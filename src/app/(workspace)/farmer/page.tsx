@@ -111,10 +111,7 @@ export default function FarmerOverviewPage() {
               Create a lot with its crop, variety, grade, quantity and sell-by date. You can review
               the details before anything is shared.
             </p>
-            <Link
-              href="/farmer/produce/new"
-              className="button button-secondary empty-action"
-            >
+            <Link href="/farmer/produce/new" className="button button-secondary empty-action">
               Create your first lot <Icon name="chevron" size={15} />
             </Link>
           </div>
