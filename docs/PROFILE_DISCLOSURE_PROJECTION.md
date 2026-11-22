@@ -15,6 +15,7 @@ This module constructs a new, minimal profile view for a specific verified viewe
 ## Server-side trust requirements
 
 The caller must:
+
 1. Obtain viewer ID and role from a verified server-side session.
 2. Load the target farmer's profile and consent preferences from trusted persistence.
 3. Determine the active workflow from persisted state (matching, accepted offer or assigned logistics).
