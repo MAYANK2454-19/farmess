@@ -1,0 +1,32 @@
+name: Lot request boundary tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/lots/lot-request.ts"
+      - "src/features/lots/lot-request.test.ts"
+      - ".github/workflows/lot-request-boundary.yml"
+  push:
+    branches:
+      - "feat/lot-request-boundary"
+
+permissions:
+  contents: read
+
+jobs:
+  lot-request:
+    name: Lot request boundary contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run lot request boundary tests
+        run: node --experimental-strip-types --test src/features/lots/lot-request.test.ts
