@@ -28,16 +28,5 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
-      - name: Preview pinned Prettier output (temporary diagnostic)
-        run: |
-          cp docs/PROFILE_DISCLOSURE_PROJECTION.md /tmp/profile-projection.md
-          cp src/features/profile/profile-projection.ts /tmp/profile-projection.ts
-          cp src/features/profile/profile-projection.test.ts /tmp/profile-projection.test.ts
-          ./node_modules/.bin/prettier --write docs/PROFILE_DISCLOSURE_PROJECTION.md src/features/profile/profile-projection.ts src/features/profile/profile-projection.test.ts
-          diff -u /tmp/profile-projection.md docs/PROFILE_DISCLOSURE_PROJECTION.md || true
-          diff -u /tmp/profile-projection.ts src/features/profile/profile-projection.ts || true
-          diff -u /tmp/profile-projection.test.ts src/features/profile/profile-projection.test.ts || true
-          git checkout -- docs/PROFILE_DISCLOSURE_PROJECTION.md src/features/profile/profile-projection.ts src/features/profile/profile-projection.test.ts
-
       - name: Run profile projection tests
         run: node --experimental-strip-types --test src/features/profile/profile-projection.test.ts
