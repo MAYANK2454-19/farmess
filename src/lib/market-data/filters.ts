@@ -19,11 +19,16 @@ function parseLimit(value: string | null): number {
 }
 
 export function parseMarketSearchFilters(params: URLSearchParams): MarketSearchFilters {
+  const commodity = optionalFilter(params.get("commodity"));
+  const state = optionalFilter(params.get("state"));
+  const district = optionalFilter(params.get("district"));
+  const market = optionalFilter(params.get("market"));
+
   return {
-    commodity: optionalFilter(params.get("commodity")),
-    state: optionalFilter(params.get("state")),
-    district: optionalFilter(params.get("district")),
-    market: optionalFilter(params.get("market")),
+    ...(commodity ? { commodity } : {}),
+    ...(state ? { state } : {}),
+    ...(district ? { district } : {}),
+    ...(market ? { market } : {}),
     limit: parseLimit(params.get("limit")),
   };
 }
