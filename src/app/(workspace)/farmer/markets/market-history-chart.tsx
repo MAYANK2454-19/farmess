@@ -20,9 +20,11 @@ function formatDate(value: string): string {
   const date = new Date(`${value}T00:00:00`);
   return Number.isNaN(date.getTime())
     ? value
-    : new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" }).format(
-        date,
-      );
+    : new Intl.DateTimeFormat("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(date);
 }
 
 export function MarketHistoryChart({ records }: Props) {
@@ -32,7 +34,8 @@ export function MarketHistoryChart({ records }: Props) {
     [history],
   );
   const [selectedId, setSelectedId] = useState("");
-  const selected = reportedSeries.find((series) => series.id === selectedId) ?? reportedSeries[0];
+  const selected =
+    reportedSeries.find((series) => series.id === selectedId) ?? reportedSeries[0];
 
   const chart = useMemo(() => {
     if (!selected) return null;
@@ -40,18 +43,25 @@ export function MarketHistoryChart({ records }: Props) {
     const prices = selected.points
       .map((point) => (point.modalPrice === null ? null : Number(point.modalPrice)))
       .filter((price): price is number => price !== null && Number.isFinite(price));
-    if (prices.length < 2) return { points: [], paths: [], min: 0, max: 0 };
+
+    if (prices.length < 2) {
+      return { points: [], paths: [], min: 0, max: 0 };
+    }
 
     const min = Math.min(...prices);
     const max = Math.max(...prices);
     const range = max - min || 1;
     const points = selected.points.map((point, index) => {
       const price = point.modalPrice === null ? null : Number(point.modalPrice);
+
       return {
         id: point.id,
         date: point.observationDate,
         price: price !== null && Number.isFinite(price) ? price : null,
-        x: selected.points.length <= 1 ? 408 : 56 + (index * 704) / (selected.points.length - 1),
+        x:
+          selected.points.length <= 1
+            ? 408
+            : 56 + (index * 704) / (selected.points.length - 1),
         y:
           price === null || !Number.isFinite(price)
             ? null
@@ -61,14 +71,17 @@ export function MarketHistoryChart({ records }: Props) {
 
     const paths: string[] = [];
     let segment = "";
+
     for (const point of points) {
       if (point.y === null) {
         if (segment) paths.push(segment);
         segment = "";
         continue;
       }
+
       segment += `${segment ? " L" : "M"} ${point.x} ${point.y}`;
     }
+
     if (segment) paths.push(segment);
 
     return { points, paths, min, max };
@@ -95,7 +108,9 @@ export function MarketHistoryChart({ records }: Props) {
   }
 
   const hasTrend = Boolean(
-    selected?.status === "available" && chart && chart.points.filter((point) => point.price !== null).length >= 2,
+    selected?.status === "available" &&
+      chart &&
+      chart.points.filter((point) => point.price !== null).length >= 2,
   );
 
   return (
@@ -114,7 +129,8 @@ export function MarketHistoryChart({ records }: Props) {
           >
             {reportedSeries.map((series) => (
               <option key={series.id} value={series.id}>
-                {series.commodity} · {series.market} · {series.variety ?? "Unspecified variety"}
+                {series.commodity} · {series.market} ·{" "}
+                {series.variety ?? "Unspecified variety"}
               </option>
             ))}
           </select>
@@ -125,7 +141,11 @@ export function MarketHistoryChart({ records }: Props) {
         <>
           <div className={styles.context}>
             <strong>{selected.commodity}</strong>
-            <span>{[selected.variety, selected.market, selected.district, selected.state].filter(Boolean).join(" · ")}</span>
+            <span>
+              {[selected.variety, selected.market, selected.district, selected.state]
+                .filter(Boolean)
+                .join(" · ")}
+            </span>
             <span>{selected.priceUnit}</span>
             <span>{selected.observationCount} observations</span>
           </div>
@@ -153,10 +173,22 @@ export function MarketHistoryChart({ records }: Props) {
                 {[0, 1, 2, 3].map((step) => {
                   const value = chart!.max - ((chart!.max - chart!.min) * step) / 3;
                   const y = 22 + (170 * step) / 3;
+
                   return (
                     <g key={step}>
-                      <line x1="56" x2="760" y1={y} y2={y} className={styles.gridLine} />
-                      <text x="48" y={y + 4} textAnchor="end" className={styles.axisLabel}>
+                      <line
+                        x1="56"
+                        x2="760"
+                        y1={y}
+                        y2={y}
+                        className={styles.gridLine}
+                      />
+                      <text
+                        x="48"
+                        y={y + 4}
+                        textAnchor="end"
+                        className={styles.axisLabel}
+                      >
                         ₹{formatPrice(value.toFixed(2))}
                       </text>
                     </g>
@@ -167,8 +199,16 @@ export function MarketHistoryChart({ records }: Props) {
                 ))}
                 {chart!.points.map((point) =>
                   point.y === null ? null : (
-                    <circle key={point.id} cx={point.x} cy={point.y} r="5" className={styles.point}>
-                      <title>{`${formatDate(point.date)}: ₹${formatPrice(point.price!.toFixed(2))}`}</title>
+                    <circle
+                      key={point.id}
+                      cx={point.x}
+                      cy={point.y}
+                      r="5"
+                      className={styles.point}
+                    >
+                      <title>
+                        {formatDate(point.date)}: ₹{formatPrice(point.price!.toFixed(2))}
+                      </title>
                     </circle>
                   ),
                 )}
@@ -177,7 +217,12 @@ export function MarketHistoryChart({ records }: Props) {
                     <text x="56" y="228" className={styles.axisLabel}>
                       {formatDate(chart!.points[0].date)}
                     </text>
-                    <text x="760" y="228" textAnchor="end" className={styles.axisLabel}>
+                    <text
+                      x="760"
+                      y="228"
+                      textAnchor="end"
+                      className={styles.axisLabel}
+                    >
                       {formatDate(chart!.points[chart!.points.length - 1].date)}
                     </text>
                   </>
@@ -195,7 +240,10 @@ export function MarketHistoryChart({ records }: Props) {
             <div className={styles.gapNotice} role="note">
               <strong>Missing observation dates:</strong>{" "}
               {selected.gaps
-                .map((gap) => `${formatDate(gap.fromDate)} – ${formatDate(gap.toDate)} (${gap.missingDays} days)`)
+                .map(
+                  (gap) =>
+                    `${formatDate(gap.fromDate)} – ${formatDate(gap.toDate)} (${gap.missingDays} days)`,
+                )
                 .join("; ")}
             </div>
           )}
