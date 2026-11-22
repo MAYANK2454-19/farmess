@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
+import styles from "./lot-form.module.css";
 import {
   validateLotDraft,
   type LotDraftInput,
@@ -29,7 +30,7 @@ function displayValue(value: string) {
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <span className="form-error" id={id}>
+    <span className={styles.formError} id={id}>
       {message}
     </span>
   );
@@ -104,12 +105,12 @@ export function LotForm() {
             <span>Sell by</span>
             <strong>{displayValue(draft.sellBy)}</strong>
           </div>
-          <div className="review-item full">
+          <div className={"review-item " + styles.reviewItemFull}>
             <span>Additional notes</span>
             <strong>{displayValue(draft.notes)}</strong>
           </div>
         </div>
-        <div className="review-note" role="note">
+        <div className={styles.reviewNote} role="note">
           Your exact address and GPS coordinates are not required here. This is not yet a submission;
           sharing and server-side saving will only be added with the authenticated lot workflow.
         </div>
@@ -136,7 +137,7 @@ export function LotForm() {
         market area rather than an exact home address.
       </p>
       {Object.keys(errors).length > 0 ? (
-        <div className="form-alert" role="alert">
+        <div className={styles.formAlert} role="alert">
           Review the marked fields and correct the information before opening the lot review.
         </div>
       ) : null}
@@ -193,8 +194,8 @@ export function LotForm() {
         </label>
         <div className="form-field">
           <span className="form-label">Available quantity *</span>
-          <div className="quantity-controls">
-            <label className="visually-hidden" htmlFor="lot-quantity">
+          <div className={styles.quantityControls}>
+            <label className={styles.visuallyHidden} htmlFor="lot-quantity">
               Quantity
             </label>
             <input
@@ -210,7 +211,7 @@ export function LotForm() {
               aria-invalid={Boolean(errors.quantity)}
               aria-describedby={errors.quantity ? "lot-quantity-error" : "lot-quantity-help"}
             />
-            <label className="visually-hidden" htmlFor="lot-unit">
+            <label className={styles.visuallyHidden} htmlFor="lot-unit">
               Quantity unit
             </label>
             <select
@@ -284,7 +285,7 @@ export function LotForm() {
           <span className="form-label">Additional notes</span>
           <textarea
             id="lot-notes"
-            className="form-control form-textarea"
+            className={"form-control " + styles.formTextarea}
             value={draft.notes}
             onChange={(event) => update("notes", event.target.value)}
             placeholder="Optional details about handling, packaging or collection"
@@ -305,7 +306,7 @@ export function LotForm() {
           Review lot details <Icon name="chevron" size={15} />
         </button>
       </div>
-      <div className="form-back-link">
+      <div className={styles.formBackLink}>
         <Link className="text-link" href="/farmer">
           ← Back to overview
         </Link>
