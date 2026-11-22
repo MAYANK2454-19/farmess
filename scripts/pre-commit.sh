@@ -8,7 +8,7 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 PRETTIER="$REPO_ROOT/node_modules/.bin/prettier"
 
 if [ -x "$PRETTIER" ]; then
-  STAGED_FILES="$(git -C "$REPO_ROOT" diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$' || true)"
+  STAGED_FILES="$(git -C "$REPO_ROOT" diff --cached --name-only --diff-filter=ACMR | grep -E '\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$' || true)"
 
   if [ -n "$STAGED_FILES" ]; then
     printf '%s\n' "$STAGED_FILES" | while IFS= read -r FILE; do
