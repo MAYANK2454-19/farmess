@@ -28,5 +28,12 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
+      - name: Preview pinned source formatting (temporary diagnostic)
+        run: |
+          cp src/features/profile/consent-audit.ts /tmp/consent-audit.ts
+          ./node_modules/.bin/prettier --write src/features/profile/consent-audit.ts
+          diff -u /tmp/consent-audit.ts src/features/profile/consent-audit.ts || true
+          git checkout -- src/features/profile/consent-audit.ts
+
       - name: Run consent audit tests
         run: node --experimental-strip-types --test src/features/profile/consent-audit.test.ts
