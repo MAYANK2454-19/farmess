@@ -1,0 +1,32 @@
+name: Market history series tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/lib/market-data/history-series.ts"
+      - "src/lib/market-data/history-series.test.ts"
+      - ".github/workflows/market-history-series.yml"
+  push:
+    branches:
+      - "feat/market-history-series-foundation"
+
+permissions:
+  contents: read
+
+jobs:
+  market-history:
+    name: Market history series contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run market history series tests
+        run: node --experimental-strip-types --test src/lib/market-data/history-series.test.ts
