@@ -37,9 +37,7 @@ export type SaleTimelineEntry = {
  * Authentication, sale ownership and evidence access must be checked by the
  * trusted server/database layer; this helper is not an authorization boundary.
  */
-export function validateSaleActivityEvent(
-  event: SaleActivityEvent,
-): string[] {
+export function validateSaleActivityEvent(event: SaleActivityEvent): string[] {
   const errors: string[] = [];
 
   for (const [field, value] of [
@@ -59,10 +57,7 @@ export function validateSaleActivityEvent(
   if (!Number.isFinite(Date.parse(event.createdAt))) {
     errors.push("Event creation time must be a valid date/time.");
   }
-  if (
-    event.evidenceReference != null &&
-    !event.evidenceReference.trim()
-  ) {
+  if (event.evidenceReference != null && !event.evidenceReference.trim()) {
     errors.push("Evidence reference must be omitted or non-empty.");
   }
 
@@ -87,10 +82,7 @@ export function validateSaleActivityEvent(
 
 function describeEvent(event: SaleActivityEvent): SaleTimelineEntry {
   const labels: Record<
-    Exclude<
-      SaleActivityEvent["eventType"],
-      "weighment_recorded" | "payment_status_reported"
-    >,
+    Exclude<SaleActivityEvent["eventType"], "weighment_recorded" | "payment_status_reported">,
     string
   > = {
     offer_accepted: "Offer accepted",
@@ -100,8 +92,7 @@ function describeEvent(event: SaleActivityEvent): SaleTimelineEntry {
   };
 
   let label: string;
-  let paymentVerification: SaleTimelineEntry["paymentVerification"] =
-    "not_applicable";
+  let paymentVerification: SaleTimelineEntry["paymentVerification"] = "not_applicable";
 
   if (event.eventType === "weighment_recorded") {
     label = `Weighment recorded: ${event.quantity} ${event.unit}`;
@@ -138,20 +129,16 @@ export function buildSaleTimeline(
     .map((event) => {
       const errors = validateSaleActivityEvent(event);
       if (errors.length > 0) {
-        throw new Error(
-          `Invalid sale activity event ${event.id}: ${errors.join(" ")}`,
-        );
+        throw new Error(`Invalid sale activity event ${event.id}: ${errors.join(" ")}`);
       }
       return describeEvent(event);
     })
     .sort((a, b) => {
-      const occurredDifference =
-        Date.parse(a.event.occurredAt) - Date.parse(b.event.occurredAt);
+      const occurredDifference = Date.parse(a.event.occurredAt) - Date.parse(b.event.occurredAt);
       if (occurredDifference !== 0) {
         return occurredDifference;
       }
-      const createdDifference =
-        Date.parse(a.event.createdAt) - Date.parse(b.event.createdAt);
+      const createdDifference = Date.parse(a.event.createdAt) - Date.parse(b.event.createdAt);
       if (createdDifference !== 0) {
         return createdDifference;
       }
