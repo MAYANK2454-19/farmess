@@ -41,9 +41,7 @@ const files = [
   .filter(
     (file) =>
       file &&
-      /\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$/i.test(
-        file,
-      ) &&
+      /\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$/i.test(file) &&
       !file.startsWith(".next/") &&
       !file.startsWith("node_modules/") &&
       !file.startsWith("docs/vendor/"),
