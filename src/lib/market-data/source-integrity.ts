@@ -28,7 +28,7 @@ export function assessMarketSourceDateIntegrity(
     return { status: "invalid-retrieval-time" };
   }
 
-  const retrievalDate = retrievalAtDate(retrievedAt);
+  const retrievalDate = retrievedAt.slice(0, 10);
 
   for (const observationDate of observationDates) {
     if (!isValidCalendarDate(observationDate)) {
@@ -40,9 +40,9 @@ export function assessMarketSourceDateIntegrity(
     .filter((observationDate) => observationDate > retrievalDate)
     .sort();
 
-  return futureDates.length > 0 ? { status: "future-observation", futureDates } : { status: "valid" };
-}
+  if (futureDates.length > 0) {
+    return { status: "future-observation", futureDates };
+  }
 
-function retrievalAtDate(retrievedAt: string): string {
-  return retrievedAt.slice(0, 10);
+  return { status: "valid" };
 }
