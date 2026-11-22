@@ -7,6 +7,7 @@ This module composes the existing FARMESS role-to-permission matrix with a recor
 A route handler first obtains the current user from the verified server-side Supabase session. It then derives the Farmess role from trusted server-side profile/app metadata and passes that verified actor to `authorizeFarmessRequest`.
 
 The actor must never come from:
+
 - Request JSON or form fields.
 - Query parameters or URL path values.
 - Local storage, cookies written by the client, or React state.
@@ -24,10 +25,7 @@ const decision = authorizeFarmessRequest(actor, "lot:update_own", {
 });
 
 if (!decision.allowed) {
-  return Response.json(
-    { error: decision.reason },
-    { status: decision.statusCode },
-  );
+  return Response.json({ error: decision.reason }, { status: decision.statusCode });
 }
 ```
 
@@ -35,11 +33,11 @@ The caller must still query persisted data with the current user scope and handl
 
 ## Supported record rules
 
-| Rule | Required condition |
-| --- | --- |
-| `owned` | Actor user ID exactly matches persisted owner ID. |
-| `assigned` | Actor user ID exactly matches persisted assignee/provider ID. |
-| `participant` | Actor user ID appears in the persisted participant list. |
+| Rule             | Required condition                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `owned`          | Actor user ID exactly matches persisted owner ID.                                                                     |
+| `assigned`       | Actor user ID exactly matches persisted assignee/provider ID.                                                         |
+| `participant`    | Actor user ID appears in the persisted participant list.                                                              |
 | `farmer_details` | Farmer is the viewer, or the viewer is a buyer/operator and farmer consent plus workflow authorization are both true. |
 
 Every rule is evaluated only after the actor is authenticated and the requested role permission is granted. Admin does not bypass the matrix.
