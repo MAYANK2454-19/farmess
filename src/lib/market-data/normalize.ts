@@ -1,7 +1,8 @@
 import type { MarketPriceRecord } from "./types.ts";
 
 export const OGD_RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070";
-export const OGD_RESOURCE_URL = `https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi`;
+export const OGD_RESOURCE_URL =
+  "https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi";
 export const OGD_API_URL = `https://api.data.gov.in/resource/${OGD_RESOURCE_ID}`;
 export const SOURCE_NAME = "OGD India / AGMARKNET";
 export const SOURCE_PRICE_UNIT = "INR/quintal";
@@ -32,10 +33,15 @@ function parseObservationDate(value: unknown): string | null {
   const candidate = dmy ? `${dmy[3]}-${dmy[2]}-${dmy[1]}` : iso ? raw : null;
   if (!candidate) return null;
   const date = new Date(`${candidate}T00:00:00.000Z`);
-  return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== candidate ? null : candidate;
+  return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== candidate
+    ? null
+    : candidate;
 }
 
-export function normalizeOgdRecord(raw: RawRecord, retrievedAt: string): MarketPriceRecord | null {
+export function normalizeOgdRecord(
+  raw: RawRecord,
+  retrievedAt: string,
+): MarketPriceRecord | null {
   const commodity = requiredText(raw.commodity);
   const state = requiredText(raw.state);
   const district = requiredText(raw.district);
@@ -52,9 +58,13 @@ export function normalizeOgdRecord(raw: RawRecord, retrievedAt: string): MarketP
   const min = minPrice === null ? null : Number(minPrice);
   const max = maxPrice === null ? null : Number(maxPrice);
   const modal = modalPrice === null ? null : Number(modalPrice);
-  if ((min !== null && max !== null && min > max) ||
-      (modal !== null && min !== null && modal < min) ||
-      (modal !== null && max !== null && modal > max)) return null;
+  if (
+    (min !== null && max !== null && min > max) ||
+    (modal !== null && min !== null && modal < min) ||
+    (modal !== null && max !== null && modal > max)
+  ) {
+    return null;
+  }
 
   const variety = requiredText(raw.variety);
   const grade = requiredText(raw.grade);
@@ -80,8 +90,15 @@ export function normalizeOgdRecord(raw: RawRecord, retrievedAt: string): MarketP
   };
 }
 
-export function normalizeOgdResponse(payload: unknown, retrievedAt: string): MarketPriceRecord[] {
-  if (!payload || typeof payload !== "object" || !Array.isArray((payload as { records?: unknown }).records)) {
+export function normalizeOgdResponse(
+  payload: unknown,
+  retrievedAt: string,
+): MarketPriceRecord[] {
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    !Array.isArray((payload as { records?: unknown }).records)
+  ) {
     throw new Error("OGD response schema mismatch: expected a records array.");
   }
   return (payload as { records: RawRecord[] }).records
