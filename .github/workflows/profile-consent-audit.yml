@@ -1,0 +1,32 @@
+name: Profile consent audit tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/profile/consent-audit.ts"
+      - "src/features/profile/consent-audit.test.ts"
+      - ".github/workflows/profile-consent-audit.yml"
+  push:
+    branches:
+      - "feat/profile-consent-audit-contract"
+
+permissions:
+  contents: read
+
+jobs:
+  consent-audit:
+    name: Profile consent audit contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run consent audit tests
+        run: node --experimental-strip-types --test src/features/profile/consent-audit.test.ts
