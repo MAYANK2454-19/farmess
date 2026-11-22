@@ -95,14 +95,15 @@ test("requires explicit participation to read a sale activity record", () => {
     participantUserIds: ["farmer-1", "buyer-1"],
   };
 
-  assert.deepEqual(
-    authorizeFarmessRequest(buyer, "sale_activity:read_participating", rule),
-    { allowed: true, actor: buyer },
-  );
-  assert.deepEqual(
-    authorizeFarmessRequest(operator, "sale_activity:read_participating", rule),
-    { allowed: false, statusCode: 403, reason: "permission_denied" },
-  );
+  assert.deepEqual(authorizeFarmessRequest(buyer, "sale_activity:read_participating", rule), {
+    allowed: true,
+    actor: buyer,
+  });
+  assert.deepEqual(authorizeFarmessRequest(operator, "sale_activity:read_participating", rule), {
+    allowed: false,
+    statusCode: 403,
+    reason: "permission_denied",
+  });
   assert.deepEqual(
     authorizeFarmessRequest(farmer, "sale_activity:read_participating", {
       kind: "participant",
@@ -120,10 +121,10 @@ test("requires farmer consent and an authorised workflow for buyer detail access
     workflowAuthorized: true,
   };
 
-  assert.deepEqual(
-    authorizeFarmessRequest(buyer, "lot:read_matched_summary", permitted),
-    { allowed: true, actor: buyer },
-  );
+  assert.deepEqual(authorizeFarmessRequest(buyer, "lot:read_matched_summary", permitted), {
+    allowed: true,
+    actor: buyer,
+  });
   assert.deepEqual(
     authorizeFarmessRequest(buyer, "lot:read_matched_summary", {
       ...permitted,
@@ -174,7 +175,10 @@ test("denies malformed or unknown record relationship rules", () => {
     {} as ResourceAuthorizationRule,
     { kind: "owned", ownerId: "" } as ResourceAuthorizationRule,
     { kind: "assigned", assigneeId: null } as unknown as ResourceAuthorizationRule,
-    { kind: "participant", participantUserIds: ["user-1", 3] } as unknown as ResourceAuthorizationRule,
+    {
+      kind: "participant",
+      participantUserIds: ["user-1", 3],
+    } as unknown as ResourceAuthorizationRule,
     { kind: "superuser" } as unknown as ResourceAuthorizationRule,
   ]) {
     assert.deepEqual(authorizeFarmessRequest(farmer, "lot:read_own", rule), {
