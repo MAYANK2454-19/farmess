@@ -34,9 +34,7 @@ const COLUMNS: Array<[string, (record: CsvMarketPriceRecord) => string | null]> 
 
 function csvCell(value: string | null): string {
   const normalized = value ?? "";
-  const safeValue = /^[\u0000-\u0020]*[=+@-]/.test(normalized)
-    ? `'${normalized}`
-    : normalized;
+  const safeValue = /^[\u0000-\u0020]*[=+@-]/.test(normalized) ? `'${normalized}` : normalized;
   return `"${safeValue.replace(/"/g, '""')}"`;
 }
 

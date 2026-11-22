@@ -79,7 +79,6 @@ test("marks observations older than 48 hours as stale", () => {
   assert.equal(isObservationStale("2026-11-19", now), true);
 });
 
-
 test("exports reported market observations with provenance and spreadsheet-safe cells", () => {
   const csv = marketPriceRecordsToCsv([
     {
