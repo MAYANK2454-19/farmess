@@ -42,12 +42,21 @@ test("rejects malformed, negative and inconsistent prices", () => {
     normalizeOgdRecord({ ...validRecord, modal_price: "not-a-price" }, retrievedAt),
     null,
   );
-  assert.equal(normalizeOgdRecord({ ...validRecord, min_price: "-1" }, retrievedAt), null);
   assert.equal(
-    normalizeOgdRecord({ ...validRecord, min_price: "1900", max_price: "1800" }, retrievedAt),
+    normalizeOgdRecord({ ...validRecord, min_price: "-1" }, retrievedAt),
     null,
   );
-  assert.equal(normalizeOgdRecord({ ...validRecord, modal_price: "2000" }, retrievedAt), null);
+  assert.equal(
+    normalizeOgdRecord(
+      { ...validRecord, min_price: "1900", max_price: "1800" },
+      retrievedAt,
+    ),
+    null,
+  );
+  assert.equal(
+    normalizeOgdRecord({ ...validRecord, modal_price: "2000" }, retrievedAt),
+    null,
+  );
 });
 
 test("allows absent optional price fields when at least one price exists", () => {
