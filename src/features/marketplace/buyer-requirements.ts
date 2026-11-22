@@ -51,7 +51,10 @@ export function validateBuyerRequirement(
   if (!crop) {
     errors.push({ field: "crop", message: "Crop is required." });
   } else if (crop.length > MAX_CROP_LENGTH) {
-    errors.push({ field: "crop", message: `Crop must be at most ${MAX_CROP_LENGTH} characters.` });
+    errors.push({
+      field: "crop",
+      message: `Crop must be at most ${MAX_CROP_LENGTH} characters.`,
+    });
   }
 
   if (variety.length > MAX_ATTRIBUTE_LENGTH) {
@@ -68,7 +71,10 @@ export function validateBuyerRequirement(
   }
 
   if (!Number.isFinite(draft.quantity) || draft.quantity <= 0) {
-    errors.push({ field: "quantity", message: "Quantity must be a finite number greater than zero." });
+    errors.push({
+      field: "quantity",
+      message: "Quantity must be a finite number greater than zero.",
+    });
   }
   if (!(QUANTITY_UNITS as readonly string[]).includes(draft.unit)) {
     errors.push({ field: "unit", message: "Choose kg, quintal or tonne." });
@@ -83,12 +89,15 @@ export function validateBuyerRequirement(
     });
   }
 
-  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(draft.requiredAt);
-  const dateTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(
-    draft.requiredAt,
-  );
-  const parsedDate = Date.parse(draft.requiredAt);
-  const datePart = draft.requiredAt.slice(0, 10);
+  const requiredAt =
+    typeof draft.requiredAt === "string" ? draft.requiredAt : "";
+  const dateOnly = /^\\d{4}-\\d{2}-\\d{2}$/.test(requiredAt);
+  const dateTime =
+    /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,3})?)?(?:Z|[+-]\\d{2}:\\d{2})$/.test(
+      requiredAt,
+    );
+  const parsedDate = Date.parse(requiredAt);
+  const datePart = requiredAt.slice(0, 10);
   const dateParts = datePart.split("-").map(Number);
   const dateIsReal =
     dateParts.length === 3 &&
@@ -96,15 +105,11 @@ export function validateBuyerRequirement(
       .toISOString()
       .startsWith(datePart);
 
-  if (
-
-    (!dateOnly && !dateTime) ||
-    !dateIsReal ||
-    !Number.isFinite(parsedDate)
-  ) {
+  if ((!dateOnly && !dateTime) || !dateIsReal || !Number.isFinite(parsedDate)) {
     errors.push({
       field: "requiredAt",
-      message: "Required date must be a valid ISO date or ISO timestamp with a timezone.",
+      message:
+        "Required date must be a valid ISO date or ISO timestamp with a timezone.",
     });
   }
 
