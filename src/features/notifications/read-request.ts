@@ -45,9 +45,7 @@ function hasOwn(record: UnknownRecord, key: string): boolean {
  * identifier. The recipient user ID must come from a verified server session.
  * The read timestamp must be generated on the server.
  */
-export function parseNotificationReadRequest(
-  input: unknown,
-): NotificationReadRequestParseResult {
+export function parseNotificationReadRequest(input: unknown): NotificationReadRequestParseResult {
   if (!isRecord(input)) {
     return {
       status: "invalid",
