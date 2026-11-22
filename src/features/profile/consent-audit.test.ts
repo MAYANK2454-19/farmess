@@ -174,17 +174,27 @@ test("rejects malformed patches and unsupported consent fields", () => {
   }
 });
 
-test("rejects invalid timestamps and missing user identities", () => {
+test("rejects invalid timestamps, impossible dates and missing user identities", () => {
   const invalidTimestamp = build({ occurredAt: "not-a-date" });
+  const impossibleDate = build({ occurredAt: "2026-02-30T15:30:00.000Z" });
   const missingActor = build({ actorUserId: " " });
+  const invalidRequest = build(null as unknown as Record<string, unknown>);
 
   assert.equal(invalidTimestamp.status, "invalid");
   if (invalidTimestamp.status === "invalid") {
     assert.equal(invalidTimestamp.reason, "invalid_timestamp");
   }
+  assert.equal(impossibleDate.status, "invalid");
+  if (impossibleDate.status === "invalid") {
+    assert.equal(impossibleDate.reason, "invalid_timestamp");
+  }
   assert.equal(missingActor.status, "invalid");
   if (missingActor.status === "invalid") {
     assert.equal(missingActor.reason, "invalid_request");
+  }
+  assert.equal(invalidRequest.status, "invalid");
+  if (invalidRequest.status === "invalid") {
+    assert.equal(invalidRequest.reason, "invalid_request");
   }
 });
 
