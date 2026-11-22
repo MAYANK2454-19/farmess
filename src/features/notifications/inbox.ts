@@ -1,11 +1,6 @@
-export const NOTIFICATION_RELATED_ENTITY_TYPES = [
-  "offer",
-  "logistics_request",
-  "sale",
-] as const;
+export const NOTIFICATION_RELATED_ENTITY_TYPES = ["offer", "logistics_request", "sale"] as const;
 
-export type NotificationRelatedEntityType =
-  (typeof NOTIFICATION_RELATED_ENTITY_TYPES)[number];
+export type NotificationRelatedEntityType = (typeof NOTIFICATION_RELATED_ENTITY_TYPES)[number];
 
 export type NotificationInboxRecord = {
   id: string;
@@ -61,8 +56,7 @@ function compareIdsDescending(left: string, right: string): number {
 
 function compareNewestFirst<T extends NotificationInboxRecord>(left: T, right: T): number {
   const timeDifference =
-    timestampValue(right.createdAt, "createdAt") -
-    timestampValue(left.createdAt, "createdAt");
+    timestampValue(right.createdAt, "createdAt") - timestampValue(left.createdAt, "createdAt");
 
   return timeDifference || compareIdsDescending(left.id, right.id);
 }
@@ -120,9 +114,7 @@ export function listRecipientNotifications<T extends NotificationInboxRecord>(
   }
 
   const limit = validatePageSize(options.limit);
-  const recipientRecords = records.filter(
-    (record) => record.recipientUserId === recipientUserId,
-  );
+  const recipientRecords = records.filter((record) => record.recipientUserId === recipientUserId);
 
   const sortedRecords = [...recipientRecords].sort(compareNewestFirst);
   const cursorTime = options.before
@@ -142,10 +134,7 @@ export function listRecipientNotifications<T extends NotificationInboxRecord>(
   return {
     items,
     unreadCount: countUnreadNotifications(recipientRecords, recipientUserId),
-    nextCursor:
-      hasMore && lastItem
-        ? { createdAt: lastItem.createdAt, id: lastItem.id }
-        : null,
+    nextCursor: hasMore && lastItem ? { createdAt: lastItem.createdAt, id: lastItem.id } : null,
   };
 }
 
