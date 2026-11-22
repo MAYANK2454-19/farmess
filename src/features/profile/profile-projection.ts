@@ -56,10 +56,7 @@ function hasUsableId(value: unknown): value is string {
 }
 
 function isWorkflow(value: unknown): value is DisclosureWorkflow {
-  return (
-    typeof value === "string" &&
-    DISCLOSURE_WORKFLOWS.includes(value as DisclosureWorkflow)
-  );
+  return typeof value === "string" && DISCLOSURE_WORKFLOWS.includes(value as DisclosureWorkflow);
 }
 
 function parseOptionalText(
@@ -198,9 +195,7 @@ export function buildFarmerProfileProjection(input: {
     status: "valid",
     view: {
       displayName: displayName.trim(),
-      approximateLocation: decisions.approximateLocation.allowed
-        ? approximateLocation.value
-        : null,
+      approximateLocation: decisions.approximateLocation.allowed ? approximateLocation.value : null,
       contactDetails:
         decisions.contactDetails.allowed && phoneNumber.value
           ? { phoneNumber: phoneNumber.value }
