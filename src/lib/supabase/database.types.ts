@@ -2,13 +2,7 @@
 // Generated from the FARMESS Supabase project. Do not edit by hand.
 // Regenerate after reviewed database migrations are applied.
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -37,35 +31,35 @@ export type Database = {
         };
         Insert: {
           buyer_id: string;
-          created_at?: string
+          created_at?: string;
           crop: string;
-          delivery_by?: string | null
-          grade?: string | null
-          id?: string
+          delivery_by?: string | null;
+          grade?: string | null;
+          id?: string;
           market_area: string;
-          max_quantity?: number | null
+          max_quantity?: number | null;
           min_quantity: number;
-          status?: string
-          target_price_paise_per_quintal?: number | null
+          status?: string;
+          target_price_paise_per_quintal?: number | null;
           unit: string;
-          updated_at?: string
-          variety?: string | null
+          updated_at?: string;
+          variety?: string | null;
         };
         Update: {
-          buyer_id?: string
-          created_at?: string
-          crop?: string
-          delivery_by?: string | null
-          grade?: string | null
-          id?: string
-          market_area?: string
-          max_quantity?: number | null
-          min_quantity?: number
-          status?: string
-          target_price_paise_per_quintal?: number | null
-          unit?: string
-          updated_at?: string
-          variety?: string | null
+          buyer_id?: string;
+          created_at?: string;
+          crop?: string;
+          delivery_by?: string | null;
+          grade?: string | null;
+          id?: string;
+          market_area?: string;
+          max_quantity?: number | null;
+          min_quantity?: number;
+          status?: string;
+          target_price_paise_per_quintal?: number | null;
+          unit?: string;
+          updated_at?: string;
+          variety?: string | null;
         };
         Relationships: [
           {
@@ -95,36 +89,36 @@ export type Database = {
           variety: string | null;
         };
         Insert: {
-          created_at?: string
+          created_at?: string;
           crop: string;
-          district?: string | null
-          id?: string
+          district?: string | null;
+          id?: string;
           market_name: string;
-          max_price_paise_per_quintal?: number | null
-          min_price_paise_per_quintal?: number | null
-          modal_price_paise_per_quintal?: number | null
+          max_price_paise_per_quintal?: number | null;
+          min_price_paise_per_quintal?: number | null;
+          modal_price_paise_per_quintal?: number | null;
           observation_date: string;
-          retrieved_at?: string
+          retrieved_at?: string;
           source_name: string;
           source_url: string;
-          state?: string | null
-          variety?: string | null
+          state?: string | null;
+          variety?: string | null;
         };
         Update: {
-          created_at?: string
-          crop?: string
-          district?: string | null
-          id?: string
-          market_name?: string
-          max_price_paise_per_quintal?: number | null
-          min_price_paise_per_quintal?: number | null
-          modal_price_paise_per_quintal?: number | null
-          observation_date?: string
-          retrieved_at?: string
-          source_name?: string
-          source_url?: string
-          state?: string | null
-          variety?: string | null
+          created_at?: string;
+          crop?: string;
+          district?: string | null;
+          id?: string;
+          market_name?: string;
+          max_price_paise_per_quintal?: number | null;
+          min_price_paise_per_quintal?: number | null;
+          modal_price_paise_per_quintal?: number | null;
+          observation_date?: string;
+          retrieved_at?: string;
+          source_name?: string;
+          source_url?: string;
+          state?: string | null;
+          variety?: string | null;
         };
         Relationships: [];
       };
@@ -142,25 +136,25 @@ export type Database = {
         };
         Insert: {
           body: string;
-          created_at?: string
+          created_at?: string;
           event_key: string;
-          id?: string
-          read_at?: string | null
+          id?: string;
+          read_at?: string | null;
           recipient_user_id: string;
-          related_id?: string | null
-          related_type?: string | null
+          related_id?: string | null;
+          related_type?: string | null;
           title: string;
         };
         Update: {
-          body?: string
-          created_at?: string
-          event_key?: string
-          id?: string
-          read_at?: string | null
-          recipient_user_id?: string
-          related_id?: string | null
-          related_type?: string | null
-          title?: string
+          body?: string;
+          created_at?: string;
+          event_key?: string;
+          id?: string;
+          read_at?: string | null;
+          recipient_user_id?: string;
+          related_id?: string | null;
+          related_type?: string | null;
+          title?: string;
         };
         Relationships: [
           {
@@ -189,31 +183,31 @@ export type Database = {
         };
         Insert: {
           buyer_id: string;
-          created_at?: string
+          created_at?: string;
           farmer_id: string;
-          id?: string
+          id?: string;
           lot_id: string;
           price_paise_per_quintal: number;
           quantity: number;
-          status?: string
-          terms?: string | null
+          status?: string;
+          terms?: string | null;
           unit: string;
-          updated_at?: string
+          updated_at?: string;
           valid_until: string;
         };
         Update: {
-          buyer_id?: string
-          created_at?: string
-          farmer_id?: string
-          id?: string
-          lot_id?: string
-          price_paise_per_quintal?: number
-          quantity?: number
-          status?: string
-          terms?: string | null
-          unit?: string
-          updated_at?: string
-          valid_until?: string
+          buyer_id?: string;
+          created_at?: string;
+          farmer_id?: string;
+          id?: string;
+          lot_id?: string;
+          price_paise_per_quintal?: number;
+          quantity?: number;
+          status?: string;
+          terms?: string | null;
+          unit?: string;
+          updated_at?: string;
+          valid_until?: string;
         };
         Relationships: [
           {
@@ -259,34 +253,34 @@ export type Database = {
         Insert: {
           approximate_area: string;
           available_from: string;
-          created_at?: string
+          created_at?: string;
           crop: string;
-          grade?: string | null
-          id?: string
-          notes?: string | null
+          grade?: string | null;
+          id?: string;
+          notes?: string | null;
           owner_id: string;
           quantity: number;
           sell_by: string;
-          status?: string
+          status?: string;
           unit: string;
-          updated_at?: string
-          variety?: string | null
+          updated_at?: string;
+          variety?: string | null;
         };
         Update: {
-          approximate_area?: string
-          available_from?: string
-          created_at?: string
-          crop?: string
-          grade?: string | null
-          id?: string
-          notes?: string | null
-          owner_id?: string
-          quantity?: number
-          sell_by?: string
-          status?: string
-          unit?: string
-          updated_at?: string
-          variety?: string | null
+          approximate_area?: string;
+          available_from?: string;
+          created_at?: string;
+          crop?: string;
+          grade?: string | null;
+          id?: string;
+          notes?: string | null;
+          owner_id?: string;
+          quantity?: number;
+          sell_by?: string;
+          status?: string;
+          unit?: string;
+          updated_at?: string;
+          variety?: string | null;
         };
         Relationships: [
           {
@@ -309,22 +303,22 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          actor_user_id?: string | null
+          actor_user_id?: string | null;
           consent_field: Database["public"]["Enums"]["farmer_consent_field"];
-          created_at?: string
-          dedupe_key?: string
+          created_at?: string;
+          dedupe_key?: string;
           granted: boolean;
-          id?: string
+          id?: string;
           user_id: string;
         };
         Update: {
-          actor_user_id?: string | null
-          consent_field?: Database["public"]["Enums"]["farmer_consent_field"]
-          created_at?: string
-          dedupe_key?: string
-          granted?: boolean
-          id?: string
-          user_id?: string
+          actor_user_id?: string | null;
+          consent_field?: Database["public"]["Enums"]["farmer_consent_field"];
+          created_at?: string;
+          dedupe_key?: string;
+          granted?: boolean;
+          id?: string;
+          user_id?: string;
         };
         Relationships: [
           {
@@ -351,30 +345,30 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          approximate_location_sharing?: boolean
-          buyer_contact_disclosure?: boolean
-          created_at?: string
-          display_name?: string | null
-          exact_location_disclosure?: boolean
+          approximate_location_sharing?: boolean;
+          buyer_contact_disclosure?: boolean;
+          created_at?: string;
+          display_name?: string | null;
+          exact_location_disclosure?: boolean;
           id: string;
-          market_area?: string | null
-          phone_number?: string | null
-          provider_contact_disclosure?: boolean
-          role?: Database["public"]["Enums"]["farmess_role"]
-          updated_at?: string
+          market_area?: string | null;
+          phone_number?: string | null;
+          provider_contact_disclosure?: boolean;
+          role?: Database["public"]["Enums"]["farmess_role"];
+          updated_at?: string;
         };
         Update: {
-          approximate_location_sharing?: boolean
-          buyer_contact_disclosure?: boolean
-          created_at?: string
-          display_name?: string | null
-          exact_location_disclosure?: boolean
-          id?: string
-          market_area?: string | null
-          phone_number?: string | null
-          provider_contact_disclosure?: boolean
-          role?: Database["public"]["Enums"]["farmess_role"]
-          updated_at?: string
+          approximate_location_sharing?: boolean;
+          buyer_contact_disclosure?: boolean;
+          created_at?: string;
+          display_name?: string | null;
+          exact_location_disclosure?: boolean;
+          id?: string;
+          market_area?: string | null;
+          phone_number?: string | null;
+          provider_contact_disclosure?: boolean;
+          role?: Database["public"]["Enums"]["farmess_role"];
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -389,22 +383,22 @@ export type Database = {
           summary: string;
         };
         Insert: {
-          actor_user_id?: string | null
-          created_at?: string
+          actor_user_id?: string | null;
+          created_at?: string;
           event_key: string;
-          id?: string
+          id?: string;
           participant_user_ids: string[];
           sale_id: string;
           summary: string;
         };
         Update: {
-          actor_user_id?: string | null
-          created_at?: string
-          event_key?: string
-          id?: string
-          participant_user_ids?: string[]
-          sale_id?: string
-          summary?: string
+          actor_user_id?: string | null;
+          created_at?: string;
+          event_key?: string;
+          id?: string;
+          participant_user_ids?: string[];
+          sale_id?: string;
+          summary?: string;
         };
         Relationships: [
           {
@@ -438,30 +432,30 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          agreed_at?: string
+          agreed_at?: string;
           agreed_price_paise_per_quintal: number;
           agreed_quantity: number;
           buyer_id: string;
           farmer_id: string;
-          id?: string
+          id?: string;
           lot_id: string;
           offer_id: string;
-          status?: string
+          status?: string;
           unit: string;
-          updated_at?: string
+          updated_at?: string;
         };
         Update: {
-          agreed_at?: string
-          agreed_price_paise_per_quintal?: number
-          agreed_quantity?: number
-          buyer_id?: string
-          farmer_id?: string
-          id?: string
-          lot_id?: string
-          offer_id?: string
-          status?: string
-          unit?: string
-          updated_at?: string
+          agreed_at?: string;
+          agreed_price_paise_per_quintal?: number;
+          agreed_quantity?: number;
+          buyer_id?: string;
+          farmer_id?: string;
+          id?: string;
+          lot_id?: string;
+          offer_id?: string;
+          status?: string;
+          unit?: string;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -513,38 +507,38 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          available_from?: string | null
-          available_until?: string | null
-          capacity_quantity?: number | null
-          capacity_unit?: string | null
-          created_at?: string
-          description?: string | null
-          destination_area?: string | null
-          id?: string
+          available_from?: string | null;
+          available_until?: string | null;
+          capacity_quantity?: number | null;
+          capacity_unit?: string | null;
+          created_at?: string;
+          description?: string | null;
+          destination_area?: string | null;
+          id?: string;
           operator_id: string;
-          price_paise?: number | null
+          price_paise?: number | null;
           service_area: string;
           service_type: string;
-          status?: string
+          status?: string;
           title: string;
-          updated_at?: string
+          updated_at?: string;
         };
         Update: {
-          available_from?: string | null
-          available_until?: string | null
-          capacity_quantity?: number | null
-          capacity_unit?: string | null
-          created_at?: string
-          description?: string | null
-          destination_area?: string | null
-          id?: string
-          operator_id?: string
-          price_paise?: number | null
-          service_area?: string
-          service_type?: string
-          status?: string
-          title?: string
-          updated_at?: string
+          available_from?: string | null;
+          available_until?: string | null;
+          capacity_quantity?: number | null;
+          capacity_unit?: string | null;
+          created_at?: string;
+          description?: string | null;
+          destination_area?: string | null;
+          id?: string;
+          operator_id?: string;
+          price_paise?: number | null;
+          service_area?: string;
+          service_type?: string;
+          status?: string;
+          title?: string;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -573,34 +567,34 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          created_at?: string
-          destination_area?: string | null
-          id?: string
+          created_at?: string;
+          destination_area?: string | null;
+          id?: string;
           listing_id: string;
-          message?: string | null
-          origin_area?: string | null
+          message?: string | null;
+          origin_area?: string | null;
           provider_user_id: string;
-          requested_date?: string | null
-          requested_quantity?: number | null
+          requested_date?: string | null;
+          requested_quantity?: number | null;
           requester_id: string;
-          status?: string
-          unit?: string | null
-          updated_at?: string
+          status?: string;
+          unit?: string | null;
+          updated_at?: string;
         };
         Update: {
-          created_at?: string
-          destination_area?: string | null
-          id?: string
-          listing_id?: string
-          message?: string | null
-          origin_area?: string | null
-          provider_user_id?: string
-          requested_date?: string | null
-          requested_quantity?: number | null
-          requester_id?: string
-          status?: string
-          unit?: string | null
-          updated_at?: string
+          created_at?: string;
+          destination_area?: string | null;
+          id?: string;
+          listing_id?: string;
+          message?: string | null;
+          origin_area?: string | null;
+          provider_user_id?: string;
+          requested_date?: string | null;
+          requested_quantity?: number | null;
+          requester_id?: string;
+          status?: string;
+          unit?: string | null;
+          updated_at?: string;
         };
         Relationships: [
           {
