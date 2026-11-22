@@ -30,13 +30,6 @@ jobs:
 
       - run: npm ci
 
-      - name: Preview exact formatter output (temporary diagnostic)
-        run: |
-          cp src/lib/auth/authorization.test.ts /tmp/authorization.test.ts
-          ./node_modules/.bin/prettier --write src/lib/auth/authorization.test.ts
-          diff -u /tmp/authorization.test.ts src/lib/auth/authorization.test.ts || true
-          git checkout -- src/lib/auth/authorization.test.ts
-
       - name: Prettier (changed files only)
         run: npm run format:check
         env:
