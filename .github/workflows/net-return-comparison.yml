@@ -27,5 +27,12 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
+      - name: Preview test formatter output (temporary diagnostic)
+        run: |
+          cp src/features/comparison/net-realisation-comparison.test.ts /tmp/comparison.test.ts
+          ./node_modules/.bin/prettier --write src/features/comparison/net-realisation-comparison.test.ts
+          diff -u /tmp/comparison.test.ts src/features/comparison/net-realisation-comparison.test.ts || true
+          git checkout -- src/features/comparison/net-realisation-comparison.test.ts
+
       - name: Run comparison contract tests
         run: node --experimental-strip-types --test src/features/comparison/net-realisation-comparison.test.ts
