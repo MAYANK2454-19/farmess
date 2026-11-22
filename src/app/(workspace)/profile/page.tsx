@@ -101,7 +101,7 @@ export default function ProfilePage() {
       <div className="form-footer profile-footer">
         <p className="form-warning">
           {saved
-            ? "Preview saved locally for this session."
+            ? "Preview updated. Changes are not persisted yet."
             : "Preview only — profile persistence will be connected by the authentication/database owner."}
         </p>
         <button className="button button-primary" type="button" onClick={() => setSaved(true)}>
