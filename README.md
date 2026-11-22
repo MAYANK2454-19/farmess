@@ -48,7 +48,7 @@ The Compare Markets route contains a single-scenario calculator. It uses the rat
 
 Run npm run format, npm run format:check, npm run lint, npm run typecheck, npm test and npm run build.
 
-For pull requests, CI formats the branch with Prettier and commits the formatting plus generated lockfile back to that branch before running the checks. This avoids recurring formatting-only CI failures while keeping the committed branch formatted.
+After `npm ci`, the `simple-git-hooks` pre-commit hook automatically formats supported staged files with Prettier and re-stages them before each commit. CI runs a separate Prettier check against only the files changed in the PR or push, so pre-existing untouched files do not repeatedly break builds. CI does not push formatting commits back to contributors' branches.
 
 ## Product and design references
 
