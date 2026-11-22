@@ -73,7 +73,12 @@ test("only the owning farmer can accept an unexpired offer", () => {
     false,
   );
   assert.deepEqual(
-    transitionOffer(offer, { id: "farmer-1", role: "farmer" }, "accept", new Date("2026-11-24")),
+    transitionOffer(
+      offer,
+      { id: "farmer-1", role: "farmer" },
+      "accept",
+      new Date("2026-11-24"),
+    ),
     { status: "accepted", changed: true },
   );
 });
@@ -115,11 +120,19 @@ const request: LogisticsRequestForTransition = {
 
 test("only the assigned provider can confirm a logistics request", () => {
   assert.equal(
-    transitionLogisticsRequest(request, { id: "provider-2", role: "provider" }, "accept").changed,
+    transitionLogisticsRequest(
+      request,
+      { id: "provider-2", role: "provider" },
+      "accept",
+    ).changed,
     false,
   );
   assert.deepEqual(
-    transitionLogisticsRequest(request, { id: "provider-1", role: "provider" }, "accept"),
+    transitionLogisticsRequest(
+      request,
+      { id: "provider-1", role: "provider" },
+      "accept",
+    ),
     { status: "accepted", changed: true },
   );
 });
