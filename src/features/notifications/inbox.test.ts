@@ -52,7 +52,10 @@ test("lists only the verified recipient's notifications", () => {
     ["notification-1", "notification-3"],
   );
   assert.equal(result.unreadCount, 1);
-  assert.equal(result.items.some((item) => item.recipientUserId === "farmer-2"), false);
+  assert.equal(
+    result.items.some((item) => item.recipientUserId === "farmer-2"),
+    false,
+  );
 });
 
 test("returns an empty inbox when the recipient identity is missing", () => {
@@ -176,11 +179,7 @@ test("mark-all is a no-op without a verified recipient and on a second call", ()
   assert.equal(unauthorised.changedCount, 0);
 
   const first = markAllNotificationsRead([farmerOne], "farmer-1", "2026-11-22T12:30:00.000Z");
-  const second = markAllNotificationsRead(
-    first.records,
-    "farmer-1",
-    "2026-11-22T12:45:00.000Z",
-  );
+  const second = markAllNotificationsRead(first.records, "farmer-1", "2026-11-22T12:45:00.000Z");
   assert.equal(first.changedCount, 1);
   assert.equal(second.changedCount, 0);
   assert.equal(second.records[0].readAt, "2026-11-22T12:30:00.000Z");
@@ -198,9 +197,6 @@ test("returns a related-record target only for supported types and non-empty IDs
     }),
     { entityType: "logistics_request", entityId: "request-1" },
   );
-  assert.equal(
-    getNotificationTarget({ relatedEntityType: "sale", relatedEntityId: " " }),
-    null,
-  );
+  assert.equal(getNotificationTarget({ relatedEntityType: "sale", relatedEntityId: " " }), null);
   assert.equal(getNotificationTarget({ relatedEntityType: null, relatedEntityId: null }), null);
 });
