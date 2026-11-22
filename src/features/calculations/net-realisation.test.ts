@@ -3,9 +3,7 @@ import test from "node:test";
 
 import { calculateNetRealisation, type NetRealisationInput } from "./net-realisation.ts";
 
-function completeInput(
-  overrides: Partial<NetRealisationInput> = {},
-): NetRealisationInput {
+function completeInput(overrides: Partial<NetRealisationInput> = {}): NetRealisationInput {
   return {
     quantity: "10",
     unit: "quintal",
@@ -31,9 +29,7 @@ test("calculates gross sale value, explicit deductions and net realisation", () 
 });
 
 test("keeps the result incomplete when a material cost is unknown", () => {
-  const result = calculateNetRealisation(
-    completeInput({ storageCost: "" }),
-  );
+  const result = calculateNetRealisation(completeInput({ storageCost: "" }));
 
   assert.equal(result.status, "incomplete");
   assert.equal(result.grossSaleValue, "20000.00");
@@ -80,12 +76,8 @@ test("rounds a fractional quantity calculation to the nearest paise", () => {
 });
 
 test("rejects invalid values and quantity precision beyond three decimals", () => {
-  const negative = calculateNetRealisation(
-    completeInput({ transportCost: "-10" }),
-  );
-  const excessivePrecision = calculateNetRealisation(
-    completeInput({ quantity: "1.2345" }),
-  );
+  const negative = calculateNetRealisation(completeInput({ transportCost: "-10" }));
+  const excessivePrecision = calculateNetRealisation(completeInput({ quantity: "1.2345" }));
 
   assert.equal(negative.status, "invalid");
   assert.ok(negative.errors.transportCost);

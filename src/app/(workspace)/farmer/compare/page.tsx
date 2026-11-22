@@ -16,9 +16,8 @@ export default function ComparePage() {
       <div className="preview-banner" role="note">
         <span className="banner-dot" />
         <span>
-          <strong>Scenario calculator available.</strong> This first slice uses
-          the price and costs you enter. Verified market observations and
-          buyer offers will be connected separately.
+          <strong>Scenario calculator available.</strong> This first slice uses the price and costs
+          you enter. Verified market observations and buyer offers will be connected separately.
         </span>
       </div>
 

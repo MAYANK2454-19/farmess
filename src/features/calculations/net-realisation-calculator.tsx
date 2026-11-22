@@ -28,22 +28,14 @@ function getFieldLabel(field: CalculationField): string {
   if (field === "unit") return "Quantity unit";
   if (field === "expectedPricePerUnit") return "Expected selling rate";
 
-  return (
-    DEDUCTION_FIELDS.find((item) => item.key === field)?.label ?? field
-  );
+  return DEDUCTION_FIELDS.find((item) => item.key === field)?.label ?? field;
 }
 
 export function NetRealisationCalculator() {
   const [input, setInput] = useState<NetRealisationInput>(initialInput);
-  const result = useMemo(
-    () => calculateNetRealisation(input),
-    [input],
-  );
+  const result = useMemo(() => calculateNetRealisation(input), [input]);
 
-  function update<K extends keyof NetRealisationInput>(
-    key: K,
-    value: NetRealisationInput[K],
-  ) {
+  function update<K extends keyof NetRealisationInput>(key: K, value: NetRealisationInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
   }
 
@@ -53,9 +45,8 @@ export function NetRealisationCalculator() {
         <div className="module-status">Entered scenario · not a market quote</div>
         <h2 className={styles.sectionTitle}>Selling option details</h2>
         <p className={styles.intro}>
-          Enter a selling rate and the costs for this produce lot. The rate and
-          every deduction are inputs you provide; Farmess does not fetch or
-          invent a price here.
+          Enter a selling rate and the costs for this produce lot. The rate and every deduction are
+          inputs you provide; Farmess does not fetch or invent a price here.
         </p>
 
         <div className={styles.sectionBlock}>
@@ -85,28 +76,19 @@ export function NetRealisationCalculator() {
                 className="form-control"
                 value={input.unit}
                 onChange={(event) =>
-                  update(
-                    "unit",
-                    event.target.value as NetRealisationInput["unit"],
-                  )
+                  update("unit", event.target.value as NetRealisationInput["unit"])
                 }
               >
                 {QUANTITY_UNITS.map((unit) => (
                   <option key={unit} value={unit}>
-                    {unit === "kg"
-                      ? "Kilogram (kg)"
-                      : unit === "quintal"
-                        ? "Quintal"
-                        : "Tonne"}
+                    {unit === "kg" ? "Kilogram (kg)" : unit === "quintal" ? "Quintal" : "Tonne"}
                   </option>
                 ))}
               </select>
             </label>
 
             <label className={"form-field " + styles.wideField}>
-              <span className="form-label">
-                Expected selling rate (₹ / {input.unit}) *
-              </span>
+              <span className="form-label">Expected selling rate (₹ / {input.unit}) *</span>
               <input
                 className="form-control"
                 type="number"
@@ -114,20 +96,14 @@ export function NetRealisationCalculator() {
                 step="0.01"
                 inputMode="decimal"
                 value={input.expectedPricePerUnit}
-                onChange={(event) =>
-                  update("expectedPricePerUnit", event.target.value)
-                }
+                onChange={(event) => update("expectedPricePerUnit", event.target.value)}
                 placeholder={"Enter rate per " + input.unit}
                 aria-invalid={Boolean(result.errors.expectedPricePerUnit)}
               />
               {result.errors.expectedPricePerUnit ? (
-                <span className={styles.errorText}>
-                  {result.errors.expectedPricePerUnit}
-                </span>
+                <span className={styles.errorText}>{result.errors.expectedPricePerUnit}</span>
               ) : null}
-              <span className="form-help">
-                Use a rate on the same unit basis selected above.
-              </span>
+              <span className="form-help">Use a rate on the same unit basis selected above.</span>
             </label>
           </div>
         </div>
@@ -135,9 +111,8 @@ export function NetRealisationCalculator() {
         <div className={styles.sectionBlock}>
           <h3 className={styles.subheading}>Costs and deductions for this lot</h3>
           <p className={styles.helperText}>
-            Enter the total rupee amount for each item. Enter 0 only when you
-            know that no cost applies; leaving a field blank keeps the result
-            incomplete.
+            Enter the total rupee amount for each item. Enter 0 only when you know that no cost
+            applies; leaving a field blank keeps the result incomplete.
           </p>
           <div className={styles.fieldGrid}>
             {DEDUCTION_FIELDS.map((field) => (
@@ -150,16 +125,12 @@ export function NetRealisationCalculator() {
                   step="0.01"
                   inputMode="decimal"
                   value={input[field.key]}
-                  onChange={(event) =>
-                    update(field.key, event.target.value)
-                  }
+                  onChange={(event) => update(field.key, event.target.value)}
                   placeholder="Enter amount"
                   aria-invalid={Boolean(result.errors[field.key])}
                 />
                 {result.errors[field.key] ? (
-                  <span className={styles.errorText}>
-                    {result.errors[field.key]}
-                  </span>
+                  <span className={styles.errorText}>{result.errors[field.key]}</span>
                 ) : null}
               </label>
             ))}
@@ -191,9 +162,7 @@ export function NetRealisationCalculator() {
 
         <h2 className={styles.netLabel}>Estimated net realisation</h2>
         <p className={styles.netValue} aria-live="polite">
-          {result.netRealisation === null
-            ? "—"
-            : "₹" + result.netRealisation}
+          {result.netRealisation === null ? "—" : "₹" + result.netRealisation}
         </p>
         <p className={styles.resultCaption}>
           {result.status === "complete"
@@ -204,19 +173,11 @@ export function NetRealisationCalculator() {
         <div className={styles.totals}>
           <div className={styles.totalRow}>
             <span>Expected sale value</span>
-            <strong>
-              {result.grossSaleValue === null
-                ? "—"
-                : "₹" + result.grossSaleValue}
-            </strong>
+            <strong>{result.grossSaleValue === null ? "—" : "₹" + result.grossSaleValue}</strong>
           </div>
           <div className={styles.totalRow}>
             <span>Total deductions</span>
-            <strong>
-              {result.deductionsTotal === null
-                ? "—"
-                : "₹" + result.deductionsTotal}
-            </strong>
+            <strong>{result.deductionsTotal === null ? "—" : "₹" + result.deductionsTotal}</strong>
           </div>
         </div>
 
@@ -237,16 +198,13 @@ export function NetRealisationCalculator() {
         {result.missingFields.length > 0 ? (
           <div className={styles.notice} role="status">
             <strong>Still required</strong>
-            <span>
-              {result.missingFields.map(getFieldLabel).join(", ")}.
-            </span>
+            <span>{result.missingFields.map(getFieldLabel).join(", ")}.</span>
           </div>
         ) : null}
 
         <p className={styles.disclaimer}>
-          This is an estimate, not a guaranteed selling price, profit, buyer
-          offer or sale. It does not include market data unless you enter a
-          rate yourself.
+          This is an estimate, not a guaranteed selling price, profit, buyer offer or sale. It does
+          not include market data unless you enter a rate yourself.
         </p>
       </aside>
     </div>

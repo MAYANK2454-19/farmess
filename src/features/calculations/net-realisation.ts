@@ -12,11 +12,7 @@ export const DEDUCTION_FIELDS = [
 ] as const;
 
 export type DeductionField = (typeof DEDUCTION_FIELDS)[number]["key"];
-export type CalculationField =
-  | "quantity"
-  | "unit"
-  | "expectedPricePerUnit"
-  | DeductionField;
+export type CalculationField = "quantity" | "unit" | "expectedPricePerUnit" | DeductionField;
 
 export type NetRealisationInput = {
   quantity: string;
@@ -65,9 +61,7 @@ function parseFixedDecimal(value: string, precision: number): bigint {
 
   const fraction = match[2] ?? "";
   if (fraction.length > precision) {
-    throw new Error(
-      "The value has more decimal places than this field supports.",
-    );
+    throw new Error("The value has more decimal places than this field supports.");
   }
 
   const scale = 10n ** BigInt(precision);
@@ -100,8 +94,7 @@ function readRequiredValue(
   try {
     return parseFixedDecimal(value, precision);
   } catch (error) {
-    errors[field] =
-      error instanceof Error ? error.message : "Enter a valid value.";
+    errors[field] = error instanceof Error ? error.message : "Enter a valid value.";
     return null;
   }
 }
@@ -113,9 +106,7 @@ function readRequiredValue(
  * total amount for the lot in rupees. A cost must be explicitly entered;
  * entering "0" is different from leaving the field blank.
  */
-export function calculateNetRealisation(
-  input: NetRealisationInput,
-): NetRealisationResult {
+export function calculateNetRealisation(input: NetRealisationInput): NetRealisationResult {
   const missingFields: CalculationField[] = [];
   const errors: Partial<Record<CalculationField, string>> = {};
   const deductionBreakdown = { ...EMPTY_BREAKDOWN };
@@ -124,13 +115,7 @@ export function calculateNetRealisation(
     errors.unit = "Select a supported quantity unit.";
   }
 
-  const quantityMilli = readRequiredValue(
-    "quantity",
-    input.quantity,
-    3,
-    missingFields,
-    errors,
-  );
+  const quantityMilli = readRequiredValue("quantity", input.quantity, 3, missingFields, errors);
   const pricePaise = readRequiredValue(
     "expectedPricePerUnit",
     input.expectedPricePerUnit,
@@ -144,9 +129,7 @@ export function calculateNetRealisation(
   }
 
   const validQuantity =
-    quantityMilli !== null && quantityMilli > 0n && !errors.quantity
-      ? quantityMilli
-      : null;
+    quantityMilli !== null && quantityMilli > 0n && !errors.quantity ? quantityMilli : null;
 
   const grossSaleValuePaise =
     validQuantity !== null && pricePaise !== null
@@ -157,13 +140,7 @@ export function calculateNetRealisation(
   let allDeductionsProvided = true;
 
   for (const field of DEDUCTION_FIELDS) {
-    const amountPaise = readRequiredValue(
-      field.key,
-      input[field.key],
-      2,
-      missingFields,
-      errors,
-    );
+    const amountPaise = readRequiredValue(field.key, input[field.key], 2, missingFields, errors);
 
     if (amountPaise === null) {
       allDeductionsProvided = false;
@@ -176,16 +153,10 @@ export function calculateNetRealisation(
 
   const hasErrors = Object.keys(errors).length > 0;
   const hasMissingFields = missingFields.length > 0;
-  const status = hasErrors
-    ? "invalid"
-    : hasMissingFields
-      ? "incomplete"
-      : "complete";
+  const status = hasErrors ? "invalid" : hasMissingFields ? "incomplete" : "complete";
 
   const deductionsTotal =
-    allDeductionsProvided && !hasErrors
-      ? formatPaise(deductionsTotalPaise)
-      : null;
+    allDeductionsProvided && !hasErrors ? formatPaise(deductionsTotalPaise) : null;
 
   const netRealisation =
     status === "complete" && grossSaleValuePaise !== null
@@ -194,10 +165,7 @@ export function calculateNetRealisation(
 
   return {
     status,
-    grossSaleValue:
-      grossSaleValuePaise === null
-        ? null
-        : formatPaise(grossSaleValuePaise),
+    grossSaleValue: grossSaleValuePaise === null ? null : formatPaise(grossSaleValuePaise),
     deductionsTotal,
     netRealisation,
     deductionBreakdown,

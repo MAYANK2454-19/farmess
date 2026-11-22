@@ -7,10 +7,18 @@ export default function CreateProduceLotPage() {
         <div>
           <p className="eyebrow">My Produce</p>
           <h1>Add a produce lot</h1>
-          <p className="page-subtitle">Tell us what you have available and when it needs to be sold.</p>
+          <p className="page-subtitle">
+            Tell us what you have available and when it needs to be sold.
+          </p>
         </div>
       </div>
-      <div className="preview-banner" role="status"><span className="banner-dot" /><span><strong>Prototype form.</strong> Review works locally; account sign-in, server validation and saving are next integration steps.</span></div>
+      <div className="preview-banner" role="status">
+        <span className="banner-dot" />
+        <span>
+          <strong>Prototype form.</strong> Review works locally; account sign-in, server validation
+          and saving are next integration steps.
+        </span>
+      </div>
       <LotForm />
     </main>
   );

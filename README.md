@@ -64,14 +64,14 @@ Read ARCHITECTURE.md before taking an issue. Work on one issue and branch per fe
 
 The six initial lanes are:
 
-| Member | Initial ownership |
-|---|---|
-| Mayank | App shell, farmer journey, integration and route coordination |
-| Prince Kumar | Auth, Postgres schema, migrations and RLS |
-| Bhavishya Jain | Figma parity, component system and responsive UI |
-| Yash | Market-source verification and data adapter |
-| Rajan Kumar | Net-return calculation and comparison |
-| Atharv Singh | Buyer offers, logistics, activity, notifications and E2E QA |
+| Member         | Initial ownership                                             |
+| -------------- | ------------------------------------------------------------- |
+| Mayank         | App shell, farmer journey, integration and route coordination |
+| Prince Kumar   | Auth, Postgres schema, migrations and RLS                     |
+| Bhavishya Jain | Figma parity, component system and responsive UI              |
+| Yash           | Market-source verification and data adapter                   |
+| Rajan Kumar    | Net-return calculation and comparison                         |
+| Atharv Singh   | Buyer offers, logistics, activity, notifications and E2E QA   |
 
 Everyone must contribute meaningfully to frontend, backend/data, and tests/documentation/review over the project. Ownership is a starting point, not a silo.
 

@@ -24,6 +24,7 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 **Scope:** Integrate the application shell, navigation, role workspace route boundaries and the end-to-end farmer navigation skeleton. Keep `My Produce` as a collection route distinct from `Add a produce lot`. Coordinate route names with Bhavishya and the backend contract with Prince.
 
 **Acceptance criteria:**
+
 - Farmer routes follow the approved sitemap and navigation labels.
 - `/farmer/produce` shows the collection state; `/farmer/produce/new` shows the entry form.
 - Navigation and primary CTAs use the correct destination and active state.
@@ -40,6 +41,7 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 **Scope:** Supabase project setup, SSR auth clients, profile/role model, first reviewed migrations and RLS foundations. Coordinate the schema change window with Mayank before editing migrations or generated database types.
 
 **Acceptance criteria:**
+
 - Email sign-up, sign-in, sign-out and password recovery work with cookie-based SSR sessions.
 - Role assignment is server-controlled; the client cannot grant itself a privileged role.
 - First profiles are created/recovered safely after sign-up.
@@ -56,6 +58,7 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 **Scope:** Inspect the actual Figma frames and implement the documented farmer overview, produce list/form/review screens and shared UI patterns. The current Figma integration was rate-limited during bootstrap; request frame exports/screenshots if MCP access is still unavailable. Do not claim exact parity without screenshot comparison.
 
 **Acceptance criteria:**
+
 - Desktop Overview, Create Lot and relevant mobile frames are compared against the same Figma viewports.
 - Design tokens, typography, field order, content hierarchy, spacing and responsive behaviour match the source.
 - Shared buttons, fields, feedback panels and navigation have documented accessible states.
@@ -72,6 +75,7 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 **Scope:** Verify candidate OGD India / AGMARKNET access, fields, source terms, attribution, units and refresh characteristics. Implement a normalized server-side adapter only after access and schema are verified.
 
 **Acceptance criteria:**
+
 - A source-verification note records the exact resource, access method, fields, terms/attribution, units, update granularity and test date.
 - `MarketPriceRecord` preserves source name, observation date, retrieval time, unit and value type.
 - Malformed values and unsupported units are rejected safely.
@@ -88,6 +92,7 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 **Scope:** Implement pure domain functions for gross sale value, explicit deductions, net total, net per unit, completeness and unit compatibility. Work with Yash on price inputs and Bhavishya on comparison/breakdown UI.
 
 **Acceptance criteria:**
+
 - Calculation logic is independent of React components.
 - Money arithmetic uses a decimal-safe representation; stored financial values are not binary floating-point.
 - Unknown costs produce an incomplete result; they are never silently treated as zero.
@@ -105,6 +110,7 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 **Scope:** Define and implement buyer requirements, offer lifecycle, logistics requests/provider response, activity events, persistent notifications and role-focused E2E journeys. Coordinate domain states and migrations with Prince before coding DB changes.
 
 **Acceptance criteria:**
+
 - Buyer-to-farmer offer journey uses explicit quantity/unit/price basis/validity and server-confirmed state transitions.
 - Only the farmer who owns a lot can accept or decline its offer; expired offers cannot be accepted.
 - Logistics requests remain pending until the assigned provider explicitly responds.
@@ -117,14 +123,14 @@ This backlog starts the six contributors in separate ownership areas. It is not 
 
 ## Cross-review rotation
 
-| PR area | Required review focus |
-|---|---|
-| App shell / integration | Bhavishya for visual structure; Atharv for journey QA |
-| Authentication / database | Prince plus Mayank or a non-author reviewer |
-| Figma parity / responsive UI | Bhavishya plus one non-UI reviewer |
-| Market data / provenance | Yash plus Rajan |
-| Net-return calculations | Rajan plus Yash |
-| Buyer / logistics / notifications | Atharv plus Prince |
+| PR area                           | Required review focus                                 |
+| --------------------------------- | ----------------------------------------------------- |
+| App shell / integration           | Bhavishya for visual structure; Atharv for journey QA |
+| Authentication / database         | Prince plus Mayank or a non-author reviewer           |
+| Figma parity / responsive UI      | Bhavishya plus one non-UI reviewer                    |
+| Market data / provenance          | Yash plus Rajan                                       |
+| Net-return calculations           | Rajan plus Yash                                       |
+| Buyer / logistics / notifications | Atharv plus Prince                                    |
 
 Confirm actual GitHub usernames before adding CODEOWNERS entries or assigning issues. Do not guess handles.
 
