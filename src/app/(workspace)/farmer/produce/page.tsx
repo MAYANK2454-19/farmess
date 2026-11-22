@@ -20,8 +20,8 @@ export default function MyProducePage() {
       <div className="preview-banner" role="status">
         <span className="banner-dot" />
         <span>
-          <strong>Build preview.</strong> Saved lots will appear here after
-          authentication and database persistence are connected.
+          <strong>Build preview.</strong> Saved lots will appear here after authentication and
+          database persistence are connected.
         </span>
       </div>
 
@@ -40,9 +40,8 @@ export default function MyProducePage() {
           </span>
           <h3 className="empty-title">No produce lots have been added</h3>
           <p className="empty-copy">
-            Add a lot to record what is available, where it can be collected,
-            and how soon it needs to be sold. You can review the details before
-            anything is submitted or shared.
+            Add a lot to record what is available, where it can be collected, and how soon it needs
+            to be sold. You can review the details before anything is submitted or shared.
           </p>
           <Link
             href="/farmer/produce/new"

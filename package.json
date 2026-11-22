@@ -11,8 +11,13 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/features/calculations/net-realisation.test.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "node scripts/check-format.mjs",
+    "prepare": "simple-git-hooks || true"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "sh scripts/pre-commit.sh"
   },
   "dependencies": {
     "next": "16.4.6",
@@ -27,6 +32,7 @@
     "eslint": "^9.39.1",
     "eslint-config-next": "16.4.6",
     "prettier": "^3.6.2",
+    "simple-git-hooks": "^2.14.0",
     "tailwindcss": "4.3.5",
     "typescript": "^5.9.3"
   }
