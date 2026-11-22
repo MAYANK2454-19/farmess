@@ -113,10 +113,7 @@ export function buildFarmerProfileProjection(input: {
   workflow: DisclosureWorkflow;
   profile: unknown;
 }): FarmerProfileProjectionResult {
-  if (
-    !hasUsableId(input.viewerId) ||
-    !isFarmessRole(input.viewerRole)
-  ) {
+  if (!hasUsableId(input.viewerId) || !isFarmessRole(input.viewerRole)) {
     return {
       status: "invalid",
       view: null,
