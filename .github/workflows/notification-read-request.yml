@@ -1,0 +1,32 @@
+name: Notification read request tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/notifications/read-request.ts"
+      - "src/features/notifications/read-request.test.ts"
+      - ".github/workflows/notification-read-request.yml"
+  push:
+    branches:
+      - "feat/notification-read-request-boundary"
+
+permissions:
+  contents: read
+
+jobs:
+  notification-read-request:
+    name: Notification read request contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run notification read request tests
+        run: node --experimental-strip-types --test src/features/notifications/read-request.test.ts
