@@ -10,6 +10,7 @@ This module converts a persisted farmer consent snapshot plus a partial consent 
 - `providerContactDisclosure`
 
 Each event records only:
+
 - Actor and farmer user IDs.
 - Consent field and broad data category.
 - Previous and next boolean value.
@@ -33,6 +34,7 @@ It does not store phone numbers, contact strings, locality text, GPS coordinates
 ## Persistence integration
 
 When the shared Supabase project/schema is available, persist events in an append-only consent audit table with:
+
 - Generated primary key.
 - Actor and farmer foreign keys.
 - Consent field, prior value and next value.
@@ -44,6 +46,7 @@ Enable RLS so farmers can inspect their own consent audit history, but browser u
 ## Integration boundary
 
 The caller should:
+
 1. Authenticate the farmer using the verified server-side session.
 2. Load the current consent snapshot.
 3. Parse the profile PATCH using the profile request boundary.
