@@ -1,0 +1,30 @@
+name: Prettier diagnostics
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/features/logistics/cold-storage.ts"
+      - "src/features/logistics/cold-storage.test.ts"
+      - ".github/workflows/prettier-diagnostics.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - name: Print exact Prettier changes
+        run: |
+          npx prettier --write src/features/logistics/cold-storage.ts src/features/logistics/cold-storage.test.ts
+          git --no-pager diff -- src/features/logistics/cold-storage.ts src/features/logistics/cold-storage.test.ts
