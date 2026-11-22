@@ -64,7 +64,7 @@ test("rejects mismatched area, crop, date and temperature requirements", () => {
       requiredTemperatureMaxC: 0,
     }),
   ]);
-  assert.equal(result.eligibleLots.length, 1);
+  assert.equal(result.eligibleLots.length, 0);
   assert.deepEqual(
     result.rejectedLots.map((item) => item.lotId),
     ["area", "crop", "date", "temp"],
