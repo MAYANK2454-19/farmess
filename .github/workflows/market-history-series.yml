@@ -28,16 +28,5 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
-      - name: Preview pinned Prettier output (temporary diagnostic)
-        run: |
-          cp docs/MARKET_HISTORY_SERIES.md /tmp/market-history.md
-          cp src/lib/market-data/history-series.ts /tmp/history-series.ts
-          cp src/lib/market-data/history-series.test.ts /tmp/history-series.test.ts
-          ./node_modules/.bin/prettier --write docs/MARKET_HISTORY_SERIES.md src/lib/market-data/history-series.ts src/lib/market-data/history-series.test.ts
-          diff -u /tmp/market-history.md docs/MARKET_HISTORY_SERIES.md || true
-          diff -u /tmp/history-series.ts src/lib/market-data/history-series.ts || true
-          diff -u /tmp/history-series.test.ts src/lib/market-data/history-series.test.ts || true
-          git checkout -- docs/MARKET_HISTORY_SERIES.md src/lib/market-data/history-series.ts src/lib/market-data/history-series.test.ts
-
       - name: Run market history series tests
         run: node --experimental-strip-types --test src/lib/market-data/history-series.test.ts
