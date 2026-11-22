@@ -28,14 +28,5 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
-      - name: Preview pinned Prettier output (temporary diagnostic)
-        run: |
-          cp docs/NOTIFICATION_LIST_QUERY.md /tmp/notification-list-query.md
-          cp src/features/notifications/list-request.ts /tmp/list-request.ts
-          ./node_modules/.bin/prettier --write docs/NOTIFICATION_LIST_QUERY.md src/features/notifications/list-request.ts
-          diff -u /tmp/notification-list-query.md docs/NOTIFICATION_LIST_QUERY.md || true
-          diff -u /tmp/list-request.ts src/features/notifications/list-request.ts || true
-          git checkout -- docs/NOTIFICATION_LIST_QUERY.md src/features/notifications/list-request.ts
-
       - name: Run notification list query tests
         run: node --experimental-strip-types --test src/features/notifications/list-request.test.ts
