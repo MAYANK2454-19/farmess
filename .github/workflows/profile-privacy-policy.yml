@@ -28,12 +28,5 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
-      - name: Preview pinned source formatter output (temporary diagnostic)
-        run: |
-          cp src/features/profile/privacy-policy.ts /tmp/profile-privacy.ts
-          ./node_modules/.bin/prettier --write src/features/profile/privacy-policy.ts
-          diff -u /tmp/profile-privacy.ts src/features/profile/privacy-policy.ts || true
-          git checkout -- src/features/profile/privacy-policy.ts
-
       - name: Run farmer privacy policy tests
         run: node --experimental-strip-types --test src/features/profile/privacy-policy.test.ts
