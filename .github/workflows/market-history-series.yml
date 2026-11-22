@@ -2,7 +2,7 @@ name: Market history series tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/market-history-series-foundation]
     paths:
       - "src/lib/market-data/history-series.ts"
       - "src/lib/market-data/history-series.test.ts"
@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - "feat/market-history-series-foundation"
+      - "feat/market-price-history-view"
 
 permissions:
   contents: read
