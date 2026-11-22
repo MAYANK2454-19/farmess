@@ -58,19 +58,14 @@ export default function ProfilePage() {
         <div className="panel-header">
           <div>
             <h2 className="panel-title">Privacy & consent</h2>
-            <p className="panel-caption">
-              Choose what can be used for matching and communication.
-            </p>
+            <p className="panel-caption">Choose what can be used for matching and communication.</p>
           </div>
         </div>
 
         <div className="privacy-row">
           <div>
             <strong>Location sharing</strong>
-            <p>
-              Allow approximate location to help compare nearby markets and logistics
-              options.
-            </p>
+            <p>Allow approximate location to help compare nearby markets and logistics options.</p>
           </div>
           <button
             type="button"
@@ -86,10 +81,7 @@ export default function ProfilePage() {
         <div className="privacy-row">
           <div>
             <strong>Buyer communication</strong>
-            <p>
-              Receive notifications when a buyer sends an offer or updates an existing
-              offer.
-            </p>
+            <p>Receive notifications when a buyer sends an offer or updates an existing offer.</p>
           </div>
           <span className="privacy-badge">Coming with account setup</span>
         </div>
@@ -98,8 +90,8 @@ export default function ProfilePage() {
           <div>
             <strong>Data visibility</strong>
             <p>
-              Your produce and contact details should only be visible according to
-              server-side sharing rules.
+              Your produce and contact details should only be visible according to server-side
+              sharing rules.
             </p>
           </div>
           <span className="privacy-badge">Server controlled</span>
@@ -112,11 +104,7 @@ export default function ProfilePage() {
             ? "Preview saved locally for this session."
             : "Preview only — profile persistence will be connected by the authentication/database owner."}
         </p>
-        <button
-          className="button button-primary"
-          type="button"
-          onClick={() => setSaved(true)}
-        >
+        <button className="button button-primary" type="button" onClick={() => setSaved(true)}>
           Save preferences
         </button>
       </div>
