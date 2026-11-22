@@ -160,7 +160,7 @@ test("exact location requires its own explicit consent and a transaction workflo
     evaluateFarmerDataDisclosure({
       ...request,
       consent: {
-        ...request.consent,
+        ...(request.consent ?? DEFAULT_FARMER_PRIVACY_CONSENTS),
         exactLocationDisclosure: false,
       },
     }),
