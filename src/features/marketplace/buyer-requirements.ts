@@ -97,7 +97,7 @@ export function validateBuyerRequirement(
       .startsWith(datePart);
 
   if (
-    typeof draft.requiredAt !== "string" ||
+
     (!dateOnly && !dateTime) ||
     !dateIsReal ||
     !Number.isFinite(parsedDate)
