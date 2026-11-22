@@ -69,7 +69,15 @@ export function normalizeOgdRecord(raw: RawRecord, retrievedAt: string): MarketP
 
   const variety = requiredText(raw.variety);
   const grade = requiredText(raw.grade);
-  const idParts = [\n    state,\n    district,\n    market,\n    commodity,\n    variety ?? "",\n    grade ?? "",\n    observationDate,\n  ];
+  const idParts = [
+    state,
+    district,
+    market,
+    commodity,
+    variety ?? "",
+    grade ?? "",
+    observationDate,
+  ];
   return {
     id: idParts.join("|").toLowerCase(),
     commodity,
