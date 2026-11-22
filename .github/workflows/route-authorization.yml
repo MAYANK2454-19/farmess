@@ -1,0 +1,32 @@
+name: Route authorization contract tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/lib/auth/route-authorization.ts"
+      - "src/lib/auth/route-authorization.test.ts"
+      - ".github/workflows/route-authorization.yml"
+  push:
+    branches:
+      - "feat/route-authorization-contract"
+
+permissions:
+  contents: read
+
+jobs:
+  route-authorization:
+    name: Route authorization contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run route authorization tests
+        run: node --experimental-strip-types --test src/lib/auth/route-authorization.test.ts
