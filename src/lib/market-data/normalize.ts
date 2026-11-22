@@ -38,10 +38,7 @@ function parseObservationDate(value: unknown): string | null {
     : candidate;
 }
 
-export function normalizeOgdRecord(
-  raw: RawRecord,
-  retrievedAt: string,
-): MarketPriceRecord | null {
+export function normalizeOgdRecord(raw: RawRecord, retrievedAt: string): MarketPriceRecord | null {
   const commodity = requiredText(raw.commodity);
   const state = requiredText(raw.state);
   const district = requiredText(raw.district);
@@ -90,10 +87,7 @@ export function normalizeOgdRecord(
   };
 }
 
-export function normalizeOgdResponse(
-  payload: unknown,
-  retrievedAt: string,
-): MarketPriceRecord[] {
+export function normalizeOgdResponse(payload: unknown, retrievedAt: string): MarketPriceRecord[] {
   if (
     !payload ||
     typeof payload !== "object" ||

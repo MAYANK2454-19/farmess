@@ -11,9 +11,7 @@ function safeLimit(limit: number | undefined): number {
   return Math.min(500, Math.max(1, Math.floor(limit)));
 }
 
-export async function searchOgdPrices(
-  filters: MarketSearchFilters,
-): Promise<MarketDataResult> {
+export async function searchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataResult> {
   const retrievedAt = new Date().toISOString();
   const apiKey = process.env.DATA_GOV_IN_API_KEY;
 

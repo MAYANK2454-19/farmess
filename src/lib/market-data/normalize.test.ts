@@ -1,11 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  isObservationStale,
-  normalizeOgdRecord,
-  normalizeOgdResponse,
-} from "./normalize.ts";
+import { isObservationStale, normalizeOgdRecord, normalizeOgdResponse } from "./normalize.ts";
 
 const retrievedAt = "2026-11-22T12:00:00.000Z";
 
