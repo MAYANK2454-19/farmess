@@ -27,5 +27,16 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
+      - name: Preview pinned Prettier output (temporary diagnostic)
+        run: |
+          cp docs/NET_RETURN_COMPARISON.md /tmp/net-return-comparison.md
+          cp src/features/comparison/net-realisation-comparison.ts /tmp/net-return-comparison.ts
+          cp src/features/comparison/net-realisation-comparison.test.ts /tmp/net-return-comparison.test.ts
+          ./node_modules/.bin/prettier --write docs/NET_RETURN_COMPARISON.md src/features/comparison/net-realisation-comparison.ts src/features/comparison/net-realisation-comparison.test.ts
+          diff -u /tmp/net-return-comparison.md docs/NET_RETURN_COMPARISON.md || true
+          diff -u /tmp/net-return-comparison.ts src/features/comparison/net-realisation-comparison.ts || true
+          diff -u /tmp/net-return-comparison.test.ts src/features/comparison/net-realisation-comparison.test.ts || true
+          git checkout -- docs/NET_RETURN_COMPARISON.md src/features/comparison/net-realisation-comparison.ts src/features/comparison/net-realisation-comparison.test.ts
+
       - name: Run comparison contract tests
         run: node --experimental-strip-types --test src/features/comparison/net-realisation-comparison.test.ts
