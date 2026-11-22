@@ -1,0 +1,32 @@
+name: Notification list query tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/notifications/list-request.ts"
+      - "src/features/notifications/list-request.test.ts"
+      - ".github/workflows/notification-list-query.yml"
+  push:
+    branches:
+      - "feat/notification-list-query-boundary"
+
+permissions:
+  contents: read
+
+jobs:
+  notification-list-query:
+    name: Notification list query contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run notification list query tests
+        run: node --experimental-strip-types --test src/features/notifications/list-request.test.ts
