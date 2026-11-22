@@ -62,9 +62,11 @@ function toKg(quantity: number, unit: PoolQuantityUnit): number | null {
 }
 
 function validDate(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
     Number.isFinite(Date.parse(value)) &&
-    new Date(value).toISOString().slice(0, 10) === value;
+    new Date(value).toISOString().slice(0, 10) === value
+  );
 }
 
 /**
@@ -97,18 +99,26 @@ export function planTransportPool(
     if (listing.status !== "published") {
       reasons.push("Transport listing is not published.");
     }
-    if (!normalise(lot.pickupArea) || !normalise(lot.dropoffArea) ||
-        normalise(lot.pickupArea) !== normalise(listing.routeFrom) ||
-        normalise(lot.dropoffArea) !== normalise(listing.routeTo)) {
+    if (
+      !normalise(lot.pickupArea) ||
+      !normalise(lot.dropoffArea) ||
+      normalise(lot.pickupArea) !== normalise(listing.routeFrom) ||
+      normalise(lot.dropoffArea) !== normalise(listing.routeTo)
+    ) {
       reasons.push("Lot pickup and drop-off areas do not match the listed route.");
     }
-    if (!validDate(lot.pickupDate) || !windowValid ||
-        lot.pickupDate < listing.availableFrom || lot.pickupDate > listing.availableUntil) {
+    if (
+      !validDate(lot.pickupDate) ||
+      !windowValid ||
+      lot.pickupDate < listing.availableFrom ||
+      lot.pickupDate > listing.availableUntil
+    ) {
       reasons.push("Pickup date is outside the valid listing availability window.");
     }
-    if (!lot.crop.trim() || !listing.supportedCrops.some(
-      (crop) => normalise(crop) === normalise(lot.crop),
-    )) {
+    if (
+      !lot.crop.trim() ||
+      !listing.supportedCrops.some((crop) => normalise(crop) === normalise(lot.crop))
+    ) {
       reasons.push("Crop is not included in the provider's stated suitability.");
     }
     if (lot.requiresColdChain && !listing.refrigerated) {

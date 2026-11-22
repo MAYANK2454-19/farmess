@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { planTransportPool, type PoolLotCandidate, type TransportPoolListing } from "./transport-pooling.ts";
+import {
+  planTransportPool,
+  type PoolLotCandidate,
+  type TransportPoolListing,
+} from "./transport-pooling.ts";
 
 const listing: TransportPoolListing = {
   id: "pool-1",
@@ -65,7 +69,9 @@ test("rejects route, date, crop and cold-chain mismatches with explanations", ()
 });
 
 test("unpublished or unverified listings never appear as confirmed bookings", () => {
-  const unpublished = planTransportPool({ ...listing, status: "paused" }, [lot({ quantity: 1, unit: "quintal" })]);
+  const unpublished = planTransportPool({ ...listing, status: "paused" }, [
+    lot({ quantity: 1, unit: "quintal" }),
+  ]);
   assert.equal(unpublished.eligibleLotIds.length, 0);
   assert.equal(unpublished.bookingStatus, "not_booked");
 
