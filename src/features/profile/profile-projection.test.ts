@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  DEFAULT_FARMER_PRIVACY_CONSENTS,
-  type FarmerPrivacyConsents,
-} from "./privacy-policy.ts";
+import { DEFAULT_FARMER_PRIVACY_CONSENTS, type FarmerPrivacyConsents } from "./privacy-policy.ts";
 import { buildFarmerProfileProjection } from "./profile-projection.ts";
 
 const profile = {
@@ -204,7 +201,14 @@ test("does not return raw profile identifiers, consent flags or private source o
   if (result.status !== "valid") return;
 
   const serialized = JSON.stringify(result.view);
-  for (const key of ["userId", "consents", "buyerContactDisclosure", "latitude", "longitude", "phoneNumber"]) {
+  for (const key of [
+    "userId",
+    "consents",
+    "buyerContactDisclosure",
+    "latitude",
+    "longitude",
+    "phoneNumber",
+  ]) {
     assert.equal(serialized.includes(key), false);
   }
 });
