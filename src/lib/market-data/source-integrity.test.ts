@@ -21,10 +21,7 @@ test("rejects an observation dated after the retrieval date", () => {
 
 test("deduplicates and sorts future observation dates", () => {
   assert.deepEqual(
-    assessMarketSourceDateIntegrity(
-      ["2026-11-24", "2026-11-23", "2026-11-24"],
-      retrievedAt,
-    ),
+    assessMarketSourceDateIntegrity(["2026-11-24", "2026-11-23", "2026-11-24"], retrievedAt),
     { status: "future-observation", futureDates: ["2026-11-23", "2026-11-24"] },
   );
 });
