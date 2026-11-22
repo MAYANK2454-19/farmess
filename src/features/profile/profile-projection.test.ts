@@ -166,6 +166,32 @@ test("allows farmers to view their own details independent of sharing consent", 
   assert.deepEqual(result.view.exactLocation, profile.exactLocation);
 });
 
+test("does not give admin a wildcard disclosure bypass", () => {
+  const result = buildFarmerProfileProjection({
+    viewerId: "admin-1",
+    viewerRole: "admin",
+    workflow: "accepted_offer",
+    profile: {
+      ...profile,
+      consents: {
+        ...DEFAULT_FARMER_PRIVACY_CONSENTS,
+        buyerContactDisclosure: true,
+        exactLocationDisclosure: true,
+      },
+    },
+  });
+
+  assert.equal(result.status, "valid");
+  if (result.status !== "valid") return;
+
+  assert.deepEqual(result.view, {
+    displayName: "Farmer One",
+    approximateLocation: null,
+    contactDetails: null,
+    exactLocation: null,
+  });
+});
+
 test("does not return raw profile identifiers, consent flags or private source object", () => {
   const result = buildFarmerProfileProjection({
     viewerId: "buyer-1",
@@ -186,7 +212,7 @@ test("does not return raw profile identifiers, consent flags or private source o
 test("fails closed for invalid viewer identity, role and workflow", () => {
   const invalidCases = [
     { viewerId: null, viewerRole: "buyer", workflow: "market_matching" },
-    { viewerId: "buyer-1", viewerRole: "admin", workflow: "market_matching" },
+    { viewerId: "buyer-1", viewerRole: "superuser", workflow: "market_matching" },
     { viewerId: "buyer-1", viewerRole: "buyer", workflow: "public_profile" },
   ] as const;
 
