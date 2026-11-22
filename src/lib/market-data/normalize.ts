@@ -30,11 +30,7 @@ function parseObservationDate(value: unknown): string | null {
   if (!raw) return null;
   const dmy = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(raw);
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
-  const candidate = dmy
-    ? [dmy[3], dmy[2], dmy[1]].join("-")
-    : iso
-      ? raw
-      : null;
+  const candidate = dmy ? [dmy[3], dmy[2], dmy[1]].join("-") : iso ? raw : null;
   if (!candidate) return null;
   const date = new Date(`${candidate}T00:00:00.000Z`);
   return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== candidate
@@ -69,15 +65,7 @@ export function normalizeOgdRecord(raw: RawRecord, retrievedAt: string): MarketP
 
   const variety = requiredText(raw.variety);
   const grade = requiredText(raw.grade);
-  const idParts = [
-    state,
-    district,
-    market,
-    commodity,
-    variety ?? "",
-    grade ?? "",
-    observationDate,
-  ];
+  const idParts = [state, district, market, commodity, variety ?? "", grade ?? "", observationDate];
   return {
     id: idParts.join("|").toLowerCase(),
     commodity,
