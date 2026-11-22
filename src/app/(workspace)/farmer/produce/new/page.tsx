@@ -15,8 +15,8 @@ export default function CreateProduceLotPage() {
       <div className="preview-banner" role="status">
         <span className="banner-dot" />
         <span>
-          <strong>Prototype form.</strong> Review works locally; account sign-in, server validation
-          and saving are next integration steps.
+          <strong>Prototype form.</strong> Client-side validation and local review are available;
+          account sign-in, server validation and persistent saving are still to be connected.
         </span>
       </div>
       <LotForm />
