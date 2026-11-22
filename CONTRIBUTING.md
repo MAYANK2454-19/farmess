@@ -1,12 +1,11 @@
 # Contributing to Farmess
 
-1. Read `ARCHITECTURE.md` and check the GitHub Project for overlapping work.
-2. Take one issue and create a focused branch: `feat/<issue>-short-description`, `fix/<issue>-short-description`, or `test/<issue>-short-description`.
-3. Pull the latest `main` before starting. Never push directly to `main`.
-4. Announce any changes to shared files before editing them.
-5. Add tests and cover loading, empty, error, stale, pending and expired states where relevant.
-6. Run formatting, lint, typecheck and build locally.
-7. Open a PR with screenshots, test results, migration details and limitations. Request one reviewer outside your lane.
-8. Merge only after review and required checks pass.
-
-Do not commit `.env.local`, keys, real farmer contact information, precise home/farm coordinates or unlabelled demo records.
+1. Read ARCHITECTURE.md and the relevant UX/Figma source documents before changing a feature.
+2. Pick one GitHub issue and create a focused branch from main.
+3. Do not push directly to main. Open a pull request and request a review from the relevant lane owner.
+4. Before pushing, run npm run format, npm run lint, npm run typecheck, npm test and npm run build.
+5. CI automatically applies Prettier formatting to pull-request branches and commits the formatting plus generated package lockfile when necessary. Review that bot commit as part of the PR.
+6. Coordinate shared files before editing them: package configuration, global CSS, shared layouts, Supabase migrations and generated database types.
+7. Never commit secrets, service-role credentials, private farmer information or unverified personal details.
+8. Do not fabricate prices, buyers, offers, provider capacity or completed sales. Unknown costs remain unknown; enter zero only when zero is known.
+9. State what was tested, what remains incomplete and whether any data is a clearly labelled demo fixture in every PR.
