@@ -3,14 +3,17 @@ import "server-only";
 import { normalizeOgdResponse, OGD_API_URL, SOURCE_NAME } from "./normalize";
 import type { MarketDataResult, MarketSearchFilters } from "./types";
 
-const SOURCE_URL = "https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi";
+const SOURCE_URL =
+  "https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi";
 
 function safeLimit(limit: number | undefined): number {
   if (!limit || !Number.isFinite(limit)) return 100;
   return Math.min(500, Math.max(1, Math.floor(limit)));
 }
 
-export async function searchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataResult> {
+export async function searchOgdPrices(
+  filters: MarketSearchFilters,
+): Promise<MarketDataResult> {
   const retrievedAt = new Date().toISOString();
   const apiKey = process.env.DATA_GOV_IN_API_KEY;
 
