@@ -1,0 +1,33 @@
+name: Temporary CSV export formatter
+
+on:
+  push:
+    branches:
+      - feat/market-price-csv-export
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/market-price-csv-export
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format scoped files
+        run: npx prettier --write "src/lib/market-data/csv.ts" "src/lib/market-data/normalize.test.ts" "src/app/(workspace)/farmer/markets/page.tsx" "src/app/(workspace)/farmer/markets/markets.module.css"
+      - name: Commit formatting and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "src/lib/market-data/csv.ts" "src/lib/market-data/normalize.test.ts" "src/app/(workspace)/farmer/markets/page.tsx" "src/app/(workspace)/farmer/markets/markets.module.css"
+          git commit -m "style(markets): apply Prettier formatting" || true
+          git rm .github/workflows/format-csv-export.yml
+          git commit -m "chore(ci): remove temporary formatter workflow"
+          git push origin HEAD:feat/market-price-csv-export
