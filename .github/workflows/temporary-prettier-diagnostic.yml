@@ -1,9 +1,9 @@
 name: Temporary Prettier diagnostic
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - docs/supabase-database-contract
 
 permissions:
   contents: read
