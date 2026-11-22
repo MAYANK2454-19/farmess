@@ -64,5 +64,8 @@ jobs:
       - name: Lot validation and workspace route tests
         run: node --experimental-strip-types --test src/features/lots/lot-validation.test.ts src/lib/routes.test.ts
 
+      - name: Role authorization contract tests
+        run: node --experimental-strip-types --test src/lib/auth/authorization.test.ts
+
       - name: Production build
         run: npm run build
