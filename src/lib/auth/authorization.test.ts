@@ -105,14 +105,8 @@ test("private farmer details require ownership or a consented authorised workflo
     canRevealPrivateFarmerDetails({ ...base, viewerRole: "farmer", viewerId: "farmer-2" }),
     false,
   );
-  assert.equal(
-    canRevealPrivateFarmerDetails({ ...base, viewerRole: "operator" }),
-    true,
-  );
-  assert.equal(
-    canRevealPrivateFarmerDetails({ ...base, viewerRole: "admin" }),
-    false,
-  );
+  assert.equal(canRevealPrivateFarmerDetails({ ...base, viewerRole: "operator" }), true);
+  assert.equal(canRevealPrivateFarmerDetails({ ...base, viewerRole: "admin" }), false);
   assert.equal(
     canRevealPrivateFarmerDetails({ ...base, viewerId: "farmer-1", viewerRole: "farmer" }),
     true,
