@@ -1,8 +1,5 @@
 export type StorageQuantityUnit = "kg" | "quintal" | "tonne";
-export type StorageRateBasis =
-  | "per_kg_day"
-  | "per_quintal_day"
-  | "per_tonne_day";
+export type StorageRateBasis = "per_kg_day" | "per_quintal_day" | "per_tonne_day";
 
 export type StorageLotCandidate = {
   id: string;
@@ -88,10 +85,7 @@ function validDate(value: string): boolean {
   );
 }
 
-function validTemperatureRange(
-  min?: number | null,
-  max?: number | null,
-): boolean {
+function validTemperatureRange(min?: number | null, max?: number | null): boolean {
   return (
     min !== null &&
     min !== undefined &&
@@ -115,8 +109,7 @@ function estimateCostPaise(
   if (!Number.isSafeInteger(ratePaise) || ratePaise < 0) {
     return null;
   }
-  const amount =
-    (quantityKg / KG_PER_RATE_UNIT[rateBasis]) * storageDays * ratePaise;
+  const amount = (quantityKg / KG_PER_RATE_UNIT[rateBasis]) * storageDays * ratePaise;
   return Number.isSafeInteger(Math.round(amount)) ? Math.round(amount) : null;
 }
 
@@ -131,9 +124,7 @@ export function planColdStorage(
 ): ColdStoragePlan {
   const capacityKg = toKg(listing.capacity, listing.capacityUnit);
   if (capacityKg === null) {
-    throw new Error(
-      "Storage listing must have a valid positive capacity and supported unit.",
-    );
+    throw new Error("Storage listing must have a valid positive capacity and supported unit.");
   }
 
   const listingWindowValid =
@@ -166,14 +157,8 @@ export function planColdStorage(
     ) {
       reasons.push("Lot storage area does not match the facility area.");
     }
-    if (
-      !listing.supportedCrops.some(
-        (crop) => normalise(crop) === normalise(lot.crop),
-      )
-    ) {
-      reasons.push(
-        "Crop is not included in the facility's stated suitability.",
-      );
+    if (!listing.supportedCrops.some((crop) => normalise(crop) === normalise(lot.crop))) {
+      reasons.push("Crop is not included in the facility's stated suitability.");
     }
     if (
       !validDate(lot.arrivalDate) ||
@@ -181,61 +166,38 @@ export function planColdStorage(
       lot.storageDays <= 0 ||
       !listingWindowValid
     ) {
-      reasons.push(
-        "Arrival date, storage duration or facility availability window is invalid.",
-      );
+      reasons.push("Arrival date, storage duration or facility availability window is invalid.");
     } else {
       const lastStorageDate = new Date(
         Date.parse(lot.arrivalDate) + (lot.storageDays - 1) * 86_400_000,
       )
         .toISOString()
         .slice(0, 10);
-      if (
-        lot.arrivalDate < listing.availableFrom ||
-        lastStorageDate > listing.availableUntil
-      ) {
-        reasons.push(
-          "Requested storage period is outside the facility availability window.",
-        );
+      if (lot.arrivalDate < listing.availableFrom || lastStorageDate > listing.availableUntil) {
+        reasons.push("Requested storage period is outside the facility availability window.");
       }
     }
     if (lot.requiresColdChain && !listing.refrigerated) {
-      reasons.push(
-        "Lot requires cold storage but the facility is not refrigerated.",
-      );
+      reasons.push("Lot requires cold storage but the facility is not refrigerated.");
     }
     const hasTemperatureRequirement =
-      lot.requiredTemperatureMinC != null ||
-      lot.requiredTemperatureMaxC != null;
+      lot.requiredTemperatureMinC != null || lot.requiredTemperatureMaxC != null;
     if (hasTemperatureRequirement) {
-      if (
-        !validTemperatureRange(
-          lot.requiredTemperatureMinC,
-          lot.requiredTemperatureMaxC,
-        )
-      ) {
+      if (!validTemperatureRange(lot.requiredTemperatureMinC, lot.requiredTemperatureMaxC)) {
         reasons.push("Lot temperature requirement is incomplete or invalid.");
-      } else if (
-        !validTemperatureRange(listing.temperatureMinC, listing.temperatureMaxC)
-      ) {
-        reasons.push(
-          "Facility temperature range is not provided for verification.",
-        );
+      } else if (!validTemperatureRange(listing.temperatureMinC, listing.temperatureMaxC)) {
+        reasons.push("Facility temperature range is not provided for verification.");
       } else if (
         listing.temperatureMinC! > lot.requiredTemperatureMinC! ||
         listing.temperatureMaxC! < lot.requiredTemperatureMaxC!
       ) {
-        reasons.push(
-          "Facility temperature range does not cover the lot requirement.",
-        );
+        reasons.push("Facility temperature range does not cover the lot requirement.");
       }
     }
     if (quantityKg === null) {
       reasons.push("Lot quantity or unit is invalid.");
     } else if (totalQuantityKg + quantityKg > capacityKg) {
-      reasons.push(
-        "Adding this lot would exceed the remaining storage capacity.",
-      );
+      reasons.push("Adding this lot would exceed the remaining storage capacity.");
     }
 
     if (reasons.length > 0 || quantityKg === null) {
@@ -254,8 +216,7 @@ export function planColdStorage(
       quantityKg,
       storageDays: lot.storageDays,
       estimatedCostPaise: cost,
-      costValueType:
-        cost === null ? "unavailable" : (listing.rateValueType ?? "indicative"),
+      costValueType: cost === null ? "unavailable" : (listing.rateValueType ?? "indicative"),
     });
     totalQuantityKg += quantityKg;
   }
@@ -268,9 +229,7 @@ export function planColdStorage(
     capacityKg,
     remainingCapacityKg: Math.max(0, capacityKg - totalQuantityKg),
     availabilityLabel:
-      listing.verificationState === "verified"
-        ? "indicative"
-        : "verification_pending",
+      listing.verificationState === "verified" ? "indicative" : "verification_pending",
     bookingStatus: "not_booked",
   };
 }
