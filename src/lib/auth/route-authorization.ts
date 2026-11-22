@@ -81,10 +81,7 @@ function validateActor(actor: unknown): FarmessActor | null {
   };
 }
 
-function authorizeResource(
-  actor: FarmessActor,
-  rule: unknown,
-): AuthorizationFailureReason | null {
+function authorizeResource(actor: FarmessActor, rule: unknown): AuthorizationFailureReason | null {
   if (!isRecord(rule) || typeof rule.kind !== "string") {
     return "invalid_resource_rule";
   }
