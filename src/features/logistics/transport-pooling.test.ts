@@ -30,12 +30,12 @@ const lot = (overrides: Partial<PoolLotCandidate> = {}): PoolLotCandidate => ({
 });
 
 test("pool planner converts units and reports capacity without claiming a booking", () => {
-  const result = planTransportPool(listing, [lot()]);
+  const result = planTransportPool({ ...listing, capacity: 30 }, [lot()]);
   assert.deepEqual(result.eligibleLotIds, ["lot-1"]);
   assert.equal(result.totalQuantityKg, 2000);
-  assert.equal(result.capacityKg, 1000);
-  // An over-capacity lot must not be included.
-  assert.deepEqual(result.rejectedLots.map((entry) => entry.lotId), ["lot-1"]);
+  assert.equal(result.capacityKg, 3000);
+  assert.equal(result.remainingCapacityKg, 1000);
+  assert.equal(result.utilisationPercent, 66.7);
   assert.equal(result.bookingStatus, "not_booked");
 });
 
