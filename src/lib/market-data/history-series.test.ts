@@ -92,10 +92,7 @@ test("keeps reported observations separate from demo data", () => {
   ]);
 
   assert.equal(result.series.length, 2);
-  assert.deepEqual(
-    result.series.map((item) => item.valueType).sort(),
-    ["demo", "reported"],
-  );
+  assert.deepEqual(result.series.map((item) => item.valueType).sort(), ["demo", "reported"]);
 });
 
 test("does not require modal price when a valid min/max range is available", () => {
