@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
+import type { MarketDataResult, MarketPriceRecord } from "@/lib/market-data/types";
+import { MarketHistoryChart } from "./market-history-chart";
 import styles from "./markets.module.css";
 
 type Filters = { commodity: string; state: string; district: string; market: string };
@@ -81,6 +84,23 @@ export default function MarketsPage() {
 
   const records = result?.records ?? [];
 
+  function handleExport() {
+    if (records.length === 0) return;
+
+    const csv = marketPriceRecordsToCsv(records);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+
+    link.href = objectUrl;
+    link.download = `farmess-market-prices-${date}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  }
+
   return (
     <main className={`content ${styles.page}`}>
       <div className="page-heading">
@@ -91,14 +111,24 @@ export default function MarketsPage() {
             Explore reported mandi observations with their source, date and price unit.
           </p>
         </div>
-        <button
-          className="button button-secondary"
-          type="button"
-          onClick={() => void loadPrices(filters)}
-          disabled={loading}
-        >
-          {loading ? "Refreshing…" : "Refresh data"}
-        </button>
+        <div className={styles.headingActions}>
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={handleExport}
+            disabled={loading || records.length === 0}
+          >
+            Export CSV
+          </button>
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={() => void loadPrices(filters)}
+            disabled={loading}
+          >
+            {loading ? "Refreshing…" : "Refresh data"}
+          </button>
+        </div>
       </div>
 
       <div className="preview-banner" role="note">
