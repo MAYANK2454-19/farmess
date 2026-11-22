@@ -1,0 +1,32 @@
+name: Profile request boundary tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/profile/profile-request.ts"
+      - "src/features/profile/profile-request.test.ts"
+      - ".github/workflows/profile-request-boundary.yml"
+  push:
+    branches:
+      - "feat/profile-request-boundary"
+
+permissions:
+  contents: read
+
+jobs:
+  profile-request:
+    name: Profile request boundary contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run profile request boundary tests
+        run: node --experimental-strip-types --test src/features/profile/profile-request.test.ts
