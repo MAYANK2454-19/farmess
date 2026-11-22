@@ -1,0 +1,32 @@
+name: Farmer privacy policy tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/profile/privacy-policy.ts"
+      - "src/features/profile/privacy-policy.test.ts"
+      - ".github/workflows/profile-privacy-policy.yml"
+  push:
+    branches:
+      - "feat/profile-privacy-disclosure-policy"
+
+permissions:
+  contents: read
+
+jobs:
+  profile-privacy:
+    name: Farmer privacy disclosure contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run farmer privacy policy tests
+        run: node --experimental-strip-types --test src/features/profile/privacy-policy.test.ts
