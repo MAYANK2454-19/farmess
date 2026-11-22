@@ -46,11 +46,7 @@ export type FarmerDisclosureDecision =
     }
   | {
       allowed: false;
-      reason:
-        | "invalid_request"
-        | "workflow_not_authorized"
-        | "consent_required"
-        | "role_not_authorized";
+      reason: "invalid_request" | "workflow_not_authorized" | "consent_required" | "role_not_authorized";
     };
 
 function hasUsableId(value: unknown): value is string {
@@ -58,17 +54,11 @@ function hasUsableId(value: unknown): value is string {
 }
 
 function isDataCategory(value: unknown): value is FarmerDataCategory {
-  return (
-    typeof value === "string" &&
-    FARMER_DATA_CATEGORIES.includes(value as FarmerDataCategory)
-  );
+  return typeof value === "string" && FARMER_DATA_CATEGORIES.includes(value as FarmerDataCategory);
 }
 
 function isDisclosureWorkflow(value: unknown): value is DisclosureWorkflow {
-  return (
-    typeof value === "string" &&
-    DISCLOSURE_WORKFLOWS.includes(value as DisclosureWorkflow)
-  );
+  return typeof value === "string" && DISCLOSURE_WORKFLOWS.includes(value as DisclosureWorkflow);
 }
 
 function readConsents(
