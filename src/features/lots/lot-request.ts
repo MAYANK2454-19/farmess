@@ -28,7 +28,7 @@ export type LotRequestParseResult =
   | {
       status: "valid";
       data: ValidatedLotDraft;
-      errors: {};
+      errors: LotRequestErrors;
     }
   | {
       status: "invalid";
