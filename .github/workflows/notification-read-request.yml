@@ -28,5 +28,16 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
+      - name: Preview pinned Prettier output (temporary diagnostic)
+        run: |
+          cp docs/NOTIFICATION_READ_REQUEST.md /tmp/notification-read.md
+          cp src/features/notifications/read-request.ts /tmp/read-request.ts
+          cp src/features/notifications/read-request.test.ts /tmp/read-request.test.ts
+          ./node_modules/.bin/prettier --write docs/NOTIFICATION_READ_REQUEST.md src/features/notifications/read-request.ts src/features/notifications/read-request.test.ts
+          diff -u /tmp/notification-read.md docs/NOTIFICATION_READ_REQUEST.md || true
+          diff -u /tmp/read-request.ts src/features/notifications/read-request.ts || true
+          diff -u /tmp/read-request.test.ts src/features/notifications/read-request.test.ts || true
+          git checkout -- docs/NOTIFICATION_READ_REQUEST.md src/features/notifications/read-request.ts src/features/notifications/read-request.test.ts
+
       - name: Run notification read request tests
         run: node --experimental-strip-types --test src/features/notifications/read-request.test.ts
