@@ -62,7 +62,7 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
     if (dateIntegrity.status !== "valid") {
       const message =
         dateIntegrity.status === "future-observation"
-          ? `OGD India returned observation date(s) later than retrieval date: ${dateIntegrity.futureDates.join(", ")}. Records were withheld.`
+          ? "OGD India returned future-dated observations. Records were withheld."
           : "OGD India returned invalid observation date metadata. Records were withheld.";
 
       return {
