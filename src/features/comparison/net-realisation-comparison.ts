@@ -3,7 +3,7 @@ import {
   QUANTITY_UNITS,
   type DeductionField,
   type QuantityUnit,
-} from "../calculations/net-realisation";
+} from "../calculations/net-realisation.ts";
 
 export const COMPARISON_OPTION_SOURCES = [
   "market_observation",
