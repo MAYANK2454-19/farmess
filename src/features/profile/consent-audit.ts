@@ -10,10 +10,7 @@ export type FarmerConsentField = (typeof FARMER_CONSENT_FIELDS)[number];
 export type FarmerConsentSnapshot = Record<FarmerConsentField, boolean>;
 export type FarmerConsentPatch = Partial<FarmerConsentSnapshot>;
 
-export type FarmerConsentDataCategory =
-  | "approximate_location"
-  | "exact_location"
-  | "contact_details";
+export type FarmerConsentDataCategory = "approximate_location" | "exact_location" | "contact_details";
 
 export type FarmerConsentAuditEvent = {
   eventType: "farmer_consent_granted" | "farmer_consent_revoked";
@@ -77,8 +74,17 @@ function isValidTimestamp(value: unknown): value is string {
   const match = ISO_TIMESTAMP_PATTERN.exec(trimmed);
   if (!match) return false;
 
-  const [, yearText, monthText, dayText, hourText, minuteText, secondText, offsetHourText, offsetMinuteText] =
-    match;
+  const [
+    ,
+    yearText,
+    monthText,
+    dayText,
+    hourText,
+    minuteText,
+    secondText,
+    offsetHourText,
+    offsetMinuteText,
+  ] = match;
   const year = Number(yearText);
   const month = Number(monthText);
   const day = Number(dayText);
@@ -93,20 +99,9 @@ function isValidTimestamp(value: unknown): value is string {
     return false;
   }
 
-  const daysInMonth = [
-    31,
-    isLeapYear(year) ? 29 : 28,
-    31,
-    30,
-    31,
-    30,
-    31,
-    31,
-    30,
-    31,
-    30,
-    31,
-  ][month - 1];
+  const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][
+    month - 1
+  ];
 
   return day >= 1 && day <= daysInMonth && Number.isFinite(Date.parse(trimmed));
 }
@@ -149,13 +144,7 @@ function createDedupeKey(
   nextAllowed: boolean,
   occurredAt: string,
 ): string {
-  return [
-    farmerUserId,
-    field,
-    previousAllowed ? "1" : "0",
-    nextAllowed ? "1" : "0",
-    occurredAt,
-  ]
+  return [farmerUserId, field, previousAllowed ? "1" : "0", nextAllowed ? "1" : "0", occurredAt]
     .map(encodeURIComponent)
     .join(":");
 }
@@ -229,13 +218,7 @@ export function buildFarmerConsentAuditEvents(input: unknown): FarmerConsentAudi
       previousAllowed,
       nextAllowed,
       occurredAt,
-      dedupeKey: createDedupeKey(
-        farmerUserId,
-        field,
-        previousAllowed,
-        nextAllowed,
-        occurredAt,
-      ),
+      dedupeKey: createDedupeKey(farmerUserId, field, previousAllowed, nextAllowed, occurredAt),
     });
   }
 
