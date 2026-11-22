@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { DEDUCTION_FIELDS, type DeductionField } from "../calculations/net-realisation";
+import { DEDUCTION_FIELDS, type DeductionField } from "../calculations/net-realisation.ts";
 import {
   compareNetRealisationOptions,
   type ComparisonOptionInput,
   type NetReturnComparisonInput,
-} from "./net-realisation-comparison";
+} from "./net-realisation-comparison.ts";
 
 function completeDeductions(overrides: Partial<Record<DeductionField, string>> = {}): Record<DeductionField, string> {
   const deductions = Object.fromEntries(DEDUCTION_FIELDS.map((field) => [field.key, "0"])) as Record<
