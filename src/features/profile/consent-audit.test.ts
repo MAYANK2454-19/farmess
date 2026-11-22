@@ -178,7 +178,7 @@ test("rejects invalid timestamps, impossible dates and missing user identities",
   const invalidTimestamp = build({ occurredAt: "not-a-date" });
   const impossibleDate = build({ occurredAt: "2026-02-30T15:30:00.000Z" });
   const missingActor = build({ actorUserId: " " });
-  const invalidRequest = build(null as unknown as Record<string, unknown>);
+  const invalidRequest = buildFarmerConsentAuditEvents(null);
 
   assert.equal(invalidTimestamp.status, "invalid");
   if (invalidTimestamp.status === "invalid") {
