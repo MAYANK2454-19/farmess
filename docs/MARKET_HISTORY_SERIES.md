@@ -26,6 +26,7 @@ A series with only one distinct observation is marked `single_observation`. It s
 Only normalized INR/quintal observations are accepted. The module does not convert arbitrary source units, infer missing values or merge series from different sources or value types.
 
 The normalized market record must preserve:
+
 - Commodity, variety, state, district and market.
 - Minimum, maximum and modal prices where reported.
 - Currency and normalized price unit.
@@ -36,6 +37,7 @@ The normalized market record must preserve:
 ## Integration guidance
 
 The market explorer should:
+
 1. Select one or more exact series using commodity/variety/market filters.
 2. Display the observation date and source context with every point.
 3. Render gaps explicitly and retain the original number of observations.
