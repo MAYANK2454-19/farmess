@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  parseProfileUpdateRequest,
-  type ProfileConsentField,
-} from "./profile-request.ts";
+import { parseProfileUpdateRequest } from "./profile-request.ts";
 
 test("accepts a partial profile update and trims user-entered text", () => {
   const result = parseProfileUpdateRequest({
@@ -217,6 +214,6 @@ test("allows the current consent contract to grow without accepting unknown cons
       "buyerContactDisclosure",
       "exactLocationDisclosure",
       "providerContactDisclosure",
-    ].sort() satisfies ProfileConsentField[],
+    ].sort(),
   );
 });
