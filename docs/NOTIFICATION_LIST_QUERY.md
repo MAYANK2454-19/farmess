@@ -13,6 +13,7 @@ Cursor parameters must be supplied together. The cursor should come from the las
 ## Server-owned query decisions
 
 The request must not control:
+
 - Recipient/user ID.
 - Role or permission.
 - Read/unread state filter.
