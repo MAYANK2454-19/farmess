@@ -273,7 +273,7 @@ test("handles costs greater than gross value without suppressing a negative net"
 
   assert.equal(result.status, "comparable");
   assert.equal(result.options.find((item) => item.id === "negative-net")?.netRealisation, "-4000.00");
-  assert.equal(result.options[1].rank, 1);
+  assert.equal(result.options.find((item) => item.id === "positive-net")?.rank, 1);
 });
 
 test("returns equal comparison ranks when all options are equivalent", () => {
