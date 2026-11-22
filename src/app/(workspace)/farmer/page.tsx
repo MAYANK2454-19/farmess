@@ -113,7 +113,6 @@ export default function FarmerOverviewPage() {
             </p>
             <Link
               href="/farmer/produce/new"
-              className="button button-secondary"
               className="button button-secondary empty-action"
             >
               Create your first lot <Icon name="chevron" size={15} />
