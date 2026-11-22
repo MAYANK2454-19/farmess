@@ -89,3 +89,14 @@ test("rejects overlong crop, variety, grade and location values", () => {
     );
   }
 });
+
+test("returns a field error instead of throwing for a non-string date at runtime", () => {
+  const result = validateBuyerRequirement({
+    ...validDraft,
+    requiredAt: null as unknown as string,
+  });
+  assert.equal(result.valid, false);
+  if (!result.valid) {
+    assert.ok(result.errors.some((error) => error.field === "requiredAt"));
+  }
+});
