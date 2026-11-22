@@ -28,5 +28,12 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
+      - name: Preview pinned documentation formatter output (temporary diagnostic)
+        run: |
+          cp docs/LOT_REQUEST_BOUNDARY.md /tmp/lot-request-boundary.md
+          ./node_modules/.bin/prettier --write docs/LOT_REQUEST_BOUNDARY.md
+          diff -u /tmp/lot-request-boundary.md docs/LOT_REQUEST_BOUNDARY.md || true
+          git checkout -- docs/LOT_REQUEST_BOUNDARY.md
+
       - name: Run lot request boundary tests
         run: node --experimental-strip-types --test src/features/lots/lot-request.test.ts
