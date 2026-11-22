@@ -18,19 +18,13 @@ test("accepts explicit, future offer terms", () => {
 });
 
 test("rejects invalid quantity and price", () => {
-  const result = validateOfferTerms(
-    { ...valid, quantity: 0, pricePaise: 1.5 },
-    now,
-  );
+  const result = validateOfferTerms({ ...valid, quantity: 0, pricePaise: 1.5 }, now);
   assert.equal(result.valid, false);
   assert.equal(result.errors.length, 2);
 });
 
 test("rejects mismatched quantity and price units", () => {
-  const result = validateOfferTerms(
-    { ...valid, unit: "tonne", priceBasis: "per_quintal" },
-    now,
-  );
+  const result = validateOfferTerms({ ...valid, unit: "tonne", priceBasis: "per_quintal" }, now);
   assert.equal(result.valid, false);
   assert.match(result.errors[0], /same unit/i);
 });
@@ -40,8 +34,5 @@ test("rejects expired or invalid validity", () => {
     validateOfferTerms({ ...valid, validUntil: "2026-11-22T11:59:59.000Z" }, now).valid,
     false,
   );
-  assert.equal(
-    validateOfferTerms({ ...valid, validUntil: "not-a-date" }, now).valid,
-    false,
-  );
+  assert.equal(validateOfferTerms({ ...valid, validUntil: "not-a-date" }, now).valid, false);
 });
