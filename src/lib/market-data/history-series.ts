@@ -1,7 +1,4 @@
-import type {
-  MarketPriceRecord,
-  MarketPriceValueType,
-} from "./types.ts";
+import type { MarketPriceRecord, MarketPriceValueType } from "./types.ts";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const SUPPORTED_CURRENCY = "INR";
@@ -123,7 +120,9 @@ function isNonEmptyText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function validateRecord(record: MarketPriceRecord): { point: MarketHistoryPoint } | { reason: string } {
+function validateRecord(
+  record: MarketPriceRecord,
+): { point: MarketHistoryPoint } | { reason: string } {
   if (!isNonEmptyText(record.id)) return { reason: "Record ID is missing." };
   if (
     !isNonEmptyText(record.commodity) ||
@@ -216,8 +215,7 @@ function buildGaps(points: readonly MarketHistoryPoint[]): MarketHistoryGap[] {
     const previous = dates[index - 1];
     const current = dates[index];
     const daysBetween =
-      (Date.parse(current + "T00:00:00.000Z") -
-        Date.parse(previous + "T00:00:00.000Z")) /
+      (Date.parse(current + "T00:00:00.000Z") - Date.parse(previous + "T00:00:00.000Z")) /
       MS_PER_DAY;
 
     if (daysBetween > 1) {
@@ -287,9 +285,7 @@ export function buildMarketHistorySeries(
   const series = [...buckets.entries()].map(([key, bucket]): MarketHistorySeries => {
     const record = bucket.firstRecord;
     const points = [...bucket.pointsById.values()].sort(comparePoints);
-    const uniqueObservationDateCount = new Set(
-      points.map((point) => point.observationDate),
-    ).size;
+    const uniqueObservationDateCount = new Set(points.map((point) => point.observationDate)).size;
     const gaps = buildGaps(points);
 
     return {
