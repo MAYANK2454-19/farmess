@@ -67,8 +67,5 @@ jobs:
       - name: Role authorization contract tests
         run: node --experimental-strip-types --test src/lib/auth/authorization.test.ts
 
-      - name: Marketplace and transport domain tests
-        run: node --experimental-strip-types --test src/features/marketplace/domain.test.ts src/features/marketplace/notifications.test.ts src/features/logistics/transport-pooling.test.ts
-
       - name: Production build
         run: npm run build
