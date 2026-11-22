@@ -39,7 +39,7 @@ Admin is not a blanket RLS bypass. Any future support access needs a separate, s
 ### Database-enforced workflows
 
 - Profile updates that change a privacy preference generate consent audit events with field, actor and timestamp.
-- Buyer offers are checked against the authenticated buyer, a published lot, future validity and lot quantity. Offer terms are immutable after creation; expired offers cannot be accepted.
+- Buyer offers are checked against the authenticated buyer, a published lot, future validity and lot quantity. Offer terms are immutable after creation; expired offers cannot be accepted. Lot-level transaction locks and aggregate accepted-quantity checks prevent two buyers' offers from overselling the same stock.
 - Offer acceptance records a sale and an activity item and creates a notification for the buyer. New, declined and withdrawn offers create recipient-scoped notifications.
 - Service requests must target an active listing owned by an operator. Provider/requester status changes create notifications.
 - Notifications are recipient-scoped; the client can only update the read timestamp.
@@ -52,10 +52,11 @@ The live Supabase migration ledger currently records:
 
 - `20261122160345_farmess_core_backend`
 - `20261122160439_farmess_core_backend_performance`
+- `20261122161534_farmess_offer_inventory_integrity`
 
-The second migration adds foreign-key indexes, combines overlapping update/select policies and uses scalar-subquery wrappers for JWT policy expressions.
+The second migration adds foreign-key indexes, combines overlapping update/select policies and uses scalar-subquery wrappers for JWT policy expressions. The third serializes offer acceptances per lot, prevents aggregate accepted quantities from exceeding stock, and prevents farmers from reducing a lot below quantities already agreed.
 
-The exact SQL statement arrays were recovered from the live `supabase_migrations.schema_migrations` ledger and checked into this repository under the matching versioned filenames in `supabase/migrations/`. The filenames match the two versions above. No migration was re-applied while recovering the source.
+The exact SQL statement arrays were recovered from the live `supabase_migrations.schema_migrations` ledger and checked into this repository under the matching versioned filenames in `supabase/migrations/`. The filenames match the three versions above. No migration was re-applied while recovering the source.
 
 For a new local checkout, initialise/link the Supabase CLI once, then verify local and remote history before changing schema:
 
@@ -91,7 +92,7 @@ Official guides:
 - The live database reports 11 public tables and RLS enabled on all 11.
 - The Supabase security advisor reported no findings.
 - The performance advisor no longer reports RLS init-plan warnings, missing foreign-key indexes or overlapping permissive policies. It reports unused-index informational entries because the new tables have not been populated or queried by real users yet.
-- A rollback-only integration transaction checked profile creation/default role assignment, role immutability, own-profile/own-lot visibility, buyer isolation from private lots, consent audit logging, offer creation/acceptance, sale/activity creation, and service-request notifications. Test fixtures were rolled back; no test users or business rows were retained.
+- A rollback-only integration transaction checked profile creation/default role assignment, role immutability, own-profile/own-lot visibility, buyer isolation from private lots, consent audit logging, offer creation/acceptance, sale/activity creation, service-request notifications, rejection of a second acceptance that would oversell a lot, and rejection of lot quantity reductions below accepted commitments. Test fixtures were rolled back; no test users or business rows were retained.
 
 ## Not yet connected in the application
 
