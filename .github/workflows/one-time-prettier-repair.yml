@@ -1,0 +1,36 @@
+name: One-time Prettier repair
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format changed files
+        shell: bash
+        run: |
+          git fetch origin main
+          mapfile -t files < <(git diff --name-only --diff-filter=ACMR origin/main...HEAD | grep -E '\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$' | grep -v '^\.github/workflows/one-time-prettier-repair\.yml$' || true)
+          if [ "${#files[@]}" -gt 0 ]; then
+            npx prettier --write "${files[@]}"
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add -- "${files[@]}"
+            git commit -m "style: apply Prettier formatting"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
