@@ -6,9 +6,7 @@ import {
   type SaleActivityEvent,
 } from "./sale-activity.ts";
 
-const event = (
-  overrides: Partial<SaleActivityEvent> = {},
-): SaleActivityEvent =>
+const event = (overrides: Partial<SaleActivityEvent> = {}): SaleActivityEvent =>
   ({
     id: "event-1",
     saleId: "sale-1",
@@ -43,10 +41,7 @@ test("builds a chronological timeline without mutating the source events", () =>
 });
 
 test("excludes events belonging to another sale", () => {
-  const timeline = buildSaleTimeline("sale-1", [
-    event(),
-    event({ id: "other", saleId: "sale-2" }),
-  ]);
+  const timeline = buildSaleTimeline("sale-1", [event(), event({ id: "other", saleId: "sale-2" })]);
 
   assert.deepEqual(
     timeline.map((entry) => entry.event.id),
@@ -85,9 +80,7 @@ test("renders payment status as externally reported, not Farmess-verified", () =
 });
 
 test("labels disputed milestones clearly", () => {
-  const timeline = buildSaleTimeline("sale-1", [
-    event({ eventStatus: "disputed" }),
-  ]);
+  const timeline = buildSaleTimeline("sale-1", [event({ eventStatus: "disputed" })]);
 
   assert.match(timeline[0].label, /^Disputed/);
 });
@@ -110,10 +103,7 @@ test("validates identifiers, timestamps and weighment quantity", () => {
 
 test("rejects invalid events in the selected sale timeline", () => {
   assert.throws(
-    () =>
-      buildSaleTimeline("sale-1", [
-        event({ createdAt: "invalid-time" }),
-      ]),
+    () => buildSaleTimeline("sale-1", [event({ createdAt: "invalid-time" })]),
     /Invalid sale activity event/,
   );
 });
