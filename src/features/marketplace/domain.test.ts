@@ -48,7 +48,10 @@ test("matching returns partial rather than inventing missing variety information
 
 test("matching rejects a known crop or location mismatch", () => {
   assert.equal(matchProduceLot(lot, { ...requirement, crop: "Potato" }).status, "no_match");
-  assert.equal(matchProduceLot(lot, { ...requirement, locationArea: "Srinagar" }).status, "no_match");
+  assert.equal(
+    matchProduceLot(lot, { ...requirement, locationArea: "Srinagar" }).status,
+    "no_match",
+  );
 });
 
 test("unpublished lots are never returned as a match", () => {
@@ -65,7 +68,8 @@ const offer: OfferForTransition = {
 
 test("only the owning farmer can accept an unexpired offer", () => {
   assert.equal(
-    transitionOffer(offer, { id: "farmer-2", role: "farmer" }, "accept", new Date("2026-11-24")).changed,
+    transitionOffer(offer, { id: "farmer-2", role: "farmer" }, "accept", new Date("2026-11-24"))
+      .changed,
     false,
   );
   assert.deepEqual(
@@ -76,11 +80,13 @@ test("only the owning farmer can accept an unexpired offer", () => {
 
 test("buyer can withdraw only their own pending offer", () => {
   assert.equal(
-    transitionOffer(offer, { id: "buyer-2", role: "buyer" }, "withdraw", new Date("2026-11-24")).changed,
+    transitionOffer(offer, { id: "buyer-2", role: "buyer" }, "withdraw", new Date("2026-11-24"))
+      .changed,
     false,
   );
   assert.equal(
-    transitionOffer(offer, { id: "buyer-1", role: "buyer" }, "withdraw", new Date("2026-11-24")).status,
+    transitionOffer(offer, { id: "buyer-1", role: "buyer" }, "withdraw", new Date("2026-11-24"))
+      .status,
     "withdrawn",
   );
 });
@@ -94,7 +100,8 @@ test("expired offers cannot be accepted even if the UI still shows the action", 
 
 test("terminal offers cannot be changed again", () => {
   assert.equal(
-    transitionOffer({ ...offer, status: "declined" }, { id: "farmer-1", role: "farmer" }, "accept").changed,
+    transitionOffer({ ...offer, status: "declined" }, { id: "farmer-1", role: "farmer" }, "accept")
+      .changed,
     false,
   );
 });

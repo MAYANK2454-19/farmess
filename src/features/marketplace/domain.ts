@@ -173,7 +173,11 @@ export function transitionOffer(
   now: Date = new Date(),
 ): TransitionResult<OfferStatus> {
   if (offer.status !== "pending") {
-    return { status: offer.status, changed: false, reason: "Only pending offers can change state." };
+    return {
+      status: offer.status,
+      changed: false,
+      reason: "Only pending offers can change state.",
+    };
   }
 
   const expiry = Date.parse(offer.validUntil);
@@ -193,14 +197,22 @@ export function transitionOffer(
 
   if (action === "accept" || action === "decline") {
     if (actor.role !== "farmer" || actor.id !== offer.farmerId) {
-      return { status: offer.status, changed: false, reason: "Only the lot-owning farmer can respond." };
+      return {
+        status: offer.status,
+        changed: false,
+        reason: "Only the lot-owning farmer can respond.",
+      };
     }
     return { status: action === "accept" ? "accepted" : "declined", changed: true };
   }
 
   if (action === "withdraw") {
     if (actor.role !== "buyer" || actor.id !== offer.buyerId) {
-      return { status: offer.status, changed: false, reason: "Only the offer's buyer can withdraw it." };
+      return {
+        status: offer.status,
+        changed: false,
+        reason: "Only the offer's buyer can withdraw it.",
+      };
     }
     return { status: "withdrawn", changed: true };
   }
@@ -209,11 +221,7 @@ export function transitionOffer(
 }
 
 export type LogisticsStatus =
-  | "pending"
-  | "accepted"
-  | "declined"
-  | "more_information"
-  | "cancelled";
+  "pending" | "accepted" | "declined" | "more_information" | "cancelled";
 
 export type LogisticsAction = "accept" | "decline" | "request_information" | "resubmit" | "cancel";
 
@@ -231,10 +239,18 @@ export function transitionLogisticsRequest(
 ): TransitionResult<LogisticsStatus> {
   if (action === "accept" || action === "decline" || action === "request_information") {
     if (actor.role !== "provider" || actor.id !== request.providerId) {
-      return { status: request.status, changed: false, reason: "Only the assigned provider can respond." };
+      return {
+        status: request.status,
+        changed: false,
+        reason: "Only the assigned provider can respond.",
+      };
     }
     if (request.status !== "pending") {
-      return { status: request.status, changed: false, reason: "Only pending requests can receive a provider response." };
+      return {
+        status: request.status,
+        changed: false,
+        reason: "Only pending requests can receive a provider response.",
+      };
     }
     const status =
       action === "accept" ? "accepted" : action === "decline" ? "declined" : "more_information";
@@ -243,20 +259,40 @@ export function transitionLogisticsRequest(
 
   if (action === "resubmit") {
     if (actor.role !== "farmer" || actor.id !== request.farmerId) {
-      return { status: request.status, changed: false, reason: "Only the requesting farmer can update this request." };
+      return {
+        status: request.status,
+        changed: false,
+        reason: "Only the requesting farmer can update this request.",
+      };
     }
     if (request.status !== "more_information") {
-      return { status: request.status, changed: false, reason: "Only requests awaiting information can be resubmitted." };
+      return {
+        status: request.status,
+        changed: false,
+        reason: "Only requests awaiting information can be resubmitted.",
+      };
     }
     return { status: "pending", changed: true };
   }
 
   if (action === "cancel") {
     if (actor.role !== "farmer" || actor.id !== request.farmerId) {
-      return { status: request.status, changed: false, reason: "Only the requesting farmer can cancel this request." };
+      return {
+        status: request.status,
+        changed: false,
+        reason: "Only the requesting farmer can cancel this request.",
+      };
     }
-    if (request.status !== "pending" && request.status !== "more_information" && request.status !== "accepted") {
-      return { status: request.status, changed: false, reason: "This request can no longer be cancelled." };
+    if (
+      request.status !== "pending" &&
+      request.status !== "more_information" &&
+      request.status !== "accepted"
+    ) {
+      return {
+        status: request.status,
+        changed: false,
+        reason: "This request can no longer be cancelled.",
+      };
     }
     return { status: "cancelled", changed: true };
   }

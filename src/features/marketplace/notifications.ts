@@ -35,9 +35,11 @@ export function notificationDedupeKey(
   return [eventType, entityType, entityId, eventVersion].map(encodeURIComponent).join(":");
 }
 
-export function createNotificationDraft(input: Omit<NotificationDraft, "dedupeKey"> & {
-  eventVersion: string;
-}): NotificationDraft {
+export function createNotificationDraft(
+  input: Omit<NotificationDraft, "dedupeKey"> & {
+    eventVersion: string;
+  },
+): NotificationDraft {
   const recipientUserId = input.recipientUserId.trim();
   const entityId = input.relatedEntityId.trim();
   const eventVersion = input.eventVersion.trim();
