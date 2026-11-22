@@ -17,7 +17,7 @@ export type NotificationReadRequestParseResult =
   | {
       status: "valid";
       data: NotificationReadAction;
-      errors: {};
+      errors: NotificationReadRequestErrors;
     }
   | {
       status: "invalid";
