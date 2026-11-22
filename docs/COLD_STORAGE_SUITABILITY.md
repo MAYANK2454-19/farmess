@@ -26,6 +26,8 @@ This is a pure, deterministic planning module for the Farmess P1 Storage Discove
 - No database, API route, UI, authentication or RLS policy is added. Those require agreement with the storage/provider owner and Prince before shared schema changes.
 - The planner is decision support only; a provider must explicitly confirm availability and terms.
 
+A capacity calculation is a screening result for the supplied candidate set only. It does not lock capacity, account for concurrent requests, or imply that any lot has been accepted by a provider.
+
 ## Tests
 
 Run directly with Node.js 22+:
