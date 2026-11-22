@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { marketPriceRecordsToCsv } from "./csv.ts";
 import { isObservationStale, normalizeOgdRecord, normalizeOgdResponse } from "./normalize.ts";
 
 const retrievedAt = "2026-11-22T12:00:00.000Z";
@@ -76,4 +77,39 @@ test("marks observations older than 48 hours as stale", () => {
   const now = new Date("2026-11-22T12:00:00.000Z");
   assert.equal(isObservationStale("2026-11-21", now), false);
   assert.equal(isObservationStale("2026-11-19", now), true);
+});
+
+
+test("exports reported market observations with provenance and spreadsheet-safe cells", () => {
+  const csv = marketPriceRecordsToCsv([
+    {
+      commodity: '=HYPERLINK("https://bad.example","click")',
+      variety: null,
+      state: "Rajasthan",
+      district: "Jaipur",
+      market: 'Jaipur "F&V"',
+      minPrice: "1200.00",
+      maxPrice: "1800.00",
+      modalPrice: "1500.00",
+      priceUnit: "INR/quintal",
+      observationDate: "2026-11-21",
+      retrievedAt,
+      sourceName: "OGD India / AGMARKNET",
+      sourceUrl: "https://data.gov.in/resource/example",
+      valueType: "reported",
+    },
+  ]);
+
+  assert.ok(csv.startsWith("\uFEFF"));
+  assert.ok(csv.includes('"'=HYPERLINK(""https://bad.example"",""click"")"'));
+  assert.ok(csv.includes('"Jaipur ""F&V"""'));
+  assert.ok(csv.includes('"INR/quintal"'));
+  assert.ok(csv.includes('"https://data.gov.in/resource/example"'));
+  assert.ok(csv.endsWith("\r\n"));
+});
+
+test("exports an empty CSV with its header row only", () => {
+  const csv = marketPriceRecordsToCsv([]);
+  assert.equal(csv.split("\r\n").length, 2);
+  assert.ok(csv.includes('"Observation date"'));
 });
