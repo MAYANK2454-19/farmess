@@ -56,7 +56,7 @@ const CONSENT_DATA_CATEGORY: Record<FarmerConsentField, FarmerConsentDataCategor
 };
 
 const ISO_TIMESTAMP_PATTERN =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+-](\d{2}):(\d{2}))$/;
 
 function isRecord(value: unknown): value is UnknownRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -66,12 +66,49 @@ function hasUsableId(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
+function isLeapYear(year: number): boolean {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+
 function isValidTimestamp(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    ISO_TIMESTAMP_PATTERN.test(value.trim()) &&
-    Number.isFinite(Date.parse(value))
-  );
+  if (typeof value !== "string") return false;
+
+  const trimmed = value.trim();
+  const match = ISO_TIMESTAMP_PATTERN.exec(trimmed);
+  if (!match) return false;
+
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, offsetHourText, offsetMinuteText] =
+    match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const hour = Number(hourText);
+  const minute = Number(minuteText);
+  const second = Number(secondText);
+  const offsetHour = offsetHourText === undefined ? 0 : Number(offsetHourText);
+  const offsetMinute = offsetMinuteText === undefined ? 0 : Number(offsetMinuteText);
+
+  if (month < 1 || month > 12 || hour > 23 || minute > 59 || second > 59) return false;
+  if (offsetHour > 14 || offsetMinute > 59 || (offsetHour === 14 && offsetMinute !== 0)) {
+    return false;
+  }
+
+  const daysInMonth = [
+    31,
+    isLeapYear(year) ? 29 : 28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+  ][month - 1];
+
+  return day >= 1 && day <= daysInMonth && Number.isFinite(Date.parse(trimmed));
 }
 
 function parseConsentSnapshot(value: unknown): FarmerConsentSnapshot | null {
