@@ -2,6 +2,12 @@
   max-width: 1180px;
 }
 
+.headingActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .filterPanel {
   margin-bottom: 30px;
 }
