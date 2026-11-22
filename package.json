@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/features src/lib/market-data/normalize.test.ts",
+    "test": "node scripts/run-tests.mjs",
     "format": "prettier --write .",
     "format:check": "node scripts/check-format.mjs",
     "prepare": "simple-git-hooks || true"
