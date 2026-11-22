@@ -66,6 +66,17 @@ test("rejects mismatched area, crop, date, cold-chain and temperature requiremen
   assert.ok(result.rejectedLots.every((item) => item.reasons.length > 0));
 });
 
+test("rejects cold-chain lots when the facility is not refrigerated", () => {
+  const result = planColdStorage(
+    { ...listing, refrigerated: false },
+    [lot({ id: "cold-chain-required" })],
+  );
+  assert.equal(result.eligibleLots.length, 0);
+  assert.ok(
+    result.rejectedLots[0].reasons.some((reason) => reason.includes("not refrigerated")),
+  );
+});
+
 test("unknown rates remain unavailable instead of becoming zero", () => {
   const result = planColdStorage(
     { ...listing, ratePaise: null, rateBasis: null },
