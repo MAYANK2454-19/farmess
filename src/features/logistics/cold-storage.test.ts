@@ -25,7 +25,9 @@ const listing: ColdStorageListing = {
   verificationState: "verification_pending",
 };
 
-const lot = (overrides: Partial<StorageLotCandidate> = {}): StorageLotCandidate => ({
+const lot = (
+  overrides: Partial<StorageLotCandidate> = {},
+): StorageLotCandidate => ({
   id: "lot-1",
   crop: "Apple",
   quantity: 2,
@@ -39,7 +41,9 @@ const lot = (overrides: Partial<StorageLotCandidate> = {}): StorageLotCandidate 
   ...overrides,
 });
 
-test("matches compatible produce and calculates an explicitly indicative rate", () => {
+test(
+  "matches compatible produce and calculates an explicitly indicative rate",
+  () => {
   const result = planColdStorage(listing, [lot()]);
   assert.deepEqual(result.eligibleLots.map((item) => item.lotId), ["lot-1"]);
   assert.equal(result.totalQuantityKg, 2000);
@@ -55,7 +59,11 @@ test("rejects mismatched area, crop, date and temperature requirements", () => {
     lot({ id: "area", storageArea: "Delhi" }),
     lot({ id: "crop", crop: "Potato" }),
     lot({ id: "date", arrivalDate: "2026-12-09", storageDays: 3 }),
-    lot({ id: "temp", requiredTemperatureMinC: -5, requiredTemperatureMaxC: 0 }),
+    lot({
+      id: "temp",
+      requiredTemperatureMinC: -5,
+      requiredTemperatureMaxC: 0,
+    }),
   ]);
   assert.equal(result.eligibleLots.length, 1);
   assert.deepEqual(
@@ -72,7 +80,9 @@ test("rejects cold-chain lots when the facility is not refrigerated", () => {
   );
   assert.equal(result.eligibleLots.length, 0);
   assert.ok(
-    result.rejectedLots[0].reasons.some((reason) => reason.includes("not refrigerated")),
+    result.rejectedLots[0].reasons.some((reason) =>
+      reason.includes("not refrigerated"),
+    ),
   );
 });
 
@@ -85,7 +95,9 @@ test("unknown rates remain unavailable instead of becoming zero", () => {
   assert.equal(result.eligibleLots[0].costValueType, "unavailable");
 });
 
-test("rejects lots when a required temperature range cannot be verified", () => {
+test(
+  "rejects lots when a required temperature range cannot be verified",
+  () => {
   const result = planColdStorage(
     { ...listing, temperatureMinC: null, temperatureMaxC: null },
     [lot()],
@@ -117,11 +129,15 @@ test("unpublished listings and invalid quantities fail closed", () => {
   ]);
   assert.equal(invalidQuantity.eligibleLots.length, 0);
   assert.ok(
-    invalidQuantity.rejectedLots[0].reasons.some((reason) => reason.includes("quantity")),
+    invalidQuantity.rejectedLots[0].reasons.some((reason) =>
+      reason.includes("quantity"),
+    ),
   );
 });
 
-test("invalid capacity and inconsistent facility temperature range throw", () => {
+test(
+  "invalid capacity and inconsistent facility temperature range throw",
+  () => {
   assert.throws(() => planColdStorage({ ...listing, capacity: 0 }, []));
   assert.throws(
     () =>
