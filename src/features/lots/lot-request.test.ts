@@ -99,12 +99,12 @@ test("returns the existing field-level errors for missing required fields", () =
   assert.ok(result.errors.sellBy);
 });
 
-test("rejects valid strings that fail the shared quantity, unit and date rules", () => {
+test("rejects valid strings that fail the shared quantity, unit and date-order rules", () => {
   const result = parseLotDraftRequest(
     validPayload({
       quantity: "0",
       unit: "bag",
-      availableAt: "2026-02-30",
+      availableAt: "2026-11-30",
       sellBy: "2026-01-01",
     }),
   );
@@ -114,8 +114,16 @@ test("rejects valid strings that fail the shared quantity, unit and date rules",
 
   assert.ok(result.errors.quantity);
   assert.ok(result.errors.unit);
-  assert.ok(result.errors.availableAt);
   assert.ok(result.errors.sellBy);
+});
+
+test("rejects impossible calendar dates through the shared lot validator", () => {
+  const result = parseLotDraftRequest(validPayload({ availableAt: "2026-02-30" }));
+
+  assert.equal(result.status, "invalid");
+  if (result.status !== "invalid") return;
+
+  assert.ok(result.errors.availableAt);
 });
 
 test("whitelists lot form fields and never returns client-supplied ownership or role data", () => {
