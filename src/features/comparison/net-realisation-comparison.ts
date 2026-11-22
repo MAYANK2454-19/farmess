@@ -264,7 +264,10 @@ function calculateOption(
     };
   }
 
-  if (!isRecord(option.feasibility) || !["feasible", "infeasible", "unknown"].includes(option.feasibility.status)) {
+  if (
+    !isRecord(option.feasibility) ||
+    !["feasible", "infeasible", "unknown"].includes(option.feasibility.status)
+  ) {
     return {
       result: emptyResult(option, "invalid", ["A valid feasibility status is required."]),
       netPerQuintalPaise: null,
@@ -444,7 +447,11 @@ export function compareNetRealisationOptions(
     .filter((item) => item.result.status === "eligible" && item.netPerQuintalPaise !== null)
     .sort((left, right) => {
       const difference = (right.netPerQuintalPaise as bigint) - (left.netPerQuintalPaise as bigint);
-      return difference === 0n ? left.result.id.localeCompare(right.result.id) : difference > 0n ? 1 : -1;
+      return difference === 0n
+        ? left.result.id.localeCompare(right.result.id)
+        : difference > 0n
+          ? 1
+          : -1;
     });
 
   if (rankable.length >= 2) {
@@ -477,7 +484,9 @@ export function compareNetRealisationOptions(
         if (right.rank === null) return -1;
         return left.rank - right.rank || left.id.localeCompare(right.id);
       }),
-      reasons: ["Only complete, feasible options for the same lot are ranked by estimated net INR per quintal."],
+      reasons: [
+        "Only complete, feasible options for the same lot are ranked by estimated net INR per quintal.",
+      ],
     };
   }
 
