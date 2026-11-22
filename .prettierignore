@@ -1,0 +1,7 @@
+node_modules
+.next
+package-lock.json
+ARCHITECTURE.md
+
+*.docx
+docs/FARMESS_Master_Figma_Execution_Brief.md
