@@ -101,7 +101,7 @@ test("exports reported market observations with provenance and spreadsheet-safe 
   ]);
 
   assert.ok(csv.startsWith("\uFEFF"));
-  assert.ok(csv.includes('"'=HYPERLINK(""https://bad.example"",""click"")"'));
+  assert.ok(csv.includes(`"'=HYPERLINK(""https://bad.example"",""click"")"`));
   assert.ok(csv.includes('"Jaipur ""F&V"""'));
   assert.ok(csv.includes('"INR/quintal"'));
   assert.ok(csv.includes('"https://data.gov.in/resource/example"'));
