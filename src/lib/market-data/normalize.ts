@@ -1,4 +1,4 @@
-import type { MarketPriceRecord } from "./types";
+import type { MarketPriceRecord } from "./types.ts";
 
 export const OGD_RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070";
 export const OGD_RESOURCE_URL = `https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi`;
