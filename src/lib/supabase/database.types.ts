@@ -14,40 +14,40 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.18"
+    PostgrestVersion: "14.18";
   }
   public: {
     Tables: {
       buyer_requirements: {
         Row: {
-          buyer_id: string
-          created_at: string
-          crop: string
-          delivery_by: string | null
-          grade: string | null
-          id: string
-          market_area: string
-          max_quantity: number | null
-          min_quantity: number
-          status: string
-          target_price_paise_per_quintal: number | null
-          unit: string
-          updated_at: string
-          variety: string | null
+          buyer_id: string;
+          created_at: string;
+          crop: string;
+          delivery_by: string | null;
+          grade: string | null;
+          id: string;
+          market_area: string;
+          max_quantity: number | null;
+          min_quantity: number;
+          status: string;
+          target_price_paise_per_quintal: number | null;
+          unit: string;
+          updated_at: string;
+          variety: string | null;
         }
         Insert: {
-          buyer_id: string
+          buyer_id: string;
           created_at?: string
-          crop: string
+          crop: string;
           delivery_by?: string | null
           grade?: string | null
           id?: string
-          market_area: string
+          market_area: string;
           max_quantity?: number | null
-          min_quantity: number
+          min_quantity: number;
           status?: string
           target_price_paise_per_quintal?: number | null
-          unit: string
+          unit: string;
           updated_at?: string
           variety?: string | null
         }
@@ -69,44 +69,44 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "buyer_requirements_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "buyer_requirements_buyer_id_fkey";
+            columns: ["buyer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ]
       }
       market_observations: {
         Row: {
-          created_at: string
-          crop: string
-          district: string | null
-          id: string
-          market_name: string
-          max_price_paise_per_quintal: number | null
-          min_price_paise_per_quintal: number | null
-          modal_price_paise_per_quintal: number | null
-          observation_date: string
-          retrieved_at: string
-          source_name: string
-          source_url: string
-          state: string | null
-          variety: string | null
+          created_at: string;
+          crop: string;
+          district: string | null;
+          id: string;
+          market_name: string;
+          max_price_paise_per_quintal: number | null;
+          min_price_paise_per_quintal: number | null;
+          modal_price_paise_per_quintal: number | null;
+          observation_date: string;
+          retrieved_at: string;
+          source_name: string;
+          source_url: string;
+          state: string | null;
+          variety: string | null;
         }
         Insert: {
           created_at?: string
-          crop: string
+          crop: string;
           district?: string | null
           id?: string
-          market_name: string
+          market_name: string;
           max_price_paise_per_quintal?: number | null
           min_price_paise_per_quintal?: number | null
           modal_price_paise_per_quintal?: number | null
-          observation_date: string
+          observation_date: string;
           retrieved_at?: string
-          source_name: string
-          source_url: string
+          source_name: string;
+          source_url: string;
           state?: string | null
           variety?: string | null
         }
@@ -126,30 +126,30 @@ export type Database = {
           state?: string | null
           variety?: string | null
         }
-        Relationships: []
+        Relationships: [];
       }
       notifications: {
         Row: {
-          body: string
-          created_at: string
-          event_key: string
-          id: string
-          read_at: string | null
-          recipient_user_id: string
-          related_id: string | null
-          related_type: string | null
-          title: string
+          body: string;
+          created_at: string;
+          event_key: string;
+          id: string;
+          read_at: string | null;
+          recipient_user_id: string;
+          related_id: string | null;
+          related_type: string | null;
+          title: string;
         }
         Insert: {
-          body: string
+          body: string;
           created_at?: string
-          event_key: string
+          event_key: string;
           id?: string
           read_at?: string | null
-          recipient_user_id: string
+          recipient_user_id: string;
           related_id?: string | null
           related_type?: string | null
-          title: string
+          title: string;
         }
         Update: {
           body?: string
@@ -164,42 +164,42 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_recipient_user_id_fkey"
-            columns: ["recipient_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "notifications_recipient_user_id_fkey";
+            columns: ["recipient_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ]
       }
       offers: {
         Row: {
-          buyer_id: string
-          created_at: string
-          farmer_id: string
-          id: string
-          lot_id: string
-          price_paise_per_quintal: number
-          quantity: number
-          status: string
-          terms: string | null
-          unit: string
-          updated_at: string
-          valid_until: string
+          buyer_id: string;
+          created_at: string;
+          farmer_id: string;
+          id: string;
+          lot_id: string;
+          price_paise_per_quintal: number;
+          quantity: number;
+          status: string;
+          terms: string | null;
+          unit: string;
+          updated_at: string;
+          valid_until: string;
         }
         Insert: {
-          buyer_id: string
+          buyer_id: string;
           created_at?: string
-          farmer_id: string
+          farmer_id: string;
           id?: string
-          lot_id: string
-          price_paise_per_quintal: number
-          quantity: number
+          lot_id: string;
+          price_paise_per_quintal: number;
+          quantity: number;
           status?: string
           terms?: string | null
-          unit: string
+          unit: string;
           updated_at?: string
-          valid_until: string
+          valid_until: string;
         }
         Update: {
           buyer_id?: string
@@ -217,58 +217,58 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "offers_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "offers_buyer_id_fkey";
+            columns: ["buyer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "offers_farmer_id_fkey"
-            columns: ["farmer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "offers_farmer_id_fkey";
+            columns: ["farmer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "offers_lot_owner_fk"
-            columns: ["lot_id", "farmer_id"]
-            isOneToOne: false
-            referencedRelation: "produce_lots"
-            referencedColumns: ["id", "owner_id"]
+            foreignKeyName: "offers_lot_owner_fk";
+            columns: ["lot_id", "farmer_id"];
+            isOneToOne: false;
+            referencedRelation: "produce_lots";
+            referencedColumns: ["id", "owner_id"];
           },
         ]
       }
       produce_lots: {
         Row: {
-          approximate_area: string
-          available_from: string
-          created_at: string
-          crop: string
-          grade: string | null
-          id: string
-          notes: string | null
-          owner_id: string
-          quantity: number
-          sell_by: string
-          status: string
-          unit: string
-          updated_at: string
-          variety: string | null
+          approximate_area: string;
+          available_from: string;
+          created_at: string;
+          crop: string;
+          grade: string | null;
+          id: string;
+          notes: string | null;
+          owner_id: string;
+          quantity: number;
+          sell_by: string;
+          status: string;
+          unit: string;
+          updated_at: string;
+          variety: string | null;
         }
         Insert: {
-          approximate_area: string
-          available_from: string
+          approximate_area: string;
+          available_from: string;
           created_at?: string
-          crop: string
+          crop: string;
           grade?: string | null
           id?: string
           notes?: string | null
-          owner_id: string
-          quantity: number
-          sell_by: string
+          owner_id: string;
+          quantity: number;
+          sell_by: string;
           status?: string
-          unit: string
+          unit: string;
           updated_at?: string
           variety?: string | null
         }
@@ -290,32 +290,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "produce_lots_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "produce_lots_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ]
       }
       profile_consent_events: {
         Row: {
-          actor_user_id: string | null
-          consent_field: Database["public"]["Enums"]["farmer_consent_field"]
-          created_at: string
-          dedupe_key: string
-          granted: boolean
-          id: string
-          user_id: string
+          actor_user_id: string | null;
+          consent_field: Database["public"]["Enums"]["farmer_consent_field"];
+          created_at: string;
+          dedupe_key: string;
+          granted: boolean;
+          id: string;
+          user_id: string;
         }
         Insert: {
           actor_user_id?: string | null
-          consent_field: Database["public"]["Enums"]["farmer_consent_field"]
+          consent_field: Database["public"]["Enums"]["farmer_consent_field"];
           created_at?: string
           dedupe_key?: string
-          granted: boolean
+          granted: boolean;
           id?: string
-          user_id: string
+          user_id: string;
         }
         Update: {
           actor_user_id?: string | null
@@ -328,27 +328,27 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profile_consent_events_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "profile_consent_events_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ]
       }
       profiles: {
         Row: {
-          approximate_location_sharing: boolean
-          buyer_contact_disclosure: boolean
-          created_at: string
-          display_name: string | null
-          exact_location_disclosure: boolean
-          id: string
-          market_area: string | null
-          phone_number: string | null
-          provider_contact_disclosure: boolean
-          role: Database["public"]["Enums"]["farmess_role"]
-          updated_at: string
+          approximate_location_sharing: boolean;
+          buyer_contact_disclosure: boolean;
+          created_at: string;
+          display_name: string | null;
+          exact_location_disclosure: boolean;
+          id: string;
+          market_area: string | null;
+          phone_number: string | null;
+          provider_contact_disclosure: boolean;
+          role: Database["public"]["Enums"]["farmess_role"];
+          updated_at: string;
         }
         Insert: {
           approximate_location_sharing?: boolean
@@ -356,7 +356,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           exact_location_disclosure?: boolean
-          id: string
+          id: string;
           market_area?: string | null
           phone_number?: string | null
           provider_contact_disclosure?: boolean
@@ -376,26 +376,26 @@ export type Database = {
           role?: Database["public"]["Enums"]["farmess_role"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [];
       }
       sale_activity: {
         Row: {
-          actor_user_id: string | null
-          created_at: string
-          event_key: string
-          id: string
-          participant_user_ids: string[]
-          sale_id: string
-          summary: string
+          actor_user_id: string | null;
+          created_at: string;
+          event_key: string;
+          id: string;
+          participant_user_ids: string[];
+          sale_id: string;
+          summary: string;
         }
         Insert: {
           actor_user_id?: string | null
           created_at?: string
-          event_key: string
+          event_key: string;
           id?: string
-          participant_user_ids: string[]
-          sale_id: string
-          summary: string
+          participant_user_ids: string[];
+          sale_id: string;
+          summary: string;
         }
         Update: {
           actor_user_id?: string | null
@@ -408,46 +408,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sale_activity_actor_user_id_fkey"
-            columns: ["actor_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "sale_activity_actor_user_id_fkey";
+            columns: ["actor_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sale_activity_sale_id_fkey"
-            columns: ["sale_id"]
-            isOneToOne: false
-            referencedRelation: "sales"
-            referencedColumns: ["id"]
+            foreignKeyName: "sale_activity_sale_id_fkey";
+            columns: ["sale_id"];
+            isOneToOne: false;
+            referencedRelation: "sales";
+            referencedColumns: ["id"];
           },
         ]
       }
       sales: {
         Row: {
-          agreed_at: string
-          agreed_price_paise_per_quintal: number
-          agreed_quantity: number
-          buyer_id: string
-          farmer_id: string
-          id: string
-          lot_id: string
-          offer_id: string
-          status: string
-          unit: string
-          updated_at: string
+          agreed_at: string;
+          agreed_price_paise_per_quintal: number;
+          agreed_quantity: number;
+          buyer_id: string;
+          farmer_id: string;
+          id: string;
+          lot_id: string;
+          offer_id: string;
+          status: string;
+          unit: string;
+          updated_at: string;
         }
         Insert: {
           agreed_at?: string
-          agreed_price_paise_per_quintal: number
-          agreed_quantity: number
-          buyer_id: string
-          farmer_id: string
+          agreed_price_paise_per_quintal: number;
+          agreed_quantity: number;
+          buyer_id: string;
+          farmer_id: string;
           id?: string
-          lot_id: string
-          offer_id: string
+          lot_id: string;
+          offer_id: string;
           status?: string
-          unit: string
+          unit: string;
           updated_at?: string
         }
         Update: {
@@ -465,52 +465,52 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sales_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_buyer_id_fkey";
+            columns: ["buyer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sales_farmer_id_fkey"
-            columns: ["farmer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_farmer_id_fkey";
+            columns: ["farmer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "sales_lot_owner_fk"
-            columns: ["lot_id", "farmer_id"]
-            isOneToOne: false
-            referencedRelation: "produce_lots"
-            referencedColumns: ["id", "owner_id"]
+            foreignKeyName: "sales_lot_owner_fk";
+            columns: ["lot_id", "farmer_id"];
+            isOneToOne: false;
+            referencedRelation: "produce_lots";
+            referencedColumns: ["id", "owner_id"];
           },
           {
-            foreignKeyName: "sales_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: true
-            referencedRelation: "offers"
-            referencedColumns: ["id"]
+            foreignKeyName: "sales_offer_id_fkey";
+            columns: ["offer_id"];
+            isOneToOne: true;
+            referencedRelation: "offers";
+            referencedColumns: ["id"];
           },
         ]
       }
       service_listings: {
         Row: {
-          available_from: string | null
-          available_until: string | null
-          capacity_quantity: number | null
-          capacity_unit: string | null
-          created_at: string
-          description: string | null
-          destination_area: string | null
-          id: string
-          operator_id: string
-          price_paise: number | null
-          service_area: string
-          service_type: string
-          status: string
-          title: string
-          updated_at: string
+          available_from: string | null;
+          available_until: string | null;
+          capacity_quantity: number | null;
+          capacity_unit: string | null;
+          created_at: string;
+          description: string | null;
+          destination_area: string | null;
+          id: string;
+          operator_id: string;
+          price_paise: number | null;
+          service_area: string;
+          service_type: string;
+          status: string;
+          title: string;
+          updated_at: string;
         }
         Insert: {
           available_from?: string | null
@@ -521,12 +521,12 @@ export type Database = {
           description?: string | null
           destination_area?: string | null
           id?: string
-          operator_id: string
+          operator_id: string;
           price_paise?: number | null
-          service_area: string
-          service_type: string
+          service_area: string;
+          service_type: string;
           status?: string
-          title: string
+          title: string;
           updated_at?: string
         }
         Update: {
@@ -548,41 +548,41 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "service_listings_operator_id_fkey"
-            columns: ["operator_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_listings_operator_id_fkey";
+            columns: ["operator_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ]
       }
       service_requests: {
         Row: {
-          created_at: string
-          destination_area: string | null
-          id: string
-          listing_id: string
-          message: string | null
-          origin_area: string | null
-          provider_user_id: string
-          requested_date: string | null
-          requested_quantity: number | null
-          requester_id: string
-          status: string
-          unit: string | null
-          updated_at: string
+          created_at: string;
+          destination_area: string | null;
+          id: string;
+          listing_id: string;
+          message: string | null;
+          origin_area: string | null;
+          provider_user_id: string;
+          requested_date: string | null;
+          requested_quantity: number | null;
+          requester_id: string;
+          status: string;
+          unit: string | null;
+          updated_at: string;
         }
         Insert: {
           created_at?: string
           destination_area?: string | null
           id?: string
-          listing_id: string
+          listing_id: string;
           message?: string | null
           origin_area?: string | null
-          provider_user_id: string
+          provider_user_id: string;
           requested_date?: string | null
           requested_quantity?: number | null
-          requester_id: string
+          requester_id: string;
           status?: string
           unit?: string | null
           updated_at?: string
@@ -604,34 +604,34 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "service_requests_listing_provider_fk"
-            columns: ["listing_id", "provider_user_id"]
-            isOneToOne: false
-            referencedRelation: "service_listings"
-            referencedColumns: ["id", "operator_id"]
+            foreignKeyName: "service_requests_listing_provider_fk";
+            columns: ["listing_id", "provider_user_id"];
+            isOneToOne: false;
+            referencedRelation: "service_listings";
+            referencedColumns: ["id", "operator_id"];
           },
           {
-            foreignKeyName: "service_requests_provider_user_id_fkey"
-            columns: ["provider_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_requests_provider_user_id_fkey";
+            columns: ["provider_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "service_requests_requester_id_fkey"
-            columns: ["requester_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "service_requests_requester_id_fkey";
+            columns: ["requester_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      [_ in never]: never;
     }
     Functions: {
-      [_ in never]: never
+      [_ in never]: never;
     }
     Enums: {
       farmer_consent_field:
@@ -639,10 +639,10 @@ export type Database = {
         | "exact_location_disclosure"
         | "buyer_contact_disclosure"
         | "provider_contact_disclosure"
-      farmess_role: "farmer" | "buyer" | "operator" | "admin"
+      farmess_role: "farmer" | "buyer" | "operator" | "admin";
     }
     CompositeTypes: {
-      [_ in never]: never
+      [_ in never]: never;
     }
   }
 };
