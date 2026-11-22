@@ -4,25 +4,25 @@ This module is the purpose-specific policy layer for sharing farmer information 
 
 ## Separate consent flags
 
-| Data category | Consent flag |
-| --- | --- |
-| Approximate location | `approximateLocationSharing` |
-| Exact location | `exactLocationDisclosure` |
-| Buyer contact details | `buyerContactDisclosure` |
-| Provider contact details | `providerContactDisclosure` |
+| Data category            | Consent flag                 |
+| ------------------------ | ---------------------------- |
+| Approximate location     | `approximateLocationSharing` |
+| Exact location           | `exactLocationDisclosure`    |
+| Buyer contact details    | `buyerContactDisclosure`     |
+| Provider contact details | `providerContactDisclosure`  |
 
 All consent defaults are `false`. Granting one permission does not grant the others. Revoking a preference should update persisted consent state and be checked on every new disclosure.
 
 ## Permitted workflow matrix
 
-| Viewer | Data category | Required workflow | Consent |
-| --- | --- | --- | --- |
-| Buyer | Approximate location | Market matching | Approximate location |
+| Viewer   | Data category        | Required workflow          | Consent              |
+| -------- | -------------------- | -------------------------- | -------------------- |
+| Buyer    | Approximate location | Market matching            | Approximate location |
 | Operator | Approximate location | Assigned logistics request | Approximate location |
-| Buyer | Contact details | Accepted offer | Buyer contact |
-| Operator | Contact details | Assigned logistics request | Provider contact |
-| Buyer | Exact location | Accepted offer | Exact location |
-| Operator | Exact location | Assigned logistics request | Exact location |
+| Buyer    | Contact details      | Accepted offer             | Buyer contact        |
+| Operator | Contact details      | Assigned logistics request | Provider contact     |
+| Buyer    | Exact location       | Accepted offer             | Exact location       |
+| Operator | Exact location       | Assigned logistics request | Exact location       |
 
 A farmer can access their own data. Other roles cannot bypass workflow and consent requirements. Admin/reviewer roles receive no wildcard disclosure permission from this policy.
 
