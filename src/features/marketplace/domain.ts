@@ -158,7 +158,10 @@ export type OfferForTransition = {
   status: OfferStatus;
 };
 
-export type MarketplaceActor = {\n  id: string;\n  role: "farmer" | "buyer" | "provider";\n};
+export type MarketplaceActor = {
+  id: string;
+  role: "farmer" | "buyer" | "provider";
+};
 
 export type TransitionResult<TStatus extends string> = {
   status: TStatus;
@@ -223,7 +226,12 @@ export function transitionOffer(
 export type LogisticsStatus =
   "pending" | "accepted" | "declined" | "more_information" | "cancelled";
 
-export type LogisticsAction =\n  | "accept"\n  | "decline"\n  | "request_information"\n  | "resubmit"\n  | "cancel";
+export type LogisticsAction =
+  | "accept"
+  | "decline"
+  | "request_information"
+  | "resubmit"
+  | "cancel";
 
 export type LogisticsRequestForTransition = {
   id: string;
