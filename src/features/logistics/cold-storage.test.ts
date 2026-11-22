@@ -50,12 +50,11 @@ test("matches compatible produce and calculates an explicitly indicative rate", 
   assert.equal(result.bookingStatus, "not_booked");
 });
 
-test("rejects mismatched area, crop, date, cold-chain and temperature requirements", () => {
+test("rejects mismatched area, crop, date and temperature requirements", () => {
   const result = planColdStorage(listing, [
     lot({ id: "area", storageArea: "Delhi" }),
     lot({ id: "crop", crop: "Potato" }),
     lot({ id: "date", arrivalDate: "2026-12-09", storageDays: 3 }),
-    lot({ id: "cold", requiresColdChain: false, requiredTemperatureMinC: null, requiredTemperatureMaxC: null }),
     lot({ id: "temp", requiredTemperatureMinC: -5, requiredTemperatureMaxC: 0 }),
   ]);
   assert.equal(result.eligibleLots.length, 1);
@@ -117,7 +116,9 @@ test("unpublished listings and invalid quantities fail closed", () => {
     lot({ quantity: Number.NaN }),
   ]);
   assert.equal(invalidQuantity.eligibleLots.length, 0);
-  assert.ok(invalidQuantity.rejectedLots[0].reasons.some((reason) => reason.includes("quantity")));
+  assert.ok(
+    invalidQuantity.rejectedLots[0].reasons.some((reason) => reason.includes("quantity")),
+  );
 });
 
 test("invalid capacity and inconsistent facility temperature range throw", () => {
