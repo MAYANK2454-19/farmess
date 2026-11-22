@@ -172,7 +172,10 @@ test("does not rank infeasible or unverified options", () => {
   assert.equal(result.status, "insufficient_data");
   assert.equal(result.options.find((item) => item.id === "infeasible")?.status, "infeasible");
   assert.equal(result.options.find((item) => item.id === "unknown")?.status, "feasibility_unknown");
-  assert.equal(result.options.every((item) => item.rank === null), true);
+  assert.equal(
+    result.options.every((item) => item.rank === null),
+    true,
+  );
 });
 
 test("rejects options that refer to a different produce lot", () => {
