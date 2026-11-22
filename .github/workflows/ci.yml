@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/market-history-series-foundation]
   push:
-    branches: [main]
+    branches: [main, feat/market-price-history-view]
 
 concurrency:
   group: ci-${{ github.ref }}
