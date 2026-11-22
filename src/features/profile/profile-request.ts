@@ -42,8 +42,7 @@ type UnknownRecord = Record<string, unknown>;
 const MAX_DISPLAY_NAME_LENGTH = 80;
 const MAX_MARKET_AREA_LENGTH = 160;
 const E164_PATTERN = /^\+[1-9]\d{7,14}$/;
-const COORDINATE_PAIR_PATTERN =
-  /^[-+]?\d{1,2}(?:\.\d+)?\s*,\s*[-+]?\d{1,3}(?:\.\d+)?$/;
+const COORDINATE_PAIR_PATTERN = /^[-+]?\d{1,2}(?:\.\d+)?\s*,\s*[-+]?\d{1,3}(?:\.\d+)?$/;
 
 function isRecord(value: unknown): value is UnknownRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
