@@ -131,22 +131,19 @@ function createDedupeKey(
  * from the verified session, and generate occurredAt on the server.
  * This function builds events only; it does not persist them.
  */
-export function buildFarmerConsentAuditEvents(input: {
-  actorUserId: string;
-  farmerUserId: string;
-  previousConsent: unknown;
-  consentPatch: unknown;
-  occurredAt: string;
-}): FarmerConsentAuditBuildResult {
-  if (
-    !hasUsableId(input.actorUserId) ||
-    !hasUsableId(input.farmerUserId) ||
-    !isRecord(input)
-  ) {
+export function buildFarmerConsentAuditEvents(input: unknown): FarmerConsentAuditBuildResult {
+  if (!isRecord(input)) {
     return { status: "invalid", events: [], changedFields: [], reason: "invalid_request" };
   }
 
-  if (input.actorUserId !== input.farmerUserId) {
+  const actorUserId = input.actorUserId;
+  const farmerUserId = input.farmerUserId;
+
+  if (!hasUsableId(actorUserId) || !hasUsableId(farmerUserId)) {
+    return { status: "invalid", events: [], changedFields: [], reason: "invalid_request" };
+  }
+
+  if (actorUserId !== farmerUserId) {
     return { status: "invalid", events: [], changedFields: [], reason: "actor_must_be_farmer" };
   }
 
@@ -188,15 +185,15 @@ export function buildFarmerConsentAuditEvents(input: {
     changedFields.push(field);
     events.push({
       eventType: nextAllowed ? "farmer_consent_granted" : "farmer_consent_revoked",
-      actorUserId: input.actorUserId,
-      farmerUserId: input.farmerUserId,
+      actorUserId,
+      farmerUserId,
       consentField: field,
       dataCategory: CONSENT_DATA_CATEGORY[field],
       previousAllowed,
       nextAllowed,
       occurredAt,
       dedupeKey: createDedupeKey(
-        input.farmerUserId,
+        farmerUserId,
         field,
         previousAllowed,
         nextAllowed,
