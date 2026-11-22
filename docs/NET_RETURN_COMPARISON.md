@@ -26,11 +26,11 @@ This module is an isolated comparison layer for one produce lot. It complements 
 
 ## Provenance
 
-| Source | Required value type | Required source detail |
-| --- | --- | --- |
-| `market_observation` | `reported` | Source name, observation date and retrieval timestamp |
-| `buyer_offer` | `quoted` | Source name and offer-valid-until timestamp |
-| `entered_scenario` | `entered` or `estimated` | Source/entry label |
+| Source               | Required value type      | Required source detail                                |
+| -------------------- | ------------------------ | ----------------------------------------------------- |
+| `market_observation` | `reported`               | Source name, observation date and retrieval timestamp |
+| `buyer_offer`        | `quoted`                 | Source name and offer-valid-until timestamp           |
+| `entered_scenario`   | `entered` or `estimated` | Source/entry label                                    |
 
 The module does not claim that an entered price is market data, that an offer is accepted, or that a market quote is still fresh. Callers must re-check current validity and feasibility at the time of display/action.
 
@@ -46,6 +46,7 @@ Per-option status explains why a candidate was not ranked. A ranking is decision
 ## Integration boundary
 
 This is a pure domain module. The owning UI/API integration should:
+
 1. Build options from source-backed market observations, actual buyer quotes or explicitly labelled farmer-entered scenarios.
 2. Confirm options all refer to the selected produce lot.
 3. Supply feasibility and its evidence/reasons; do not infer it from headline price.
