@@ -94,6 +94,13 @@ export function matchProduceLot(
     requirement.quantity <= 0
   ) {
     unknowns.push("A valid positive quantity is required to compare volume.");
+  } else if (
+    !(lot.unit in UNIT_IN_KG) ||
+    !(requirement.unit in UNIT_IN_KG) ||
+    !Number.isFinite(lot.quantity * UNIT_IN_KG[lot.unit]) ||
+    !Number.isFinite(requirement.quantity * UNIT_IN_KG[requirement.unit])
+  ) {
+    unknowns.push("A supported quantity unit is required to compare volume.");
   } else {
     const lotKg = lot.quantity * UNIT_IN_KG[lot.unit];
     const requiredKg = requirement.quantity * UNIT_IN_KG[requirement.unit];
@@ -119,6 +126,9 @@ export function matchProduceLot(
   } else {
     const available = Date.parse(lot.availableAt);
     const required = Date.parse(requirement.requiredAt);
+    if (lot.sellBy && !isValidDate(lot.sellBy)) {
+      unknowns.push("The lot sell-by date is invalid.");
+    }
     const sellBy = lot.sellBy && isValidDate(lot.sellBy) ? Date.parse(lot.sellBy) : null;
     if (available > required || (sellBy !== null && sellBy < required)) {
       incompatible = true;
