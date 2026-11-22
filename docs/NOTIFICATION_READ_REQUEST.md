@@ -10,6 +10,7 @@ This parser accepts only the two read actions supported by the notification inbo
 The client may select the action and, for mark-one, identify which notification it is asking to mark as read. All other input fields are ignored.
 
 In particular, the client must not control:
+
 - Recipient/user ID.
 - Read timestamp.
 - User role or permission.
