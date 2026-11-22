@@ -21,9 +21,5 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: Preview Prettier output for offer terms files
-        run: |
-          npx prettier --write src/features/offers/terms.ts src/features/offers/terms.test.ts
-          git diff -- src/features/offers/terms.ts src/features/offers/terms.test.ts
       - name: Offer terms unit tests
         run: node --experimental-strip-types --test src/features/offers/terms.test.ts
