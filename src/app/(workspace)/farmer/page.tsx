@@ -61,7 +61,7 @@ export default function FarmerOverviewPage() {
             <span className="empty-icon"><Icon name="leaf" size={23} /></span>
             <h3 className="empty-title">Your produce will appear here</h3>
             <p className="empty-copy">Create a lot with its crop, variety, grade, quantity and sell-by date. You can review the details before anything is shared.</p>
-            <Link href="/farmer/produce/new" className="button button-secondary" className="button button-secondary empty-action">Create your first lot <Icon name="chevron" size={15} /></Link>
+            <Link href="/farmer/produce/new" className="button button-secondary empty-action">Create your first lot <Icon name="chevron" size={15} /></Link>
           </div>
         </div>
 
