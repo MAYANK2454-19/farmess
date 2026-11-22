@@ -24,16 +24,5 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm ci
-
-      - name: Preview exact Prettier output (temporary diagnostic)
-        run: |
-          cp src/features/notifications/inbox.ts /tmp/inbox.ts
-          cp src/features/notifications/inbox.test.ts /tmp/inbox.test.ts
-          ./node_modules/.bin/prettier --write src/features/notifications/inbox.ts src/features/notifications/inbox.test.ts
-          diff -u /tmp/inbox.ts src/features/notifications/inbox.ts || true
-          diff -u /tmp/inbox.test.ts src/features/notifications/inbox.test.ts || true
-          git checkout -- src/features/notifications/inbox.ts src/features/notifications/inbox.test.ts
-
       - name: Run notification inbox tests
         run: node --experimental-strip-types --test src/features/notifications/inbox.test.ts
