@@ -46,7 +46,8 @@ export type FarmerDisclosureDecision =
     }
   | {
       allowed: false;
-      reason: "invalid_request" | "workflow_not_authorized" | "consent_required" | "role_not_authorized";
+      reason:
+        "invalid_request" | "workflow_not_authorized" | "consent_required" | "role_not_authorized";
     };
 
 function hasUsableId(value: unknown): value is string {
