@@ -1,0 +1,28 @@
+name: Temporary Prettier diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  format-diff:
+    name: Temporary Prettier diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Print generated formatter diff
+        run: |
+          npx prettier src/lib/supabase/database.types.ts > /tmp/database.types.formatted.ts
+          diff -u --label committed src/lib/supabase/database.types.ts --label prettier /tmp/database.types.formatted.ts || true
