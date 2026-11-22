@@ -28,5 +28,16 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
+      - name: Preview pinned Prettier output (temporary diagnostic)
+        run: |
+          cp docs/ROUTE_AUTHORIZATION_CONTRACT.md /tmp/route-auth.md
+          cp src/lib/auth/route-authorization.ts /tmp/route-auth.ts
+          cp src/lib/auth/route-authorization.test.ts /tmp/route-auth.test.ts
+          ./node_modules/.bin/prettier --write docs/ROUTE_AUTHORIZATION_CONTRACT.md src/lib/auth/route-authorization.ts src/lib/auth/route-authorization.test.ts
+          diff -u /tmp/route-auth.md docs/ROUTE_AUTHORIZATION_CONTRACT.md || true
+          diff -u /tmp/route-auth.ts src/lib/auth/route-authorization.ts || true
+          diff -u /tmp/route-auth.test.ts src/lib/auth/route-authorization.test.ts || true
+          git checkout -- docs/ROUTE_AUTHORIZATION_CONTRACT.md src/lib/auth/route-authorization.ts src/lib/auth/route-authorization.test.ts
+
       - name: Run route authorization tests
         run: node --experimental-strip-types --test src/lib/auth/route-authorization.test.ts
