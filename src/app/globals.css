@@ -903,3 +903,126 @@ h1 {
     width: 100%;
   }
 }
+.profile-card,
+.privacy-card {
+  margin-top: 20px;
+}
+.profile-card {
+  padding: 21px;
+}
+.profile-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.profile-status,
+.privacy-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  color: #756542;
+  background: var(--soft-gold);
+  border: 1px solid #eee4ce;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.profile-avatar-large {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  margin-bottom: 18px;
+  color: var(--brand-primary);
+  background: #e8efe9;
+  border-radius: 50%;
+  font-size: 19px;
+  font-weight: 800;
+}
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+.profile-form-grid .full {
+  grid-column: 1 / -1;
+}
+.privacy-card {
+  overflow: hidden;
+}
+.privacy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 20px;
+  border-top: 1px solid #edf0ed;
+}
+.privacy-row strong {
+  display: block;
+  color: var(--text);
+  font-size: 12px;
+}
+.privacy-row p {
+  max-width: 560px;
+  margin: 4px 0 0;
+  color: #7f8a83;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.privacy-toggle {
+  display: inline-flex;
+  min-width: 72px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 10px;
+  color: #68756d;
+  background: #f7f8f5;
+  border: 1px solid #dce4dd;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+}
+.privacy-toggle span {
+  width: 8px;
+  height: 8px;
+  background: #9aa49e;
+  border-radius: 50%;
+}
+.privacy-toggle.on {
+  color: var(--brand-primary);
+  background: var(--soft-green);
+  border-color: #cfe0d3;
+}
+.privacy-toggle.on span {
+  background: var(--brand-secondary);
+}
+.profile-footer {
+  margin-top: 18px;
+}
+@media (max-width: 560px) {
+  .profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-form-grid .full {
+    grid-column: auto;
+  }
+  .privacy-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .privacy-toggle {
+    align-self: flex-start;
+  }
+  .profile-footer {
+    align-items: stretch;
+  }
+  .profile-footer .button {
+    width: 100%;
+  }
+}
