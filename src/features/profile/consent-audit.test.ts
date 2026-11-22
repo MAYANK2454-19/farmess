@@ -53,8 +53,7 @@ test("records an explicit consent grant with field and purpose metadata", () => 
     previousAllowed: false,
     nextAllowed: true,
     occurredAt: "2026-11-22T15:30:00.000Z",
-    dedupeKey:
-      "farmer-1:approximateLocationSharing:0:1:2026-11-22T15%3A30%3A00.000Z",
+    dedupeKey: "farmer-1:approximateLocationSharing:0:1:2026-11-22T15%3A30%3A00.000Z",
   });
 });
 
@@ -133,15 +132,12 @@ test("maps buyer and provider contact consent to the contact-details category", 
 });
 
 test("rejects a different actor attempting to change the farmer's consent", () => {
-  assert.deepEqual(
-    build({ actorUserId: "operator-1" }),
-    {
-      status: "invalid",
-      events: [],
-      changedFields: [],
-      reason: "actor_must_be_farmer",
-    },
-  );
+  assert.deepEqual(build({ actorUserId: "operator-1" }), {
+    status: "invalid",
+    events: [],
+    changedFields: [],
+    reason: "actor_must_be_farmer",
+  });
 });
 
 test("rejects incomplete or malformed persisted consent state", () => {
