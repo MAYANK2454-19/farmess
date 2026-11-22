@@ -28,16 +28,5 @@ jobs:
       - name: Install repository dependencies
         run: npm ci
 
-      - name: Preview pinned Prettier output (temporary diagnostic)
-        run: |
-          cp docs/PROFILE_CONSENT_AUDIT.md /tmp/profile-consent-audit.md
-          cp src/features/profile/consent-audit.ts /tmp/consent-audit.ts
-          cp src/features/profile/consent-audit.test.ts /tmp/consent-audit.test.ts
-          ./node_modules/.bin/prettier --write docs/PROFILE_CONSENT_AUDIT.md src/features/profile/consent-audit.ts src/features/profile/consent-audit.test.ts
-          diff -u /tmp/profile-consent-audit.md docs/PROFILE_CONSENT_AUDIT.md || true
-          diff -u /tmp/consent-audit.ts src/features/profile/consent-audit.ts || true
-          diff -u /tmp/consent-audit.test.ts src/features/profile/consent-audit.test.ts || true
-          git checkout -- docs/PROFILE_CONSENT_AUDIT.md src/features/profile/consent-audit.ts src/features/profile/consent-audit.test.ts
-
       - name: Run consent audit tests
         run: node --experimental-strip-types --test src/features/profile/consent-audit.test.ts
