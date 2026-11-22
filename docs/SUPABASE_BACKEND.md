@@ -55,18 +55,18 @@ The live Supabase migration ledger currently records:
 
 The second migration adds foreign-key indexes, combines overlapping update/select policies and uses scalar-subquery wrappers for JWT policy expressions.
 
-**Important repository-sync note:** the live migrations were applied through the authenticated Supabase database connection. The Supabase CLI was not available in the current build environment, so the corresponding CLI-generated SQL migration files have not yet been checked into this repository. Before the next schema change, pull/reconcile the live schema with the Supabase CLI and commit the migration source files; do not create a second schema by hand or reset the live project.
+The exact SQL statement arrays were recovered from the live `supabase_migrations.schema_migrations` ledger and checked into this repository under the matching versioned filenames in `supabase/migrations/`. The filenames match the two versions above. No migration was re-applied while recovering the source.
 
-Recommended local reconciliation:
+For a new local checkout, initialise/link the Supabase CLI once, then verify local and remote history before changing schema:
 
 ```bash
-npx supabase --version
+npx supabase init
 npx supabase link --project-ref jsfpajiurzabdqbxvype
-npx supabase db pull
 npx supabase migration list
+npx supabase db diff --linked
 ```
 
-Review the pulled SQL against the two versions above before making further DDL changes.
+Review any diff before pushing. Do not reset the live project or edit its schema outside a reviewed migration.
 
 ## Local environment
 
