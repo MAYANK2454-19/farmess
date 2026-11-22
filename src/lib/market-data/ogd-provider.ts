@@ -1,5 +1,6 @@
 import "server-only";
 
+import { assessMarketSourceDateIntegrity } from "./source-integrity";
 import { normalizeOgdResponse, OGD_API_URL, SOURCE_NAME } from "./normalize";
 import type { MarketDataResult, MarketSearchFilters } from "./types";
 
@@ -53,6 +54,26 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
     }
 
     const records = normalizeOgdResponse(await response.json(), retrievedAt);
+    const dateIntegrity = assessMarketSourceDateIntegrity(
+      records.map((record) => record.observationDate),
+      retrievedAt,
+    );
+
+    if (dateIntegrity.status !== "valid") {
+      const message =
+        dateIntegrity.status === "future-observation"
+          ? `OGD India returned observation date(s) later than retrieval date: ${dateIntegrity.futureDates.join(", ")}. Records were withheld.`
+          : "OGD India returned invalid observation date metadata. Records were withheld.";
+
+      return {
+        status: "unavailable",
+        records: [],
+        retrievedAt,
+        sourceName: SOURCE_NAME,
+        message,
+      };
+    }
+
     if (records.length === 0) {
       return { status: "no-data", records: [], retrievedAt, sourceName: SOURCE_NAME };
     }
