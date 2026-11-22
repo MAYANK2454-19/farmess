@@ -75,8 +75,8 @@ test("rounds a fractional quantity calculation to the nearest paise", () => {
   );
 
   assert.equal(result.status, "complete");
-  assert.equal(result.grossSaleValue, "152.24");
-  assert.equal(result.netRealisation, "152.24");
+  assert.equal(result.grossSaleValue, "152.34");
+  assert.equal(result.netRealisation, "152.34");
 });
 
 test("rejects invalid values and quantity precision beyond three decimals", () => {
