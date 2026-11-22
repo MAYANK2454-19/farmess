@@ -72,18 +72,9 @@ test("rejects malformed profile field types", () => {
 });
 
 test("requires a non-empty display name within the documented length", () => {
-  assert.equal(
-    parseProfileUpdateRequest({ displayName: " " }).status,
-    "invalid",
-  );
-  assert.equal(
-    parseProfileUpdateRequest({ displayName: "x".repeat(81) }).status,
-    "invalid",
-  );
-  assert.equal(
-    parseProfileUpdateRequest({ displayName: "x".repeat(80) }).status,
-    "valid",
-  );
+  assert.equal(parseProfileUpdateRequest({ displayName: " " }).status, "invalid");
+  assert.equal(parseProfileUpdateRequest({ displayName: "x".repeat(81) }).status, "invalid");
+  assert.equal(parseProfileUpdateRequest({ displayName: "x".repeat(80) }).status, "valid");
 });
 
 test("rejects invalid phone values instead of guessing a country code", () => {
