@@ -111,8 +111,9 @@ export function LotForm() {
           </div>
         </div>
         <div className={styles.reviewNote} role="note">
-          Your exact address and GPS coordinates are not required here. This is not yet a submission;
-          sharing and server-side saving will only be added with the authenticated lot workflow.
+          Your exact address and GPS coordinates are not required here. This is not yet a
+          submission; sharing and server-side saving will only be added with the authenticated lot
+          workflow.
         </div>
         <div className="form-footer">
           <p className="form-warning">Preview only — no produce lot has been created.</p>
@@ -133,8 +134,8 @@ export function LotForm() {
       <div className="module-status">P0 farmer flow · validated form</div>
       <h2>Produce lot details</h2>
       <p>
-        Enter what you have available and when it can be collected. Use a village, locality or nearby
-        market area rather than an exact home address.
+        Enter what you have available and when it can be collected. Use a village, locality or
+        nearby market area rather than an exact home address.
       </p>
       {Object.keys(errors).length > 0 ? (
         <div className={styles.formAlert} role="alert">
@@ -190,7 +191,9 @@ export function LotForm() {
             <option value="Not graded">Not graded</option>
           </select>
           <FieldError id="lot-grade-error" message={errors.grade} />
-          <span className="form-help">You can leave this blank when the produce is not graded.</span>
+          <span className="form-help">
+            You can leave this blank when the produce is not graded.
+          </span>
         </label>
         <div className="form-field">
           <span className="form-label">Available quantity *</span>
