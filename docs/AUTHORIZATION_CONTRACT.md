@@ -12,17 +12,17 @@ This document records the first backend/platform slice for FARMESS-02. It is a s
 
 ## Application permission matrix
 
-| Capability | Farmer | Buyer | Operator | Admin |
-| --- | --- | --- | --- | --- |
-| Create and manage own produce lots | Yes | No | No | No blanket access |
-| Respond to offers on own lots | Yes | No | No | No blanket access |
-| Create/manage own buyer requirements and offers | No | Yes | No | No blanket access |
-| Read matched lot summaries | No | Yes | No | No blanket access |
-| Create/manage own service listings | No | No | Yes | No blanket access |
-| Respond to assigned service requests | No | No | Yes | No blanket access |
-| Read/mark own notifications | Yes | Yes | Yes | No blanket access |
-| Read participating sale activity | Yes | Yes | No | No blanket access |
-| Read assigned service activity | No | No | Yes | No blanket access |
+| Capability                                      | Farmer | Buyer | Operator | Admin             |
+| ----------------------------------------------- | ------ | ----- | -------- | ----------------- |
+| Create and manage own produce lots              | Yes    | No    | No       | No blanket access |
+| Respond to offers on own lots                   | Yes    | No    | No       | No blanket access |
+| Create/manage own buyer requirements and offers | No     | Yes   | No       | No blanket access |
+| Read matched lot summaries                      | No     | Yes   | No       | No blanket access |
+| Create/manage own service listings              | No     | No    | Yes      | No blanket access |
+| Respond to assigned service requests            | No     | No    | Yes      | No blanket access |
+| Read/mark own notifications                     | Yes    | Yes   | Yes      | No blanket access |
+| Read participating sale activity                | Yes    | Yes   | No       | No blanket access |
+| Read assigned service activity                  | No     | No    | Yes      | No blanket access |
 
 These helpers express role-level capabilities. Every record operation must additionally check ownership, assignment, participation, or an explicitly authorised workflow.
 
