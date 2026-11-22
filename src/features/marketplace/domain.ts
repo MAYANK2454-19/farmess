@@ -226,12 +226,7 @@ export function transitionOffer(
 export type LogisticsStatus =
   "pending" | "accepted" | "declined" | "more_information" | "cancelled";
 
-export type LogisticsAction =
-  | "accept"
-  | "decline"
-  | "request_information"
-  | "resubmit"
-  | "cancel";
+export type LogisticsAction = "accept" | "decline" | "request_information" | "resubmit" | "cancel";
 
 export type LogisticsRequestForTransition = {
   id: string;
