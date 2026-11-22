@@ -20,14 +20,7 @@ const headSha = process.env.FORMAT_HEAD_SHA;
 let changedFiles;
 
 if (baseSha && headSha && !/^0+$/.test(baseSha)) {
-  changedFiles = gitLines([
-    "diff",
-    "--name-only",
-    "--diff-filter=ACMR",
-    baseSha,
-    headSha,
-    "--",
-  ]);
+  changedFiles = gitLines(["diff", "--name-only", "--diff-filter=ACMR", baseSha, headSha, "--"]);
 } else {
   changedFiles = [
     ...gitLines(["diff", "--name-only", "HEAD", "--"]),
@@ -35,9 +28,7 @@ if (baseSha && headSha && !/^0+$/.test(baseSha)) {
   ];
 }
 
-const files = [
-  ...new Set(changedFiles.map((file) => file.replaceAll("\\", "/"))),
-]
+const files = [...new Set(changedFiles.map((file) => file.replaceAll("\\", "/")))]
   .filter(
     (file) =>
       file &&
@@ -53,24 +44,16 @@ if (files.length === 0) {
   process.exit(0);
 }
 
-const prettierCli = path.join(
-  repositoryRoot,
-  "node_modules",
-  "prettier",
-  "bin",
-  "prettier.cjs",
-);
+const prettierCli = path.join(repositoryRoot, "node_modules", "prettier", "bin", "prettier.cjs");
 
 if (!existsSync(prettierCli)) {
   console.error("Prettier is not installed. Run npm ci.");
   process.exit(1);
 }
 
-const result = spawnSync(
-  process.execPath,
-  [prettierCli, "--check", "--ignore-unknown", ...files],
-  { stdio: "inherit" },
-);
+const result = spawnSync(process.execPath, [prettierCli, "--check", "--ignore-unknown", ...files], {
+  stdio: "inherit",
+});
 
 if (result.error) {
   console.error(result.error.message);
