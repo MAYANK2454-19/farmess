@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/features/calculations/net-realisation.test.ts",
+    "test": "node --experimental-strip-types --test src/features/calculations/net-realisation.test.ts src/features/lots/lot-validation.test.ts src/lib/routes.test.ts",
     "format": "prettier --write .",
     "format:check": "node scripts/check-format.mjs",
     "prepare": "simple-git-hooks || true"
