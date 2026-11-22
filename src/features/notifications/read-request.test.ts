@@ -4,28 +4,28 @@ import test from "node:test";
 import { parseNotificationReadRequest } from "./read-request.ts";
 
 test("accepts mark-one-read with a trimmed notification ID", () => {
-  assert.deepEqual(parseNotificationReadRequest({
-    action: "mark_one_read",
-    notificationId: " notification-123 ",
-  }), {
-    status: "valid",
-    data: {
-      action: "mark_one_read",
-      notificationId: "notification-123",
-    },
-    errors: {},
-  });
-});
-
-test("accepts mark-all-read without requiring a notification ID", () => {
   assert.deepEqual(
-    parseNotificationReadRequest({ action: "mark_all_read" }),
+    parseNotificationReadRequest({
+      action: "mark_one_read",
+      notificationId: " notification-123 ",
+    }),
     {
       status: "valid",
-      data: { action: "mark_all_read" },
+      data: {
+        action: "mark_one_read",
+        notificationId: "notification-123",
+      },
       errors: {},
     },
   );
+});
+
+test("accepts mark-all-read without requiring a notification ID", () => {
+  assert.deepEqual(parseNotificationReadRequest({ action: "mark_all_read" }), {
+    status: "valid",
+    data: { action: "mark_all_read" },
+    errors: {},
+  });
 });
 
 test("rejects null, arrays, primitives and non-object payloads", () => {
