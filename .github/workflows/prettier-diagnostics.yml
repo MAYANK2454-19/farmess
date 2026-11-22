@@ -27,4 +27,7 @@ jobs:
       - name: Print exact Prettier changes
         run: |
           npx prettier --write src/features/logistics/cold-storage.ts src/features/logistics/cold-storage.test.ts
-          git --no-pager diff -- src/features/logistics/cold-storage.ts src/features/logistics/cold-storage.test.ts
+          echo '--- COLD STORAGE TEST ---'
+          cat src/features/logistics/cold-storage.test.ts
+          echo '--- COLD STORAGE SOURCE ---'
+          cat src/features/logistics/cold-storage.ts
