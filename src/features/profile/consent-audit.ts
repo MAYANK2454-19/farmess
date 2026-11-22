@@ -10,7 +10,8 @@ export type FarmerConsentField = (typeof FARMER_CONSENT_FIELDS)[number];
 export type FarmerConsentSnapshot = Record<FarmerConsentField, boolean>;
 export type FarmerConsentPatch = Partial<FarmerConsentSnapshot>;
 
-export type FarmerConsentDataCategory = "approximate_location" | "exact_location" | "contact_details";
+export type FarmerConsentDataCategory =
+  "approximate_location" | "exact_location" | "contact_details";
 
 export type FarmerConsentAuditEvent = {
   eventType: "farmer_consent_granted" | "farmer_consent_revoked";
