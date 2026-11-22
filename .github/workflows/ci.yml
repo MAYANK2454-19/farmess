@@ -30,6 +30,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Temporary Prettier output for formatter helper
+        run: npx prettier scripts/check-format.mjs
+
       - name: Prettier (changed files only)
         run: npm run format:check
         env:
