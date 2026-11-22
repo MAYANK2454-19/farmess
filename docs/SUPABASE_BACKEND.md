@@ -14,21 +14,19 @@ Never commit a publishable value as a substitute for database security. The publ
 
 ## Live schema
 
-The current database has 11 public tables:
+The current database has 11 public tables, each with a distinct access boundary:
 
-| Table | Purpose | Access boundary |
-| --- | --- | --- |
-| `profiles` | Account details, role and privacy preferences | A user can read/update their own profile fields; role is not user-writable |
-| `profile_consent_events` | Consent grant/revoke audit history | Own events read-only; rows written by a database trigger |
-| `market_observations` | Source-attributed market data in INR paise per quintal | Public read-only; ingestion is a trusted server task |
-| `produce_lots` | Farmer's produce lots | Owner-only; matching summaries are intentionally not exposed yet |
-| `buyer_requirements` | Buyer's required crop, quantity and area | Buyer-owner-only |
-| `offers` | Buyer quotes against a farmer lot | Visible only to buyer and farmer participants |
-| `service_listings` | Operator transport/storage listings | Active listings expose an allowlisted set of non-contact fields |
-| `service_requests` | Requests for provider services | Requester/provider participants only |
-| `notifications` | In-app event inbox | Recipient-only; created by database event triggers |
-| `sales` | Agreed sale terms and status | Buyer/farmer participants only |
-| `sale_activity` | Sale event timeline | Explicit participants only |
+- **`profiles`:** Account details, role and privacy preferences. Users can read and update their own allowed profile fields; role is not user-writable.
+- **`profile_consent_events`:** Consent grant/revoke audit history. Own events are read-only; a database trigger writes the rows.
+- **`market_observations`:** Source-attributed market data in INR paise per quintal. Public read-only; ingestion is a trusted server task.
+- **`produce_lots`:** Farmer-owned produce lots. Owner-only; matching summaries are intentionally not exposed yet.
+- **`buyer_requirements`:** Buyer requirements for crop, quantity and market area. Buyer-owner-only.
+- **`offers`:** Buyer quotes against a farmer lot. Visible only to buyer and farmer participants.
+- **`service_listings`:** Operator transport/storage listings. Active listings expose only an allowlisted set of non-contact fields.
+- **`service_requests`:** Requests for provider services. Requester/provider participants only.
+- **`notifications`:** In-app event inbox. Recipient-only; created by database event triggers.
+- **`sales`:** Agreed sale terms and status. Buyer/farmer participants only.
+- **`sale_activity`:** Sale event timeline. Explicit participants only.
 
 All 11 tables have Row Level Security enabled. The public Data API has explicit least-privilege grants; public clients cannot write market observations, consent history, notifications, sales, or sale activity.
 
