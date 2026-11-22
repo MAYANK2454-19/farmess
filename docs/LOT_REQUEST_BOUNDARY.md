@@ -5,6 +5,7 @@ This module is the server-facing parser for an untrusted create-lot request body
 ## Accepted fields
 
 Required string fields:
+
 - `crop`
 - `quantity`
 - `unit`
@@ -13,6 +14,7 @@ Required string fields:
 - `sellBy`
 
 Optional string fields:
+
 - `variety`
 - `grade`
 - `notes`
@@ -22,6 +24,7 @@ Omitted optional fields become empty strings. A field explicitly supplied as nul
 ## Trust boundary
 
 The parser does not accept, preserve or infer:
+
 - `ownerId` / user ID
 - Role or admin flags
 - Record ID
