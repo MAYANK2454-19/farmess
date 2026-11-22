@@ -58,7 +58,7 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
     }
 
     const latestDate = records.reduce(
-      (latest, record) => (record.observationDate > latest ? record.observationDate : latest),
+      (latest, record) =>\n        record.observationDate > latest ? record.observationDate : latest,
       records[0].observationDate,
     );
     const latestAge = Date.now() - new Date(`${latestDate}T00:00:00.000Z`).getTime();
