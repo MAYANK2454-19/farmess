@@ -8,11 +8,12 @@ import {
   type NetReturnComparisonInput,
 } from "./net-realisation-comparison.ts";
 
-function completeDeductions(overrides: Partial<Record<DeductionField, string>> = {}): Record<DeductionField, string> {
-  const deductions = Object.fromEntries(DEDUCTION_FIELDS.map((field) => [field.key, "0"])) as Record<
-    DeductionField,
-    string
-  >;
+function completeDeductions(
+  overrides: Partial<Record<DeductionField, string>> = {},
+): Record<DeductionField, string> {
+  const deductions = Object.fromEntries(
+    DEDUCTION_FIELDS.map((field) => [field.key, "0"]),
+  ) as Record<DeductionField, string>;
 
   return { ...deductions, ...overrides };
 }
@@ -170,20 +171,14 @@ test("does not rank infeasible or unverified options", () => {
 
   assert.equal(result.status, "insufficient_data");
   assert.equal(result.options.find((item) => item.id === "infeasible")?.status, "infeasible");
-  assert.equal(
-    result.options.find((item) => item.id === "unknown")?.status,
-    "feasibility_unknown",
-  );
+  assert.equal(result.options.find((item) => item.id === "unknown")?.status, "feasibility_unknown");
   assert.equal(result.options.every((item) => item.rank === null), true);
 });
 
 test("rejects options that refer to a different produce lot", () => {
   const result = compareNetRealisationOptions(
     comparison({
-      options: [
-        option({ id: "same-lot" }),
-        option({ id: "other-lot", lotId: "lot-2" }),
-      ],
+      options: [option({ id: "same-lot" }), option({ id: "other-lot", lotId: "lot-2" })],
     }),
   );
 
@@ -200,7 +195,10 @@ test("marks duplicate option IDs invalid instead of producing ambiguous ranks", 
   );
 
   assert.equal(result.status, "no_feasible_options");
-  assert.equal(result.options.every((item) => item.status === "invalid"), true);
+  assert.equal(
+    result.options.every((item) => item.status === "invalid"),
+    true,
+  );
 });
 
 test("requires source-backed provenance for mandi observations", () => {
@@ -222,10 +220,7 @@ test("requires source-backed provenance for mandi observations", () => {
   );
 
   assert.equal(result.status, "insufficient_data");
-  assert.equal(
-    result.options.find((item) => item.id === "missing-source-date")?.status,
-    "invalid",
-  );
+  assert.equal(result.options.find((item) => item.id === "missing-source-date")?.status, "invalid");
 });
 
 test("keeps entered scenarios explicitly labelled", () => {
@@ -254,7 +249,10 @@ test("keeps entered scenarios explicitly labelled", () => {
   );
 
   assert.equal(result.status, "comparable");
-  assert.equal(result.options.every((item) => item.valueType === "entered" || item.valueType === "estimated"), true);
+  assert.equal(
+    result.options.every((item) => item.valueType === "entered" || item.valueType === "estimated"),
+    true,
+  );
 });
 
 test("handles costs greater than gross value without suppressing a negative net", () => {
@@ -272,7 +270,10 @@ test("handles costs greater than gross value without suppressing a negative net"
   );
 
   assert.equal(result.status, "comparable");
-  assert.equal(result.options.find((item) => item.id === "negative-net")?.netRealisation, "-4000.00");
+  assert.equal(
+    result.options.find((item) => item.id === "negative-net")?.netRealisation,
+    "-4000.00",
+  );
   assert.equal(result.options.find((item) => item.id === "positive-net")?.rank, 1);
 });
 
@@ -308,5 +309,8 @@ test("never treats missing quality-loss cost as zero", () => {
   );
 
   assert.equal(result.options.find((item) => item.id === "unknown-loss")?.status, "incomplete");
-  assert.equal(result.options.find((item) => item.id === "known-loss")?.deductionBreakdown.expectedQualityLoss, "0.00");
+  assert.equal(
+    result.options.find((item) => item.id === "known-loss")?.deductionBreakdown.expectedQualityLoss,
+    "0.00",
+  );
 });
