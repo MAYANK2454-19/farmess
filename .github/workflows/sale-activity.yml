@@ -21,9 +21,5 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: Preview Prettier output for sale activity files
-        run: |
-          npx prettier --write src/features/marketplace/sale-activity.ts src/features/marketplace/sale-activity.test.ts
-          git diff -- src/features/marketplace/sale-activity.ts src/features/marketplace/sale-activity.test.ts
       - name: Sale activity unit tests
         run: node --experimental-strip-types --test src/features/marketplace/sale-activity.test.ts
