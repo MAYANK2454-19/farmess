@@ -31,18 +31,6 @@ const SORT_ORDERS = new Set<MarketRecordSortOrder>([
   "modal-low",
 ]);
 
-const QUERY_KEYS = [
-  "mc",
-  "ms",
-  "md",
-  "mm",
-  "from",
-  "to",
-  "min",
-  "max",
-  "sort",
-] as const;
-
 function cleanText(value: string | null): string {
   return (value ?? "").trim().slice(0, 100);
 }
@@ -96,12 +84,9 @@ export function serializeMarketSearchState(state: MarketSearchState): string {
 
   for (const [key, rawValue] of values) {
     const value = rawValue.trim();
-    if (value) params.set(key, value);
+    if (value && !(key === "sort" && value === "newest")) params.set(key, value);
   }
 
   return params.toString();
 }
 
-export function marketSearchQueryKeys(): readonly string[] {
-  return QUERY_KEYS;
-}
