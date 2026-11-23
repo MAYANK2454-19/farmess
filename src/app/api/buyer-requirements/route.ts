@@ -5,18 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 const REQUIREMENT_SELECT =
   "id,crop,variety,grade,market_area,min_quantity,max_quantity,unit,target_price_paise_per_quintal,delivery_by,status,created_at";
 
-type RequirementDraft = {
-  crop: string;
-  variety?: string | null;
-  grade?: string | null;
-  market_area: string;
-  min_quantity: number;
-  max_quantity?: number | null;
-  unit: "kg" | "quintal" | "tonne";
-  target_price_paise_per_quintal?: number | null;
-  delivery_by?: string | null;
-};
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
