@@ -44,11 +44,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Temporary Prettier format preview
-        run: |
-          npx prettier --write src/lib/market-data/ogd-provider.ts src/lib/market-data/normalize.ts src/lib/market-data/normalize-diagnostics.test.ts src/app/api/market-data/refresh/route.ts
-          git diff -- src/lib/market-data/ogd-provider.ts src/lib/market-data/normalize.ts src/lib/market-data/normalize-diagnostics.test.ts src/app/api/market-data/refresh/route.ts
-
       - name: Prettier
         run: npx prettier --check src/lib/market-data/ogd-pagination.ts src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/ogd-provider.ts src/lib/market-data/normalize.ts src/lib/market-data/types.ts src/lib/market-data/normalize-diagnostics.test.ts src/app/api/market-data/refresh/route.ts docs/OGD_MARKET_DATA_PAGINATION.md docs/OGD_SOURCE_QUALITY_DIAGNOSTICS.md .github/workflows/ogd-market-data-pagination.yml
 
