@@ -29,7 +29,8 @@ export function getMarketRecordFreshnessLabel(
       return {
         status: "future",
         label: "Future-dated",
-        explanation: "This observation is dated in the future and should not be treated as current.",
+        explanation:
+          "This observation is dated in the future and should not be treated as current.",
       };
     case "invalid":
       return {
