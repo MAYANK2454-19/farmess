@@ -24,6 +24,19 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const role = user?.app_metadata?.farmess_role;
+  const roleHome =
+    role === "buyer"
+      ? "/buyer"
+      : role === "operator"
+        ? "/operator"
+        : role === "admin"
+          ? "/workspace-unavailable"
+          : "/farmer";
+  const destination = request.nextUrl.searchParams.has("next")
+    ? nextPath
+    : roleHome;
+
   const displayName = user?.user_metadata?.display_name;
   if (user && typeof displayName === "string" && displayName.trim()) {
     const { error: profileError } = await supabase
@@ -36,5 +49,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(new URL(nextPath, request.url));
+  return NextResponse.redirect(new URL(destination, request.url));
 }
