@@ -57,6 +57,7 @@ export const APP_ROUTE_FILES = [
   { href: "/farmer/activity", file: "src/app/(workspace)/farmer/activity/page.tsx" },
   { href: "/buyer", file: "src/app/(workspace)/buyer/page.tsx" },
   { href: "/buyer/requirements", file: "src/app/(workspace)/buyer/requirements/page.tsx" },
+  { href: "/buyer/matches", file: "src/app/(workspace)/buyer/matches/page.tsx" },
   { href: "/buyer/marketplace", file: "src/app/(workspace)/buyer/marketplace/page.tsx" },
   { href: "/buyer/offers", file: "src/app/(workspace)/buyer/offers/page.tsx" },
   { href: "/operator", file: "src/app/(workspace)/operator/page.tsx" },
