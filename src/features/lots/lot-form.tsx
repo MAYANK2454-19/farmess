@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import styles from "./lot-form.module.css";
@@ -37,9 +38,12 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 export function LotForm() {
+  const router = useRouter();
   const [draft, setDraft] = useState<LotDraftInput>(initialDraft);
   const [errors, setErrors] = useState<LotValidationErrors>({});
   const [review, setReview] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   function update<K extends LotField>(key: K, value: LotDraftInput[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -62,7 +66,34 @@ export function LotForm() {
     if (!result.data) return;
 
     setDraft(result.data);
+    setSaveError("");
     setReview(true);
+  }
+
+  async function handleSaveDraft() {
+    setSaving(true);
+    setSaveError("");
+
+    try {
+      const response = await fetch("/api/produce-lots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(draft),
+      });
+      const result = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setSaveError(result.error ?? "Your lot could not be saved. Please try again.");
+        setSaving(false);
+        return;
+      }
+
+      router.push("/farmer/produce");
+      router.refresh();
+    } catch {
+      setSaveError("A connection error prevented the lot from being saved. Please try again.");
+      setSaving(false);
+    }
   }
 
   if (review) {
@@ -71,8 +102,8 @@ export function LotForm() {
         <div className="module-status">Local review only</div>
         <h2 id="review-lot-heading">Review your produce lot</h2>
         <p>
-          Check the information below before continuing. This preview stays in this browser session;
-          it has not been saved or shared with buyers.
+          Check the information below before saving. New lots are stored as private drafts and are
+          not visible to buyers.
         </p>
         <div className="review-grid">
           <div className="review-item">
@@ -111,18 +142,30 @@ export function LotForm() {
           </div>
         </div>
         <div className={styles.reviewNote} role="note">
-          Your exact address and GPS coordinates are not required here. This is not yet a
-          submission; sharing and server-side saving will only be added with the authenticated lot
-          workflow.
+          Your exact address and GPS coordinates are not required here. A saved draft remains
+          private to your account until a separate publish step is available.
         </div>
+        {saveError ? (
+          <div className={styles.formAlert} role="alert">
+            {saveError}
+          </div>
+        ) : null}
         <div className="form-footer">
-          <p className="form-warning">Preview only — no produce lot has been created.</p>
           <button
             className="button button-secondary"
             type="button"
             onClick={() => setReview(false)}
+            disabled={saving}
           >
             Edit details
+          </button>
+          <button
+            className="button button-primary"
+            type="button"
+            onClick={() => void handleSaveDraft()}
+            disabled={saving}
+          >
+            {saving ? "Saving draft…" : "Save private draft"}
           </button>
         </div>
       </section>
@@ -304,7 +347,7 @@ export function LotForm() {
         </label>
       </div>
       <div className="form-footer">
-        <p className="form-warning">Review only — this form does not save or publish a lot yet.</p>
+        <p className="form-warning">The lot is saved as a private draft after your review.</p>
         <button className="button button-primary" type="submit">
           Review lot details <Icon name="chevron" size={15} />
         </button>
