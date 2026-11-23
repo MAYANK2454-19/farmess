@@ -126,7 +126,11 @@ export function OperatorServiceManager() {
       setAvailableUntil("");
       setMessage("Your service is now active and visible to farmers.");
     } catch (publishError) {
-      setError(publishError instanceof Error ? publishError.message : "The service listing could not be published.");
+      setError(
+        publishError instanceof Error
+          ? publishError.message
+          : "The service listing could not be published.",
+      );
     } finally {
       setSaving(false);
     }
@@ -142,13 +146,22 @@ export function OperatorServiceManager() {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ id, status }),
       });
-      const result = (await response.json()) as { listing?: { id: string; status: string }; error?: string };
+      const result = (await response.json()) as {
+        listing?: { id: string; status: string };
+        error?: string;
+      };
       if (!response.ok || !result.listing) {
         throw new Error(result.error ?? "The listing status could not be changed.");
       }
-      setListings((current) => current.map((item) => item.id === id ? { ...item, status } : item));
+      setListings((current) =>
+        current.map((item) => (item.id === id ? { ...item, status } : item)),
+      );
     } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "The listing status could not be changed.");
+      setError(
+        updateError instanceof Error
+          ? updateError.message
+          : "The listing status could not be changed.",
+      );
     } finally {
       setPendingId(null);
     }
@@ -159,39 +172,82 @@ export function OperatorServiceManager() {
       <section className="panel" aria-labelledby="new-service-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="new-service-heading">Publish a service</h2>
+            <h2 className="panel-title" id="new-service-heading">
+              Publish a service
+            </h2>
             <p className="panel-caption">Only the details entered here are shown to farmers.</p>
           </div>
         </div>
         <form className="operator-service-form" onSubmit={publish}>
           <label className="form-field">
             <span className="form-label">Service title</span>
-            <input className="form-control" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={100} required placeholder="e.g. Tractor transport within district" />
+            <input
+              className="form-control"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              maxLength={100}
+              required
+              placeholder="e.g. Tractor transport within district"
+            />
           </label>
           <label className="form-field">
             <span className="form-label">Service type</span>
-            <select className="form-control" value={serviceType} onChange={(event) => setServiceType(event.target.value)}>
+            <select
+              className="form-control"
+              value={serviceType}
+              onChange={(event) => setServiceType(event.target.value)}
+            >
               <option value="transport">Transport</option>
               <option value="storage">Storage</option>
             </select>
           </label>
           <label className="form-field">
             <span className="form-label">Service area</span>
-            <input className="form-control" value={serviceArea} onChange={(event) => setServiceArea(event.target.value)} maxLength={160} required placeholder="District or service zone" />
+            <input
+              className="form-control"
+              value={serviceArea}
+              onChange={(event) => setServiceArea(event.target.value)}
+              maxLength={160}
+              required
+              placeholder="District or service zone"
+            />
           </label>
           <label className="form-field">
             <span className="form-label">Destination (optional)</span>
-            <input className="form-control" value={destination} onChange={(event) => setDestination(event.target.value)} maxLength={160} placeholder="Destination area" />
+            <input
+              className="form-control"
+              value={destination}
+              onChange={(event) => setDestination(event.target.value)}
+              maxLength={160}
+              placeholder="Destination area"
+            />
           </label>
           <label className="form-field">
             <span className="form-label">Price in ₹ (optional)</span>
-            <input className="form-control" inputMode="decimal" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="Leave blank for quote" />
+            <input
+              className="form-control"
+              inputMode="decimal"
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
+              placeholder="Leave blank for quote"
+            />
           </label>
           <div className="form-field">
             <span className="form-label">Capacity (optional)</span>
             <div className="service-quantity">
-              <input className="form-control" inputMode="decimal" value={capacity} onChange={(event) => setCapacity(event.target.value)} placeholder="Quantity" />
-              <select className="form-control" value={capacityUnit} onChange={(event) => setCapacityUnit(event.target.value)} aria-label="Capacity unit">
+              <input
+                className="form-control"
+                inputMode="decimal"
+                value={capacity}
+                onChange={(event) => setCapacity(event.target.value)}
+                placeholder="Quantity"
+              />
+              <select
+                className="form-control"
+                value={capacityUnit}
+                onChange={(event) => setCapacityUnit(event.target.value)}
+                aria-label="Capacity unit"
+              >
                 <option value="kg">kg</option>
                 <option value="quintal">quintal</option>
                 <option value="tonne">tonne</option>
@@ -200,20 +256,47 @@ export function OperatorServiceManager() {
           </div>
           <label className="form-field">
             <span className="form-label">Available from</span>
-            <input className="form-control" type="date" value={availableFrom} onChange={(event) => setAvailableFrom(event.target.value)} />
+            <input
+              className="form-control"
+              type="date"
+              value={availableFrom}
+              onChange={(event) => setAvailableFrom(event.target.value)}
+            />
           </label>
           <label className="form-field">
             <span className="form-label">Available until</span>
-            <input className="form-control" type="date" value={availableUntil} onChange={(event) => setAvailableUntil(event.target.value)} />
+            <input
+              className="form-control"
+              type="date"
+              value={availableUntil}
+              onChange={(event) => setAvailableUntil(event.target.value)}
+            />
           </label>
           <label className="form-field operator-description">
             <span className="form-label">Service details</span>
-            <textarea className="form-control" rows={3} value={description} onChange={(event) => setDescription(event.target.value)} maxLength={1000} placeholder="Describe vehicles, storage conditions, coverage or other relevant details." />
+            <textarea
+              className="form-control"
+              rows={3}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              maxLength={1000}
+              placeholder="Describe vehicles, storage conditions, coverage or other relevant details."
+            />
           </label>
-          {error ? <p className="form-alert operator-feedback" role="alert">{error}</p> : null}
-          {message ? <p className="form-success operator-feedback" role="status">{message}</p> : null}
+          {error ? (
+            <p className="form-alert operator-feedback" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {message ? (
+            <p className="form-success operator-feedback" role="status">
+              {message}
+            </p>
+          ) : null}
           <div className="buyer-form-footer">
-            <p className="form-warning">Publishing makes this listing visible to signed-in farmers.</p>
+            <p className="form-warning">
+              Publishing makes this listing visible to signed-in farmers.
+            </p>
             <button className="button button-primary" type="submit" disabled={saving}>
               {saving ? "Publishing…" : "Publish service"}
             </button>
@@ -224,16 +307,26 @@ export function OperatorServiceManager() {
       <section className="panel" aria-labelledby="operator-listings-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="operator-listings-heading">Your service listings</h2>
-            <p className="panel-caption">{loading ? "Loading…" : `${listings.length} listing(s)`}</p>
+            <h2 className="panel-title" id="operator-listings-heading">
+              Your service listings
+            </h2>
+            <p className="panel-caption">
+              {loading ? "Loading…" : `${listings.length} listing(s)`}
+            </p>
           </div>
         </div>
         {loading ? (
-          <div className="empty-state"><p className="empty-copy" role="status">Loading listings…</p></div>
+          <div className="empty-state">
+            <p className="empty-copy" role="status">
+              Loading listings…
+            </p>
+          </div>
         ) : listings.length === 0 ? (
           <div className="empty-state">
             <h3 className="empty-title">No services published</h3>
-            <p className="empty-copy">Add a transport or storage service above to make it available to farmers.</p>
+            <p className="empty-copy">
+              Add a transport or storage service above to make it available to farmers.
+            </p>
           </div>
         ) : (
           <ul className="operator-listing-list">
@@ -241,17 +334,39 @@ export function OperatorServiceManager() {
               <li className="operator-listing-row" key={listing.id}>
                 <div>
                   <strong>{listing.title}</strong>
-                  <span>{listing.service_type} · {listing.service_area}{listing.destination_area ? ` → ${listing.destination_area}` : ""}</span>
+                  <span>
+                    {listing.service_type} · {listing.service_area}
+                    {listing.destination_area ? ` → ${listing.destination_area}` : ""}
+                  </span>
                   <time dateTime={listing.created_at}>{money(listing.price_paise)}</time>
                 </div>
                 <div className="operator-listing-actions">
-                  <span className={"produce-status produce-status-" + listing.status}>{listing.status}</span>
+                  <span className={"produce-status produce-status-" + listing.status}>
+                    {listing.status}
+                  </span>
                   {listing.status !== "closed" ? (
                     <>
-                      <button className="text-link" type="button" disabled={pendingId === listing.id} onClick={() => void updateStatus(listing.id, listing.status === "active" ? "paused" : "active")}>
+                      <button
+                        className="text-link"
+                        type="button"
+                        disabled={pendingId === listing.id}
+                        onClick={() =>
+                          void updateStatus(
+                            listing.id,
+                            listing.status === "active" ? "paused" : "active",
+                          )
+                        }
+                      >
                         {listing.status === "active" ? "Pause" : "Activate"}
                       </button>
-                      <button className="text-link" type="button" disabled={pendingId === listing.id} onClick={() => void updateStatus(listing.id, "closed")}>Close</button>
+                      <button
+                        className="text-link"
+                        type="button"
+                        disabled={pendingId === listing.id}
+                        onClick={() => void updateStatus(listing.id, "closed")}
+                      >
+                        Close
+                      </button>
                     </>
                   ) : null}
                 </div>
