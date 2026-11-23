@@ -31,7 +31,10 @@ export async function GET() {
     return NextResponse.json({ error: "Sign in to manage your services." }, { status: 401 });
   }
   if (session.role !== "operator") {
-    return NextResponse.json({ error: "Only service-provider accounts can manage listings." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only service-provider accounts can manage listings." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -62,7 +65,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sign in before publishing a service." }, { status: 401 });
   }
   if (session.role !== "operator") {
-    return NextResponse.json({ error: "Only service-provider accounts can publish listings." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only service-provider accounts can publish listings." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -89,11 +95,17 @@ export async function POST(request: NextRequest) {
     !isRecord(body) ||
     Object.keys(body).some((key) => !allowed.includes(key as (typeof allowed)[number]))
   ) {
-    return NextResponse.json({ error: "The listing contains unsupported fields." }, { status: 400 });
+    return NextResponse.json(
+      { error: "The listing contains unsupported fields." },
+      { status: 400 },
+    );
   }
 
   if (typeof body.title !== "string" || !body.title.trim() || body.title.trim().length > 100) {
-    return NextResponse.json({ error: "Enter a service title using 1 to 100 characters." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter a service title using 1 to 100 characters." },
+      { status: 400 },
+    );
   }
   if (body.service_type !== "transport" && body.service_type !== "storage") {
     return NextResponse.json({ error: "Select transport or storage." }, { status: 400 });
@@ -103,13 +115,19 @@ export async function POST(request: NextRequest) {
     !body.service_area.trim() ||
     body.service_area.trim().length > 160
   ) {
-    return NextResponse.json({ error: "Enter a service area using 1 to 160 characters." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter a service area using 1 to 160 characters." },
+      { status: 400 },
+    );
   }
 
   const destination = optionalText(body, "destination_area", 160);
   const description = optionalText(body, "description", 1000);
   if (!destination.valid || !description.valid) {
-    return NextResponse.json({ error: "Destination or description is too long or invalid." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Destination or description is too long or invalid." },
+      { status: 400 },
+    );
   }
 
   const price =
@@ -117,7 +135,10 @@ export async function POST(request: NextRequest) {
       ? null
       : body.price_paise;
   if (price !== null && (typeof price !== "number" || !Number.isSafeInteger(price) || price <= 0)) {
-    return NextResponse.json({ error: "Price must be a positive whole number of paise." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Price must be a positive whole number of paise." },
+      { status: 400 },
+    );
   }
 
   const capacity =
@@ -133,7 +154,10 @@ export async function POST(request: NextRequest) {
       capacity <= 0 ||
       capacity > Number.MAX_SAFE_INTEGER)
   ) {
-    return NextResponse.json({ error: "Capacity must be a finite positive quantity." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Capacity must be a finite positive quantity." },
+      { status: 400 },
+    );
   }
 
   const capacityUnit =
@@ -147,25 +171,42 @@ export async function POST(request: NextRequest) {
       capacityUnit !== "quintal" &&
       capacityUnit !== "tonne")
   ) {
-    return NextResponse.json({ error: "Select both a capacity and its unit, or leave both blank." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Select both a capacity and its unit, or leave both blank." },
+      { status: 400 },
+    );
   }
 
   let availableFrom: string | null = null;
   let availableUntil: string | null = null;
-  if (body.available_from !== undefined && body.available_from !== null && body.available_from !== "") {
+  if (
+    body.available_from !== undefined &&
+    body.available_from !== null &&
+    body.available_from !== ""
+  ) {
     if (typeof body.available_from !== "string" || !validDate(body.available_from)) {
-      return NextResponse.json({ error: "Enter a valid availability start date." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Enter a valid availability start date." },
+        { status: 400 },
+      );
     }
     availableFrom = body.available_from;
   }
-  if (body.available_until !== undefined && body.available_until !== null && body.available_until !== "") {
+  if (
+    body.available_until !== undefined &&
+    body.available_until !== null &&
+    body.available_until !== ""
+  ) {
     if (typeof body.available_until !== "string" || !validDate(body.available_until)) {
       return NextResponse.json({ error: "Enter a valid availability end date." }, { status: 400 });
     }
     availableUntil = body.available_until;
   }
   if (availableFrom && availableUntil && availableUntil < availableFrom) {
-    return NextResponse.json({ error: "Availability end date must not precede its start date." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Availability end date must not precede its start date." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
@@ -189,7 +230,10 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Your service listing could not be published." }, { status: 409 });
+    return NextResponse.json(
+      { error: "Your service listing could not be published." },
+      { status: 409 },
+    );
   }
 
   return NextResponse.json(
@@ -205,7 +249,10 @@ export async function PATCH(request: NextRequest) {
 
   const session = await getFarmessSession();
   if (!session || session.role !== "operator") {
-    return NextResponse.json({ error: "Sign in with a service-provider account to update a listing." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Sign in with a service-provider account to update a listing." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;

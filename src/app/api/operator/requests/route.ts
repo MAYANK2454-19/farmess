@@ -15,7 +15,10 @@ export async function GET() {
     return NextResponse.json({ error: "Sign in to view provider requests." }, { status: 401 });
   }
   if (session.role !== "operator") {
-    return NextResponse.json({ error: "Only service-provider accounts can view incoming requests." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only service-provider accounts can view incoming requests." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -27,7 +30,10 @@ export async function GET() {
     .limit(100);
 
   if (error) {
-    return NextResponse.json({ error: "Unable to load incoming service requests." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to load incoming service requests." },
+      { status: 500 },
+    );
   }
 
   const listingIds = [...new Set((requests ?? []).map((request) => request.listing_id))];
@@ -40,7 +46,10 @@ export async function GET() {
     : { data: [], error: null };
 
   if (listingError) {
-    return NextResponse.json({ error: "Unable to load the related service listings." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to load the related service listings." },
+      { status: 500 },
+    );
   }
 
   const listingById = new Map((listings ?? []).map((listing) => [listing.id, listing]));
@@ -62,7 +71,10 @@ export async function PATCH(request: NextRequest) {
 
   const session = await getFarmessSession();
   if (!session || session.role !== "operator") {
-    return NextResponse.json({ error: "Sign in with a service-provider account to respond." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Sign in with a service-provider account to respond." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -79,7 +91,10 @@ export async function PATCH(request: NextRequest) {
     !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id) ||
     (body.decision !== "accepted" && body.decision !== "declined")
   ) {
-    return NextResponse.json({ error: "Choose a valid request and accept/decline decision." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose a valid request and accept/decline decision." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
