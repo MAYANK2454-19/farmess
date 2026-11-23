@@ -61,9 +61,7 @@ export async function POST(request: NextRequest) {
   const listingId = record.service_listing_id;
   if (
     typeof listingId !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      listingId,
-    )
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(listingId)
   ) {
     return NextResponse.json({ error: "Select a valid service listing." }, { status: 400 });
   }

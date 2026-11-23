@@ -162,7 +162,10 @@ export async function POST(request: NextRequest) {
 
     if (auditError) {
       return NextResponse.json(
-        { error: "Conflicting source rows were detected, but the audit record could not be written." },
+        {
+          error:
+            "Conflicting source rows were detected, but the audit record could not be written.",
+        },
         { status: 500 },
       );
     }
@@ -175,7 +178,8 @@ export async function POST(request: NextRequest) {
         recordsRejected: source.sourceQuality.rejected,
         sourceQuality: source.sourceQuality,
         recordsUpserted: 0,
-        message: "The source response repeated an observation key with different values. No observations were imported.",
+        message:
+          "The source response repeated an observation key with different values. No observations were imported.",
       },
       { status: 422 },
     );
@@ -198,7 +202,9 @@ export async function POST(request: NextRequest) {
     records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
-      : ("message" in source ? source.message.slice(0, 500) : null),
+      : "message" in source
+        ? source.message.slice(0, 500)
+        : null,
   });
 
   if (upsertError || auditError) {

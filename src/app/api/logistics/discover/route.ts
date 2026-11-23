@@ -67,9 +67,7 @@ export async function GET(request: NextRequest) {
 
   const serviceTypeValue = params.get("serviceType");
   const serviceType: "transport" | "storage" | null =
-    serviceTypeValue === "transport" || serviceTypeValue === "storage"
-      ? serviceTypeValue
-      : null;
+    serviceTypeValue === "transport" || serviceTypeValue === "storage" ? serviceTypeValue : null;
   if (serviceTypeValue !== null && serviceType === null) {
     return NextResponse.json({ error: "Select transport or storage." }, { status: 400 });
   }
@@ -89,9 +87,7 @@ export async function GET(request: NextRequest) {
 
   const unitValue = params.get("unit");
   const unit: "kg" | "quintal" | "tonne" | null =
-    unitValue === "kg" || unitValue === "quintal" || unitValue === "tonne"
-      ? unitValue
-      : null;
+    unitValue === "kg" || unitValue === "quintal" || unitValue === "tonne" ? unitValue : null;
   if (unitValue !== null && unit === null) {
     return NextResponse.json(
       { error: "Choose kg, quintal or tonne for the requested quantity." },

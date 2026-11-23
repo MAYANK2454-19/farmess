@@ -52,9 +52,7 @@ test("reports received, accepted and rejected source rows", () => {
 test("counts optional missing price fields as valid when another price exists", () => {
   const result = normalizeOgdResponseWithDiagnostics(
     {
-      records: [
-        { ...validRecord, min_price: "", max_price: "", modal_price: "1500" },
-      ],
+      records: [{ ...validRecord, min_price: "", max_price: "", modal_price: "1500" }],
     },
     retrievedAt,
   );

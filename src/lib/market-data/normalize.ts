@@ -72,7 +72,9 @@ function parseObservationDate(value: unknown): string | null {
 function normalizeRecord(
   value: unknown,
   retrievedAt: string,
-): { record: MarketPriceRecord; reason?: never } | { record?: never; reason: MarketSourceQualityRejectionReason } {
+):
+  | { record: MarketPriceRecord; reason?: never }
+  | { record?: never; reason: MarketSourceQualityRejectionReason } {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return { reason: "invalid_record" };
   }

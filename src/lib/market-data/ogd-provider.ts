@@ -67,7 +67,13 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
     }
 
     if (records.length === 0) {
-      return { status: "no-data", records: [], retrievedAt, sourceName: SOURCE_NAME, sourceQuality };
+      return {
+        status: "no-data",
+        records: [],
+        retrievedAt,
+        sourceName: SOURCE_NAME,
+        sourceQuality,
+      };
     }
 
     const latestDate = records.reduce(
