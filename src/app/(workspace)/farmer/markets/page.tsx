@@ -64,6 +64,7 @@ export default function MarketsPage() {
   const [recordFilterError, setRecordFilterError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareStatus, setShareStatus] = useState("");
 
   const loadPrices = useCallback(async (nextFilters: Filters) => {
     setLoading(true);
@@ -169,6 +170,16 @@ export default function MarketsPage() {
   const filteredRecords = filterMarketPriceRecords(records, appliedRecordFilters);
   const sortedRecords = sortMarketPriceRecords(filteredRecords, sortOrder);
 
+  async function handleCopyShareLink() {
+    setShareStatus("Copying share link…");
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareStatus("Link copied. Share it with anyone who needs these filters.");
+    } catch {
+      setShareStatus("Could not copy automatically. Copy the URL from your browser address bar.");
+    }
+  }
+
   function handleExport() {
     if (sortedRecords.length === 0) return;
 
@@ -197,6 +208,9 @@ export default function MarketsPage() {
           </p>
         </div>
         <div className={styles.headingActions}>
+          <button className="button button-secondary" type="button" onClick={handleCopyShareLink}>
+            Copy share link
+          </button>
           <button
             className="button button-secondary"
             type="button"
@@ -222,6 +236,11 @@ export default function MarketsPage() {
             {loading ? "Refreshing…" : "Refresh data"}
           </button>
         </div>
+        {shareStatus && (
+          <p className={styles.shareStatus} role="status" aria-live="polite">
+            {shareStatus}
+          </p>
+        )}
       </div>
 
       <div className="preview-banner" role="note">
