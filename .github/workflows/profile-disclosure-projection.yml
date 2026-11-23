@@ -1,0 +1,32 @@
+name: Farmer profile projection tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/profile/profile-projection.ts"
+      - "src/features/profile/profile-projection.test.ts"
+      - ".github/workflows/profile-disclosure-projection.yml"
+  push:
+    branches:
+      - "feat/profile-disclosure-projection"
+
+permissions:
+  contents: read
+
+jobs:
+  profile-projection:
+    name: Farmer profile projection contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run profile projection tests
+        run: node --experimental-strip-types --test src/features/profile/profile-projection.test.ts
