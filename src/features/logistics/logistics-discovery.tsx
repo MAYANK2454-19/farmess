@@ -2,11 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
-import {
-  rankLogisticsCandidates,
-  type LogisticsRecommendation,
-  type NearbyServiceCandidate,
-} from "@/features/logistics/recommendations";
+import type { LogisticsRecommendation } from "@/features/logistics/recommendations";
 import { LogisticsMap } from "@/features/logistics/logistics-map";
 
 type Origin = { latitude: number; longitude: number };
@@ -418,9 +414,8 @@ export function LogisticsDiscovery() {
     }
   }
 
-  function onRequestSent(request: ServiceRequest) {
+  function onRequestSent(_request: ServiceRequest) {
     setRequestMessage("Your service request was sent. The provider still needs to confirm availability.");
-    setRecommendations((current) => current);
   }
 
   return (
