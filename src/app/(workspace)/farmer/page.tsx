@@ -29,8 +29,8 @@ export default function FarmerOverviewPage() {
         <div className="simple-empty-state">
           <h3>No produce added</h3>
           <p>
-            Start with one lot. Add the crop, quantity, grade and the date you need to sell by.
-            You can review the details before submitting.
+            Start with one lot. Add the crop, quantity, grade and the date you need to sell by. You
+            can review the details before submitting.
           </p>
           <Link href="/farmer/produce/new" className="text-link">
             Add your first lot
@@ -62,17 +62,15 @@ export default function FarmerOverviewPage() {
           </Link>
           <Link href="/farmer/produce" className="quick-link">
             <span className="quick-link-title">Manage produce</span>
-            <span className="quick-link-copy">
-              Review the produce details you have entered.
-            </span>
+            <span className="quick-link-copy">Review the produce details you have entered.</span>
             <span className="quick-link-action">View produce</span>
           </Link>
         </div>
       </section>
 
       <p className="preview-footnote">
-        Preview build: sign-in and saved records are not connected. Details entered in forms are
-        not stored in an account yet.
+        Preview build: sign-in and saved records are not connected. Details entered in forms are not
+        stored in an account yet.
       </p>
     </main>
   );
