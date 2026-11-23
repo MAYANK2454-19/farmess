@@ -1,0 +1,31 @@
+name: Net-return comparison tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/comparison/**"
+      - ".github/workflows/net-return-comparison.yml"
+  push:
+    branches:
+      - "feat/net-return-comparison-contract"
+
+permissions:
+  contents: read
+
+jobs:
+  comparison-contract:
+    name: Net-return comparison contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Run comparison contract tests
+        run: node --experimental-strip-types --test src/features/comparison/net-realisation-comparison.test.ts
