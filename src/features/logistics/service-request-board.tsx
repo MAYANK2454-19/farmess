@@ -16,6 +16,11 @@ type Listing = Pick<
   | "capacity_unit"
   | "available_from"
   | "available_until"
+  | "rate_basis"
+  | "service_radius_km"
+  | "crop_suitability"
+  | "cold_chain_available"
+  | "verification_state"
 >;
 
 type ServiceRequest = Pick<
@@ -45,13 +50,14 @@ function formatDate(value: string | null) {
       }).format(date);
 }
 
-function formatPrice(value: number | null) {
-  if (value === null) return "Ask provider";
-  return new Intl.NumberFormat("en-IN", {
+function formatPrice(value: number | null, basis: string) {
+  if (value === null) return "Ask provider for a quote";
+  const amount = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 2,
   }).format(value / 100);
+  return `${amount} · ${basis.replaceAll("_", " ")}`;
 }
 
 function ListingCard({
@@ -131,7 +137,7 @@ function ListingCard({
           </p>
           <h3>{listing.title}</h3>
         </div>
-        <strong className="service-price">{formatPrice(listing.price_paise)}</strong>
+        <strong className="service-price">{formatPrice(listing.price_paise, listing.rate_basis)}</strong>
       </div>
       <p className="service-area">
         {listing.service_area}
@@ -144,7 +150,15 @@ function ListingCard({
         {listing.capacity_quantity !== null
           ? ` · Capacity ${listing.capacity_quantity} ${listing.capacity_unit ?? ""}`
           : ""}
+        {listing.service_radius_km ? ` · Service radius ${listing.service_radius_km} km` : ""}
       </p>
+      <div className="service-listing-tags">
+        <span>{listing.verification_state.replaceAll("_", " ")}</span>
+        {listing.cold_chain_available ? <span>Cold-chain service</span> : null}
+        {listing.crop_suitability.length
+          ? <span>Suitable for {listing.crop_suitability.join(", ")}</span>
+          : <span>Crop suitability not specified</span>}
+      </div>
 
       {sent ? (
         <p className="form-success service-sent" role="status">
