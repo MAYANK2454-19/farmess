@@ -131,12 +131,17 @@ def build_pipeline() -> Pipeline:
             ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
         ]
     )
+    numeric_indices = list(range(len(NUMERIC_FEATURES)))
+    categorical_indices = list(
+        range(len(NUMERIC_FEATURES), len(NUMERIC_FEATURES) + len(CATEGORICAL_FEATURES))
+    )
     features = ColumnTransformer(
         transformers=[
-            ("numeric", numeric, NUMERIC_FEATURES),
-            ("categorical", categorical, CATEGORICAL_FEATURES),
+            ("numeric", numeric, numeric_indices),
+            ("categorical", categorical, categorical_indices),
         ],
         remainder="drop",
+        sparse_threshold=0.0,
     )
     classifier = HistGradientBoostingClassifier(
         learning_rate=0.05,
@@ -213,13 +218,14 @@ def main() -> int:
         ):
             manifest["reason"] = "Chronological split does not contain enough examples of both rating classes."
         else:
-            import pandas as pd
-
-            x_train = pd.DataFrame(
-                [{column: row[column] for column in NUMERIC_FEATURES + CATEGORICAL_FEATURES} for row in train_rows]
+            feature_columns = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+            x_train = np.asarray(
+                [[row[column] for column in feature_columns] for row in train_rows],
+                dtype=object,
             )
-            x_test = pd.DataFrame(
-                [{column: row[column] for column in NUMERIC_FEATURES + CATEGORICAL_FEATURES} for row in test_rows]
+            x_test = np.asarray(
+                [[row[column] for column in feature_columns] for row in test_rows],
+                dtype=object,
             )
             y_train = np.asarray([row["label"] for row in train_rows], dtype=np.int8)
             y_test = np.asarray([row["label"] for row in test_rows], dtype=np.int8)
