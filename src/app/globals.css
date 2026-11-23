@@ -1625,3 +1625,89 @@ h1 {
 .overview-lot-row .produce-status {
   flex: 0 0 auto;
 }
+
+
+.profile-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.profile-card-heading h2 {
+  margin: 0 0 5px;
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.profile-card-heading .page-subtitle {
+  font-size: 11px;
+}
+
+.privacy-checkbox {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 2px 0 0;
+  accent-color: var(--brand-secondary);
+  cursor: pointer;
+}
+
+.privacy-checkbox:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.form-alert,
+.form-success {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.form-alert {
+  color: #8b342d;
+  background: #fff4f1;
+  border-left: 3px solid #c45d4e;
+}
+
+.form-success {
+  color: #24583a;
+  background: #eff6ee;
+  border-left: 3px solid #2f7447;
+}
+
+.profile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.profile-footer .form-warning {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .profile-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-footer {
+    align-items: stretch;
+    flex-direction: column;
+    padding-inline: 0;
+  }
+
+  .profile-footer .button {
+    width: 100%;
+  }
+}
