@@ -14,7 +14,7 @@ export default function CreateProduceLotPage() {
       </div>
       <LotForm />
       <p className="preview-footnote">
-        This preview checks the details in your browser only. It does not save or publish a lot.
+        Saved lots are private drafts. They are not published or visible to buyers from this form.
       </p>
     </main>
   );
