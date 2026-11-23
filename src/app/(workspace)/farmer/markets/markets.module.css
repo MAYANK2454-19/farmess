@@ -19,7 +19,44 @@
   padding: 20px;
 }
 
-.advancedFilters {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 16px;\n  padding: 0 20px 20px;\n}\n\n.advancedFiltersHeading {\n  grid-column: 1 / -1;\n}\n\n.advancedFiltersHeading h3 {\n  margin: 0 0 4px;\n  color: var(--brand-primary);\n  font-size: 13px;\n}\n\n.advancedFiltersHeading p {\n  margin: 0;\n  color: var(--muted);\n  font-size: 11px;\n}\n\n.advancedFilterActions {\n  display: flex;\n  grid-column: 1 / -1;\n  flex-wrap: wrap;\n  gap: 10px;\n}\n\n.filterError {\n  grid-column: 1 / -1;\n  margin: 0;\n  color: #a33c3c;\n  font-size: 11px;\n}\n\n.filterActions {
+.advancedFilters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0 20px 20px;
+}
+
+.advancedFiltersHeading {
+  grid-column: 1 / -1;
+}
+
+.advancedFiltersHeading h3 {
+  margin: 0 0 4px;
+  color: var(--brand-primary);
+  font-size: 13px;
+}
+
+.advancedFiltersHeading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.advancedFilterActions {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterError {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #a33c3c;
+  font-size: 11px;
+}
+
+.filterActions {
   display: flex;
   grid-column: 1 / -1;
   gap: 10px;
