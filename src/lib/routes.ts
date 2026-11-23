@@ -11,6 +11,7 @@ export const FARMER_NAVIGATION = [
 export const BUYER_NAVIGATION = [
   { label: "Overview", href: "/buyer", icon: "overview" },
   { label: "My Requirements", href: "/buyer/requirements", icon: "produce" },
+  { label: "Matches", href: "/buyer/matches", icon: "compare" },
   { label: "Marketplace", href: "/buyer/marketplace", icon: "markets" },
   { label: "My Offers", href: "/buyer/offers", icon: "offers" },
 ] as const;
