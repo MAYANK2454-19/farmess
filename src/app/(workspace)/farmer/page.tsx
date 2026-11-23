@@ -54,7 +54,9 @@ export default async function FarmerOverviewPage() {
             <div>
               <p className="eyebrow">Your inventory</p>
               <h2 id="produce-heading">Produce lots</h2>
-              <p>{error ? "Your records could not be loaded." : `${lots?.length ?? 0} recent lot(s)`}</p>
+              <p>
+                {error ? "Your records could not be loaded." : `${lots?.length ?? 0} recent lot(s)`}
+              </p>
             </div>
             <Link href="/farmer/produce" className="text-link">
               View all lots
@@ -63,10 +65,14 @@ export default async function FarmerOverviewPage() {
 
           {error ? (
             <div className="overview-empty" role="alert">
-              <span className="overview-empty-number" aria-hidden="true">!</span>
+              <span className="overview-empty-number" aria-hidden="true">
+                !
+              </span>
               <div>
                 <h3>Unable to load your produce</h3>
-                <p>Your saved records have not been changed. Refresh the page or try again shortly.</p>
+                <p>
+                  Your saved records have not been changed. Refresh the page or try again shortly.
+                </p>
               </div>
             </div>
           ) : lots && lots.length > 0 ? (
@@ -75,7 +81,9 @@ export default async function FarmerOverviewPage() {
                 <li className="overview-lot-row" key={lot.id}>
                   <div>
                     <strong>{lot.crop}</strong>
-                    <span>{formatQuantity(lot.quantity)} {lot.unit} · Sell by {formatDate(lot.sell_by)}</span>
+                    <span>
+                      {formatQuantity(lot.quantity)} {lot.unit} · Sell by {formatDate(lot.sell_by)}
+                    </span>
                   </div>
                   <span className={"produce-status produce-status-" + lot.status}>
                     {lot.status.charAt(0).toUpperCase() + lot.status.slice(1)}
@@ -85,12 +93,14 @@ export default async function FarmerOverviewPage() {
             </ul>
           ) : (
             <div className="overview-empty">
-              <span className="overview-empty-number" aria-hidden="true">01</span>
+              <span className="overview-empty-number" aria-hidden="true">
+                01
+              </span>
               <div>
                 <h3>No produce recorded yet</h3>
                 <p>
-                  Start with one lot. Add the crop, quantity, grade, collection area and the date you
-                  need to sell by. You can review the details before submitting.
+                  Start with one lot. Add the crop, quantity, grade, collection area and the date
+                  you need to sell by. You can review the details before submitting.
                 </p>
                 <Link href="/farmer/produce/new">
                   Record your first lot <span aria-hidden="true">→</span>

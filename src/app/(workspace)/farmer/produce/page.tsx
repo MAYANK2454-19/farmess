@@ -55,9 +55,13 @@ export default async function MyProducePage() {
       <section className="panel" aria-labelledby="lots-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="lots-heading">Your produce lots</h2>
+            <h2 className="panel-title" id="lots-heading">
+              Your produce lots
+            </h2>
             <p className="panel-caption">
-              {error ? "Your saved records could not be loaded." : `${lots?.length ?? 0} saved lot(s)`}
+              {error
+                ? "Your saved records could not be loaded."
+                : `${lots?.length ?? 0} saved lot(s)`}
             </p>
           </div>
         </div>
@@ -87,10 +91,15 @@ export default async function MyProducePage() {
                   <tr key={lot.id}>
                     <td>
                       <strong>{lot.crop}</strong>
-                      <span>{[lot.variety, lot.grade].filter(Boolean).join(" · ") || "No variety or grade recorded"}</span>
+                      <span>
+                        {[lot.variety, lot.grade].filter(Boolean).join(" · ") ||
+                          "No variety or grade recorded"}
+                      </span>
                     </td>
                     <td>
-                      <strong>{formatQuantity(lot.quantity)} {lot.unit}</strong>
+                      <strong>
+                        {formatQuantity(lot.quantity)} {lot.unit}
+                      </strong>
                     </td>
                     <td>{lot.approximate_area}</td>
                     <td>{formatDate(lot.available_from)}</td>

@@ -44,7 +44,9 @@ export function ProfileForm() {
         if (active) setProfile(result.profile);
       } catch (loadError) {
         if (active) {
-          setError(loadError instanceof Error ? loadError.message : "Your profile could not be loaded.");
+          setError(
+            loadError instanceof Error ? loadError.message : "Your profile could not be loaded.",
+          );
         }
       } finally {
         if (active) setLoading(false);
@@ -106,7 +108,9 @@ export function ProfileForm() {
         </div>
 
         {loading ? (
-          <p className="form-help" role="status">Loading account details…</p>
+          <p className="form-help" role="status">
+            Loading account details…
+          </p>
         ) : (
           <>
             <div className="profile-form-grid">
@@ -157,7 +161,9 @@ export function ProfileForm() {
       <section className="panel privacy-card" aria-labelledby="privacy-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="privacy-heading">Privacy and sharing</h2>
+            <h2 className="panel-title" id="privacy-heading">
+              Privacy and sharing
+            </h2>
             <p className="panel-caption">
               You control whether these details may be shared in a relevant Farmess workflow.
             </p>
@@ -168,7 +174,10 @@ export function ProfileForm() {
         <label className="privacy-row">
           <span>
             <strong>Share my approximate market area</strong>
-            <p>May be shown to a matched buyer or service provider where an active workflow needs an area.</p>
+            <p>
+              May be shown to a matched buyer or service provider where an active workflow needs an
+              area.
+            </p>
           </span>
           <input
             className="privacy-checkbox"
@@ -182,7 +191,10 @@ export function ProfileForm() {
         <label className="privacy-row">
           <span>
             <strong>Allow exact location disclosure</strong>
-            <p>Only for a specific, authorised workflow. Farmess does not ask for GPS coordinates on the produce form.</p>
+            <p>
+              Only for a specific, authorised workflow. Farmess does not ask for GPS coordinates on
+              the produce form.
+            </p>
           </span>
           <input
             className="privacy-checkbox"
@@ -196,7 +208,9 @@ export function ProfileForm() {
         <label className="privacy-row">
           <span>
             <strong>Allow my phone number to be shared with a buyer</strong>
-            <p>Your number stays private unless you enable this and a buyer contact workflow applies.</p>
+            <p>
+              Your number stays private unless you enable this and a buyer contact workflow applies.
+            </p>
           </span>
           <input
             className="privacy-checkbox"
@@ -210,7 +224,9 @@ export function ProfileForm() {
         <label className="privacy-row">
           <span>
             <strong>Allow my phone number to be shared with a service provider</strong>
-            <p>Used only when you request a transport or storage service that needs provider contact.</p>
+            <p>
+              Used only when you request a transport or storage service that needs provider contact.
+            </p>
           </span>
           <input
             className="privacy-checkbox"
@@ -222,8 +238,16 @@ export function ProfileForm() {
         </label>
 
         <div className="profile-footer">
-          {error ? <p className="form-alert" role="alert">{error}</p> : null}
-          {message ? <p className="form-success" role="status">{message}</p> : null}
+          {error ? (
+            <p className="form-alert" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {message ? (
+            <p className="form-success" role="status">
+              {message}
+            </p>
+          ) : null}
           <button
             className="button button-primary"
             type="button"

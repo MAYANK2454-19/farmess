@@ -8,7 +8,8 @@ export default function ProfilePage() {
           <p className="eyebrow">Account</p>
           <h1>Profile and privacy</h1>
           <p className="page-subtitle">
-            Manage the details connected to your account and choose what may be shared in a relevant workflow.
+            Manage the details connected to your account and choose what may be shared in a relevant
+            workflow.
           </p>
         </div>
       </div>

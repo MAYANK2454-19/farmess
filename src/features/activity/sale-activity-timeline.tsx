@@ -37,7 +37,9 @@ export function SaleActivityTimeline() {
         if (active) setItems(result.activity ?? []);
       } catch (loadError) {
         if (active) {
-          setError(loadError instanceof Error ? loadError.message : "Sale activity could not be loaded.");
+          setError(
+            loadError instanceof Error ? loadError.message : "Sale activity could not be loaded.",
+          );
         }
       } finally {
         if (active) setLoading(false);
@@ -54,16 +56,26 @@ export function SaleActivityTimeline() {
     <section className="panel activity-panel" aria-labelledby="activity-heading">
       <div className="panel-header">
         <div>
-          <h2 className="panel-title" id="activity-heading">Sale timeline</h2>
+          <h2 className="panel-title" id="activity-heading">
+            Sale timeline
+          </h2>
           <p className="panel-caption">
             {loading ? "Loading…" : `${items.length} update(s) on sales you participate in`}
           </p>
         </div>
       </div>
 
-      {error ? <p className="form-alert notification-alert" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-alert notification-alert" role="alert">
+          {error}
+        </p>
+      ) : null}
       {loading ? (
-        <div className="empty-state"><p className="empty-copy" role="status">Loading sale activity…</p></div>
+        <div className="empty-state">
+          <p className="empty-copy" role="status">
+            Loading sale activity…
+          </p>
+        </div>
       ) : items.length === 0 ? (
         <div className="empty-state">
           <h3 className="empty-title">No sale activity yet</h3>

@@ -31,7 +31,11 @@ export function SignOutButton() {
       <button className="topbar-action" type="button" onClick={handleSignOut} disabled={pending}>
         {pending ? "Signing out…" : "Sign out"}
       </button>
-      {error ? <span className="sign-out-error" role="alert">{error}</span> : null}
+      {error ? (
+        <span className="sign-out-error" role="alert">
+          {error}
+        </span>
+      ) : null}
     </div>
   );
 }

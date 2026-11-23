@@ -66,15 +66,28 @@ export async function PATCH(request: NextRequest) {
   }
 
   const keys = Object.keys(body);
-  if (keys.length === 0 || keys.some((key) => !PROFILE_FIELDS.includes(key as (typeof PROFILE_FIELDS)[number]))) {
-    return NextResponse.json({ error: "The update contains unsupported profile fields." }, { status: 400 });
+  if (
+    keys.length === 0 ||
+    keys.some((key) => !PROFILE_FIELDS.includes(key as (typeof PROFILE_FIELDS)[number]))
+  ) {
+    return NextResponse.json(
+      { error: "The update contains unsupported profile fields." },
+      { status: 400 },
+    );
   }
 
   const update: ProfileUpdate = {};
 
   if ("display_name" in body) {
-    if (typeof body.display_name !== "string" || !body.display_name.trim() || body.display_name.trim().length > 80) {
-      return NextResponse.json({ error: "Enter a name using 1 to 80 characters." }, { status: 400 });
+    if (
+      typeof body.display_name !== "string" ||
+      !body.display_name.trim() ||
+      body.display_name.trim().length > 80
+    ) {
+      return NextResponse.json(
+        { error: "Enter a name using 1 to 80 characters." },
+        { status: 400 },
+      );
     }
     update.display_name = body.display_name.trim();
   }
@@ -85,7 +98,10 @@ export async function PATCH(request: NextRequest) {
     }
     const phone = typeof body.phone_number === "string" ? body.phone_number.trim() : "";
     if (phone && !/^[+0-9()\s-]{7,24}$/.test(phone)) {
-      return NextResponse.json({ error: "Enter a phone number using digits and common separators." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Enter a phone number using digits and common separators." },
+        { status: 400 },
+      );
     }
     update.phone_number = phone || null;
   }
@@ -96,7 +112,10 @@ export async function PATCH(request: NextRequest) {
     }
     const area = typeof body.market_area === "string" ? body.market_area.trim() : "";
     if (area.length > 120) {
-      return NextResponse.json({ error: "Use 120 characters or fewer for the market area." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Use 120 characters or fewer for the market area." },
+        { status: 400 },
+      );
     }
     update.market_area = area || null;
   }
@@ -109,7 +128,10 @@ export async function PATCH(request: NextRequest) {
   ] as const) {
     if (field in body) {
       if (typeof body[field] !== "boolean") {
-        return NextResponse.json({ error: "Privacy preferences must be true or false." }, { status: 400 });
+        return NextResponse.json(
+          { error: "Privacy preferences must be true or false." },
+          { status: 400 },
+        );
       }
       update[field] = body[field];
     }
@@ -126,7 +148,10 @@ export async function PATCH(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Your profile could not be saved. Please try again." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Your profile could not be saved. Please try again." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json(

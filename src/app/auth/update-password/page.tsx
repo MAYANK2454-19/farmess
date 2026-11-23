@@ -73,8 +73,16 @@ export default function UpdatePasswordPage() {
                 onChange={(event) => setConfirmation(event.target.value)}
               />
             </label>
-            {error ? <p className={styles.error} role="alert">{error}</p> : null}
-            {message ? <p className={styles.message} role="status">{message}</p> : null}
+            {error ? (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            ) : null}
+            {message ? (
+              <p className={styles.message} role="status">
+                {message}
+              </p>
+            ) : null}
             <button className={styles.submit} type="submit" disabled={pending}>
               {pending ? "Updating…" : "Update password"}
             </button>
