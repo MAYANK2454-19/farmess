@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
-import type { MarketDataResult, MarketPriceRecord } from "@/lib/market-data/types";
+import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
 import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
 import styles from "./markets.module.css";
