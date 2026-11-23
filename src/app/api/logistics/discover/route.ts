@@ -35,22 +35,34 @@ function parseCalendarDate(value: string | null): string | null | undefined {
 export async function GET(request: NextRequest) {
   const session = await getFarmessSession();
   if (!session) {
-    return NextResponse.json({ error: "Sign in to find nearby logistics support." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sign in to find nearby logistics support." },
+      { status: 401 },
+    );
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Local logistics discovery is available to farmer accounts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Local logistics discovery is available to farmer accounts." },
+      { status: 403 },
+    );
   }
 
   const params = request.nextUrl.searchParams;
   const latitude = parseCoordinate(params.get("lat"), -90, 90);
   const longitude = parseCoordinate(params.get("lng"), -180, 180);
   if (latitude === null || longitude === null) {
-    return NextResponse.json({ error: "Provide a valid location after choosing to share your current area." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Provide a valid location after choosing to share your current area." },
+      { status: 400 },
+    );
   }
 
   const radiusKm = params.has("radiusKm") ? Number(params.get("radiusKm")) : 25;
   if (!Number.isFinite(radiusKm) || radiusKm < 0.5 || radiusKm > 100) {
-    return NextResponse.json({ error: "Search radius must be between 0.5 and 100 km." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Search radius must be between 0.5 and 100 km." },
+      { status: 400 },
+    );
   }
 
   const serviceType = params.get("serviceType") || null;
@@ -60,7 +72,10 @@ export async function GET(request: NextRequest) {
 
   const crop = params.get("crop")?.trim() || null;
   if (crop && crop.length > 80) {
-    return NextResponse.json({ error: "Crop name must be 80 characters or fewer." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Crop name must be 80 characters or fewer." },
+      { status: 400 },
+    );
   }
 
   const quantity = parseOptionalPositiveNumber(params.get("quantity"));
@@ -70,10 +85,16 @@ export async function GET(request: NextRequest) {
 
   const unit = params.get("unit") || null;
   if (quantity !== null && unit !== "kg" && unit !== "quintal" && unit !== "tonne") {
-    return NextResponse.json({ error: "Choose kg, quintal or tonne for the requested quantity." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose kg, quintal or tonne for the requested quantity." },
+      { status: 400 },
+    );
   }
   if (quantity === null && unit !== null) {
-    return NextResponse.json({ error: "Enter a quantity when selecting its unit." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter a quantity when selecting its unit." },
+      { status: 400 },
+    );
   }
 
   const requiredDate = parseCalendarDate(params.get("date"));
@@ -130,9 +151,11 @@ export async function GET(request: NextRequest) {
       metadata: {
         rankingVersion: "rules-v1",
         method: "explainable-heuristic",
-        distanceMeaning: "Straight-line distance to the provider's published service location; not road distance or travel time.",
+        distanceMeaning:
+          "Straight-line distance to the provider's published service location; not road distance or travel time.",
         bookingMeaning: "A discovery result is not a booking. Provider confirmation is required.",
-        verificationMeaning: "Provider verification reflects the evidence state stored in Farmess; it does not guarantee live availability.",
+        verificationMeaning:
+          "Provider verification reflects the evidence state stored in Farmess; it does not guarantee live availability.",
       },
     },
     { headers: { "Cache-Control": "private, no-store" } },
