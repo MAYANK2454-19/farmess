@@ -33,7 +33,7 @@ The detached checkout is intentional for a local preview; it does not modify the
 ```powershell
 node --version
 npm --version
-npm ci
+npm install
 ```
 
 The Node version must be v22 or newer.
