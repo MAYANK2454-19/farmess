@@ -3122,3 +3122,46 @@ h1 {
     font-size: 18px;
   }
 }
+
+
+.logistics-feedback {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.logistics-feedback summary {
+  width: fit-content;
+  color: var(--brand-secondary);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.logistics-feedback-form {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.65fr) minmax(240px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 13px;
+}
+
+.logistics-feedback-form .button {
+  min-height: 42px;
+  padding-inline: 13px;
+  font-size: 10px;
+}
+
+.logistics-feedback-saved {
+  margin: 0;
+  font-size: 10px;
+}
+
+@media (max-width: 760px) {
+  .logistics-feedback-form {
+    grid-template-columns: 1fr;
+  }
+
+  .logistics-feedback-form .button {
+    width: 100%;
+  }
+}
