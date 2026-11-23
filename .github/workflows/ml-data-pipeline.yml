@@ -5,12 +5,6 @@ on:
     paths:
       - "ml/**"
       - ".github/workflows/ml-data-pipeline.yml"
-  push:
-    branches:
-      - "feat/ml-*"
-    paths:
-      - "ml/**"
-      - ".github/workflows/ml-data-pipeline.yml"
   workflow_dispatch:
 
 permissions:

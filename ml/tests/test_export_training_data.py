@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
@@ -49,6 +50,7 @@ class ExportTrainingDataTests(unittest.TestCase):
         self.assertEqual(len(first), 64)
 
     def test_market_readiness_counts_unique_dates_per_series(self) -> None:
+        first_day = date(2026, 1, 1)
         rows = [
             {
                 "crop": "wheat",
@@ -56,24 +58,16 @@ class ExportTrainingDataTests(unittest.TestCase):
                 "state": "Jammu and Kashmir",
                 "district": "Jammu",
                 "market_name": "Example mandi",
-                "observation_date": f"2026-01-{day:02d}",
+                "observation_date": (first_day + timedelta(days=offset)).isoformat(),
             }
-            for day in range(1, 29)
+            for offset in range(119)
         ]
-        rows.extend(
-            {
-                "crop": "wheat",
-                "variety": "",
-                "state": "Jammu and Kashmir",
-                "district": "Jammu",
-                "market_name": "Example mandi",
-                "observation_date": f"2026-{month:02d}-01",
-            }
-            for month in range(2, 5)
-        )
-        # Repeated dates do not inflate the number of unique observations.
-        rows.append(dict(rows[0]))
-        self.assertEqual(_market_readiness(rows)["seriesMeetingMinimumHistory"], 0)
+        # Two duplicate rows must not make 119 unique days look like 120.
+        rows.extend([dict(rows[0]), dict(rows[0])])
+        readiness = _market_readiness(rows)
+        self.assertEqual(readiness["usableSeries"], 1)
+        self.assertEqual(readiness["seriesMeetingMinimumHistory"], 0)
+        self.assertFalse(readiness["readyToTrainAtLeastOneSeries"])
 
     def test_empty_logistics_dataset_is_not_ready(self) -> None:
         result = _logistics_readiness([])

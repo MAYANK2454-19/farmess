@@ -14,7 +14,7 @@ No synthetic rows are inserted into the production database to make these compon
 
 ## 1. Export real training data
 
-The exporter reads only allow-listed columns from:
+The exporter reads only allow-listed training fields plus source-attribution metadata from:
 
 - public.market_observations
 - public.logistics_recommendation_feedback
@@ -38,7 +38,7 @@ Privacy controls:
 - Raw user IDs and provider-listing IDs are replaced with salted HMAC-SHA256 values. The salt is not included in the export.
 - IDs remain stable across exports only when the same private salt is reused; this permits diversity checks without exporting raw identifiers.
 - Free-text feedback notes are not selected or exported.
-- Only selected training columns are queried; no profile, phone, email, exact coordinates, or private farmer-lot records are exported.
+- Only training fields and mandi source metadata (source name, source URL, retrieval time) are queried; no profile, phone, email, exact coordinates, or private farmer-lot records are exported. Provenance fields are for review, not model features.
 - CSVs and manifests are written locally. This script performs no database writes.
 - The output folder is ignored by Git. Delete local exports when they are no longer needed.
 

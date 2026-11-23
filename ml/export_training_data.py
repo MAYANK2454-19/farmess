@@ -28,6 +28,9 @@ DEFAULT_PAGE_SIZE = 500
 MAX_PAGE_SIZE = 1000
 
 MARKET_COLUMNS = (
+    "source_name",
+    "source_url",
+    "retrieved_at",
     "crop",
     "variety",
     "state",
@@ -86,8 +89,8 @@ class SupabaseRestClient:
             raise ValueError("SUPABASE_URL must be a valid HTTPS project URL.")
         if parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1"}:
             raise ValueError("HTTP is allowed only for a local Supabase development project.")
-        if parsed.query or parsed.fragment:
-            raise ValueError("SUPABASE_URL must not include a query string or fragment.")
+        if parsed.path not in {"", "/"} or parsed.query or parsed.fragment:
+            raise ValueError("SUPABASE_URL must be the project root, without a path, query or fragment.")
         if not api_key.strip():
             raise ValueError("A Supabase secret key is required.")
         if not 1 <= page_size <= MAX_PAGE_SIZE:
