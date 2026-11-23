@@ -1,31 +1,57 @@
 # Farmess application integration status
 
-This document separates the existing database foundation from the application flows connected in the current release branch.
+This document distinguishes connected application flows from capabilities that still require real data, role provisioning, external verification or end-to-end testing.
 
-## Existing Supabase foundation
+## Database and authentication
 
-The Supabase project already contains the core Farmess schema and row-level security policies. The application tables include profiles and consent audit events, produce lots, market observations, buyer requirements, offers, service listings and requests, notifications, sales and sale activity.
+The team Supabase project contains the core Farmess schema, Postgres/PostGIS functions and RLS policies. The schema includes profiles and consent audit events, produce lots, source-attributed market observations, buyer requirements, offers, service listings and requests, notifications, sales, sale activity, logistics feedback, market ingestion runs, forecast runs/points and forecast review events.
 
-The database owns important invariants: account roles are stored in trusted auth metadata, rows are scoped by participant/owner, a farmer accepting an offer is checked against expiry and available inventory, and the offer lifecycle creates the related sale/activity/notification records.
+All inspected public tables have RLS enabled. User role checks use trusted Auth `app_metadata`; the browser cannot select its own privileged role. Cookie-based Supabase SSR clients and the Next.js 16 `proxy.ts` refresh flow are used. The server resolves the authenticated session and checks that the profile role matches the trusted role metadata.
 
-## Application flows connected on this branch
+The application branch connects the following flows to authenticated server handlers and the Supabase database:
 
-- Cookie-based Supabase SSR clients, session refresh, sign-in, sign-up, email confirmation, password reset and sign-out.
-- Farmer workspace with private produce drafts, inventory listing, profile and privacy preferences, inbox notifications, received offer decisions and sale activity.
-- Buyer workspace with own buying requirements, public published-lot discovery, offer creation, sent-offer history and pending-offer withdrawal.
-- Service-provider workspace with service listing publication and management, incoming requests and accept/decline decisions.
+- Sign-up, sign-in, email callback, password recovery, password update and sign-out.
+- Farmer-owned produce drafts and inventory reads.
+- Buyer requirements, safe published-lot projection, offer creation/history/withdrawal and farmer offer decisions.
+- Operator service listing management and provider request acceptance/decline.
 - Farmer transport/storage discovery and service-request creation.
+- Profile preferences, consent audit events, notifications and sale activity.
 
-All writes use authenticated server handlers and the user's session. The server derives owner/provider/participant IDs rather than trusting IDs supplied by the browser. Supabase RLS remains the final data-access boundary.
+Writes derive owner, requester, provider and participant identities from the authenticated session. RLS and database constraints remain the final authorization boundary.
 
-## Not yet complete
+## Market data and price forecasting
 
-- Trusted buyer and service-provider onboarding/invitation. Public sign-up deliberately creates farmer accounts only; role changes cannot be requested from a browser form.
-- Admin/reviewer workspace and its case-authorized workflows.
-- Automated matching of buyer requirements to farmer lots and notification campaigns.
-- Sale fulfilment workflow beyond agreement capture and recorded activity; payment collection/settlement is not implemented.
-- Provider-side contact disclosure, dispatch/fulfilment tracking, live capacity reservation and cancellation lifecycle.
-- Production verification of email deliverability, reset templates, allowed redirect URLs and real-user RLS flows.
-- Final production deployment of this branch.
+- `GET /api/market-prices` uses the server-side market-data adapter and preserves source status/provenance in the response.
+- `POST /api/market-data/refresh` is admin-only. It validates normalized source observations, converts INR to paise, upserts dated records and records an ingestion audit entry.
+- `GET /api/market-forecasts` returns only approved forecast runs. Without an approved run, the API reports insufficient data rather than inventing a forecast.
+- `ml/market_forecast/train.py` is an offline HistGradientBoosting candidate pipeline. It groups dated observations by crop/variety/geography/market, requires at least 90 unique observations in a series, uses a chronological holdout and must beat a last-observation baseline on both MAE and sMAPE. Candidate forecasts require a separate human review before publication.
 
-Do not represent any item in the last section as a live capability until it is implemented and tested end to end.
+**There is no trained market-forecast model or approved forecast at this time.** The database had no market observations when inspected. A market-data steward/admin account and a permitted, functioning data source are needed before this pipeline can be trained.
+
+## Locality-aware logistics support
+
+- `GET /api/logistics/discover` requires a signed-in farmer and explicit latitude/longitude supplied after the user chooses to share their location.
+- The database function `find_nearby_service_listings` uses PostGIS distance filtering and supports a configurable search radius, transport/storage type, crop, quantity/unit, required date and cold-chain requirement.
+- `src/features/logistics/recommendations.ts` currently uses an explainable `rules-v1` heuristic. It scores proximity, capacity, crop suitability, date, cold chain, provider verification, pricing transparency and service coverage. Each recommendation reports reasons and unknowns; a recommendation is not a confirmed booking.
+- `logistics_recommendation_feedback` records a point-in-time feature snapshot and explicit feedback.
+- `ml/logistics_ranker/train.py` is an offline candidate model for explicit recommendation usefulness ratings. It requires at least 300 clear non-neutral labels, 30 distinct users and 20 distinct listings, with a chronological evaluation. User and provider IDs are excluded from model features; a candidate is not automatically deployed.
+
+**The logistics ML model is not trained or served.** The database had no provider listings or recommendation feedback when inspected. The live map can only locate active, real provider listings after operators add and maintain their service locations. No local transporter, cold store, availability or price should be invented.
+
+## Buyer-lot matching and net-realisation decisions
+
+Buyer requirement matching is currently deterministic rule-based matching on crop, variety/grade, compatible quantity/unit, locality text and dates. Its response identifies the method as `deterministic-rule-match`; it does not claim a sale probability. Net-realisation comparison remains an explainable calculation from explicit price and cost inputs. Missing costs must remain unknown, not silently become zero.
+
+## Known gaps before production readiness
+
+- Trusted buyer/operator onboarding and invitation, plus an admin/data-steward management workspace.
+- Real-user end-to-end verification of sign-up, email delivery, reset links and role-scoped RLS on the team's Supabase Auth configuration.
+- A verified directory and onboarding process for transport and storage providers; listing availability must be reconfirmed by the provider.
+- Better buyer-lot matching signals and persistent matching/notification campaigns.
+- Provider contact disclosure with explicit farmer consent, dispatch/fulfilment milestones, capacity reservation and cancellation handling.
+- Sale/payment evidence capture beyond the current agreement/activity record. Farmess does not process payments.
+- Market-data source availability, permitted API access, regular ingestion and enough validated observations to evaluate forecasts.
+- Enough representative logistics feedback and actual service-request outcomes to validate a learning-to-rank model. Explicit preference feedback is not the same as successful service completion.
+- Production deployment and full unit, integration, RLS-denial and end-to-end test evidence for this integrated branch.
+
+Do not present any item in this section as a completed live capability until it has been implemented and tested end to end.
