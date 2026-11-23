@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 import { buildMarketPriceComparisons } from "@/lib/market-data/market-comparison";
+import { marketPriceComparisonsToCsv } from "@/lib/market-data/market-comparison-csv";
 import type { MarketPriceRecord } from "@/lib/market-data/types";
 import styles from "./market-comparison-panel.module.css";
 
@@ -13,7 +14,7 @@ function formatPrice(value: number): string {
 }
 
 function formatDate(value: string): string {
-  const date = new Date(`${value}T00:00:00`);
+  const date = new Date(value + "T00:00:00");
   return Number.isNaN(date.getTime())
     ? value
     : new Intl.DateTimeFormat("en-IN", {
@@ -26,8 +27,22 @@ function formatDate(value: string): string {
 export function MarketComparisonPanel({ records }: Props) {
   const comparisons = useMemo(() => buildMarketPriceComparisons(records), [records]);
 
+  function handleExport() {
+    if (comparisons.length === 0) return;
+
+    const csv = marketPriceComparisonsToCsv(comparisons);
+    const objectUrl = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = "farmess-mandi-comparison-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  }
+
   return (
-    <section className={`panel ${styles.panel}`} aria-labelledby="market-comparison-heading">
+    <section className={"panel " + styles.panel} aria-labelledby="market-comparison-heading">
       <div className={styles.heading}>
         <div>
           <h2 id="market-comparison-heading">Compare mandi prices</h2>
@@ -36,7 +51,14 @@ export function MarketComparisonPanel({ records }: Props) {
             averaged before comparison.
           </p>
         </div>
-        <span className={styles.unit}>₹ per quintal</span>
+        <div className={styles.headingActions}>
+          <span className={styles.unit}>₹ per quintal</span>
+          {comparisons.length > 0 && (
+            <button className="button button-secondary" type="button" onClick={handleExport}>
+              Export comparison CSV
+            </button>
+          )}
+        </div>
       </div>
 
       {comparisons.length === 0 ? (
@@ -52,7 +74,7 @@ export function MarketComparisonPanel({ records }: Props) {
                 <div>
                   <h3>{comparison.commodity}</h3>
                   <p>
-                    {comparison.variety ? `${comparison.variety} · ` : ""}
+                    {comparison.variety ? comparison.variety + " · " : ""}
                     {formatDate(comparison.observationDate)}
                   </p>
                 </div>
@@ -80,14 +102,16 @@ export function MarketComparisonPanel({ records }: Props) {
                   </thead>
                   <tbody>
                     {comparison.markets.map((market, index) => (
-                      <tr key={`${market.market}|${market.district}|${market.state}`}>
+                      <tr key={market.market + "|" + market.district + "|" + market.state}>
                         <td>
                           <span className={styles.marketName}>
                             {market.market || "Unnamed market"}
                           </span>
                           {index === 0 && <span className={styles.lowest}>Lowest reported</span>}
                         </td>
-                        <td>{[market.district, market.state].filter(Boolean).join(", ") || "—"}</td>
+                        <td>
+                          {[market.district, market.state].filter(Boolean).join(", ") || "—"}
+                        </td>
                         <td className={styles.price}>₹{formatPrice(market.averageModalPrice)}</td>
                         <td>{market.observationCount}</td>
                       </tr>
