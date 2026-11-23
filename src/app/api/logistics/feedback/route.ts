@@ -58,13 +58,13 @@ export async function POST(request: NextRequest) {
   }
 
   const record = body as Record<string, unknown>;
-  const uuid =
-    typeof record.service_listing_id === "string" &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      record.service_listing_id,
-    );
-
-  if (!uuid) {
+  const listingId = record.service_listing_id;
+  if (
+    typeof listingId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      listingId,
+    )
+  ) {
     return NextResponse.json({ error: "Select a valid service listing." }, { status: 400 });
   }
   if (
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
   const { data: listing, error: listingError } = await supabase
     .from("service_listings")
     .select("id,service_type,verification_state,rate_basis,price_paise,service_radius_km")
-    .eq("id", record.service_listing_id)
+    .eq("id", listingId)
     .eq("status", "active")
     .maybeSingle();
 
