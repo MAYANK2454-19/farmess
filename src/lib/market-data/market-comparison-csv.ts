@@ -3,17 +3,12 @@ import type { MarketComparisonGroup } from "./market-comparison.ts";
 type CsvCell = string | number | null;
 type CsvColumn = [
   string,
-  (
-    group: MarketComparisonGroup,
-    market: MarketComparisonGroup["markets"][number],
-  ) => CsvCell,
+  (group: MarketComparisonGroup, market: MarketComparisonGroup["markets"][number]) => CsvCell,
 ];
 
 function csvCell(value: CsvCell): string {
   const normalized = value === null ? "" : String(value);
-  const safeValue = /^[\u0000-\u0020]*[=+@-]/.test(normalized)
-    ? "'" + normalized
-    : normalized;
+  const safeValue = /^[\u0000-\u0020]*[=+@-]/.test(normalized) ? "'" + normalized : normalized;
   return '"' + safeValue.replace(/"/g, '""') + '"';
 }
 
