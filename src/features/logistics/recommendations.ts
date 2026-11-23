@@ -184,12 +184,12 @@ export function rankLogisticsCandidates(
       unknowns.push("Crop suitability has not been specified by the provider.");
     }
 
-    let availabilityScore = 5;
+    let availabilityScore = 3;
     if (!dateRequested) {
-      availabilityScore = 15;
+      availabilityScore = 10;
       reasons.push("No specific service date was requested.");
     } else if (candidate.date_match === true) {
-      availabilityScore = 15;
+      availabilityScore = 10;
       reasons.push("The requested date falls within the provider's stated availability.");
     } else if (candidate.date_match === false) {
       availabilityScore = 0;
