@@ -1,0 +1,25 @@
+name: Buyer requirement validation tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  buyer-requirements:
+    name: Buyer requirement domain tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Buyer requirement validation tests
+        run: node --experimental-strip-types --test src/features/marketplace/buyer-requirements.test.ts
