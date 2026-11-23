@@ -37,5 +37,6 @@
     "simple-git-hooks": "^2.14.0",
     "tailwindcss": "4.3.5",
     "typescript": "^5.9.3"
-  }
+  },
+  "description": "Farmer-first produce and market workspace"
 }
