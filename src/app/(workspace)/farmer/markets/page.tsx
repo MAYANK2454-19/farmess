@@ -5,6 +5,11 @@ import { MarketForecastPanel } from "@/features/market-data/market-forecast-pane
 import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import { getMarketRecordFreshnessLabel } from "@/lib/market-data/record-freshness";
+import {
+  EMPTY_MARKET_RECORD_FILTERS,
+  filterMarketPriceRecords,
+  type MarketRecordFilters,
+} from "@/lib/market-data/filter-records";
 import { sortMarketPriceRecords, type MarketRecordSortOrder } from "@/lib/market-data/sort-records";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
@@ -42,6 +47,13 @@ export default function MarketsPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<MarketDataResult | null>(null);
   const [sortOrder, setSortOrder] = useState<MarketRecordSortOrder>("newest");
+  const [draftRecordFilters, setDraftRecordFilters] = useState<MarketRecordFilters>(
+    EMPTY_MARKET_RECORD_FILTERS,
+  );
+  const [appliedRecordFilters, setAppliedRecordFilters] = useState<MarketRecordFilters>(
+    EMPTY_MARKET_RECORD_FILTERS,
+  );
+  const [recordFilterError, setRecordFilterError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -122,7 +134,7 @@ export default function MarketsPage() {
             className="button button-secondary"
             type="button"
             onClick={handleExport}
-            disabled={loading || records.length === 0}
+            disabled={loading || filteredRecords.length === 0}
           >
             Export CSV
           </button>
@@ -224,7 +236,7 @@ export default function MarketsPage() {
             <p>
               {loading
                 ? "Checking the selected data source…"
-                : `${records.length} reported record${records.length === 1 ? "" : "s"} returned`}
+                : `${filteredRecords.length} of ${records.length} reported record${records.length === 1 ? "" : "s"} shown`}
             </p>
           </div>
           {result && <span className={styles.sourceTag}>{result.sourceName}</span>}
@@ -283,11 +295,11 @@ export default function MarketsPage() {
           <SourceQualityPanel quality={result.sourceQuality} />
         )}
 
-        {!loading && records.length > 0 && <MarketHistoryChart records={records} />}
+        {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
 
         {!loading && <MarketForecastPanel crop={filters.commodity} market={filters.market} />}
 
-        {!loading && records.length > 0 && (
+        {!loading && records.length > 0 && filteredRecords.length === 0 && (\n          <div className={`panel ${styles.statePanel}`} role="status">\n            <strong>No observations match these advanced filters</strong>\n            <p>Widen the date or modal-price range, or clear the advanced filters to see all returned records.</p>\n          </div>\n        )}\n\n        {!loading && filteredRecords.length > 0 && (
           <>
             <div className={styles.listToolbar}>
               <p>Choose how market observations are ordered.</p>
