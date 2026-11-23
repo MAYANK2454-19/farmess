@@ -6,52 +6,42 @@ export default function MyProducePage() {
     <main className="content">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Farmer workspace</p>
-          <h1>My Produce</h1>
+          <p className="eyebrow">Your inventory</p>
+          <h1>My produce</h1>
           <p className="page-subtitle">
-            Manage your produce lots, availability dates and selling urgency.
+            Keep track of the crop, quantity, quality and collection details for each lot.
           </p>
         </div>
         <Link href="/farmer/produce/new" className="button button-primary">
-          <Icon name="plus" size={16} /> Add produce lot
+          <Icon name="plus" size={16} /> Add a produce lot
         </Link>
       </div>
 
-      <div className="preview-banner" role="status">
-        <span className="banner-dot" />
-        <span>
-          <strong>Build preview.</strong> Saved lots will appear here after authentication and
-          database persistence are connected.
-        </span>
-      </div>
-
-      <section className="panel">
+      <section className="panel" aria-labelledby="lots-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title">Your produce lots</h2>
+            <h2 className="panel-title" id="lots-heading">Your produce lots</h2>
             <p className="panel-caption">
-              Crop, variety, grade, quantity, sell-by date and current status
+              Crop, variety, grade, quantity, collection area and sell-by date
             </p>
           </div>
         </div>
         <div className="empty-state">
-          <span className="empty-icon">
-            <Icon name="leaf" size={23} />
-          </span>
-          <h3 className="empty-title">No produce lots have been added</h3>
+          <h3 className="empty-title">No produce lots to show</h3>
           <p className="empty-copy">
-            Add a lot to record what is available, where it can be collected, and how soon it needs
-            to be sold. You can review the details before anything is submitted or shared.
+            Your inventory will appear here after you add a lot. Each record should describe
+            produce that is actually available, with a clear quantity and collection area.
           </p>
-          <Link
-            href="/farmer/produce/new"
-            className="button button-primary"
-            style={{ marginTop: 16 }}
-          >
-            Add your first produce lot <Icon name="chevron" size={15} />
+          <Link href="/farmer/produce/new" className="button button-primary" style={{ marginTop: 16 }}>
+            Add your first lot <Icon name="chevron" size={15} />
           </Link>
         </div>
       </section>
+
+      <p className="preview-footnote">
+        Saved lot records are not connected to your account in this preview. Do not enter sensitive
+        personal details in the collection-area field.
+      </p>
     </main>
   );
 }
