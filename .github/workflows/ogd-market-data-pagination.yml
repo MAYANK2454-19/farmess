@@ -28,7 +28,7 @@ on:
       - "src/lib/market-data/record-freshness.ts"
       - "src/lib/market-data/record-freshness.test.ts"
       - "src/lib/market-data/sort-records.ts"
-      - "src/lib/market-data/sort-records.test.ts"
+      - "src/lib/market-data/sort-records.test.ts"\n      - "src/lib/market-data/filter-records.ts"\n      - "src/lib/market-data/filter-records.test.ts"
       - "src/features/market-data/source-quality-panel.tsx"
       - "src/features/market-data/source-quality-panel.module.css"
       - "src/app/(workspace)/farmer/markets/page.tsx"
@@ -38,7 +38,7 @@ on:
       - "docs/OGD_SOURCE_QUALITY_DIAGNOSTICS.md"
       - "docs/MARKET_SOURCE_QUALITY_UI.md"
       - "docs/MARKET_RECORD_FRESHNESS_LABELS.md"
-      - "docs/MARKET_OBSERVATION_SORTING.md"
+      - "docs/MARKET_OBSERVATION_SORTING.md"\n      - "docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md"
       - ".github/workflows/ogd-market-data-pagination.yml"
 
 permissions:
@@ -65,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: Prettier
-        run: npx prettier --check src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md .github/workflows/ogd-market-data-pagination.yml
+        run: npx prettier --check src/lib/market-data/filter-records.ts src/lib/market-data/filter-records.test.ts docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md .github/workflows/ogd-market-data-pagination.yml
 
       - name: ESLint
         run: npm run lint
@@ -79,7 +79,7 @@ jobs:
 
       - name: Focused market-data sorting tests
         if: always()
-        run: node --experimental-strip-types --test src/lib/market-data/sort-records.test.ts
+        run: node --experimental-strip-types --test src/lib/market-data/filter-records.test.ts src/lib/market-data/sort-records.test.ts
 
       - name: Production build
         if: always()
