@@ -65,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: Prettier
-        run: npx prettier --write src/lib/market-data/sort-records.test.ts && git diff -- src/lib/market-data/sort-records.test.ts && npx prettier --check src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md .github/workflows/ogd-market-data-pagination.yml
+        run: npx prettier --check src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md .github/workflows/ogd-market-data-pagination.yml
 
       - name: ESLint
         run: npm run lint
