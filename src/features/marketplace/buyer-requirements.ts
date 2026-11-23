@@ -46,9 +46,7 @@ function isRealCalendarDate(value: string): boolean {
   date.setUTCHours(0, 0, 0, 0);
 
   return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
   );
 }
 
@@ -56,15 +54,12 @@ function isRealCalendarDate(value: string): boolean {
  * Validate and normalize buyer-entered requirements before matching.
  * This is a pure input contract, not persistence or authorization.
  */
-export function validateBuyerRequirement(
-  draft: BuyerRequirementDraft,
-): BuyerRequirementValidation {
+export function validateBuyerRequirement(draft: BuyerRequirementDraft): BuyerRequirementValidation {
   const errors: BuyerRequirementFieldError[] = [];
   const crop = typeof draft.crop === "string" ? draft.crop.trim() : "";
   const variety = typeof draft.variety === "string" ? draft.variety.trim() : "";
   const grade = typeof draft.grade === "string" ? draft.grade.trim() : "";
-  const locationArea =
-    typeof draft.locationArea === "string" ? draft.locationArea.trim() : "";
+  const locationArea = typeof draft.locationArea === "string" ? draft.locationArea.trim() : "";
 
   if (!crop) {
     errors.push({ field: "crop", message: "Crop is required." });
