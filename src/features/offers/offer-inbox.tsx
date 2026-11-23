@@ -64,7 +64,9 @@ export function OfferInbox() {
         if (active) setOffers(result.offers ?? []);
       } catch (loadError) {
         if (active) {
-          setError(loadError instanceof Error ? loadError.message : "Buyer offers could not be loaded.");
+          setError(
+            loadError instanceof Error ? loadError.message : "Buyer offers could not be loaded.",
+          );
         }
       } finally {
         if (active) setLoading(false);
@@ -101,7 +103,9 @@ export function OfferInbox() {
           : "Offer declined.",
       );
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "The offer could not be updated.");
+      setError(
+        requestError instanceof Error ? requestError.message : "The offer could not be updated.",
+      );
     } finally {
       setPendingId(null);
     }
@@ -111,18 +115,32 @@ export function OfferInbox() {
     <section className="panel offer-panel" aria-labelledby="offer-inbox-heading">
       <div className="panel-header">
         <div>
-          <h2 className="panel-title" id="offer-inbox-heading">Offers received</h2>
+          <h2 className="panel-title" id="offer-inbox-heading">
+            Offers received
+          </h2>
           <p className="panel-caption">
             {loading ? "Loading…" : `${offers.length} offer(s) on your produce`}
           </p>
         </div>
       </div>
 
-      {error ? <p className="form-alert notification-alert" role="alert">{error}</p> : null}
-      {message ? <p className="form-success notification-alert" role="status">{message}</p> : null}
+      {error ? (
+        <p className="form-alert notification-alert" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {message ? (
+        <p className="form-success notification-alert" role="status">
+          {message}
+        </p>
+      ) : null}
 
       {loading ? (
-        <div className="empty-state"><p className="empty-copy" role="status">Loading buyer offers…</p></div>
+        <div className="empty-state">
+          <p className="empty-copy" role="status">
+            Loading buyer offers…
+          </p>
+        </div>
       ) : offers.length === 0 ? (
         <div className="empty-state">
           <h3 className="empty-title">No offers received</h3>
@@ -135,7 +153,8 @@ export function OfferInbox() {
         <ul className="offer-list">
           {offers.map((offer) => {
             const expired = now !== null && new Date(offer.valid_until).getTime() <= now;
-            const effectiveStatus = offer.status === "pending" && expired ? "expired" : offer.status;
+            const effectiveStatus =
+              offer.status === "pending" && expired ? "expired" : offer.status;
 
             return (
               <li className="offer-item" key={offer.id}>
@@ -153,7 +172,8 @@ export function OfferInbox() {
                   </p>
                   {offer.terms ? <p className="offer-note">{offer.terms}</p> : null}
                   <p className="offer-dates">
-                    Received {formatDate(offer.created_at)} · Valid until {formatDate(offer.valid_until)}
+                    Received {formatDate(offer.created_at)} · Valid until{" "}
+                    {formatDate(offer.valid_until)}
                   </p>
                 </div>
                 {offer.status === "pending" ? (

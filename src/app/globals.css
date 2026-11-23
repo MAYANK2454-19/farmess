@@ -30,7 +30,14 @@ body {
   margin: 0;
   color: var(--text);
   background: var(--page);
-  font-family: Inter, "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    Inter,
+    "Segoe UI",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -147,7 +154,10 @@ textarea:focus-visible {
   border-radius: 2px;
   font-size: 12px;
   font-weight: 520;
-  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease;
 }
 
 .nav-link:hover {
@@ -295,7 +305,10 @@ h1 {
   cursor: pointer;
   font-size: 11px;
   font-weight: 650;
-  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
 .button:hover {
@@ -1274,7 +1287,6 @@ h1 {
   }
 }
 
-
 .topbar-action {
   padding: 7px 10px;
   color: #526456;
@@ -1513,7 +1525,6 @@ h1 {
   }
 }
 
-
 .table-wrap {
   overflow-x: auto;
 }
@@ -1589,7 +1600,6 @@ h1 {
   border-color: #dfe5dc;
 }
 
-
 .overview-lot-list {
   margin: 0;
   padding: 0;
@@ -1625,7 +1635,6 @@ h1 {
 .overview-lot-row .produce-status {
   flex: 0 0 auto;
 }
-
 
 .profile-card-heading {
   display: flex;
@@ -1711,7 +1720,6 @@ h1 {
     width: 100%;
   }
 }
-
 
 .notification-alert {
   margin: 14px 18px 0;
@@ -1807,7 +1815,6 @@ h1 {
     align-self: flex-start;
   }
 }
-
 
 .offer-list {
   margin: 0;
@@ -1907,7 +1914,6 @@ h1 {
     flex: 1;
   }
 }
-
 
 .activity-list {
   position: relative;

@@ -33,11 +33,17 @@ export function NotificationList() {
     async function load() {
       try {
         const response = await fetch("/api/notifications", { cache: "no-store" });
-        const result = (await response.json()) as { notifications?: Notification[]; error?: string };
+        const result = (await response.json()) as {
+          notifications?: Notification[];
+          error?: string;
+        };
         if (!response.ok) throw new Error(result.error ?? "Notifications could not be loaded.");
         if (active) setItems(result.notifications ?? []);
       } catch (loadError) {
-        if (active) setError(loadError instanceof Error ? loadError.message : "Notifications could not be loaded.");
+        if (active)
+          setError(
+            loadError instanceof Error ? loadError.message : "Notifications could not be loaded.",
+          );
       } finally {
         if (active) setLoading(false);
       }
@@ -67,7 +73,11 @@ export function NotificationList() {
         ),
       );
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "The notification could not be updated.");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "The notification could not be updated.",
+      );
     } finally {
       setPendingId(null);
     }
@@ -79,20 +89,33 @@ export function NotificationList() {
     <section className="panel notification-panel" aria-labelledby="notification-list-heading">
       <div className="panel-header">
         <div>
-          <h2 className="panel-title" id="notification-list-heading">Your notifications</h2>
+          <h2 className="panel-title" id="notification-list-heading">
+            Your notifications
+          </h2>
           <p className="panel-caption">
             {loading ? "Loading…" : `${unreadCount} unread · ${items.length} recent`}
           </p>
         </div>
       </div>
 
-      {error ? <p className="form-alert notification-alert" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-alert notification-alert" role="alert">
+          {error}
+        </p>
+      ) : null}
       {loading ? (
-        <div className="empty-state"><p className="empty-copy" role="status">Loading notifications…</p></div>
+        <div className="empty-state">
+          <p className="empty-copy" role="status">
+            Loading notifications…
+          </p>
+        </div>
       ) : items.length === 0 ? (
         <div className="empty-state">
           <h3 className="empty-title">No notifications yet</h3>
-          <p className="empty-copy">Updates about offers and service requests will appear here when they are created for your account.</p>
+          <p className="empty-copy">
+            Updates about offers and service requests will appear here when they are created for
+            your account.
+          </p>
         </div>
       ) : (
         <ul className="notification-list">

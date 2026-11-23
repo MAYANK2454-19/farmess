@@ -8,7 +8,10 @@ export async function GET() {
     return NextResponse.json({ error: "Sign in to view buyer offers." }, { status: 401 });
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Only farmer accounts can view received offers here." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only farmer accounts can view received offers here." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -29,7 +32,10 @@ export async function GET() {
     : { data: [], error: null };
 
   if (lotError) {
-    return NextResponse.json({ error: "Unable to load the produce details for these offers." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to load the produce details for these offers." },
+      { status: 500 },
+    );
   }
 
   const lotById = new Map((lots ?? []).map((lot) => [lot.id, lot]));
@@ -54,7 +60,10 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Sign in before responding to an offer." }, { status: 401 });
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Only the farmer who owns the lot can respond to this offer." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only the farmer who owns the lot can respond to this offer." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -75,7 +84,10 @@ export async function PATCH(request: NextRequest) {
     (body.decision !== "accepted" && body.decision !== "declined") ||
     Object.keys(body).some((key) => key !== "id" && key !== "decision")
   ) {
-    return NextResponse.json({ error: "Only an offer ID and accept/decline decision are allowed." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Only an offer ID and accept/decline decision are allowed." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();

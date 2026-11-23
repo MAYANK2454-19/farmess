@@ -61,13 +61,7 @@ function NavigationLinks({
   );
 }
 
-export function WorkspaceLayout({
-  children,
-  user,
-}: {
-  children: ReactNode;
-  user: WorkspaceUser;
-}) {
+export function WorkspaceLayout({ children, user }: { children: ReactNode; user: WorkspaceUser }) {
   const pathname = usePathname();
 
   return (

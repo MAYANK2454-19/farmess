@@ -13,7 +13,10 @@ export async function GET() {
   }
 
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "This account cannot manage farmer produce lots." }, { status: 403 });
+    return NextResponse.json(
+      { error: "This account cannot manage farmer produce lots." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -27,7 +30,10 @@ export async function GET() {
     return NextResponse.json({ error: "Unable to load your produce lots." }, { status: 500 });
   }
 
-  return NextResponse.json({ lots: data ?? [] }, { headers: { "Cache-Control": "private, no-store" } });
+  return NextResponse.json(
+    { lots: data ?? [] },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -42,7 +48,10 @@ export async function POST(request: NextRequest) {
   }
 
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "This account cannot create farmer produce lots." }, { status: 403 });
+    return NextResponse.json(
+      { error: "This account cannot create farmer produce lots." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -85,8 +94,14 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Your lot could not be saved. Please try again." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Your lot could not be saved. Please try again." },
+      { status: 500 },
+    );
   }
 
-  return NextResponse.json({ lot: data }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
+  return NextResponse.json(
+    { lot: data },
+    { status: 201, headers: { "Cache-Control": "private, no-store" } },
+  );
 }

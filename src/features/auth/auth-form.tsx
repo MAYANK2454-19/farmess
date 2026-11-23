@@ -28,12 +28,9 @@ export function AuthForm() {
       const normalizedEmail = email.trim().toLowerCase();
 
       if (mode === "reset") {
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-          normalizedEmail,
-          {
-            redirectTo: `${window.location.origin}/auth/callback?next=/auth/update-password`,
-          },
-        );
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+          redirectTo: `${window.location.origin}/auth/callback?next=/auth/update-password`,
+        });
 
         if (resetError) throw resetError;
         setMessage("If an account uses that email, a password reset link has been sent.");
@@ -179,10 +176,24 @@ export function AuthForm() {
       <div className={styles.switches}>
         {mode === "sign-in" ? (
           <>
-            <button type="button" onClick={() => { setMode("sign-up"); setError(""); setMessage(""); }}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("sign-up");
+                setError("");
+                setMessage("");
+              }}
+            >
               Create a new account
             </button>
-            <button type="button" onClick={() => { setMode("reset"); setError(""); setMessage(""); }}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("reset");
+                setError("");
+                setMessage("");
+              }}
+            >
               Forgot password?
             </button>
           </>

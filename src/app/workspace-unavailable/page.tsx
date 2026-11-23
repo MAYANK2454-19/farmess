@@ -11,7 +11,9 @@ export default function WorkspaceUnavailablePage() {
             Farmess currently has the farmer workspace connected. Buyer and service-provider
             workspaces are being built separately; your account role has not been changed.
           </p>
-          <Link href="/login" className="button button-secondary">Return to sign in</Link>
+          <Link href="/login" className="button button-secondary">
+            Return to sign in
+          </Link>
         </div>
       </section>
     </main>
