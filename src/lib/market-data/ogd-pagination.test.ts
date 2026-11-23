@@ -16,7 +16,10 @@ test("fetches multiple full pages using increasing offsets", async () => {
     new URL("https://example.test/resource"),
     250,
     async (url) => {
-      calls.push({ limit: url.searchParams.get("limit"), offset: url.searchParams.get("offset") });
+      calls.push({
+        limit: url.searchParams.get("limit"),
+        offset: url.searchParams.get("offset"),
+      });
       const offset = Number(url.searchParams.get("offset"));
       const limit = Number(url.searchParams.get("limit"));
       return jsonResponse(Array.from({ length: limit }, (_, index) => offset + index));
@@ -34,11 +37,15 @@ test("fetches multiple full pages using increasing offsets", async () => {
 test("preserves source filters and API parameters across pages", async () => {
   const calls: URL[] = [];
   await fetchOgdRecordsPaginated(
-    new URL("https://example.test/resource?api-key=secret&format=json&filters%5Bstate%5D=Rajasthan"),
+    new URL(
+      "https://example.test/resource?api-key=secret&format=json&filters%5Bstate%5D=Rajasthan",
+    ),
     150,
     async (url) => {
       calls.push(url);
-      return jsonResponse(Array.from({ length: Number(url.searchParams.get("limit")) }, () => ({})));
+      return jsonResponse(
+        Array.from({ length: Number(url.searchParams.get("limit")) }, () => ({})),
+      );
     },
   );
 
