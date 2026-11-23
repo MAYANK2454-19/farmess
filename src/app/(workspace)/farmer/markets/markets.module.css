@@ -155,6 +155,38 @@
   font-size: 11px;
 }
 
+.recordBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.freshnessTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 9px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.freshnessfresh {
+  color: #286247;
+  background: #e8f3eb;
+}
+
+.freshnessstale {
+  color: #765f35;
+  background: #fbf2df;
+}
+
+.freshnessfuture,
+.freshnessinvalid {
+  color: #8b3e3e;
+  background: #f9eaea;
+}
+
 .priceGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -232,6 +264,14 @@
 
   .recordCard {
     padding: 15px;
+  }
+
+  .recordTop {
+    flex-direction: column;
+  }
+
+  .recordBadges {
+    justify-content: flex-start;
   }
 
   .priceGrid {
