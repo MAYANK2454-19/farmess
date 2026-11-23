@@ -83,9 +83,15 @@ export type Database = {
           distance_meters: number
           feedback_note: string | null
           id: string
+          price_paise: number | null
+          provider_verification_state: string | null
           rank_position: number
+          rate_basis: string | null
           recommendation_version: string
           service_listing_id: string
+          service_radius_km: number | null
+          service_radius_match: boolean | null
+          service_type: string | null
           user_feedback: number | null
           user_id: string
         }
@@ -98,9 +104,15 @@ export type Database = {
           distance_meters: number
           feedback_note?: string | null
           id?: string
+          price_paise?: number | null
+          provider_verification_state?: string | null
           rank_position: number
+          rate_basis?: string | null
           recommendation_version: string
           service_listing_id: string
+          service_radius_km?: number | null
+          service_radius_match?: boolean | null
+          service_type?: string | null
           user_feedback?: number | null
           user_id: string
         }
@@ -113,9 +125,15 @@ export type Database = {
           distance_meters?: number
           feedback_note?: string | null
           id?: string
+          price_paise?: number | null
+          provider_verification_state?: string | null
           rank_position?: number
+          rate_basis?: string | null
           recommendation_version?: string
           service_listing_id?: string
+          service_radius_km?: number | null
+          service_radius_match?: boolean | null
+          service_type?: string | null
           user_feedback?: number | null
           user_id?: string
         }
