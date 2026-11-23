@@ -11,7 +11,7 @@ const comparison: MarketComparisonGroup = {
   observationDate: "2026-11-23",
   markets: [
     {
-      market: "=HYPERLINK(\"https://bad.example\")",
+      market: '=HYPERLINK("https://bad.example")',
       district: "Jaipur, Rural",
       state: "Rajasthan",
       observationCount: 2,
@@ -36,11 +36,11 @@ const comparison: MarketComparisonGroup = {
 test("exports each comparable mandi row with date, averaged price and provenance context", () => {
   const csv = marketPriceComparisonsToCsv([comparison]);
 
-  assert.ok(csv.startsWith("\\uFEFF"));
+  assert.ok(csv.startsWith("\uFEFF"));
   assert.match(csv, /"Commodity","Variety","Observation date","Mandi"/);
   assert.match(csv, /"Wheat, premium","Sharbati ""A""","2026-11-23"/);
   assert.match(csv, /"2250.50","2","2200.00","2301.00","249.50","11.09"/);
-  assert.equal(csv.split("\\r\\n").filter(Boolean).length, 3);
+  assert.equal(csv.split("\r\n").filter(Boolean).length, 3);
 });
 
 test("neutralizes spreadsheet formulas and escapes CSV delimiters and quotes", () => {
@@ -53,6 +53,6 @@ test("neutralizes spreadsheet formulas and escapes CSV delimiters and quotes", (
 test("returns a header-only UTF-8 CSV when there are no comparisons", () => {
   const csv = marketPriceComparisonsToCsv([]);
 
-  assert.ok(csv.startsWith("\\uFEFF"));
-  assert.equal(csv.split("\\r\\n").filter(Boolean).length, 1);
+  assert.ok(csv.startsWith("\uFEFF"));
+  assert.equal(csv.split("\r\n").filter(Boolean).length, 1);
 });
