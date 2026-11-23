@@ -54,7 +54,9 @@ export function BuyerOfferHistory() {
       })
       .catch((loadError: unknown) => {
         if (active) {
-          setError(loadError instanceof Error ? loadError.message : "Your offers could not be loaded.");
+          setError(
+            loadError instanceof Error ? loadError.message : "Your offers could not be loaded.",
+          );
         }
       })
       .finally(() => {
@@ -78,10 +80,14 @@ export function BuyerOfferHistory() {
       const result = (await response.json()) as { error?: string };
       if (!response.ok) throw new Error(result.error ?? "The offer could not be withdrawn.");
       setOffers((current) =>
-        current.map((offer) => offer.id === id ? { ...offer, status: "withdrawn" } : offer),
+        current.map((offer) => (offer.id === id ? { ...offer, status: "withdrawn" } : offer)),
       );
     } catch (withdrawError) {
-      setError(withdrawError instanceof Error ? withdrawError.message : "The offer could not be withdrawn.");
+      setError(
+        withdrawError instanceof Error
+          ? withdrawError.message
+          : "The offer could not be withdrawn.",
+      );
     } finally {
       setPendingId(null);
     }
@@ -91,17 +97,30 @@ export function BuyerOfferHistory() {
     <section className="panel" aria-labelledby="buyer-offer-history-heading">
       <div className="panel-header">
         <div>
-          <h2 className="panel-title" id="buyer-offer-history-heading">Offers sent</h2>
+          <h2 className="panel-title" id="buyer-offer-history-heading">
+            Offers sent
+          </h2>
           <p className="panel-caption">{loading ? "Loading…" : `${offers.length} sent offer(s)`}</p>
         </div>
       </div>
-      {error ? <p className="form-alert service-alert" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-alert service-alert" role="alert">
+          {error}
+        </p>
+      ) : null}
       {loading ? (
-        <div className="empty-state"><p className="empty-copy" role="status">Loading offers…</p></div>
+        <div className="empty-state">
+          <p className="empty-copy" role="status">
+            Loading offers…
+          </p>
+        </div>
       ) : offers.length === 0 ? (
         <div className="empty-state">
           <h3 className="empty-title">No offers sent</h3>
-          <p className="empty-copy">When you make an offer on a published produce lot, the terms and farmer decision will appear here.</p>
+          <p className="empty-copy">
+            When you make an offer on a published produce lot, the terms and farmer decision will
+            appear here.
+          </p>
         </div>
       ) : (
         <ul className="buyer-offer-list">
@@ -112,13 +131,20 @@ export function BuyerOfferHistory() {
               <li className="buyer-offer-row" key={offer.id}>
                 <div>
                   <strong>{money(offer.price_paise_per_quintal)} / quintal</strong>
-                  <span>{offer.quantity} {offer.unit} · {status}</span>
+                  <span>
+                    {offer.quantity} {offer.unit} · {status}
+                  </span>
                   <span>Valid until {when(offer.valid_until)}</span>
                   <time dateTime={offer.created_at}>Sent {when(offer.created_at)}</time>
                   {offer.terms ? <p>{offer.terms}</p> : null}
                 </div>
                 {offer.status === "pending" && !expired ? (
-                  <button className="text-link" type="button" onClick={() => void withdraw(offer.id)} disabled={pendingId === offer.id}>
+                  <button
+                    className="text-link"
+                    type="button"
+                    onClick={() => void withdraw(offer.id)}
+                    disabled={pendingId === offer.id}
+                  >
                     {pendingId === offer.id ? "Withdrawing…" : "Withdraw offer"}
                   </button>
                 ) : (
