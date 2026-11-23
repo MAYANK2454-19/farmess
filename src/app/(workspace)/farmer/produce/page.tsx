@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { LotStatusButton } from "@/features/lots/lot-status-button";
 
 function formatDate(value: string) {
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -45,12 +46,19 @@ export default async function MyProducePage() {
           <h1>My produce</h1>
           <p className="page-subtitle">
             Keep track of the crop, quantity, quality and collection details for each lot.
+            Drafts stay private until you publish them.
           </p>
         </div>
         <Link href="/farmer/produce/new" className="button button-primary">
           <Icon name="plus" size={16} /> Add a produce lot
         </Link>
       </div>
+
+      <p className="preview-footnote">
+        Publishing makes crop, grade, quantity, availability and a consented approximate locality visible to buyers.
+        Your private notes and contact details are not shown on the marketplace. Manage locality sharing in{" "}
+        <Link href="/profile" className="text-link">Profile & privacy</Link>.
+      </p>
 
       <section className="panel" aria-labelledby="lots-heading">
         <div className="panel-header">
@@ -84,6 +92,7 @@ export default async function MyProducePage() {
                   <th scope="col">Available from</th>
                   <th scope="col">Sell by</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Marketplace</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,6 +117,9 @@ export default async function MyProducePage() {
                       <span className={"produce-status produce-status-" + lot.status}>
                         {formatStatus(lot.status)}
                       </span>
+                    </td>
+                    <td>
+                      <LotStatusButton lotId={lot.id} status={lot.status} />
                     </td>
                   </tr>
                 ))}
