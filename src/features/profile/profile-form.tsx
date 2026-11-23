@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 
 type Profile = Pick<
