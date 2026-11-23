@@ -44,10 +44,16 @@ function optionalText(
 export async function GET() {
   const session = await getFarmessSession();
   if (!session) {
-    return NextResponse.json({ error: "Sign in to view transport and storage services." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sign in to view transport and storage services." },
+      { status: 401 },
+    );
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "This service-request view is for farmer accounts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "This service-request view is for farmer accounts." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -67,7 +73,10 @@ export async function GET() {
   ]);
 
   if (listingsResult.error || requestsResult.error) {
-    return NextResponse.json({ error: "Unable to load transport and storage records." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to load transport and storage records." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json(
@@ -89,7 +98,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sign in before requesting a service." }, { status: 401 });
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Only a farmer account can request these services." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only a farmer account can request these services." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -113,7 +125,9 @@ export async function POST(request: NextRequest) {
     !isRecord(body) ||
     Object.keys(body).some((key) => !allowedKeys.includes(key as (typeof allowedKeys)[number])) ||
     typeof body.listing_id !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.listing_id)
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      body.listing_id,
+    )
   ) {
     return NextResponse.json({ error: "Select a valid service listing." }, { status: 400 });
   }
@@ -123,11 +137,18 @@ export async function POST(request: NextRequest) {
   const message = optionalText(body, "message", 1000);
 
   if (!originArea.valid || !destinationArea.valid || !message.valid) {
-    return NextResponse.json({ error: "Check the area and message fields; one or more values are too long or invalid." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Check the area and message fields; one or more values are too long or invalid." },
+      { status: 400 },
+    );
   }
 
   let requestedDate: string | null = null;
-  if (body.requested_date !== undefined && body.requested_date !== null && body.requested_date !== "") {
+  if (
+    body.requested_date !== undefined &&
+    body.requested_date !== null &&
+    body.requested_date !== ""
+  ) {
     if (typeof body.requested_date !== "string" || !isCalendarDate(body.requested_date)) {
       return NextResponse.json({ error: "Enter a valid requested date." }, { status: 400 });
     }
@@ -135,12 +156,18 @@ export async function POST(request: NextRequest) {
   }
 
   let requestedQuantity: number | null = null;
-  if (body.requested_quantity !== undefined && body.requested_quantity !== null && body.requested_quantity !== "") {
-    const numeric = typeof body.requested_quantity === "number"
-      ? body.requested_quantity
-      : typeof body.requested_quantity === "string" && /^\d+(?:\.\d{1,3})?$/.test(body.requested_quantity)
-        ? Number(body.requested_quantity)
-        : Number.NaN;
+  if (
+    body.requested_quantity !== undefined &&
+    body.requested_quantity !== null &&
+    body.requested_quantity !== ""
+  ) {
+    const numeric =
+      typeof body.requested_quantity === "number"
+        ? body.requested_quantity
+        : typeof body.requested_quantity === "string" &&
+            /^\d+(?:\.\d{1,3})?$/.test(body.requested_quantity)
+          ? Number(body.requested_quantity)
+          : Number.NaN;
 
     if (!Number.isFinite(numeric) || numeric <= 0 || numeric > Number.MAX_SAFE_INTEGER) {
       return NextResponse.json({ error: "Enter a valid positive quantity." }, { status: 400 });
@@ -157,13 +184,18 @@ export async function POST(request: NextRequest) {
   }
 
   if ((requestedQuantity === null) !== (unit === null)) {
-    return NextResponse.json({ error: "Select both a quantity and its unit, or leave both blank." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Select both a quantity and its unit, or leave both blank." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
   const { data: listing, error: listingError } = await supabase
     .from("service_listings")
-    .select("id,operator_id,service_type,service_area,destination_area,available_from,available_until")
+    .select(
+      "id,operator_id,service_type,service_area,destination_area,available_from,available_until",
+    )
     .eq("id", body.listing_id)
     .eq("status", "active")
     .maybeSingle();
@@ -189,7 +221,10 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "The service request could not be saved. The listing may have changed." }, { status: 409 });
+    return NextResponse.json(
+      { error: "The service request could not be saved. The listing may have changed." },
+      { status: 409 },
+    );
   }
 
   return NextResponse.json(
