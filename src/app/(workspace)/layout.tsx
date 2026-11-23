@@ -7,6 +7,8 @@ export default async function WorkspaceRootLayout({ children }: { children: Reac
   const session = await getFarmessSession();
 
   if (!session) redirect("/login");
+  // Admin workflows are intentionally not exposed through the operator workspace.
+  if (session.role === "admin") redirect("/workspace-unavailable");
 
   return (
     <WorkspaceLayout
