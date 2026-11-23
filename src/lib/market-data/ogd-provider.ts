@@ -1,6 +1,7 @@
 import "server-only";
 
 import { assessMarketSourceDateIntegrity } from "./source-integrity";
+import { fetchOgdRecordsPaginated } from "./ogd-pagination";
 import { normalizeOgdResponse, OGD_API_URL, SOURCE_NAME } from "./normalize";
 import type { MarketDataResult, MarketSearchFilters } from "./types";
 
@@ -29,31 +30,14 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
   const url = new URL(OGD_API_URL);
   url.searchParams.set("api-key", apiKey);
   url.searchParams.set("format", "json");
-  url.searchParams.set("limit", String(safeLimit(filters.limit)));
-  url.searchParams.set("offset", "0");
   if (filters.commodity) url.searchParams.set("filters[commodity]", filters.commodity);
   if (filters.state) url.searchParams.set("filters[state]", filters.state);
   if (filters.district) url.searchParams.set("filters[district]", filters.district);
   if (filters.market) url.searchParams.set("filters[market]", filters.market);
 
   try {
-    const response = await fetch(url, {
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
-
-    if (!response.ok) {
-      return {
-        status: "unavailable",
-        records: [],
-        retrievedAt,
-        sourceName: SOURCE_NAME,
-        message: `OGD India returned HTTP ${response.status}. Try again later.`,
-      };
-    }
-
-    const records = normalizeOgdResponse(await response.json(), retrievedAt);
+    const rawRecords = await fetchOgdRecordsPaginated(url, safeLimit(filters.limit));
+    const records = normalizeOgdResponse({ records: rawRecords }, retrievedAt);
     const dateIntegrity = assessMarketSourceDateIntegrity(
       records.map((record) => record.observationDate),
       retrievedAt,
