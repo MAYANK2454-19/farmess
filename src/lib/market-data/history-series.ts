@@ -57,6 +57,12 @@ export type MarketHistoryBuildResult = {
   discardedDuplicateCount: number;
 };
 
+type ValidatedRecord = {
+  record: MarketPriceRecord;
+  point: MarketHistoryPoint;
+  groupingKey: string;
+};
+
 type SeriesBucket = {
   firstRecord: MarketPriceRecord;
   pointsById: Map<string, MarketHistoryPoint>;
