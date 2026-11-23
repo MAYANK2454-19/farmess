@@ -54,6 +54,13 @@ export default function MarketsPage() {
     EMPTY_MARKET_RECORD_FILTERS,
   );
   const [recordFilterError, setRecordFilterError] = useState("");
+  const [draftRecordFilters, setDraftRecordFilters] = useState<MarketRecordFilters>(
+    EMPTY_MARKET_RECORD_FILTERS,
+  );
+  const [appliedRecordFilters, setAppliedRecordFilters] = useState<MarketRecordFilters>(
+    EMPTY_MARKET_RECORD_FILTERS,
+  );
+  const [recordFilterError, setRecordFilterError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -99,8 +106,28 @@ export default function MarketsPage() {
     void loadPrices(EMPTY_FILTERS);
   }
 
+  function handleRecordFilterSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      filterMarketPriceRecords(records, draftRecordFilters);
+      setAppliedRecordFilters(draftRecordFilters);
+      setRecordFilterError("");
+    } catch (filterError) {
+      setRecordFilterError(
+        filterError instanceof Error ? filterError.message : "Check the advanced filter values.",
+      );
+    }
+  }
+
+  function handleRecordFilterReset() {
+    setDraftRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
+    setAppliedRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
+    setRecordFilterError("");
+  }
+
   const records = result?.records ?? [];
-  const sortedRecords = sortMarketPriceRecords(records, sortOrder);
+  const filteredRecords = filterMarketPriceRecords(records, appliedRecordFilters);
+  const sortedRecords = sortMarketPriceRecords(filteredRecords, sortOrder);
 
   function handleExport() {
     if (sortedRecords.length === 0) return;
@@ -223,6 +250,84 @@ export default function MarketsPage() {
             </button>
           </div>
         </form>
+        <form className={styles.advancedFilters} onSubmit={handleRecordFilterSubmit}>
+          <div className={styles.advancedFiltersHeading}>
+            <div>
+              <h3>Advanced filters</h3>
+              <p>Refine the returned observations by date and modal price (₹/quintal).</p>
+            </div>
+          </div>
+          <label className="form-field">
+            <span className="form-label">From date</span>
+            <input
+              className="form-control"
+              type="date"
+              value={draftRecordFilters.fromDate}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, fromDate: event.target.value })
+              }
+            />
+          </label>
+          <label className="form-field">
+            <span className="form-label">To date</span>
+            <input
+              className="form-control"
+              type="date"
+              value={draftRecordFilters.toDate}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, toDate: event.target.value })
+              }
+            />
+          </label>
+          <label className="form-field">
+            <span className="form-label">Minimum modal price (₹)</span>
+            <input
+              className="form-control"
+              type="number"
+              min="0"
+              step="any"
+              inputMode="decimal"
+              value={draftRecordFilters.minModalPrice}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, minModalPrice: event.target.value })
+              }
+              placeholder="No minimum"
+            />
+          </label>
+          <label className="form-field">
+            <span className="form-label">Maximum modal price (₹)</span>
+            <input
+              className="form-control"
+              type="number"
+              min="0"
+              step="any"
+              inputMode="decimal"
+              value={draftRecordFilters.maxModalPrice}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, maxModalPrice: event.target.value })
+              }
+              placeholder="No maximum"
+            />
+          </label>
+          <div className={styles.advancedFilterActions}>
+            <button className="button button-primary" type="submit" disabled={loading}>
+              Apply advanced filters
+            </button>
+            <button
+              className="button button-secondary"
+              type="button"
+              onClick={handleRecordFilterReset}
+              disabled={loading}
+            >
+              Clear advanced filters
+            </button>
+          </div>
+          {recordFilterError && (
+            <p className={styles.filterError} role="alert">
+              {recordFilterError}
+            </p>
+          )}
+        </form>
       </section>
 
       <section
@@ -299,7 +404,17 @@ export default function MarketsPage() {
 
         {!loading && <MarketForecastPanel crop={filters.commodity} market={filters.market} />}
 
-        {!loading && records.length > 0 && filteredRecords.length === 0 && (\n          <div className={`panel ${styles.statePanel}`} role="status">\n            <strong>No observations match these advanced filters</strong>\n            <p>Widen the date or modal-price range, or clear the advanced filters to see all returned records.</p>\n          </div>\n        )}\n\n        {!loading && filteredRecords.length > 0 && (
+        {!loading && records.length > 0 && filteredRecords.length === 0 && (
+          <div className={`panel ${styles.statePanel}`} role="status">
+            <strong>No observations match these advanced filters</strong>
+            <p>
+              Widen the date or modal-price range, or clear the advanced filters to see all returned
+              records.
+            </p>
+          </div>
+        )}
+
+        {!loading && filteredRecords.length > 0 && (
           <>
             <div className={styles.listToolbar}>
               <p>Choose how market observations are ordered.</p>
