@@ -39,12 +39,7 @@ test("buyer-to-farmer journey records accepted offers and truthful sale history"
     reason: "Only the lot-owning farmer can respond.",
   });
 
-  const accepted = transitionOffer(
-    offer,
-    { id: "farmer-1", role: "farmer" },
-    "accept",
-    fixedNow,
-  );
+  const accepted = transitionOffer(offer, { id: "farmer-1", role: "farmer" }, "accept", fixedNow);
   assert.deepEqual(accepted, { status: "accepted", changed: true });
 
   const buyerNotification = createNotificationDraft({
