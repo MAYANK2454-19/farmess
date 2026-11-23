@@ -31,9 +31,8 @@ export async function GET() {
   const supabase = await createClient();
   const [lotsResult, offersResult] = await Promise.all([
     supabase
-      .from("produce_lots")
-      .select("id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by")
-      .eq("status", "published")
+      .from("buyer_marketplace_lots")
+      .select("id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,created_at")
       .order("created_at", { ascending: false })
       .limit(100),
     supabase
@@ -144,55 +143,30 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { data: lot, error: lotError } = await supabase
-    .from("produce_lots")
-    .select("id,owner_id,quantity,unit,status")
-    .eq("id", body.lot_id)
-    .eq("status", "published")
-    .maybeSingle();
+  const { data, error } = await supabase.rpc("create_buyer_offer", {
+    p_lot_id: body.lot_id,
+    p_quantity: quantity,
+    p_unit: body.unit,
+    p_price_paise_per_quintal: price,
+    p_valid_until: new Date(body.valid_until).toISOString(),
+    p_terms: terms,
+  });
 
-  if (lotError || !lot) {
-    return NextResponse.json(
-      { error: "This produce lot is no longer available." },
-      { status: 404 },
-    );
-  }
-
-  if (lot.owner_id === session.userId || lot.unit !== body.unit || quantity > lot.quantity) {
-    return NextResponse.json(
-      { error: "Offer quantity, unit or lot ownership does not match this listing." },
-      { status: 400 },
-    );
-  }
-
-  const { data, error } = await supabase
-    .from("offers")
-    .insert({
-      buyer_id: session.userId,
-      farmer_id: lot.owner_id,
-      lot_id: lot.id,
-      quantity,
-      unit: body.unit,
-      price_paise_per_quintal: price,
-      valid_until: new Date(body.valid_until).toISOString(),
-      terms,
-      status: "pending",
-    })
-    .select(OFFER_SELECT)
-    .single();
-
-  if (error) {
+  const createdOffer = Array.isArray(data) ? data[0] : null;
+  if (error || !createdOffer) {
     return NextResponse.json(
       {
         error:
-          "The offer could not be sent. The lot may have changed or its available quantity may be committed.",
+          error?.message === "A buyer cannot make an offer on their own lot."
+            ? "You cannot make an offer on your own produce."
+            : "The offer could not be sent. The lot may have changed or its available quantity may be committed.",
       },
       { status: 409 },
     );
   }
 
   return NextResponse.json(
-    { offer: { ...data, is_expired: false } },
+    { offer: { ...createdOffer, is_expired: false } },
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
   );
 }
