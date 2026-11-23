@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { NearbyServiceCandidate, LogisticsRecommendation } from "@/features/logistics/recommendations";
+import type { LogisticsRecommendation } from "@/features/logistics/recommendations";
 
 type Origin = { latitude: number; longitude: number };
 
