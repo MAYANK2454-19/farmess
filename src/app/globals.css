@@ -3165,3 +3165,127 @@ h1 {
     width: 100%;
   }
 }
+
+
+.buyer-matches {
+  display: grid;
+  gap: 20px;
+}
+
+.buyer-match-group {
+  overflow: hidden;
+}
+
+.buyer-match-count {
+  flex: 0 0 auto;
+  color: #738175;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.buyer-match-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.buyer-match-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.buyer-match-row:last-child {
+  border-bottom: 0;
+}
+
+.buyer-match-main {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.buyer-match-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.buyer-match-title strong {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.buyer-match-main > p,
+.buyer-match-main > span {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.buyer-match-reasons {
+  display: grid;
+  gap: 3px;
+  margin: 5px 0 0;
+  padding-left: 17px;
+  color: #5e6e61;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.buyer-match-unknown {
+  padding: 8px 10px;
+  background: #fbf8f0;
+  border-left: 2px solid #c5a56d;
+}
+
+.buyer-match-actions {
+  display: grid;
+  flex: 0 0 auto;
+  justify-items: end;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.buyer-match-actions > span {
+  color: #738175;
+  font-size: 9px;
+}
+
+.produce-status-partial {
+  color: #745927;
+  background: #fbf6e9;
+  border-color: #eadfc5;
+}
+
+.produce-status-match {
+  color: #235d36;
+  background: #eaf4e9;
+  border-color: #cfe3ce;
+}
+
+.produce-status-no_match {
+  color: #6a746b;
+  background: #f2f4f0;
+  border-color: #dce2d9;
+}
+
+@media (max-width: 720px) {
+  .buyer-match-row {
+    flex-direction: column;
+    gap: 13px;
+    padding-inline: 15px;
+  }
+
+  .buyer-match-actions {
+    width: 100%;
+    justify-items: start;
+  }
+}
+
