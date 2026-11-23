@@ -29,6 +29,7 @@ export function ProfileForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export function ProfileForm() {
         if (active) setProfile(result.profile);
       } catch (loadError) {
         if (active) {
-          setError(
+          setLoadError(
             loadError instanceof Error ? loadError.message : "Your profile could not be loaded.",
           );
         }
@@ -110,6 +111,10 @@ export function ProfileForm() {
         {loading ? (
           <p className="form-help" role="status">
             Loading account details…
+          </p>
+        ) : loadError ? (
+          <p className="form-alert" role="alert">
+            {loadError} Refresh the page before editing your account.
           </p>
         ) : (
           <>
@@ -183,7 +188,7 @@ export function ProfileForm() {
             className="privacy-checkbox"
             type="checkbox"
             checked={profile.approximate_location_sharing}
-            disabled={loading || saving}
+            disabled={loading || saving || Boolean(loadError)}
             onChange={(event) => update("approximate_location_sharing", event.target.checked)}
           />
         </label>
@@ -200,7 +205,7 @@ export function ProfileForm() {
             className="privacy-checkbox"
             type="checkbox"
             checked={profile.exact_location_disclosure}
-            disabled={loading || saving}
+            disabled={loading || saving || Boolean(loadError)}
             onChange={(event) => update("exact_location_disclosure", event.target.checked)}
           />
         </label>
@@ -216,7 +221,7 @@ export function ProfileForm() {
             className="privacy-checkbox"
             type="checkbox"
             checked={profile.buyer_contact_disclosure}
-            disabled={loading || saving}
+            disabled={loading || saving || Boolean(loadError)}
             onChange={(event) => update("buyer_contact_disclosure", event.target.checked)}
           />
         </label>
@@ -232,7 +237,7 @@ export function ProfileForm() {
             className="privacy-checkbox"
             type="checkbox"
             checked={profile.provider_contact_disclosure}
-            disabled={loading || saving}
+            disabled={loading || saving || Boolean(loadError)}
             onChange={(event) => update("provider_contact_disclosure", event.target.checked)}
           />
         </label>
@@ -252,7 +257,7 @@ export function ProfileForm() {
             className="button button-primary"
             type="button"
             onClick={() => void submitProfile()}
-            disabled={loading || saving}
+            disabled={loading || saving || Boolean(loadError)}
           >
             {saving ? "Saving…" : "Save privacy choices"}
           </button>
