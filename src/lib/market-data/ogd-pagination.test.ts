@@ -12,12 +12,16 @@ function jsonResponse(records: unknown[], status = 200): Response {
 
 test("fetches multiple full pages using increasing offsets", async () => {
   const calls: Array<{ limit: string | null; offset: string | null }> = [];
-  const records = await fetchOgdRecordsPaginated(new URL("https://example.test/resource"), 250, async (url) => {
-    calls.push({ limit: url.searchParams.get("limit"), offset: url.searchParams.get("offset") });
-    const offset = Number(url.searchParams.get("offset"));
-    const limit = Number(url.searchParams.get("limit"));
-    return jsonResponse(Array.from({ length: limit }, (_, index) => offset + index));
-  });
+  const records = await fetchOgdRecordsPaginated(
+    new URL("https://example.test/resource"),
+    250,
+    async (url) => {
+      calls.push({ limit: url.searchParams.get("limit"), offset: url.searchParams.get("offset") });
+      const offset = Number(url.searchParams.get("offset"));
+      const limit = Number(url.searchParams.get("limit"));
+      return jsonResponse(Array.from({ length: limit }, (_, index) => offset + index));
+    },
+  );
 
   assert.equal(records.length, 250);
   assert.deepEqual(calls, [
@@ -27,12 +31,35 @@ test("fetches multiple full pages using increasing offsets", async () => {
   ]);
 });
 
+test("preserves source filters and API parameters across pages", async () => {
+  const calls: URL[] = [];
+  await fetchOgdRecordsPaginated(
+    new URL("https://example.test/resource?api-key=secret&format=json&filters%5Bstate%5D=Rajasthan"),
+    150,
+    async (url) => {
+      calls.push(url);
+      return jsonResponse(Array.from({ length: Number(url.searchParams.get("limit")) }, () => ({})));
+    },
+  );
+
+  assert.equal(calls.length, 2);
+  for (const url of calls) {
+    assert.equal(url.searchParams.get("api-key"), "secret");
+    assert.equal(url.searchParams.get("format"), "json");
+    assert.equal(url.searchParams.get("filters[state]"), "Rajasthan");
+  }
+});
+
 test("stops when the source returns a short page", async () => {
   let calls = 0;
-  const records = await fetchOgdRecordsPaginated(new URL("https://example.test/resource"), 250, async () => {
-    calls += 1;
-    return jsonResponse([1, 2, 3]);
-  });
+  const records = await fetchOgdRecordsPaginated(
+    new URL("https://example.test/resource"),
+    250,
+    async () => {
+      calls += 1;
+      return jsonResponse([1, 2, 3]);
+    },
+  );
 
   assert.deepEqual(records, [1, 2, 3]);
   assert.equal(calls, 1);
@@ -75,8 +102,10 @@ test("rejects malformed page payloads", async () => {
 
 test("rejects limits outside the supported source request range", async () => {
   await assert.rejects(
-    fetchOgdRecordsPaginated(new URL("https://example.test/resource"), 501, async () =>
-      jsonResponse([]),
+    fetchOgdRecordsPaginated(
+      new URL("https://example.test/resource"),
+      501,
+      async () => jsonResponse([]),
     ),
     /limit must be a whole number/,
   );
