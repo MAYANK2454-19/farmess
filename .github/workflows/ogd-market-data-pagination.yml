@@ -67,7 +67,7 @@ jobs:
 
       - name: Focused OGD tests
         if: always()
-        run: node --experimental-strip-types --test src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/normalize-diagnostics.test.ts
+        run: node --experimental-strip-types --test src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/normalize-diagnostics.test.ts src/lib/market-data/source-quality.test.ts
 
       - name: Production build
         if: always()
