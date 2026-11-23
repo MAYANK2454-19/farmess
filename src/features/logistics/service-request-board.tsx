@@ -237,27 +237,40 @@ export function ServiceRequestBoard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function load() {
-    setError("");
-    try {
-      const response = await fetch("/api/service-requests", { cache: "no-store" });
-      const result = (await response.json()) as {
-        listings?: Listing[];
-        requests?: ServiceRequest[];
-        error?: string;
-      };
-      if (!response.ok) throw new Error(result.error ?? "Services could not be loaded.");
-      setListings(result.listings ?? []);
-      setRequests(result.requests ?? []);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Services could not be loaded.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    void load();
+    let active = true;
+
+    void fetch("/api/service-requests", { cache: "no-store" })
+      .then(async (response) => {
+        const result = (await response.json()) as {
+          listings?: Listing[];
+          requests?: ServiceRequest[];
+          error?: string;
+        };
+        if (!response.ok) {
+          throw new Error(result.error ?? "Services could not be loaded.");
+        }
+        if (active) {
+          setListings(result.listings ?? []);
+          setRequests(result.requests ?? []);
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (active) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Services could not be loaded.",
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   function addRequest(request: ServiceRequest) {
