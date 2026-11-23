@@ -77,7 +77,10 @@ function ListingCard({
     setError("");
 
     const numericQuantity = quantity.trim() ? Number(quantity) : null;
-    if (quantity.trim() && (!Number.isFinite(numericQuantity) || numericQuantity === null || numericQuantity <= 0)) {
+    if (
+      quantity.trim() &&
+      (!Number.isFinite(numericQuantity) || numericQuantity === null || numericQuantity <= 0)
+    ) {
       setError("Enter a valid positive quantity.");
       setPending(false);
       return;
@@ -109,7 +112,11 @@ function ListingCard({
       onRequested(result.request);
       setSent(true);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Your service request could not be sent.");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Your service request could not be sent.",
+      );
     } finally {
       setPending(false);
     }
@@ -119,16 +126,24 @@ function ListingCard({
     <article className="service-listing">
       <div className="service-listing-heading">
         <div>
-          <p className="eyebrow">{listing.service_type === "transport" ? "Transport" : "Storage"}</p>
+          <p className="eyebrow">
+            {listing.service_type === "transport" ? "Transport" : "Storage"}
+          </p>
           <h3>{listing.title}</h3>
         </div>
         <strong className="service-price">{formatPrice(listing.price_paise)}</strong>
       </div>
-      <p className="service-area">{listing.service_area}{listing.destination_area ? ` → ${listing.destination_area}` : ""}</p>
+      <p className="service-area">
+        {listing.service_area}
+        {listing.destination_area ? ` → ${listing.destination_area}` : ""}
+      </p>
       {listing.description ? <p className="service-description">{listing.description}</p> : null}
       <p className="service-availability">
-        Available {formatDate(listing.available_from)}{listing.available_until ? ` to ${formatDate(listing.available_until)}` : ""}
-        {listing.capacity_quantity !== null ? ` · Capacity ${listing.capacity_quantity} ${listing.capacity_unit ?? ""}` : ""}
+        Available {formatDate(listing.available_from)}
+        {listing.available_until ? ` to ${formatDate(listing.available_until)}` : ""}
+        {listing.capacity_quantity !== null
+          ? ` · Capacity ${listing.capacity_quantity} ${listing.capacity_unit ?? ""}`
+          : ""}
       </p>
 
       {sent ? (
@@ -141,21 +156,49 @@ function ListingCard({
           <form className="service-request-form" onSubmit={submit}>
             <label className="form-field">
               <span className="form-label">Collection / origin area</span>
-              <input className="form-control" value={originArea} onChange={(event) => setOriginArea(event.target.value)} maxLength={160} placeholder="Village or market area" />
+              <input
+                className="form-control"
+                value={originArea}
+                onChange={(event) => setOriginArea(event.target.value)}
+                maxLength={160}
+                placeholder="Village or market area"
+              />
             </label>
             <label className="form-field">
               <span className="form-label">Destination area</span>
-              <input className="form-control" value={destinationArea} onChange={(event) => setDestinationArea(event.target.value)} maxLength={160} placeholder="Where the produce should go" />
+              <input
+                className="form-control"
+                value={destinationArea}
+                onChange={(event) => setDestinationArea(event.target.value)}
+                maxLength={160}
+                placeholder="Where the produce should go"
+              />
             </label>
             <label className="form-field">
               <span className="form-label">Requested date</span>
-              <input className="form-control" type="date" value={date} onChange={(event) => setDate(event.target.value)} />
+              <input
+                className="form-control"
+                type="date"
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+              />
             </label>
             <div className="form-field">
               <span className="form-label">Quantity (optional)</span>
               <div className="service-quantity">
-                <input className="form-control" inputMode="decimal" value={quantity} onChange={(event) => setQuantity(event.target.value)} placeholder="e.g. 10" />
-                <select className="form-control" value={unit} onChange={(event) => setUnit(event.target.value)} aria-label="Quantity unit">
+                <input
+                  className="form-control"
+                  inputMode="decimal"
+                  value={quantity}
+                  onChange={(event) => setQuantity(event.target.value)}
+                  placeholder="e.g. 10"
+                />
+                <select
+                  className="form-control"
+                  value={unit}
+                  onChange={(event) => setUnit(event.target.value)}
+                  aria-label="Quantity unit"
+                >
                   <option value="kg">kg</option>
                   <option value="quintal">quintal</option>
                   <option value="tonne">tonne</option>
@@ -164,9 +207,20 @@ function ListingCard({
             </div>
             <label className="form-field service-message">
               <span className="form-label">Message (optional)</span>
-              <textarea className="form-control" rows={3} value={message} onChange={(event) => setMessage(event.target.value)} maxLength={1000} placeholder="Share details the provider needs to assess your request" />
+              <textarea
+                className="form-control"
+                rows={3}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                maxLength={1000}
+                placeholder="Share details the provider needs to assess your request"
+              />
             </label>
-            {error ? <p className="form-alert" role="alert">{error}</p> : null}
+            {error ? (
+              <p className="form-alert" role="alert">
+                {error}
+              </p>
+            ) : null}
             <button className="button button-primary" type="submit" disabled={pending}>
               {pending ? "Sending…" : "Send service request"}
             </button>
@@ -210,24 +264,39 @@ export function ServiceRequestBoard() {
     setRequests((current) => [request, ...current]);
   }
 
-  const listingTitle = (id: string) => listings.find((listing) => listing.id === id)?.title ?? "Service listing";
+  const listingTitle = (id: string) =>
+    listings.find((listing) => listing.id === id)?.title ?? "Service listing";
 
   return (
     <div className="service-board">
       <section className="panel" aria-labelledby="service-listings-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="service-listings-heading">Available services</h2>
-            <p className="panel-caption">Active transport and storage listings from service providers</p>
+            <h2 className="panel-title" id="service-listings-heading">
+              Available services
+            </h2>
+            <p className="panel-caption">
+              Active transport and storage listings from service providers
+            </p>
           </div>
         </div>
-        {error ? <p className="form-alert service-alert" role="alert">{error}</p> : null}
+        {error ? (
+          <p className="form-alert service-alert" role="alert">
+            {error}
+          </p>
+        ) : null}
         {loading ? (
-          <div className="empty-state"><p className="empty-copy" role="status">Loading services…</p></div>
+          <div className="empty-state">
+            <p className="empty-copy" role="status">
+              Loading services…
+            </p>
+          </div>
         ) : listings.length === 0 ? (
           <div className="empty-state">
             <h3 className="empty-title">No active services listed</h3>
-            <p className="empty-copy">When verified transport and storage providers publish a service, it will appear here.</p>
+            <p className="empty-copy">
+              When verified transport and storage providers publish a service, it will appear here.
+            </p>
           </div>
         ) : (
           <div className="service-list">
@@ -241,14 +310,18 @@ export function ServiceRequestBoard() {
       <section className="panel" aria-labelledby="service-requests-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="service-requests-heading">My requests</h2>
+            <h2 className="panel-title" id="service-requests-heading">
+              My requests
+            </h2>
             <p className="panel-caption">{requests.length} request(s) from your account</p>
           </div>
         </div>
         {requests.length === 0 ? (
           <div className="empty-state">
             <h3 className="empty-title">No service requests yet</h3>
-            <p className="empty-copy">Requests you send to a provider will appear here with their current status.</p>
+            <p className="empty-copy">
+              Requests you send to a provider will appear here with their current status.
+            </p>
           </div>
         ) : (
           <ul className="service-request-list">
@@ -256,10 +329,17 @@ export function ServiceRequestBoard() {
               <li className="service-request-row" key={request.id}>
                 <div>
                   <strong>{listingTitle(request.listing_id)}</strong>
-                  <span>{request.origin_area ?? "Origin not specified"}{request.destination_area ? ` → ${request.destination_area}` : ""}</span>
-                  <time dateTime={request.created_at}>Requested {formatDate(request.created_at.slice(0, 10))}</time>
+                  <span>
+                    {request.origin_area ?? "Origin not specified"}
+                    {request.destination_area ? ` → ${request.destination_area}` : ""}
+                  </span>
+                  <time dateTime={request.created_at}>
+                    Requested {formatDate(request.created_at.slice(0, 10))}
+                  </time>
                 </div>
-                <span className={"produce-status produce-status-" + request.status}>{request.status}</span>
+                <span className={"produce-status produce-status-" + request.status}>
+                  {request.status}
+                </span>
               </li>
             ))}
           </ul>
