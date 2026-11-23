@@ -31,7 +31,7 @@ const records = [
   record("middle", "2026-11-21", "2200"),
   record("high", "2026-11-23", "2800"),
   record("missing", "2026-11-22", null),
-  record("invalid", "not-a-date", "2400"),
+  record("invalid", "2026-11-22", "not-a-price"),
 ];
 
 test("returns a new list with all records when no filters are active", () => {
@@ -74,6 +74,18 @@ test("combines date and modal-price filters", () => {
   assert.deepEqual(
     result.map(({ id }) => id),
     ["middle", "high"],
+  );
+});
+
+
+test("excludes malformed observation dates only when a date bound is active", () => {
+  const result = filterMarketPriceRecords(records, {
+    ...EMPTY_MARKET_RECORD_FILTERS,
+    fromDate: "2026-11-20",
+  });
+  assert.deepEqual(
+    result.map(({ id }) => id),
+    ["middle", "high", "missing"],
   );
 });
 
