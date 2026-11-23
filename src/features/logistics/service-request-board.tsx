@@ -208,7 +208,6 @@ export function ServiceRequestBoard() {
 
   function addRequest(request: ServiceRequest) {
     setRequests((current) => [request, ...current]);
-    setListings((current) => current);
   }
 
   const listingTitle = (id: string) => listings.find((listing) => listing.id === id)?.title ?? "Service listing";
