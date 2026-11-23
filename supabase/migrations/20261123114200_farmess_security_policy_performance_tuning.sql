@@ -1,6 +1,5 @@
--- Consolidate read policies and remove repeated per-row JWT evaluation.
--- This migration belongs after market-data ingestion and forecast-review foundations.
-
+-- Consolidate role/visibility reads and index audit foreign keys.
+-- Keep this migration after market-data ingestion and forecast-review foundations.
 drop policy if exists market_forecast_runs_read_approved on public.market_forecast_runs;
 drop policy if exists market_forecast_runs_admin_select on public.market_forecast_runs;
 create policy market_forecast_runs_read_approved_or_admin
@@ -98,15 +97,11 @@ create policy market_forecast_review_events_admin_select
   using (coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'farmess_role'),'')='admin');
 
 drop policy if exists produce_lots_select_own on public.produce_lots;
-drop policy if exists produce_lots_select_published_for_buyers on public.produce_lots;
-create policy produce_lots_select_visible
+create policy produce_lots_select_own
   on public.produce_lots for select to authenticated
   using (
     (select auth.uid())=owner_id
-    or (
-      status='published'
-      and coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'farmess_role'),'')='buyer'
-    )
+    and coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'farmess_role'),'')='farmer'
   );
 
 create index if not exists market_data_ingestion_runs_actor_user_idx
