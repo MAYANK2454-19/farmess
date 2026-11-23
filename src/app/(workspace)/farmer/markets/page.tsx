@@ -157,7 +157,11 @@ export default function MarketsPage() {
   function handleRecordFilterReset() {
     setDraftRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
     setAppliedRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
-    updateSearchUrl({ filters: appliedFilters, recordFilters: EMPTY_MARKET_RECORD_FILTERS, sortOrder });
+    updateSearchUrl({
+      filters: appliedFilters,
+      recordFilters: EMPTY_MARKET_RECORD_FILTERS,
+      sortOrder,
+    });
     setRecordFilterError("");
   }
 
@@ -406,7 +410,7 @@ export default function MarketsPage() {
             <button
               className="button button-secondary"
               type="button"
-              onClick={() => void loadPrices(filters)}
+              onClick={() => void loadPrices(appliedFilters)}
             >
               Try again
             </button>
