@@ -27,7 +27,7 @@ export function validateOfferTerms(input: OfferTermsInput, now = new Date()): Of
     errors.push("Quantity must be a finite positive number.");
   }
 
-  if (!Number.isInteger(input.pricePaise) || input.pricePaise <= 0) {
+  if (!Number.isSafeInteger(input.pricePaise) || input.pricePaise <= 0) {
     errors.push("Price must be a positive integer number of paise.");
   }
 
