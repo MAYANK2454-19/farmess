@@ -7,15 +7,18 @@ import { Icon } from "@/components/icons";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
   ACCOUNT_NAVIGATION,
-  FARMER_NAVIGATION,
-  MOBILE_NAVIGATION,
+  NAVIGATION_BY_ROLE,
+  MOBILE_NAVIGATION_BY_ROLE,
   getWorkspacePageLabel,
   isActiveRoute,
 } from "@/lib/routes";
 
+type WorkspaceRole = keyof typeof NAVIGATION_BY_ROLE;
+
 type WorkspaceUser = {
   displayName: string;
   email: string | null;
+  role: WorkspaceRole;
 };
 
 function Brand() {
@@ -69,7 +72,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
       <aside className="sidebar" aria-label="Primary navigation">
         <Brand />
         <p className="nav-section-label">Workspace</p>
-        <NavigationLinks items={FARMER_NAVIGATION} pathname={pathname} />
+        <NavigationLinks items={NAVIGATION_BY_ROLE[user.role]} pathname={pathname} />
         <p className="nav-section-label">Account</p>
         <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
         <div className="sidebar-bottom">
@@ -97,7 +100,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
             </span>
             <span>farmess</span>
           </Link>
-          <span className="topbar-context">{getWorkspacePageLabel(pathname)}</span>
+          <span className="topbar-context">{getWorkspacePageLabel(pathname, user.role)}</span>
           <div className="topbar-right">
             <Link href="/notifications" className="topbar-link">
               <Icon name="bell" size={15} />
@@ -114,7 +117,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
       </div>
 
       <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
-        {MOBILE_NAVIGATION.map((item) => {
+        {MOBILE_NAVIGATION_BY_ROLE[user.role].map((item) => {
           const active = isActiveRoute(pathname, item.href);
           return (
             <Link
