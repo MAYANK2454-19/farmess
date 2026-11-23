@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import type { LogisticsRecommendation } from "@/features/logistics/recommendations";
 import { LogisticsMap } from "@/features/logistics/logistics-map";
+import { LogisticsFeedbackForm } from "@/features/logistics/logistics-feedback-form";
 
 type Origin = { latitude: number; longitude: number };
 type ServiceRequest = Pick<
@@ -195,9 +196,11 @@ function ProviderRequestForm({
 function RecommendationCard({
   recommendation,
   onRequestSent,
+  rankPosition,
 }: {
   recommendation: LogisticsRecommendation;
   onRequestSent: (request: ServiceRequest) => void;
+  rankPosition: number;
 }) {
   const listing = recommendation.listing;
   const statusLabel =
@@ -283,6 +286,7 @@ function RecommendationCard({
       {recommendation.status !== "excluded" ? (
         <ProviderRequestForm listing={listing} onSent={onRequestSent} />
       ) : null}
+      <LogisticsFeedbackForm listing={listing} rankPosition={rankPosition} />
       <p className="logistics-result-disclaimer">
         Straight-line distance only. Price bases differ and are not directly comparable unless their units match.
         A request is not a confirmed booking.
@@ -525,11 +529,12 @@ export function LogisticsDiscovery() {
               </div>
             ) : (
               <div className="logistics-results-list">
-                {recommendations.map((recommendation) => (
+                {recommendations.map((recommendation, index) => (
                   <RecommendationCard
                     key={recommendation.listing.id}
                     recommendation={recommendation}
                     onRequestSent={onRequestSent}
+                    rankPosition={index + 1}
                   />
                 ))}
               </div>
