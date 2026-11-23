@@ -43,7 +43,10 @@ export async function GET() {
     return NextResponse.json({ error: "Sign in to manage buyer requirements." }, { status: 401 });
   }
   if (session.role !== "buyer") {
-    return NextResponse.json({ error: "Buyer requirements are available to buyer accounts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Buyer requirements are available to buyer accounts." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -74,7 +77,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sign in before creating a requirement." }, { status: 401 });
   }
   if (session.role !== "buyer") {
-    return NextResponse.json({ error: "Only buyer accounts can create requirements." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only buyer accounts can create requirements." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -100,20 +106,36 @@ export async function POST(request: NextRequest) {
     !isRecord(body) ||
     Object.keys(body).some((key) => !allowed.includes(key as (typeof allowed)[number]))
   ) {
-    return NextResponse.json({ error: "The requirement contains unsupported fields." }, { status: 400 });
+    return NextResponse.json(
+      { error: "The requirement contains unsupported fields." },
+      { status: 400 },
+    );
   }
 
   if (typeof body.crop !== "string" || !body.crop.trim() || body.crop.trim().length > 80) {
-    return NextResponse.json({ error: "Enter a crop name using 1 to 80 characters." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter a crop name using 1 to 80 characters." },
+      { status: 400 },
+    );
   }
-  if (typeof body.market_area !== "string" || !body.market_area.trim() || body.market_area.trim().length > 120) {
-    return NextResponse.json({ error: "Enter a market or delivery area using 1 to 120 characters." }, { status: 400 });
+  if (
+    typeof body.market_area !== "string" ||
+    !body.market_area.trim() ||
+    body.market_area.trim().length > 120
+  ) {
+    return NextResponse.json(
+      { error: "Enter a market or delivery area using 1 to 120 characters." },
+      { status: 400 },
+    );
   }
 
   const variety = optionalText(body, "variety", 80);
   const grade = optionalText(body, "grade", 40);
   if (!variety.valid || !grade.valid) {
-    return NextResponse.json({ error: "Variety or grade is too long or invalid." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Variety or grade is too long or invalid." },
+      { status: 400 },
+    );
   }
 
   const minQuantity = typeof body.min_quantity === "number" ? body.min_quantity : Number.NaN;
@@ -125,7 +147,10 @@ export async function POST(request: NextRequest) {
         : Number.NaN;
 
   if (!Number.isFinite(minQuantity) || minQuantity <= 0 || minQuantity > Number.MAX_SAFE_INTEGER) {
-    return NextResponse.json({ error: "Enter a valid positive minimum quantity." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter a valid positive minimum quantity." },
+      { status: 400 },
+    );
   }
   if (
     maxQuantity !== null &&
@@ -133,7 +158,10 @@ export async function POST(request: NextRequest) {
       maxQuantity < minQuantity ||
       maxQuantity > Number.MAX_SAFE_INTEGER)
   ) {
-    return NextResponse.json({ error: "Maximum quantity must be at least the minimum quantity." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Maximum quantity must be at least the minimum quantity." },
+      { status: 400 },
+    );
   }
 
   if (body.unit !== "kg" && body.unit !== "quintal" && body.unit !== "tonne") {
@@ -149,9 +177,7 @@ export async function POST(request: NextRequest) {
 
   if (
     targetPrice !== null &&
-    (typeof targetPrice !== "number" ||
-      !Number.isSafeInteger(targetPrice) ||
-      targetPrice <= 0)
+    (typeof targetPrice !== "number" || !Number.isSafeInteger(targetPrice) || targetPrice <= 0)
   ) {
     return NextResponse.json(
       { error: "Enter a positive whole-number target price in paise per quintal." },
@@ -203,7 +229,10 @@ export async function PATCH(request: NextRequest) {
 
   const session = await getFarmessSession();
   if (!session || session.role !== "buyer") {
-    return NextResponse.json({ error: "Sign in with a buyer account to update a requirement." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Sign in with a buyer account to update a requirement." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
