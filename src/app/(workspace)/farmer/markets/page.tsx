@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
+import { getMarketRecordFreshnessLabel } from "@/lib/market-data/record-freshness";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
 import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
@@ -285,54 +286,66 @@ export default function MarketsPage() {
 
         {!loading && records.length > 0 && (
           <div className={styles.recordList}>
-            {records.map((record) => (
-              <article className={`panel ${styles.recordCard}`} key={record.id}>
-                <div className={styles.recordTop}>
-                  <div>
-                    <h3>{record.commodity}</h3>
-                    <p>
-                      {[record.variety, record.market, record.district, record.state]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
+            {records.map((record) => {
+              const freshness = getMarketRecordFreshnessLabel(record.observationDate);
+
+              return (
+                <article className={`panel ${styles.recordCard}`} key={record.id}>
+                  <div className={styles.recordTop}>
+                    <div>
+                      <h3>{record.commodity}</h3>
+                      <p>
+                        {[record.variety, record.market, record.district, record.state]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    </div>
+                    <div className={styles.recordBadges}>
+                      <span className={styles.reportedTag}>Reported</span>
+                      <span
+                        className={`${styles.freshnessTag} ${styles[`freshness${freshness.status}`]}`}
+                        title={freshness.explanation}
+                      >
+                        {freshness.label}
+                      </span>
+                    </div>
                   </div>
-                  <span className={styles.reportedTag}>Reported</span>
-                </div>
-                <div className={styles.priceGrid}>
-                  <div>
-                    <span>Minimum</span>
-                    <strong>₹{formatPrice(record.minPrice)}</strong>
+                  <div className={styles.priceGrid}>
+                    <div>
+                      <span>Minimum</span>
+                      <strong>₹{formatPrice(record.minPrice)}</strong>
+                    </div>
+                    <div>
+                      <span>Modal</span>
+                      <strong>₹{formatPrice(record.modalPrice)}</strong>
+                    </div>
+                    <div>
+                      <span>Maximum</span>
+                      <strong>₹{formatPrice(record.maxPrice)}</strong>
+                    </div>
                   </div>
-                  <div>
-                    <span>Modal</span>
-                    <strong>₹{formatPrice(record.modalPrice)}</strong>
+                  <div className={styles.recordMeta}>
+                    <span>
+                      Observed: <strong>{formatDate(record.observationDate)}</strong>
+                    </span>
+                    <span>
+                      Unit: <strong>{record.priceUnit}</strong>
+                    </span>
+                    <span>
+                      Retrieved: <strong>{formatTimestamp(record.retrievedAt)}</strong>
+                    </span>
                   </div>
-                  <div>
-                    <span>Maximum</span>
-                    <strong>₹{formatPrice(record.maxPrice)}</strong>
-                  </div>
-                </div>
-                <div className={styles.recordMeta}>
-                  <span>
-                    Observed: <strong>{formatDate(record.observationDate)}</strong>
-                  </span>
-                  <span>
-                    Unit: <strong>{record.priceUnit}</strong>
-                  </span>
-                  <span>
-                    Retrieved: <strong>{formatTimestamp(record.retrievedAt)}</strong>
-                  </span>
-                </div>
-                <a
-                  className={styles.sourceLink}
-                  href={record.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View source resource <span aria-hidden="true">↗</span>
-                </a>
-              </article>
-            ))}
+                  <a
+                    className={styles.sourceLink}
+                    href={record.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View source resource <span aria-hidden="true">↗</span>
+                  </a>
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
