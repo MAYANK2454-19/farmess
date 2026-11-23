@@ -5,15 +5,18 @@ export default function WorkspaceUnavailablePage() {
     <main className="auth-page auth-page-single">
       <section className="auth-main">
         <div className="module-unavailable">
-          <p className="module-status">Account recognised</p>
-          <h1>This workspace is not ready for your account type.</h1>
+          <p className="module-status">Workspace not enabled</p>
+          <h1>This account does not have an available workspace.</h1>
           <p>
-            Farmess currently has the farmer workspace connected. Buyer and service-provider
-            workspaces are being built separately; your account role has not been changed.
+            Farmess keeps farmer, buyer and service-provider access separate. This account has
+            been recognised, but its role does not currently have a supported workspace.
           </p>
-          <Link href="/login" className="button button-secondary">
-            Return to sign in
-          </Link>
+          <p>
+            Public sign-up creates farmer accounts only. Buyer and service-provider access must
+            be provisioned through an authorised process; changing a browser field cannot grant
+            another role.
+          </p>
+          <Link href="/login" className="button button-secondary">Return to sign in</Link>
         </div>
       </section>
     </main>
