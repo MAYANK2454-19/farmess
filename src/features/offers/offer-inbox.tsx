@@ -47,6 +47,11 @@ export function OfferInbox() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNow(Date.now());
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -129,7 +134,7 @@ export function OfferInbox() {
       ) : (
         <ul className="offer-list">
           {offers.map((offer) => {
-            const expired = new Date(offer.valid_until).getTime() <= Date.now();
+            const expired = now !== null && new Date(offer.valid_until).getTime() <= now;
             const effectiveStatus = offer.status === "pending" && expired ? "expired" : offer.status;
 
             return (
