@@ -46,7 +46,7 @@ function comparablePayload(row: MarketObservationImportRow): string {
 }
 
 /**
- * Collapse byte-for-byte equivalent source observations before a database
+ * Collapse equivalent source observations before a database
  * upsert. If one natural key carries different prices or provenance, reject
  * the whole batch rather than letting row order decide which value wins.
  */
