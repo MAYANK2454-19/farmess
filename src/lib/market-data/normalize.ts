@@ -1,4 +1,5 @@
 import type { MarketPriceRecord } from "./types.ts";
+import { assessMarketDataFreshness } from "./freshness.ts";
 
 export const OGD_RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070";
 export const OGD_RESOURCE_URL =
@@ -101,7 +102,5 @@ export function normalizeOgdResponse(payload: unknown, retrievedAt: string): Mar
 }
 
 export function isObservationStale(observationDate: string, now = new Date()): boolean {
-  const observed = new Date(`${observationDate}T00:00:00.000Z`);
-  const ageMs = now.getTime() - observed.getTime();
-  return ageMs > 48 * 60 * 60 * 1000;
+  return assessMarketDataFreshness(observationDate, now).status === "stale";
 }
