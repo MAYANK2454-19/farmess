@@ -34,8 +34,7 @@ export function MarketHistoryChart({ records }: Props) {
     [history],
   );
   const [selectedId, setSelectedId] = useState("");
-  const selected =
-    reportedSeries.find((series) => series.id === selectedId) ?? reportedSeries[0];
+  const selected = reportedSeries.find((series) => series.id === selectedId) ?? reportedSeries[0];
 
   const chart = useMemo(() => {
     if (!selected) return null;
@@ -51,7 +50,12 @@ export function MarketHistoryChart({ records }: Props) {
     const min = Math.min(...prices);
     const max = Math.max(...prices);
     const range = max - min || 1;
-    const points = selected.points.map((point, index) => {
+    const firstTimestamp = Date.parse(`${selected.points[0].observationDate}T00:00:00.000Z`);
+    const lastTimestamp = Date.parse(
+      `${selected.points[selected.points.length - 1].observationDate}T00:00:00.000Z`,
+    );
+    const timeRange = lastTimestamp - firstTimestamp;
+    const points = selected.points.map((point) => {
       const price = point.modalPrice === null ? null : Number(point.modalPrice);
 
       return {
@@ -59,9 +63,12 @@ export function MarketHistoryChart({ records }: Props) {
         date: point.observationDate,
         price: price !== null && Number.isFinite(price) ? price : null,
         x:
-          selected.points.length <= 1
+          timeRange <= 0
             ? 408
-            : 56 + (index * 704) / (selected.points.length - 1),
+            : 56 +
+              ((Date.parse(`${point.observationDate}T00:00:00.000Z`) - firstTimestamp) /
+                timeRange) *
+                704,
         y:
           price === null || !Number.isFinite(price)
             ? null
