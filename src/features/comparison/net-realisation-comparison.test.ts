@@ -320,7 +320,6 @@ test("never treats missing quality-loss cost as zero", () => {
   );
 });
 
-
 test("does not rank buyer offers that have just expired", () => {
   const now = new Date("2026-11-22T12:00:00.000Z");
   const result = compareNetRealisationOptions(
