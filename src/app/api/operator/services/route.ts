@@ -36,7 +36,11 @@ function optionalText(body: Record<string, unknown>, key: string, max: number) {
   return { value: normalized || null, valid: normalized.length <= max };
 }
 
-function parseCoordinate(value: unknown, minimum: number, maximum: number): number | null | undefined {
+function parseCoordinate(
+  value: unknown,
+  minimum: number,
+  maximum: number,
+): number | null | undefined {
   if (value === undefined || value === null || value === "") return null;
   const parsed = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(parsed) || parsed < minimum || parsed > maximum) return undefined;
@@ -50,7 +54,11 @@ function parseCropSuitability(value: unknown): string[] | null {
   for (const item of value) {
     if (typeof item !== "string" || !item.trim() || item.trim().length > 80) return null;
     const crop = item.trim();
-    if (!items.some((existing) => existing.toLocaleLowerCase("en-IN") === crop.toLocaleLowerCase("en-IN"))) {
+    if (
+      !items.some(
+        (existing) => existing.toLocaleLowerCase("en-IN") === crop.toLocaleLowerCase("en-IN"),
+      )
+    ) {
       items.push(crop);
     }
   }
@@ -184,22 +192,13 @@ export async function POST(request: NextRequest) {
 
   const rateBasis = body.rate_basis ?? (price === null ? "quote_required" : null);
   if (!RATE_BASES.includes(rateBasis as (typeof RATE_BASES)[number])) {
-    return NextResponse.json(
-      { error: "Choose the unit for the listed rate." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Choose the unit for the listed rate." }, { status: 400 });
   }
   if (price === null && rateBasis !== "quote_required") {
-    return NextResponse.json(
-      { error: "Enter a rate or choose quote required." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Enter a rate or choose quote required." }, { status: 400 });
   }
   if (price !== null && rateBasis === "quote_required") {
-    return NextResponse.json(
-      { error: "Choose how the entered rate is charged." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Choose how the entered rate is charged." }, { status: 400 });
   }
 
   const capacity =
@@ -240,7 +239,11 @@ export async function POST(request: NextRequest) {
 
   let availableFrom: string | null = null;
   let availableUntil: string | null = null;
-  if (body.available_from !== undefined && body.available_from !== null && body.available_from !== "") {
+  if (
+    body.available_from !== undefined &&
+    body.available_from !== null &&
+    body.available_from !== ""
+  ) {
     if (typeof body.available_from !== "string" || !validDate(body.available_from)) {
       return NextResponse.json(
         { error: "Enter a valid availability start date." },
@@ -249,7 +252,11 @@ export async function POST(request: NextRequest) {
     }
     availableFrom = body.available_from;
   }
-  if (body.available_until !== undefined && body.available_until !== null && body.available_until !== "") {
+  if (
+    body.available_until !== undefined &&
+    body.available_until !== null &&
+    body.available_until !== ""
+  ) {
     if (typeof body.available_until !== "string" || !validDate(body.available_until)) {
       return NextResponse.json({ error: "Enter a valid availability end date." }, { status: 400 });
     }
@@ -263,7 +270,10 @@ export async function POST(request: NextRequest) {
   }
 
   if (body.cold_chain_available !== undefined && typeof body.cold_chain_available !== "boolean") {
-    return NextResponse.json({ error: "Cold-chain availability must be true or false." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Cold-chain availability must be true or false." },
+      { status: 400 },
+    );
   }
   const cropSuitability = parseCropSuitability(body.crop_suitability);
   if (cropSuitability === null) {
@@ -280,12 +290,18 @@ export async function POST(request: NextRequest) {
     destinationLatitude === undefined ||
     destinationLongitude === undefined
   ) {
-    return NextResponse.json({ error: "One or more map coordinates are invalid." }, { status: 400 });
+    return NextResponse.json(
+      { error: "One or more map coordinates are invalid." },
+      { status: 400 },
+    );
   }
 
   const publishLocation = body.publish_location === true;
   if (body.publish_location !== undefined && typeof body.publish_location !== "boolean") {
-    return NextResponse.json({ error: "Confirm whether to publish this service location." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Confirm whether to publish this service location." },
+      { status: 400 },
+    );
   }
   if (publishLocation && (serviceLatitude === null || serviceLongitude === null)) {
     return NextResponse.json(
@@ -294,18 +310,29 @@ export async function POST(request: NextRequest) {
     );
   }
   if ((serviceLatitude === null) !== (serviceLongitude === null)) {
-    return NextResponse.json({ error: "Enter both service coordinates or leave both blank." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter both service coordinates or leave both blank." },
+      { status: 400 },
+    );
   }
   if ((destinationLatitude === null) !== (destinationLongitude === null)) {
-    return NextResponse.json({ error: "Enter both destination coordinates or leave both blank." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter both destination coordinates or leave both blank." },
+      { status: 400 },
+    );
   }
 
   const radius =
-    body.service_radius_km === undefined || body.service_radius_km === null || body.service_radius_km === ""
+    body.service_radius_km === undefined ||
+    body.service_radius_km === null ||
+    body.service_radius_km === ""
       ? null
       : Number(body.service_radius_km);
   if (radius !== null && (!Number.isFinite(radius) || radius <= 0 || radius > 500)) {
-    return NextResponse.json({ error: "Service radius must be between 0 and 500 km." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Service radius must be between 0 and 500 km." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
