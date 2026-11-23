@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import type { MarketDataResult, MarketPriceRecord } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
+import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
 import styles from "./markets.module.css";
 
 type Filters = { commodity: string; state: string; district: string; market: string };
@@ -274,6 +275,10 @@ export default function MarketsPage() {
         )}
 
         {!loading && records.length > 0 && <MarketHistoryChart records={records} />}
+
+        {!loading && (
+          <MarketForecastPanel crop={filters.commodity} market={filters.market} />
+        )}
 
         {!loading && records.length > 0 && (
           <div className={styles.recordList}>
