@@ -9,6 +9,7 @@ The server-side OGD India / AGMARKNET adapter now reads a bounded result set acr
 - The adapter increments the OGD `offset` by the number of records already collected.
 - Existing commodity, state, district and market filters are carried unchanged to every page.
 - A short page or empty page ends pagination early.
+- The complete sequence shares a 10-second timeout budget.
 - The normalized `MarketPriceRecord` contract, source attribution, observation dates and retrieval timestamp are unchanged.
 
 ## Failure behaviour
