@@ -28,7 +28,7 @@ export function MarketComparisonPanel({ records }: Props) {
 
   return (
     <section
-      className={`panel ${styles.panel} marketComparisonPanel`}
+      className={`panel ${styles.panel}`}
       aria-labelledby="market-comparison-heading"
     >
       <div className={styles.heading}>
