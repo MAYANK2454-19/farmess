@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
     "crop_match",
     "date_match",
     "cold_chain_match",
+    "service_radius_match",
     "user_feedback",
     "feedback_note",
   ] as const;
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: listing, error: listingError } = await supabase
     .from("service_listings")
-    .select("id")
+    .select("id,service_type,verification_state,rate_basis,price_paise,service_radius_km")
     .eq("id", record.service_listing_id)
     .eq("status", "active")
     .maybeSingle();
@@ -121,6 +122,12 @@ export async function POST(request: NextRequest) {
       crop_match: record.crop_match as boolean | null,
       date_match: record.date_match as boolean | null,
       cold_chain_match: record.cold_chain_match as boolean | null,
+      service_radius_match: record.service_radius_match as boolean | null,
+      provider_verification_state: listing.verification_state,
+      service_type: listing.service_type,
+      rate_basis: listing.rate_basis,
+      price_paise: listing.price_paise,
+      service_radius_km: listing.service_radius_km,
       user_feedback: record.user_feedback,
       feedback_note: feedbackNote,
     })
