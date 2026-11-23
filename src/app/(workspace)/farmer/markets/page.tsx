@@ -54,13 +54,6 @@ export default function MarketsPage() {
     EMPTY_MARKET_RECORD_FILTERS,
   );
   const [recordFilterError, setRecordFilterError] = useState("");
-  const [draftRecordFilters, setDraftRecordFilters] = useState<MarketRecordFilters>(
-    EMPTY_MARKET_RECORD_FILTERS,
-  );
-  const [appliedRecordFilters, setAppliedRecordFilters] = useState<MarketRecordFilters>(
-    EMPTY_MARKET_RECORD_FILTERS,
-  );
-  const [recordFilterError, setRecordFilterError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
