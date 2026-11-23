@@ -4,14 +4,11 @@ type CsvCell = string | number | null;
 
 function csvCell(value: CsvCell): string {
   const normalized = value === null ? "" : String(value);
-  const safeValue = /^[\\u0000-\\u0020]*[=+@-]/.test(normalized) ? `'${normalized}` : normalized;
-  return `"${safeValue.replace(/"/g, '""')}"`;
+  const safeValue = /^[\u0000-\u0020]*[=+@-]/.test(normalized) ? "'" + normalized : normalized;
+  return '"' + safeValue.replace(/"/g, '""') + '"';
 }
 
-/**
- * Export only the comparable, reported-price rows already produced by the
- * comparison domain. Every row retains its date, crop identity and location.
- */
+/** Export the comparable reported-price rows without widening the active filters. */
 export function marketPriceComparisonsToCsv(comparisons: readonly MarketComparisonGroup[]): string {
   const columns: Array<[string, (group: MarketComparisonGroup, market: MarketComparisonGroup["markets"][number]) => CsvCell]> = [
     ["Commodity", (group) => group.commodity],
@@ -35,5 +32,5 @@ export function marketPriceComparisonsToCsv(comparisons: readonly MarketComparis
     ),
   );
 
-  return `\\uFEFF${[header, ...rows].join("\\r\\n")}\\r\\n`;
+  return "\uFEFF" + [header, ...rows].join("\r\n") + "\r\n";
 }
