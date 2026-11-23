@@ -10,7 +10,7 @@ type MatchLot = {
   grade: string | null;
   quantity: number;
   unit: string;
-  locationArea: string;
+  locationArea: string | null;
   availableAt: string;
   sellBy: string | null;
 };
@@ -156,7 +156,9 @@ export function BuyerMatchResults() {
                             </span>
                           </div>
                           <p>
-                            {[item.lot.grade, item.lot.locationArea].filter(Boolean).join(" · ")}
+                            {[item.lot.grade, item.lot.locationArea ?? "Approximate locality not shared"]
+                              .filter(Boolean)
+                              .join(" · ")}
                           </p>
                           <span>
                             {item.lot.quantity} {item.lot.unit}
