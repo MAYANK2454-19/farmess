@@ -49,18 +49,35 @@ export async function GET() {
     requiredAt: item.delivery_by ?? "",
   }));
 
-  const lots: ProduceLotForMatching[] = (lotsResult.data ?? []).map((item) => ({
-    id: item.id,
-    crop: item.crop,
-    variety: item.variety,
-    grade: item.grade,
-    quantity: item.quantity,
-    unit: item.unit as ProduceLotForMatching["unit"],
-    locationArea: item.approximate_area,
-    availableAt: item.available_from,
-    sellBy: item.sell_by,
-    status: "published",
-  }));
+  const lots: ProduceLotForMatching[] = (lotsResult.data ?? []).flatMap((item) => {
+    const supportedUnit =
+      item.unit === "kg" || item.unit === "quintal" || item.unit === "tonne";
+    if (
+      !item.id ||
+      !item.crop ||
+      !Number.isFinite(item.quantity) ||
+      item.quantity === null ||
+      item.quantity <= 0 ||
+      !supportedUnit ||
+      !item.approximate_area ||
+      !item.available_from
+    ) {
+      return [];
+    }
+
+    return [{
+      id: item.id,
+      crop: item.crop,
+      variety: item.variety,
+      grade: item.grade,
+      quantity: item.quantity,
+      unit: item.unit as ProduceLotForMatching["unit"],
+      locationArea: item.approximate_area,
+      availableAt: item.available_from,
+      sellBy: item.sell_by,
+      status: "published" as const,
+    }];
+  });
 
   const matches = requirements.map((requirement) => {
     const ranked = lots
