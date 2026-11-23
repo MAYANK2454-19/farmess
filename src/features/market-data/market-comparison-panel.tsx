@@ -27,10 +27,7 @@ export function MarketComparisonPanel({ records }: Props) {
   const comparisons = useMemo(() => buildMarketPriceComparisons(records), [records]);
 
   return (
-    <section
-      className={`panel ${styles.panel}`}
-      aria-labelledby="market-comparison-heading"
-    >
+    <section className={`panel ${styles.panel}`} aria-labelledby="market-comparison-heading">
       <div className={styles.heading}>
         <div>
           <h2 id="market-comparison-heading">Compare mandi prices</h2>
@@ -85,7 +82,9 @@ export function MarketComparisonPanel({ records }: Props) {
                     {comparison.markets.map((market, index) => (
                       <tr key={`${market.market}|${market.district}|${market.state}`}>
                         <td>
-                          <span className={styles.marketName}>{market.market || "Unnamed market"}</span>
+                          <span className={styles.marketName}>
+                            {market.market || "Unnamed market"}
+                          </span>
                           {index === 0 && <span className={styles.lowest}>Lowest reported</span>}
                         </td>
                         <td>{[market.district, market.state].filter(Boolean).join(", ") || "—"}</td>
