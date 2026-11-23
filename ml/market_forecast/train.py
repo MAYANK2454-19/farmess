@@ -25,7 +25,7 @@ from sklearn.metrics import mean_absolute_error
 MODEL_NAME = "hist_gradient_boosting"
 MODEL_VERSION = "farmess-market-hgb-1.0.0"
 FEATURE_SCHEMA_VERSION = "market-lags-v1"
-MINIMUM_OBSERVATIONS = 90
+MINIMUM_OBSERVATIONS = 120
 LOOKBACK = 28
 LAGS = (1, 2, 3, 7, 14, 28)
 ROLLING_WINDOWS = (7, 14, 28)
