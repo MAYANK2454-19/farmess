@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
+import { SignOutButton } from "@/components/sign-out-button";
 import {
   ACCOUNT_NAVIGATION,
   FARMER_NAVIGATION,
@@ -11,6 +12,11 @@ import {
   getWorkspacePageLabel,
   isActiveRoute,
 } from "@/lib/routes";
+
+type WorkspaceUser = {
+  displayName: string;
+  email: string | null;
+};
 
 function Brand() {
   return (
@@ -55,7 +61,13 @@ function NavigationLinks({
   );
 }
 
-export function WorkspaceLayout({ children }: { children: ReactNode }) {
+export function WorkspaceLayout({
+  children,
+  user,
+}: {
+  children: ReactNode;
+  user: WorkspaceUser;
+}) {
   const pathname = usePathname();
 
   return (
@@ -67,10 +79,18 @@ export function WorkspaceLayout({ children }: { children: ReactNode }) {
         <p className="nav-section-label">Account</p>
         <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
         <div className="sidebar-bottom">
-          <p className="sidebar-preview-label">Early access</p>
+          <div className="sidebar-account">
+            <span className="sidebar-avatar" aria-hidden="true">
+              {user.displayName.slice(0, 1).toUpperCase()}
+            </span>
+            <span className="sidebar-user-copy">
+              <strong className="sidebar-user-name">{user.displayName}</strong>
+              <span className="sidebar-user-email">{user.email ?? "Signed in"}</span>
+            </span>
+          </div>
+          <p className="sidebar-preview-label">Farmess workspace</p>
           <p className="sidebar-preview-copy">
-            Some account and marketplace tools are still being connected. Your market figures always
-            show their source and date.
+            Market reports show their source and date. Other records stay within your account.
           </p>
         </div>
       </aside>
@@ -93,6 +113,7 @@ export function WorkspaceLayout({ children }: { children: ReactNode }) {
               <Icon name="user" size={15} />
               <span>Profile</span>
             </Link>
+            <SignOutButton />
           </div>
         </header>
         {children}
