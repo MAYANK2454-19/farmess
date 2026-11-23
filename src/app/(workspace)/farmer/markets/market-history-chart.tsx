@@ -51,28 +51,21 @@ export function MarketHistoryChart({ records }: Props) {
     const max = Math.max(...prices);
     const range = max - min || 1;
     const firstTimestamp = Date.parse(`${selected.points[0].observationDate}T00:00:00.000Z`);
-    const lastTimestamp = Date.parse(
-      `${selected.points[selected.points.length - 1].observationDate}T00:00:00.000Z`,
-    );
+    const lastPoint = selected.points[selected.points.length - 1];
+    const lastTimestamp = Date.parse(`${lastPoint.observationDate}T00:00:00.000Z`);
     const timeRange = lastTimestamp - firstTimestamp;
     const points = selected.points.map((point) => {
       const price = point.modalPrice === null ? null : Number(point.modalPrice);
+      const timestamp = Date.parse(`${point.observationDate}T00:00:00.000Z`);
+      const x = timeRange <= 0 ? 408 : 56 + ((timestamp - firstTimestamp) / timeRange) * 704;
+      const y = price === null || !Number.isFinite(price) ? null : 22 + ((max - price) / range) * 170;
 
       return {
         id: point.id,
         date: point.observationDate,
         price: price !== null && Number.isFinite(price) ? price : null,
-        x:
-          timeRange <= 0
-            ? 408
-            : 56 +
-              ((Date.parse(`${point.observationDate}T00:00:00.000Z`) - firstTimestamp) /
-                timeRange) *
-                704,
-        y:
-          price === null || !Number.isFinite(price)
-            ? null
-            : 22 + ((max - price) / range) * 170,
+        x,
+        y,
       };
     });
 
@@ -175,7 +168,7 @@ export function MarketHistoryChart({ records }: Props) {
                 className={styles.chart}
                 viewBox="0 0 800 250"
                 role="img"
-                aria-label={`Reported modal price history for ${selected.commodity} at ${selected.market}, in ${selected.priceUnit}`}
+                aria-label="Reported modal price history chart"
               >
                 {[0, 1, 2, 3].map((step) => {
                   const value = chart!.max - ((chart!.max - chart!.min) * step) / 3;
@@ -249,7 +242,7 @@ export function MarketHistoryChart({ records }: Props) {
               {selected.gaps
                 .map(
                   (gap) =>
-                    `${formatDate(gap.fromDate)} – ${formatDate(gap.toDate)} (${gap.missingDays} days)`,
+                    `${formatDate(gap.fromDate)} – ${formatDate(gap.toDate)}: ${gap.missingDays} days`,
                 )
                 .join("; ")}
             </div>
