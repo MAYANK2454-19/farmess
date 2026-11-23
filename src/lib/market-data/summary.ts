@@ -22,8 +22,7 @@ export function summarizeMarketPriceRecords(
   for (const record of records) {
     if (record.valueType !== "reported") continue;
 
-    const location = [record.market, record.district, record.state]
-      .map(normalizeLocationPart);
+    const location = [record.market, record.district, record.state].map(normalizeLocationPart);
     if (location.some(Boolean)) marketKeys.add(location.join("|"));
 
     if (record.modalPrice === null || record.modalPrice.trim() === "") continue;

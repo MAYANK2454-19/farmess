@@ -29,7 +29,10 @@ export function MarketSummaryPanel({ records }: Props) {
       <div className={styles.heading}>
         <div>
           <h2 id="market-summary-heading">Market snapshot</h2>
-          <p>Summary of the currently visible observations. Prices are reported values, not live quotes.</p>
+          <p>
+            Summary of the currently visible observations. Prices are reported values, not live
+            quotes.
+          </p>
         </div>
         <span className={styles.unit}>₹ per quintal</span>
       </div>
