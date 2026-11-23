@@ -414,7 +414,7 @@ export function LogisticsDiscovery() {
     }
   }
 
-  function onRequestSent(_request: ServiceRequest) {
+  function onRequestSent() {
     setRequestMessage("Your service request was sent. The provider still needs to confirm availability.");
   }
 
