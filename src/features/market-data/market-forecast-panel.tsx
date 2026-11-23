@@ -103,7 +103,9 @@ export function MarketForecastPanel({ crop, market }: { crop: string; market: st
           setRequestState({
             key: requestKey,
             error:
-              requestError instanceof Error ? requestError.message : "Forecast could not be loaded.",
+              requestError instanceof Error
+                ? requestError.message
+                : "Forecast could not be loaded.",
           });
         }
       });
