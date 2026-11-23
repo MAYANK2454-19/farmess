@@ -12,3 +12,6 @@ The snapshot includes:
 Demo records, missing prices, non-numeric prices and negative prices do not contribute to reported price metrics. If no valid reported modal prices exist, price metrics display an em dash and the panel explains why.
 
 These are descriptive summaries of source observations, not live quotes, forecasts or guaranteed selling prices.
+
+
+The market-data workflow also runs on pull requests targeting the market summary feature branch.
