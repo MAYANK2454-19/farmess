@@ -7,6 +7,13 @@ import { createClient } from "@/lib/supabase/client";
 
 type AuthMode = "sign-in" | "sign-up" | "reset";
 
+function workspaceForRole(role: unknown): string {
+  if (role === "buyer") return "/buyer";
+  if (role === "operator") return "/operator";
+  if (role === "admin") return "/workspace-unavailable";
+  return "/farmer";
+}
+
 export function AuthForm() {
   const router = useRouter();
   const [mode, setMode] = useState<AuthMode>("sign-in");
@@ -38,13 +45,15 @@ export function AuthForm() {
       }
 
       if (mode === "sign-in") {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email: normalizedEmail,
           password,
         });
 
         if (signInError) throw signInError;
-        router.replace("/farmer");
+        // This only selects the landing page; server-side session and route guards
+        // independently verify the trusted role before rendering any workspace.
+        router.replace(workspaceForRole(data.user.app_metadata?.farmess_role));
         router.refresh();
         return;
       }
@@ -105,7 +114,7 @@ export function AuthForm() {
         {isReset
           ? "Enter the email address associated with your Farmess account."
           : isSignUp
-            ? "Create a farmer account to keep your produce records in one place."
+            ? "Create a farmer account to keep your produce records in one place. Buyer and service-provider accounts are provisioned separately."
             : "Sign in to manage your produce and selling decisions."}
       </p>
 
