@@ -23,7 +23,6 @@ export async function GET() {
   const { data, error } = await supabase
     .from("produce_lots")
     .select(LOT_SELECT)
-    .eq("owner_id", session.userId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -154,7 +153,6 @@ export async function PATCH(request: NextRequest) {
     .from("produce_lots")
     .update({ status: nextStatus })
     .eq("id", body.id)
-    .eq("owner_id", session.userId)
     .eq("status", expectedStatus)
     .select("id,crop,status,published_at,buyer_market_area")
     .maybeSingle();
