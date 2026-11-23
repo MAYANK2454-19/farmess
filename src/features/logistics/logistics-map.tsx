@@ -56,7 +56,7 @@ export function LogisticsMap({
       mapRef.current = null;
       layerRef.current = null;
     };
-  }, []);
+  }, [origin.latitude, origin.longitude]);
 
   useEffect(() => {
     if (!ready || !mapRef.current || !layerRef.current) return;
@@ -130,7 +130,7 @@ export function LogisticsMap({
         <div>
           <p className="eyebrow">Locality view</p>
           <h2 id="logistics-map-heading">Nearby provider locations</h2>
-          <p>Green pin: your search origin. Dark pin: a provider's published service location.</p>
+          <p>Green pin: your search origin. Dark pin: a published provider service location.</p>
         </div>
         <a
           href="https://www.openstreetmap.org/fixthemap"
