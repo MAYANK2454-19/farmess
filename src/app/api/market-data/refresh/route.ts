@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       source_name: source.sourceName,
       status: source.status,
       request_filters: filters,
-      records_received: 0,
+      records_received: source.sourceQuality.received,
       records_upserted: 0,
       error_message: ("message" in source ? source.message : null)?.slice(0, 500) ?? null,
     });
@@ -104,7 +104,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         status: source.status,
-        recordsReceived: 0,
+        recordsReceived: source.sourceQuality.received,
+        recordsAccepted: source.sourceQuality.accepted,
+        recordsRejected: source.sourceQuality.rejected,
+        sourceQuality: source.sourceQuality,
         recordsUpserted: 0,
         message:
           "message" in source ? source.message : "The source returned no usable observations.",
@@ -156,7 +159,7 @@ export async function POST(request: NextRequest) {
     source_name: source.sourceName,
     status: auditStatus,
     request_filters: filters,
-    records_received: source.records.length,
+    records_received: source.sourceQuality.received,
     records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
@@ -176,7 +179,10 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       status: source.status,
-      recordsReceived: source.records.length,
+      recordsReceived: source.sourceQuality.received,
+      recordsAccepted: source.sourceQuality.accepted,
+      recordsRejected: source.sourceQuality.rejected,
+      sourceQuality: source.sourceQuality,
       recordsUpserted: observations.length,
       retrievedAt: source.retrievedAt,
       message:
