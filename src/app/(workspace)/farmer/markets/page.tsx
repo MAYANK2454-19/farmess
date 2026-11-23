@@ -154,6 +154,14 @@ export default function MarketsPage() {
           <button
             className="button button-secondary"
             type="button"
+            onClick={() => window.print()}
+            disabled={loading || filteredRecords.length === 0}
+          >
+            Print / Save PDF
+          </button>
+          <button
+            className="button button-secondary"
+            type="button"
             onClick={handleExport}
             disabled={loading || filteredRecords.length === 0}
           >
