@@ -39,8 +39,10 @@ export async function GET() {
   }
 
   const lotById = new Map((lots ?? []).map((lot) => [lot.id, lot]));
+  const now = Date.now();
   const result = (offers ?? []).map((offer) => ({
     ...offer,
+    is_expired: new Date(offer.valid_until).getTime() <= now,
     lot: lotById.get(offer.lot_id) ?? null,
   }));
 
