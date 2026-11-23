@@ -61,8 +61,7 @@ export function ProfileForm() {
     setProfile((current) => ({ ...current, [field]: value }));
   }
 
-  async function saveProfile(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submitProfile() {
     setSaving(true);
     setError("");
     setMessage("");
@@ -90,7 +89,13 @@ export function ProfileForm() {
 
   return (
     <div>
-      <form className="panel profile-card" onSubmit={saveProfile}>
+      <form
+        className="panel profile-card"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void submitProfile();
+        }}
+      >
         <div className="profile-card-heading">
           <div>
             <p className="eyebrow">Account details</p>
@@ -222,7 +227,7 @@ export function ProfileForm() {
           <button
             className="button button-primary"
             type="button"
-            onClick={() => void saveProfile(new Event("submit") as unknown as FormEvent<HTMLFormElement>)}
+            onClick={() => void submitProfile()}
             disabled={loading || saving}
           >
             {saving ? "Saving…" : "Save privacy choices"}
