@@ -2136,3 +2136,282 @@ h1 {
     padding-inline: 15px;
   }
 }
+
+
+.buyer-overview-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 36px;
+  padding-top: 30px;
+}
+
+.buyer-requirements {
+  display: grid;
+  gap: 22px;
+}
+
+.buyer-requirement-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.buyer-form-message {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.buyer-form-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+}
+
+.buyer-form-footer .form-warning {
+  margin: 0;
+}
+
+.buyer-requirement-list,
+.buyer-offer-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.buyer-requirement-row,
+.buyer-offer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.buyer-requirement-row:last-child,
+.buyer-offer-row:last-child {
+  border-bottom: 0;
+}
+
+.buyer-requirement-copy,
+.buyer-offer-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.buyer-requirement-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.buyer-requirement-title strong,
+.buyer-offer-row strong {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.buyer-requirement-copy p,
+.buyer-requirement-copy > span,
+.buyer-offer-row span,
+.buyer-offer-row time,
+.buyer-offer-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.buyer-requirement-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 13px;
+}
+
+.buyer-requirement-actions button {
+  padding: 3px 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.buyer-requirement-actions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.marketplace-board {
+  display: grid;
+  gap: 22px;
+}
+
+.marketplace-lot-list {
+  display: grid;
+}
+
+.marketplace-lot {
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.marketplace-lot:last-child {
+  border-bottom: 0;
+}
+
+.marketplace-lot-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.marketplace-lot-heading .eyebrow {
+  margin-bottom: 4px;
+}
+
+.marketplace-lot-heading h3 {
+  margin: 0 0 4px;
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.marketplace-lot-heading p,
+.marketplace-lot-dates,
+.marketplace-existing-offer {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.marketplace-lot-heading > strong {
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.marketplace-lot-dates {
+  margin-top: 12px;
+  color: #849087;
+  font-size: 9px;
+}
+
+.marketplace-existing-offer {
+  margin-top: 10px;
+  color: #315f42;
+}
+
+.marketplace-offer-details {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.marketplace-offer-details summary {
+  width: fit-content;
+  padding: 12px 0 2px;
+  color: var(--brand-secondary);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.marketplace-offer-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.marketplace-offer-terms {
+  grid-column: 1 / -1;
+}
+
+.marketplace-offer-form > .button {
+  justify-self: start;
+}
+
+.marketplace-sent {
+  margin: 14px 0 0;
+}
+
+.buyer-offer-row {
+  align-items: center;
+}
+
+.buyer-offer-row > button {
+  flex: 0 0 auto;
+  padding: 4px 0;
+  color: var(--brand-secondary);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.buyer-offer-row > button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+@media (max-width: 760px) {
+  .buyer-overview-sections {
+    grid-template-columns: 1fr;
+    gap: 23px;
+  }
+
+  .buyer-requirement-row,
+  .buyer-offer-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding-inline: 15px;
+  }
+
+  .buyer-requirement-actions {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .buyer-requirement-form,
+  .marketplace-offer-form {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .buyer-form-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .buyer-form-footer .button,
+  .marketplace-offer-form > .button {
+    width: 100%;
+  }
+
+  .marketplace-offer-terms,
+  .buyer-form-message,
+  .buyer-form-footer {
+    grid-column: auto;
+  }
+
+  .marketplace-lot {
+    padding-inline: 15px;
+  }
+
+  .marketplace-lot-heading {
+    gap: 10px;
+  }
+}
