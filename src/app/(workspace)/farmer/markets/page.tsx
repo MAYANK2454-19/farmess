@@ -5,7 +5,10 @@ import { MarketForecastPanel } from "@/features/market-data/market-forecast-pane
 import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import { getMarketRecordFreshnessLabel } from "@/lib/market-data/record-freshness";
-import { sortMarketPriceRecords, type MarketRecordSortOrder } from "@/lib/market-data/sort-records";
+import {
+  sortMarketPriceRecords,
+  type MarketRecordSortOrder,
+} from "@/lib/market-data/sort-records";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
 import styles from "./markets.module.css";
