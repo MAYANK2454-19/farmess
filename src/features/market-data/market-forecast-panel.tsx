@@ -65,13 +65,7 @@ function dateLabel(value: string) {
       }).format(date);
 }
 
-export function MarketForecastPanel({
-  crop,
-  market,
-}: {
-  crop: string;
-  market: string;
-}) {
+export function MarketForecastPanel({ crop, market }: { crop: string; market: string }) {
   const [result, setResult] = useState<ForecastResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -89,16 +83,18 @@ export function MarketForecastPanel({
       .then(async (response) => {
         const payload = (await response.json()) as ForecastResponse | { error?: string };
         if (!response.ok) {
-          throw new Error("error" in payload ? payload.error ?? "Forecast could not be loaded." : "Forecast could not be loaded.");
+          throw new Error(
+            "error" in payload
+              ? (payload.error ?? "Forecast could not be loaded.")
+              : "Forecast could not be loaded.",
+          );
         }
         if (active) setResult(payload as ForecastResponse);
       })
       .catch((requestError: unknown) => {
         if (active) {
           setError(
-            requestError instanceof Error
-              ? requestError.message
-              : "Forecast could not be loaded.",
+            requestError instanceof Error ? requestError.message : "Forecast could not be loaded.",
           );
         }
       })
@@ -116,18 +112,26 @@ export function MarketForecastPanel({
       <div className="panel-header">
         <div>
           <p className="eyebrow">Decision support</p>
-          <h2 className="panel-title" id="market-forecast-heading">Price trend forecast</h2>
-          <p className="panel-caption">Only forecasts that passed a time-ordered evaluation are shown here.</p>
+          <h2 className="panel-title" id="market-forecast-heading">
+            Price trend forecast
+          </h2>
+          <p className="panel-caption">
+            Only forecasts that passed a time-ordered evaluation are shown here.
+          </p>
         </div>
       </div>
 
       {loading ? (
         <div className="empty-state">
-          <p className="empty-copy" role="status">Checking for an approved forecast…</p>
+          <p className="empty-copy" role="status">
+            Checking for an approved forecast…
+          </p>
         </div>
       ) : error ? (
         <div className="empty-state">
-          <p className="empty-copy" role="alert">{error}</p>
+          <p className="empty-copy" role="alert">
+            {error}
+          </p>
         </div>
       ) : result?.status === "insufficient_data" ? (
         <div className="market-forecast-empty">
@@ -145,7 +149,9 @@ export function MarketForecastPanel({
           <div className="market-forecast-summary">
             <div>
               <span>Model</span>
-              <strong>{result.forecast.run.model_name} · {result.forecast.run.model_version}</strong>
+              <strong>
+                {result.forecast.run.model_name} · {result.forecast.run.model_version}
+              </strong>
             </div>
             <div>
               <span>Training observations</span>
@@ -175,7 +181,9 @@ export function MarketForecastPanel({
                   {result.forecast.points.map((point) => (
                     <tr key={point.target_date}>
                       <td>{dateLabel(point.target_date)}</td>
-                      <td><strong>{money(point.predicted_modal_price_paise_per_quintal)}</strong></td>
+                      <td>
+                        <strong>{money(point.predicted_modal_price_paise_per_quintal)}</strong>
+                      </td>
                       <td>{money(point.lower_bound_paise_per_quintal)}</td>
                       <td>{money(point.upper_bound_paise_per_quintal)}</td>
                     </tr>
@@ -188,7 +196,8 @@ export function MarketForecastPanel({
           )}
           <p className="market-forecast-footnote">{result.forecast.confidenceMeaning}</p>
           <p className="market-forecast-footnote">
-            Generated {dateLabel(result.forecast.run.generated_at.slice(0, 10))}. A forecast is an estimate, not a guaranteed price or a recommendation to delay a sale.
+            Generated {dateLabel(result.forecast.run.generated_at.slice(0, 10))}. A forecast is an
+            estimate, not a guaranteed price or a recommendation to delay a sale.
           </p>
         </>
       ) : null}

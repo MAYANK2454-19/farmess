@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function LotStatusButton({
-  lotId,
-  status,
-}: {
-  lotId: string;
-  status: string;
-}) {
+export function LotStatusButton({ lotId, status }: { lotId: string; status: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -57,8 +51,16 @@ export function LotStatusButton({
       >
         {pending ? "Saving…" : label}
       </button>
-      {error ? <span className="lot-status-error" role="alert">{error}</span> : null}
-      {message ? <span className="lot-status-success" role="status">{message}</span> : null}
+      {error ? (
+        <span className="lot-status-error" role="alert">
+          {error}
+        </span>
+      ) : null}
+      {message ? (
+        <span className="lot-status-success" role="status">
+          {message}
+        </span>
+      ) : null}
     </div>
   );
 }

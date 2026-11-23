@@ -130,7 +130,9 @@ export function MarketDecisionSupport() {
       .catch((loadError: unknown) => {
         if (active) {
           setError(
-            loadError instanceof Error ? loadError.message : "Your produce lots could not be loaded.",
+            loadError instanceof Error
+              ? loadError.message
+              : "Your produce lots could not be loaded.",
           );
         }
       })
@@ -164,9 +166,7 @@ export function MarketDecisionSupport() {
 
       const options = result.marketOptions ?? [];
       setMarketOptions(options);
-      setCosts(
-        Object.fromEntries(options.map((option) => [option.id, emptyDeductions()])),
-      );
+      setCosts(Object.fromEntries(options.map((option) => [option.id, emptyDeductions()])));
       if (result.message) setMessage(result.message);
     } catch (loadError) {
       setError(
@@ -235,13 +235,15 @@ export function MarketDecisionSupport() {
       });
       const result = (await response.json()) as ComparisonResponse | { error?: string };
       if (!response.ok) {
-        throw new Error("error" in result ? result.error ?? "Market comparison failed." : "Market comparison failed.");
+        throw new Error(
+          "error" in result
+            ? (result.error ?? "Market comparison failed.")
+            : "Market comparison failed.",
+        );
       }
       setComparison(result as ComparisonResponse);
     } catch (compareError) {
-      setError(
-        compareError instanceof Error ? compareError.message : "Market comparison failed.",
-      );
+      setError(compareError instanceof Error ? compareError.message : "Market comparison failed.");
     } finally {
       setComparing(false);
     }
@@ -255,8 +257,9 @@ export function MarketDecisionSupport() {
         <p className="eyebrow">Market decision support</p>
         <h2 id="market-decision-heading">Which market leaves the strongest net return?</h2>
         <p>
-          Farmess uses the latest source-reported modal mandi prices for your crop, then subtracts the costs you enter for each market.
-          Only reports within the last seven days can be ranked.
+          Farmess uses the latest source-reported modal mandi prices for your crop, then subtracts
+          the costs you enter for each market. Only reports within the last seven days can be
+          ranked.
         </p>
       </div>
 
@@ -270,7 +273,11 @@ export function MarketDecisionSupport() {
             disabled={loadingLots || lots.length === 0}
           >
             <option value="">
-              {loadingLots ? "Loading your lots…" : lots.length ? "Choose a produce lot" : "No saved produce lots"}
+              {loadingLots
+                ? "Loading your lots…"
+                : lots.length
+                  ? "Choose a produce lot"
+                  : "No saved produce lots"}
             </option>
             {lots.map((lot) => (
               <option value={lot.id} key={lot.id}>
@@ -282,18 +289,29 @@ export function MarketDecisionSupport() {
 
         {selectedLot ? (
           <p className="market-decision-lot-note">
-            Comparing the same lot of {selectedLot.quantity} {selectedLot.unit} of {selectedLot.crop}.
-            Current asking or offer prices are not inferred from mandi observations.
+            Comparing the same lot of {selectedLot.quantity} {selectedLot.unit} of{" "}
+            {selectedLot.crop}. Current asking or offer prices are not inferred from mandi
+            observations.
           </p>
         ) : null}
 
-        {error ? <p className="form-alert" role="alert">{error}</p> : null}
-        {message ? <p className="form-help" role="status">{message}</p> : null}
+        {error ? (
+          <p className="form-alert" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {message ? (
+          <p className="form-help" role="status">
+            {message}
+          </p>
+        ) : null}
       </section>
 
       {loadingMarkets ? (
         <section className="panel empty-state">
-          <p className="empty-copy" role="status">Loading source-attributed market observations…</p>
+          <p className="empty-copy" role="status">
+            Loading source-attributed market observations…
+          </p>
         </section>
       ) : null}
 
@@ -301,7 +319,8 @@ export function MarketDecisionSupport() {
         <section className="panel empty-state">
           <h3 className="empty-title">No stored market observations for this crop</h3>
           <p className="empty-copy">
-            Farmess cannot compare markets until source-attributed mandi observations are imported. No demo prices are substituted.
+            Farmess cannot compare markets until source-attributed mandi observations are imported.
+            No demo prices are substituted.
           </p>
         </section>
       ) : null}
@@ -316,10 +335,19 @@ export function MarketDecisionSupport() {
           </div>
 
           {marketOptions.map((option) => (
-            <article className={"panel market-decision-option" + (option.freshness === "stale" ? " stale" : "")} key={option.id}>
+            <article
+              className={
+                "panel market-decision-option" + (option.freshness === "stale" ? " stale" : "")
+              }
+              key={option.id}
+            >
               <div className="market-decision-option-heading">
                 <div>
-                  <p className="eyebrow">{option.freshness === "fresh" ? "Recent source report" : "Stale report · not rankable"}</p>
+                  <p className="eyebrow">
+                    {option.freshness === "fresh"
+                      ? "Recent source report"
+                      : "Stale report · not rankable"}
+                  </p>
                   <h4>{option.label}</h4>
                   <p className="market-decision-price">
                     {option.modalPricePerUnit} {option.priceUnit}
@@ -328,13 +356,16 @@ export function MarketDecisionSupport() {
                 <div className="market-decision-observation">
                   <span>Observed</span>
                   <strong>{formatDate(option.observationDate)}</strong>
-                  <a href={option.sourceUrl} target="_blank" rel="noreferrer">Source: {option.sourceName}</a>
+                  <a href={option.sourceUrl} target="_blank" rel="noreferrer">
+                    Source: {option.sourceName}
+                  </a>
                 </div>
               </div>
 
               {option.freshness === "stale" ? (
                 <p className="market-decision-stale-note">
-                  This observation is older than seven days or has a future date. It is shown for context only and will not be ranked.
+                  This observation is older than seven days or has a future date. It is shown for
+                  context only and will not be ranked.
                 </p>
               ) : (
                 <div className="market-decision-cost-grid">
@@ -358,9 +389,14 @@ export function MarketDecisionSupport() {
 
           <div className="market-decision-submit">
             <p className="form-warning">
-              All cost inputs are your estimates. Farmess does not auto-fill transport, storage or quality-loss costs.
+              All cost inputs are your estimates. Farmess does not auto-fill transport, storage or
+              quality-loss costs.
             </p>
-            <button className="button button-primary" type="submit" disabled={comparing || loadingMarkets}>
+            <button
+              className="button button-primary"
+              type="submit"
+              disabled={comparing || loadingMarkets}
+            >
               {comparing ? "Calculating net returns…" : "Compare net returns"}
             </button>
           </div>
@@ -368,7 +404,10 @@ export function MarketDecisionSupport() {
       ) : null}
 
       {comparison ? (
-        <section className="market-decision-results" aria-labelledby="market-decision-results-heading">
+        <section
+          className="market-decision-results"
+          aria-labelledby="market-decision-results-heading"
+        >
           <div className="section-heading">
             <div>
               <p className="eyebrow">Calculation result</p>
@@ -387,21 +426,39 @@ export function MarketDecisionSupport() {
                       {option.status.replaceAll("_", " ")}
                     </span>
                   </div>
-                  {option.rank !== null ? <strong className="market-decision-rank">#{option.rank}</strong> : null}
+                  {option.rank !== null ? (
+                    <strong className="market-decision-rank">#{option.rank}</strong>
+                  ) : null}
                 </div>
                 <div className="market-decision-result-facts">
-                  <div><span>Gross sale value</span><strong>{formatMoney(option.grossSaleValue)}</strong></div>
-                  <div><span>Total deductions</span><strong>{formatMoney(option.deductionsTotal)}</strong></div>
-                  <div><span>Net realisation</span><strong>{formatMoney(option.netRealisation)}</strong></div>
-                  <div><span>Net per quintal</span><strong>{formatMoney(option.netPerQuintal)}</strong></div>
+                  <div>
+                    <span>Gross sale value</span>
+                    <strong>{formatMoney(option.grossSaleValue)}</strong>
+                  </div>
+                  <div>
+                    <span>Total deductions</span>
+                    <strong>{formatMoney(option.deductionsTotal)}</strong>
+                  </div>
+                  <div>
+                    <span>Net realisation</span>
+                    <strong>{formatMoney(option.netRealisation)}</strong>
+                  </div>
+                  <div>
+                    <span>Net per quintal</span>
+                    <strong>{formatMoney(option.netPerQuintal)}</strong>
+                  </div>
                 </div>
-                {option.reasons.length ? <p className="market-decision-result-note">{option.reasons.join(" ")}</p> : null}
+                {option.reasons.length ? (
+                  <p className="market-decision-result-note">{option.reasons.join(" ")}</p>
+                ) : null}
               </article>
             ))}
           </div>
 
           <p className="market-forecast-footnote">
-            This is arithmetic over source-reported mandi modal prices and costs you entered. It does not include unentered road distance, buyer reliability, negotiation, taxes or unrecorded losses. It is not a guarantee of a sale price.
+            This is arithmetic over source-reported mandi modal prices and costs you entered. It
+            does not include unentered road distance, buyer reliability, negotiation, taxes or
+            unrecorded losses. It is not a guarantee of a sale price.
           </p>
         </section>
       ) : null}

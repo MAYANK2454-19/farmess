@@ -149,16 +149,20 @@ test("logistics request is not confirmed by submission and can be cancelled by i
   );
 });
 
-
 test("withheld approximate locality is unknown, not a location mismatch", () => {
   const result = matchProduceLot({ ...lot, locationArea: null }, requirement);
   assert.equal(result.status, "partial");
   assert.ok(result.unknowns.some((reason) => reason.includes("farmer has not shared")));
-  assert.equal(result.reasons.some((reason) => reason.includes("does not match")), false);
+  assert.equal(
+    result.reasons.some((reason) => reason.includes("does not match")),
+    false,
+  );
 });
 
 test("a buyer requirement without a delivery date does not invent a date constraint", () => {
   const result = matchProduceLot(lot, { ...requirement, requiredAt: null });
   assert.equal(result.status, "match");
-  assert.ok(result.reasons.some((reason) => reason.includes("has not set a required delivery date")));
+  assert.ok(
+    result.reasons.some((reason) => reason.includes("has not set a required delivery date")),
+  );
 });

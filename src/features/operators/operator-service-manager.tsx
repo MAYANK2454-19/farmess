@@ -157,7 +157,9 @@ export function OperatorServiceManager() {
       setServiceLongitude("");
       setDestinationLatitude("");
       setDestinationLongitude("");
-      setMessage("Your service is now active. Its map pin is shown only when you chose to publish one.");
+      setMessage(
+        "Your service is now active. Its map pin is shown only when you chose to publish one.",
+      );
     } catch (publishError) {
       setError(
         publishError instanceof Error
@@ -321,7 +323,9 @@ export function OperatorServiceManager() {
               <option value="per_day">Per day</option>
               <option value="fixed">Fixed charge</option>
             </select>
-            <span className="form-help">Choose the unit the entered price covers. Leave price blank to request a quote.</span>
+            <span className="form-help">
+              Choose the unit the entered price covers. Leave price blank to request a quote.
+            </span>
           </label>
           <label className="form-field">
             <span className="form-label">Crop suitability (optional)</span>
@@ -331,7 +335,10 @@ export function OperatorServiceManager() {
               onChange={(event) => setCropSuitability(event.target.value)}
               placeholder="e.g. Tomato, Apple, Potato"
             />
-            <span className="form-help">Comma-separated crop names. An empty list means suitability is unknown, not suitable for every crop.</span>
+            <span className="form-help">
+              Comma-separated crop names. An empty list means suitability is unknown, not suitable
+              for every crop.
+            </span>
           </label>
           <label className="form-field">
             <span className="form-label">Service radius (km, optional)</span>
@@ -357,7 +364,9 @@ export function OperatorServiceManager() {
           <fieldset className="operator-location-fields">
             <legend>Show this service on the locality map</legend>
             <p className="form-help">
-              Add your service base coordinates and explicitly opt in to publishing that provider location. These are not farmer coordinates. Listings without a map pin remain available by area but will not appear in radius searches.
+              Add your service base coordinates and explicitly opt in to publishing that provider
+              location. These are not farmer coordinates. Listings without a map pin remain
+              available by area but will not appear in radius searches.
             </p>
             <label className="service-checkbox-row">
               <input
@@ -396,11 +405,23 @@ export function OperatorServiceManager() {
             <div className="operator-coordinate-grid">
               <label className="form-field">
                 <span className="form-label">Destination latitude (optional)</span>
-                <input className="form-control" inputMode="decimal" value={destinationLatitude} onChange={(event) => setDestinationLatitude(event.target.value)} placeholder="Optional" />
+                <input
+                  className="form-control"
+                  inputMode="decimal"
+                  value={destinationLatitude}
+                  onChange={(event) => setDestinationLatitude(event.target.value)}
+                  placeholder="Optional"
+                />
               </label>
               <label className="form-field">
                 <span className="form-label">Destination longitude (optional)</span>
-                <input className="form-control" inputMode="decimal" value={destinationLongitude} onChange={(event) => setDestinationLongitude(event.target.value)} placeholder="Optional" />
+                <input
+                  className="form-control"
+                  inputMode="decimal"
+                  value={destinationLongitude}
+                  onChange={(event) => setDestinationLongitude(event.target.value)}
+                  placeholder="Optional"
+                />
               </label>
             </div>
           </fieldset>
@@ -476,7 +497,9 @@ export function OperatorServiceManager() {
                   <span>
                     {listing.verification_state.replaceAll("_", " ")}
                     {listing.cold_chain_available ? " · cold-chain support" : ""}
-                    {listing.service_radius_km ? ` · ${listing.service_radius_km} km service radius` : ""}
+                    {listing.service_radius_km
+                      ? ` · ${listing.service_radius_km} km service radius`
+                      : ""}
                   </span>
                 </div>
                 <div className="operator-listing-actions">

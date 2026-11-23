@@ -105,7 +105,6 @@ export async function POST(request: NextRequest) {
   );
 }
 
-
 export async function PATCH(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (!origin || origin !== request.nextUrl.origin) {
@@ -117,7 +116,10 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Sign in before changing a produce lot." }, { status: 401 });
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Only the farmer who owns a lot can publish or withdraw it." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only the farmer who owns a lot can publish or withdraw it." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -138,7 +140,10 @@ export async function PATCH(request: NextRequest) {
     (body.action !== "publish" && body.action !== "withdraw") ||
     Object.keys(body).some((key) => key !== "id" && key !== "action")
   ) {
-    return NextResponse.json({ error: "Choose a valid lot and publish/withdraw action." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose a valid lot and publish/withdraw action." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();

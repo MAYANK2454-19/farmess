@@ -8,7 +8,8 @@ export default function BuyerMatchesPage() {
           <p className="eyebrow">Sourcing decisions</p>
           <h1>Matches for my requirements</h1>
           <p className="page-subtitle">
-            Compare your active crop, quantity, locality and delivery requirements with currently published farmer lots.
+            Compare your active crop, quantity, locality and delivery requirements with currently
+            published farmer lots.
           </p>
         </div>
       </div>

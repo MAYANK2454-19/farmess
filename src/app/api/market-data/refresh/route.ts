@@ -25,10 +25,16 @@ export async function POST(request: NextRequest) {
 
   const session = await getFarmessSession();
   if (!session) {
-    return NextResponse.json({ error: "Sign in with an authorised data-steward account." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sign in with an authorised data-steward account." },
+      { status: 401 },
+    );
   }
   if (session.role !== "admin") {
-    return NextResponse.json({ error: "Only the Farmess data-steward role can import market observations." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only the Farmess data-steward role can import market observations." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -45,7 +51,10 @@ export async function POST(request: NextRequest) {
     Array.isArray(body) ||
     Object.keys(body).some((key) => !allowed.includes(key as (typeof allowed)[number]))
   ) {
-    return NextResponse.json({ error: "The import request contains unsupported fields." }, { status: 400 });
+    return NextResponse.json(
+      { error: "The import request contains unsupported fields." },
+      { status: 400 },
+    );
   }
 
   const params = new URLSearchParams();
@@ -62,7 +71,10 @@ export async function POST(request: NextRequest) {
   const limit = (body as Record<string, unknown>).limit;
   if (limit !== undefined) {
     if (typeof limit !== "number" || !Number.isSafeInteger(limit) || limit < 1 || limit > 500) {
-      return NextResponse.json({ error: "Import limit must be a whole number from 1 to 500." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Import limit must be a whole number from 1 to 500." },
+        { status: 400 },
+      );
     }
     params.set("limit", String(limit));
   }
@@ -83,7 +95,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (auditError) {
-      return NextResponse.json({ error: "The source was checked, but the audit record could not be written." }, { status: 500 });
+      return NextResponse.json(
+        { error: "The source was checked, but the audit record could not be written." },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(
@@ -129,12 +144,10 @@ export async function POST(request: NextRequest) {
 
   const observations = rows.map((entry) => entry.row);
 
-  const { error: upsertError } = await supabase
-    .from("market_observations")
-    .upsert(observations, {
-      onConflict: "crop,variety,state,district,market_name,observation_date,source_name",
-      ignoreDuplicates: false,
-    });
+  const { error: upsertError } = await supabase.from("market_observations").upsert(observations, {
+    onConflict: "crop,variety,state,district,market_name,observation_date,source_name",
+    ignoreDuplicates: false,
+  });
 
   const auditStatus = upsertError ? "partial" : source.status;
   const { error: auditError } = await supabase.from("market_data_ingestion_runs").insert({
@@ -146,12 +159,15 @@ export async function POST(request: NextRequest) {
     records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
-      : source.message?.slice(0, 500) ?? null,
+      : (source.message?.slice(0, 500) ?? null),
   });
 
   if (upsertError || auditError) {
     return NextResponse.json(
-      { error: "The import could not be completed and audited. No successful import is being reported." },
+      {
+        error:
+          "The import could not be completed and audited. No successful import is being reported.",
+      },
       { status: 500 },
     );
   }

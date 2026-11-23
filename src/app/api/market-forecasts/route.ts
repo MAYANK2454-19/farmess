@@ -9,10 +9,16 @@ export async function GET(request: NextRequest) {
   const market = params.get("market")?.trim() || null;
 
   if (crop && crop.length > 120) {
-    return NextResponse.json({ error: "Crop filter must be 120 characters or fewer." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Crop filter must be 120 characters or fewer." },
+      { status: 400 },
+    );
   }
   if (market && market.length > 160) {
-    return NextResponse.json({ error: "Market filter must be 160 characters or fewer." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Market filter must be 160 characters or fewer." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
@@ -46,7 +52,7 @@ export async function GET(request: NextRequest) {
       {
         status: "insufficient_data",
         forecast: null,
-        matchingObservationCount: observationsError ? null : count ?? 0,
+        matchingObservationCount: observationsError ? null : (count ?? 0),
         message:
           "No approved price forecast is available for these filters. Farmess will not invent a future price; a model must be trained and pass a time-ordered back-test against a naive baseline first.",
       },
@@ -56,7 +62,9 @@ export async function GET(request: NextRequest) {
 
   const { data: points, error: pointError } = await supabase
     .from("market_forecast_points")
-    .select("target_date,predicted_modal_price_paise_per_quintal,lower_bound_paise_per_quintal,upper_bound_paise_per_quintal")
+    .select(
+      "target_date,predicted_modal_price_paise_per_quintal,lower_bound_paise_per_quintal,upper_bound_paise_per_quintal",
+    )
     .eq("forecast_run_id", run.id)
     .order("target_date", { ascending: true });
 
@@ -71,7 +79,8 @@ export async function GET(request: NextRequest) {
         run,
         points: points ?? [],
         priceUnit: "INR/quintal",
-        confidenceMeaning: "Lower and upper bounds are model intervals, not guaranteed market prices.",
+        confidenceMeaning:
+          "Lower and upper bounds are model intervals, not guaranteed market prices.",
       },
     },
     { headers: { "Cache-Control": "private, no-store" } },

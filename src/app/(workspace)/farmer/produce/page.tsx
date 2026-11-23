@@ -45,8 +45,8 @@ export default async function MyProducePage() {
           <p className="eyebrow">Your inventory</p>
           <h1>My produce</h1>
           <p className="page-subtitle">
-            Keep track of the crop, quantity, quality and collection details for each lot.
-            Drafts stay private until you publish them.
+            Keep track of the crop, quantity, quality and collection details for each lot. Drafts
+            stay private until you publish them.
           </p>
         </div>
         <Link href="/farmer/produce/new" className="button button-primary">
@@ -55,9 +55,13 @@ export default async function MyProducePage() {
       </div>
 
       <p className="preview-footnote">
-        Publishing makes crop, grade, quantity, availability and a consented approximate locality visible to buyers.
-        Your private notes and contact details are not shown on the marketplace. Manage locality sharing in{" "}
-        <Link href="/profile" className="text-link">Profile & privacy</Link>.
+        Publishing makes crop, grade, quantity, availability and a consented approximate locality
+        visible to buyers. Your private notes and contact details are not shown on the marketplace.
+        Manage locality sharing in{" "}
+        <Link href="/profile" className="text-link">
+          Profile & privacy
+        </Link>
+        .
       </p>
 
       <section className="panel" aria-labelledby="lots-heading">
