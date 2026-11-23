@@ -18,10 +18,6 @@ function rupeesToPaise(value: string | null): { value: number | null; valid: boo
   return { value: paise, valid: true };
 }
 
-function getFilters(request: NextRequest) {
-  return parseMarketSearchFilters(request.nextUrl.searchParams);
-}
-
 export async function POST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
@@ -83,7 +79,7 @@ export async function POST(request: NextRequest) {
       request_filters: filters,
       records_received: 0,
       records_upserted: 0,
-      error_message: source.message?.slice(0, 500) ?? null,
+      error_message: ("message" in source ? source.message : null)?.slice(0, 500) ?? null,
     });
 
     if (auditError) {
