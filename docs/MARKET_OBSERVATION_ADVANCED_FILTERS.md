@@ -9,3 +9,6 @@ The farmer market explorer supports optional local filters over the observations
 - Filtering is presentation-only: it does not change API requests, source records, or stored values.
 - The history chart, visible record list, sort order, result count and CSV export all use the same filtered set.
 - Clearing the advanced filters restores all records returned by the current server-side search.
+
+
+Automated coverage verifies inclusive date and price boundaries, combined filters, empty-filter behavior, missing values, malformed dates, negative prices and reversed ranges.
