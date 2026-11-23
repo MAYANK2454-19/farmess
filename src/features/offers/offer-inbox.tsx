@@ -16,6 +16,7 @@ type Offer = Pick<
   | "created_at"
 > & {
   lot: Pick<Database["public"]["Tables"]["produce_lots"]["Row"], "id" | "crop" | "variety"> | null;
+  is_expired: boolean;
 };
 
 type OfferDecision = "accepted" | "declined";
@@ -47,11 +48,6 @@ export function OfferInbox() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const [now, setNow] = useState<number | null>(null);
-
-  useEffect(() => {
-    setNow(Date.now());
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -152,7 +148,7 @@ export function OfferInbox() {
       ) : (
         <ul className="offer-list">
           {offers.map((offer) => {
-            const expired = now !== null && new Date(offer.valid_until).getTime() <= now;
+            const expired = offer.is_expired;
             const effectiveStatus =
               offer.status === "pending" && expired ? "expired" : offer.status;
 
