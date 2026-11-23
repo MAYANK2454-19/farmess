@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
+import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import { getMarketRecordFreshnessLabel } from "@/lib/market-data/record-freshness";
+import { sortMarketPriceRecords, type MarketRecordSortOrder } from "@/lib/market-data/sort-records";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
-import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
-import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
 import styles from "./markets.module.css";
 
 type Filters = { commodity: string; state: string; district: string; market: string };
@@ -40,6 +41,7 @@ function formatTimestamp(value: string): string {
 export default function MarketsPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<MarketDataResult | null>(null);
+  const [sortOrder, setSortOrder] = useState<MarketRecordSortOrder>("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -86,11 +88,12 @@ export default function MarketsPage() {
   }
 
   const records = result?.records ?? [];
+  const sortedRecords = sortMarketPriceRecords(records, sortOrder);
 
   function handleExport() {
-    if (records.length === 0) return;
+    if (sortedRecords.length === 0) return;
 
-    const csv = marketPriceRecordsToCsv(records);
+    const csv = marketPriceRecordsToCsv(sortedRecords);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const objectUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -285,68 +288,87 @@ export default function MarketsPage() {
         {!loading && <MarketForecastPanel crop={filters.commodity} market={filters.market} />}
 
         {!loading && records.length > 0 && (
-          <div className={styles.recordList}>
-            {records.map((record) => {
-              const freshness = getMarketRecordFreshnessLabel(record.observationDate);
+          <>
+            <div className={styles.listToolbar}>
+              <p>Choose how market observations are ordered.</p>
+              <label className={styles.sortControl}>
+                <span>Sort by</span>
+                <select
+                  className="form-control"
+                  value={sortOrder}
+                  onChange={(event) => setSortOrder(event.target.value as MarketRecordSortOrder)}
+                  aria-label="Sort market observations"
+                >
+                  <option value="newest">Newest observation</option>
+                  <option value="oldest">Oldest observation</option>
+                  <option value="modal-high">Highest modal price</option>
+                  <option value="modal-low">Lowest modal price</option>
+                </select>
+              </label>
+            </div>
+            <div className={styles.recordList}>
+              {sortedRecords.map((record) => {
+                const freshness = getMarketRecordFreshnessLabel(record.observationDate);
 
-              return (
-                <article className={`panel ${styles.recordCard}`} key={record.id}>
-                  <div className={styles.recordTop}>
-                    <div>
-                      <h3>{record.commodity}</h3>
-                      <p>
-                        {[record.variety, record.market, record.district, record.state]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
+                return (
+                  <article className={`panel ${styles.recordCard}`} key={record.id}>
+                    <div className={styles.recordTop}>
+                      <div>
+                        <h3>{record.commodity}</h3>
+                        <p>
+                          {[record.variety, record.market, record.district, record.state]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      </div>
+                      <div className={styles.recordBadges}>
+                        <span className={styles.reportedTag}>Reported</span>
+                        <span
+                          className={`${styles.freshnessTag} ${styles[`freshness${freshness.status}`]}`}
+                          title={freshness.explanation}
+                        >
+                          {freshness.label}
+                        </span>
+                      </div>
                     </div>
-                    <div className={styles.recordBadges}>
-                      <span className={styles.reportedTag}>Reported</span>
-                      <span
-                        className={`${styles.freshnessTag} ${styles[`freshness${freshness.status}`]}`}
-                        title={freshness.explanation}
-                      >
-                        {freshness.label}
+                    <div className={styles.priceGrid}>
+                      <div>
+                        <span>Minimum</span>
+                        <strong>₹{formatPrice(record.minPrice)}</strong>
+                      </div>
+                      <div>
+                        <span>Modal</span>
+                        <strong>₹{formatPrice(record.modalPrice)}</strong>
+                      </div>
+                      <div>
+                        <span>Maximum</span>
+                        <strong>₹{formatPrice(record.maxPrice)}</strong>
+                      </div>
+                    </div>
+                    <div className={styles.recordMeta}>
+                      <span>
+                        Observed: <strong>{formatDate(record.observationDate)}</strong>
+                      </span>
+                      <span>
+                        Unit: <strong>{record.priceUnit}</strong>
+                      </span>
+                      <span>
+                        Retrieved: <strong>{formatTimestamp(record.retrievedAt)}</strong>
                       </span>
                     </div>
-                  </div>
-                  <div className={styles.priceGrid}>
-                    <div>
-                      <span>Minimum</span>
-                      <strong>₹{formatPrice(record.minPrice)}</strong>
-                    </div>
-                    <div>
-                      <span>Modal</span>
-                      <strong>₹{formatPrice(record.modalPrice)}</strong>
-                    </div>
-                    <div>
-                      <span>Maximum</span>
-                      <strong>₹{formatPrice(record.maxPrice)}</strong>
-                    </div>
-                  </div>
-                  <div className={styles.recordMeta}>
-                    <span>
-                      Observed: <strong>{formatDate(record.observationDate)}</strong>
-                    </span>
-                    <span>
-                      Unit: <strong>{record.priceUnit}</strong>
-                    </span>
-                    <span>
-                      Retrieved: <strong>{formatTimestamp(record.retrievedAt)}</strong>
-                    </span>
-                  </div>
-                  <a
-                    className={styles.sourceLink}
-                    href={record.sourceUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View source resource <span aria-hidden="true">↗</span>
-                  </a>
-                </article>
-              );
-            })}
-          </div>
+                    <a
+                      className={styles.sourceLink}
+                      href={record.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View source resource <span aria-hidden="true">↗</span>
+                    </a>
+                  </article>
+                );
+              })}
+            </div>
+          </>
         )}
       </section>
     </main>
