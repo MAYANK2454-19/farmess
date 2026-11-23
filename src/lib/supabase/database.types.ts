@@ -949,9 +949,68 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      buyer_marketplace_lots: {
+        Row: {
+          approximate_area: string | null
+          available_from: string | null
+          created_at: string | null
+          crop: string | null
+          grade: string | null
+          id: string | null
+          quantity: number | null
+          sell_by: string | null
+          unit: string | null
+          variety: string | null
+        }
+        Insert: {
+          approximate_area?: string | null
+          available_from?: string | null
+          created_at?: string | null
+          crop?: string | null
+          grade?: string | null
+          id?: string | null
+          quantity?: number | null
+          sell_by?: string | null
+          unit?: string | null
+          variety?: string | null
+        }
+        Update: {
+          approximate_area?: string | null
+          available_from?: string | null
+          created_at?: string | null
+          crop?: string | null
+          grade?: string | null
+          id?: string | null
+          quantity?: number | null
+          sell_by?: string | null
+          unit?: string | null
+          variety?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      create_buyer_offer: {
+        Args: {
+          p_lot_id: string
+          p_price_paise_per_quintal: number
+          p_quantity: number
+          p_terms?: string
+          p_unit: string
+          p_valid_until: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          lot_id: string
+          price_paise_per_quintal: number
+          quantity: number
+          status: string
+          terms: string
+          unit: string
+          valid_until: string
+        }[]
+      }
       find_nearby_service_listings: {
         Args: {
           p_crop?: string
