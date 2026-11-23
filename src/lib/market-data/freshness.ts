@@ -32,11 +32,7 @@ export function assessMarketDataFreshness(
   maxAgeHours = DEFAULT_MAX_AGE_HOURS,
 ): MarketDataFreshnessResult {
   if (!isRealCalendarDate(observationDate)) {
-    return {
-      status: "invalid",
-      ageHours: null,
-      message: "Observation date is invalid.",
-    };
+    return { status: "invalid", ageHours: null, message: "Observation date is invalid." };
   }
 
   if (!Number.isFinite(maxAgeHours) || maxAgeHours < 0) {
