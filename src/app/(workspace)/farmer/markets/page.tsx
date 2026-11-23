@@ -13,6 +13,11 @@ import {
   type MarketRecordFilters,
 } from "@/lib/market-data/filter-records";
 import { sortMarketPriceRecords, type MarketRecordSortOrder } from "@/lib/market-data/sort-records";
+import {
+  parseMarketSearchState,
+  serializeMarketSearchState,
+  type MarketSearchState,
+} from "@/lib/market-data/market-search-state";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
 import styles from "./markets.module.css";
@@ -87,17 +92,47 @@ export default function MarketsPage() {
     }
   }, []);
 
+  function updateSearchUrl(state: MarketSearchState, replace = false) {
+    const url = new URL(window.location.href);
+    for (const key of ["mc", "ms", "md", "mm", "from", "to", "min", "max", "sort"]) {
+      url.searchParams.delete(key);
+    }
+    const query = serializeMarketSearchState(state);
+    new URLSearchParams(query).forEach((value, key) => url.searchParams.set(key, value));
+    const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+    if (replace) window.history.replaceState(null, "", nextUrl);
+    else window.history.pushState(null, "", nextUrl);
+  }
+
   useEffect(() => {
-    void Promise.resolve().then(() => loadPrices(EMPTY_FILTERS));
+    function restoreSearchState() {
+      const restored = parseMarketSearchState(window.location.search);
+      setFilters(restored.filters);
+      setDraftRecordFilters(restored.recordFilters);
+      setAppliedRecordFilters(restored.recordFilters);
+      setSortOrder(restored.sortOrder);
+      setRecordFilterError("");
+      void loadPrices(restored.filters);
+    }
+
+    restoreSearchState();
+    window.addEventListener("popstate", restoreSearchState);
+    return () => window.removeEventListener("popstate", restoreSearchState);
   }, [loadPrices]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    updateSearchUrl({ filters, recordFilters: appliedRecordFilters, sortOrder });
     void loadPrices(filters);
   }
 
   function handleReset() {
     setFilters(EMPTY_FILTERS);
+    updateSearchUrl({
+      filters: EMPTY_FILTERS,
+      recordFilters: appliedRecordFilters,
+      sortOrder,
+    });
     void loadPrices(EMPTY_FILTERS);
   }
 
@@ -106,6 +141,7 @@ export default function MarketsPage() {
     try {
       filterMarketPriceRecords(records, draftRecordFilters);
       setAppliedRecordFilters(draftRecordFilters);
+      updateSearchUrl({ filters, recordFilters: draftRecordFilters, sortOrder });
       setRecordFilterError("");
     } catch (filterError) {
       setRecordFilterError(
@@ -117,6 +153,7 @@ export default function MarketsPage() {
   function handleRecordFilterReset() {
     setDraftRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
     setAppliedRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
+    updateSearchUrl({ filters, recordFilters: EMPTY_MARKET_RECORD_FILTERS, sortOrder });
     setRecordFilterError("");
   }
 
@@ -432,7 +469,15 @@ export default function MarketsPage() {
                 <select
                   className="form-control"
                   value={sortOrder}
-                  onChange={(event) => setSortOrder(event.target.value as MarketRecordSortOrder)}
+                  onChange={(event) => {
+                    const nextSort = event.target.value as MarketRecordSortOrder;
+                    setSortOrder(nextSort);
+                    updateSearchUrl({
+                      filters,
+                      recordFilters: appliedRecordFilters,
+                      sortOrder: nextSort,
+                    });
+                  }}
                   aria-label="Sort market observations"
                 >
                   <option value="newest">Newest observation</option>
