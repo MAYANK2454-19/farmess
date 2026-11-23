@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  rankLogisticsCandidates,
-  type NearbyServiceCandidate,
-} from "./recommendations.ts";
+import { rankLogisticsCandidates, type NearbyServiceCandidate } from "./recommendations.ts";
 
 const base = (overrides: Partial<NearbyServiceCandidate> = {}): NearbyServiceCandidate => ({
   id: "listing-1",
@@ -55,7 +52,15 @@ test("ranks a fully compatible and platform-verified provider as recommended", (
 
 test("unknown provider details remain needs-confirmation, never silently match", () => {
   const [result] = rankLogisticsCandidates(
-    [base({ capacity_match: null, crop_match: null, date_match: null, cold_chain_match: null, verification_state: "unverified" })],
+    [
+      base({
+        capacity_match: null,
+        crop_match: null,
+        date_match: null,
+        cold_chain_match: null,
+        verification_state: "unverified",
+      }),
+    ],
     requirements,
   );
   assert.equal(result.status, "needs_confirmation");
@@ -63,19 +68,13 @@ test("unknown provider details remain needs-confirmation, never silently match",
 });
 
 test("hard conflicts exclude a listing", () => {
-  const [result] = rankLogisticsCandidates(
-    [base({ capacity_match: false })],
-    requirements,
-  );
+  const [result] = rankLogisticsCandidates([base({ capacity_match: false })], requirements);
   assert.equal(result.status, "excluded");
   assert.ok(result.reasons.some((reason) => reason.includes("capacity")));
 });
 
 test("a cold-chain mismatch excludes a refrigerated requirement", () => {
-  const [result] = rankLogisticsCandidates(
-    [base({ cold_chain_match: false })],
-    requirements,
-  );
+  const [result] = rankLogisticsCandidates([base({ cold_chain_match: false })], requirements);
   assert.equal(result.status, "excluded");
   assert.ok(result.reasons.some((reason) => reason.includes("Cold-chain")));
 });
@@ -114,6 +113,8 @@ test("nearer candidates sort first when all other fields tie", () => {
 });
 
 test("rejects invalid search radius and malformed required quantity", () => {
-  assert.throws(() => rankLogisticsCandidates([base()], { ...requirements, maximumRadiusMeters: 100 }));
+  assert.throws(() =>
+    rankLogisticsCandidates([base()], { ...requirements, maximumRadiusMeters: 100 }),
+  );
   assert.throws(() => rankLogisticsCandidates([base()], { ...requirements, requiredQuantity: 0 }));
 });

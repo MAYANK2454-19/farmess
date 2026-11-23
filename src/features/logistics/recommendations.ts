@@ -17,11 +17,7 @@ export type NearbyServiceCandidate = {
   crop_suitability: string[];
   cold_chain_available: boolean;
   verification_state:
-    | "unverified"
-    | "contact_verified"
-    | "document_verified"
-    | "platform_verified"
-    | "suspended";
+    "unverified" | "contact_verified" | "document_verified" | "platform_verified" | "suspended";
   latitude: number;
   longitude: number;
   destination_latitude: number | null;
@@ -95,18 +91,16 @@ function verificationScore(state: NearbyServiceCandidate["verification_state"]):
 }
 
 function hasComparableRate(candidate: NearbyServiceCandidate): boolean {
-  if (candidate.price_paise === null || !Number.isSafeInteger(candidate.price_paise) || candidate.price_paise < 0) {
+  if (
+    candidate.price_paise === null ||
+    !Number.isSafeInteger(candidate.price_paise) ||
+    candidate.price_paise < 0
+  ) {
     return false;
   }
-  return [
-    "per_trip",
-    "per_km",
-    "per_kg",
-    "per_quintal",
-    "per_tonne",
-    "per_day",
-    "fixed",
-  ].includes(candidate.rate_basis);
+  return ["per_trip", "per_km", "per_kg", "per_quintal", "per_tonne", "per_day", "fixed"].includes(
+    candidate.rate_basis,
+  );
 }
 
 export function rankLogisticsCandidates(
@@ -216,7 +210,9 @@ export function rankLogisticsCandidates(
     if (candidate.verification_state === "platform_verified") {
       reasons.push("Provider identity and listing have platform verification.");
     } else if (candidate.verification_state === "document_verified") {
-      reasons.push("Provider documents have been checked; live availability still needs confirmation.");
+      reasons.push(
+        "Provider documents have been checked; live availability still needs confirmation.",
+      );
     } else if (candidate.verification_state === "contact_verified") {
       reasons.push("Provider contact has been checked; service availability is still unconfirmed.");
     } else {
@@ -284,7 +280,13 @@ export function rankLogisticsCandidates(
 
   return ranked.sort((a, b) => {
     const statusRank = (status: LogisticsRecommendation["status"]) =>
-      status === "recommended" ? 0 : status === "eligible" ? 1 : status === "needs_confirmation" ? 2 : 3;
+      status === "recommended"
+        ? 0
+        : status === "eligible"
+          ? 1
+          : status === "needs_confirmation"
+            ? 2
+            : 3;
     return (
       statusRank(a.status) - statusRank(b.status) ||
       b.score - a.score ||
