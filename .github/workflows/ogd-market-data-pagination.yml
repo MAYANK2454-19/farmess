@@ -11,6 +11,7 @@ on:
       - feat/market-observation-advanced-filters
       - feat/market-price-summary-insights
       - feat/printable-market-observation-report
+      - feat/market-mandi-price-comparison
   pull_request:
     branches:
       - feat/market-import-duplicate-reconciliation
@@ -22,6 +23,7 @@ on:
       - feat/market-observation-advanced-filters
       - feat/market-price-summary-insights
       - feat/printable-market-observation-report
+      - feat/market-mandi-price-comparison
     paths:
       - "src/lib/market-data/ogd-pagination.ts"
       - "src/lib/market-data/ogd-pagination.test.ts"
@@ -39,6 +41,10 @@ on:
       - "src/lib/market-data/filter-records.test.ts"
       - "src/lib/market-data/summary.ts"
       - "src/lib/market-data/summary.test.ts"
+      - "src/lib/market-data/market-comparison.ts"
+      - "src/lib/market-data/market-comparison.test.ts"
+      - "src/features/market-data/market-comparison-panel.tsx"
+      - "src/features/market-data/market-comparison-panel.module.css"
       - "src/features/market-data/market-summary-panel.tsx"
       - "src/features/market-data/market-summary-panel.module.css"
       - "src/features/market-data/source-quality-panel.tsx"
@@ -54,6 +60,7 @@ on:
       - "docs/MARKET_OBSERVATION_SORTING.md"
       - "docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md"
       - "docs/MARKET_PRICE_SUMMARY_INSIGHTS.md"
+      - "docs/MARKET_MANDI_PRICE_COMPARISON.md"
       - ".github/workflows/ogd-market-data-pagination.yml"
 
 permissions:
@@ -80,7 +87,7 @@ jobs:
         run: npm ci
 
       - name: Prettier
-        run: npx prettier --check src/lib/market-data/summary.ts src/lib/market-data/summary.test.ts src/features/market-data/market-summary-panel.tsx src/features/market-data/market-summary-panel.module.css docs/MARKET_PRICE_SUMMARY_INSIGHTS.md src/lib/market-data/filter-records.ts src/lib/market-data/filter-records.test.ts docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md docs/PRINTABLE_MARKET_OBSERVATION_REPORT.md .github/workflows/ogd-market-data-pagination.yml
+        run: npx prettier --check src/lib/market-data/market-comparison.ts src/lib/market-data/market-comparison.test.ts src/features/market-data/market-comparison-panel.tsx src/features/market-data/market-comparison-panel.module.css docs/MARKET_MANDI_PRICE_COMPARISON.md src/lib/market-data/summary.ts src/lib/market-data/summary.test.ts src/features/market-data/market-summary-panel.tsx src/features/market-data/market-summary-panel.module.css docs/MARKET_PRICE_SUMMARY_INSIGHTS.md src/lib/market-data/filter-records.ts src/lib/market-data/filter-records.test.ts docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md docs/PRINTABLE_MARKET_OBSERVATION_REPORT.md .github/workflows/ogd-market-data-pagination.yml
 
       - name: ESLint
         run: npm run lint
@@ -94,7 +101,7 @@ jobs:
 
       - name: Focused market-data summary, filter and sorting tests
         if: always()
-        run: node --experimental-strip-types --test src/lib/market-data/summary.test.ts src/lib/market-data/filter-records.test.ts src/lib/market-data/sort-records.test.ts
+        run: node --experimental-strip-types --test src/lib/market-data/market-comparison.test.ts src/lib/market-data/summary.test.ts src/lib/market-data/filter-records.test.ts src/lib/market-data/sort-records.test.ts
 
       - name: Production build
         if: always()
