@@ -109,10 +109,8 @@ test("rejects malformed page payloads", async () => {
 
 test("rejects limits outside the supported source request range", async () => {
   await assert.rejects(
-    fetchOgdRecordsPaginated(
-      new URL("https://example.test/resource"),
-      501,
-      async () => jsonResponse([]),
+    fetchOgdRecordsPaginated(new URL("https://example.test/resource"), 501, async () =>
+      jsonResponse([]),
     ),
     /limit must be a whole number/,
   );
