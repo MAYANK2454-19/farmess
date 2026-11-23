@@ -7,6 +7,7 @@ on:
       - feat/market-source-quality-diagnostics
       - feat/market-source-quality-ui
       - feat/market-record-freshness-labels
+      - feat/market-observation-sorting
   pull_request:
     branches:
       - feat/market-import-duplicate-reconciliation
@@ -14,6 +15,7 @@ on:
       - feat/market-source-quality-diagnostics
       - feat/market-source-quality-ui
       - feat/market-record-freshness-labels
+      - feat/market-observation-sorting
     paths:
       - "src/lib/market-data/ogd-pagination.ts"
       - "src/lib/market-data/ogd-pagination.test.ts"
@@ -25,6 +27,8 @@ on:
       - "src/lib/market-data/source-quality.test.ts"
       - "src/lib/market-data/record-freshness.ts"
       - "src/lib/market-data/record-freshness.test.ts"
+      - "src/lib/market-data/sort-records.ts"
+      - "src/lib/market-data/sort-records.test.ts"
       - "src/features/market-data/source-quality-panel.tsx"
       - "src/features/market-data/source-quality-panel.module.css"
       - "src/app/(workspace)/farmer/markets/page.tsx"
@@ -34,6 +38,7 @@ on:
       - "docs/OGD_SOURCE_QUALITY_DIAGNOSTICS.md"
       - "docs/MARKET_SOURCE_QUALITY_UI.md"
       - "docs/MARKET_RECORD_FRESHNESS_LABELS.md"
+      - "docs/MARKET_OBSERVATION_SORTING.md"
       - ".github/workflows/ogd-market-data-pagination.yml"
 
 permissions:
@@ -60,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: Prettier
-        run: npx prettier --check src/lib/market-data/record-freshness.ts src/lib/market-data/record-freshness.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_RECORD_FRESHNESS_LABELS.md .github/workflows/ogd-market-data-pagination.yml src/lib/market-data/source-quality.ts src/lib/market-data/source-quality.test.ts src/features/market-data/source-quality-panel.tsx src/features/market-data/source-quality-panel.module.css 'src/app/(workspace)/farmer/markets/page.tsx' docs/MARKET_SOURCE_QUALITY_UI.md src/lib/market-data/ogd-pagination.ts src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/ogd-provider.ts src/lib/market-data/normalize.ts src/lib/market-data/types.ts src/lib/market-data/normalize-diagnostics.test.ts src/app/api/market-data/refresh/route.ts docs/OGD_MARKET_DATA_PAGINATION.md docs/OGD_SOURCE_QUALITY_DIAGNOSTICS.md .github/workflows/ogd-market-data-pagination.yml
+        run: npx prettier --check src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md .github/workflows/ogd-market-data-pagination.yml
 
       - name: ESLint
         run: npm run lint
@@ -72,9 +77,9 @@ jobs:
         if: always()
         run: npm test
 
-      - name: Focused OGD and freshness tests
+      - name: Focused market-data sorting tests
         if: always()
-        run: node --experimental-strip-types --test src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/normalize-diagnostics.test.ts src/lib/market-data/source-quality.test.ts src/lib/market-data/record-freshness.test.ts
+        run: node --experimental-strip-types --test src/lib/market-data/sort-records.test.ts
 
       - name: Production build
         if: always()
