@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - package.json
+      - .github/workflows/refresh-dependency-lockfile.yml
 
 permissions:
   contents: write
@@ -26,8 +27,8 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies and reconcile lockfile
+        run: npm install --ignore-scripts --no-audit --no-fund
 
       - name: Format changed source files
         run: |
