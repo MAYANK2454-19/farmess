@@ -46,7 +46,7 @@ export async function GET() {
     quantity: item.min_quantity,
     unit: item.unit as BuyerRequirementForMatching["unit"],
     locationArea: item.market_area,
-    requiredAt: item.delivery_by ?? "",
+    requiredAt: item.delivery_by,
   }));
 
   const lots: ProduceLotForMatching[] = (lotsResult.data ?? []).flatMap((item) => {
@@ -59,7 +59,6 @@ export async function GET() {
       item.quantity === null ||
       item.quantity <= 0 ||
       !supportedUnit ||
-      !item.approximate_area ||
       !item.available_from
     ) {
       return [];
