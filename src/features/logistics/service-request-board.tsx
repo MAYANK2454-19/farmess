@@ -258,9 +258,7 @@ export function ServiceRequestBoard() {
       .catch((loadError: unknown) => {
         if (active) {
           setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "Services could not be loaded.",
+            loadError instanceof Error ? loadError.message : "Services could not be loaded.",
           );
         }
       })
