@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
+import { MarketSummaryPanel } from "@/features/market-data/market-summary-panel";
 import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import { getMarketRecordFreshnessLabel } from "@/lib/market-data/record-freshness";
@@ -391,6 +392,10 @@ export default function MarketsPage() {
 
         {!loading && result && result.sourceQuality.received > 0 && (
           <SourceQualityPanel quality={result.sourceQuality} />
+        )}
+
+        {!loading && filteredRecords.length > 0 && (
+          <MarketSummaryPanel records={filteredRecords} />
         )}
 
         {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
