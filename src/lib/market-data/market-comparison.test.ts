@@ -74,10 +74,7 @@ test("excludes demo, missing, invalid, negative and invalid-date observations", 
 
 test("does not compare a single mandi against itself", () => {
   assert.deepEqual(
-    buildMarketPriceComparisons([
-      record("one", "Jaipur", "2000"),
-      record("two", "Jaipur", "2100"),
-    ]),
+    buildMarketPriceComparisons([record("one", "Jaipur", "2000"), record("two", "Jaipur", "2100")]),
     [],
   );
 });
