@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, feat/ui/field-ready-farmess-redesign]
   push:
-    branches: [main]
+    branches: [main, feat/m6-produce-quality-inspection]
 
 permissions:
   contents: read
