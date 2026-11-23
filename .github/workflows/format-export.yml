@@ -1,0 +1,31 @@
+name: Temporary formatter export
+
+on:
+  push:
+    branches:
+      - feat/market-price-history-view-clean
+
+permissions:
+  contents: read
+
+jobs:
+  format-export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Format source
+        run: npx prettier --write "src/app/(workspace)/farmer/markets/market-history-chart.tsx"
+      - name: Export formatted source
+        run: |
+          echo BEGIN_FORMATTED_BASE64
+          base64 -w0 "src/app/(workspace)/farmer/markets/market-history-chart.tsx"
+          echo
+          echo END_FORMATTED_BASE64
