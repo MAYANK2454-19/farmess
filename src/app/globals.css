@@ -1588,3 +1588,40 @@ h1 {
   background: #f1f3ef;
   border-color: #dfe5dc;
 }
+
+
+.overview-lot-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overview-lot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.overview-lot-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.overview-lot-row strong {
+  color: #1d2b20;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.overview-lot-row > div > span {
+  color: #788479;
+  font-size: 10px;
+}
+
+.overview-lot-row .produce-status {
+  flex: 0 0 auto;
+}
