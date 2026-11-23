@@ -63,13 +63,7 @@ function formatPrice(value: number) {
   }).format(value / 100);
 }
 
-function OfferForm({
-  lot,
-  onSent,
-}: {
-  lot: Lot;
-  onSent: (offer: Offer) => void;
-}) {
+function OfferForm({ lot, onSent }: { lot: Lot; onSent: (offer: Offer) => void }) {
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [validUntil, setValidUntil] = useState("");
@@ -122,14 +116,20 @@ function OfferForm({
       onSent(result.offer);
       setSent(true);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Your offer could not be sent.");
+      setError(
+        submitError instanceof Error ? submitError.message : "Your offer could not be sent.",
+      );
     } finally {
       setPending(false);
     }
   }
 
   if (sent) {
-    return <p className="form-success marketplace-sent" role="status">Offer sent. You can follow the decision in My Offers.</p>;
+    return (
+      <p className="form-success marketplace-sent" role="status">
+        Offer sent. You can follow the decision in My Offers.
+      </p>
+    );
   }
 
   return (
@@ -138,21 +138,53 @@ function OfferForm({
       <form className="marketplace-offer-form" onSubmit={submit}>
         <label className="form-field">
           <span className="form-label">Quantity ({lot.unit})</span>
-          <input className="form-control" inputMode="decimal" value={quantity} onChange={(event) => setQuantity(event.target.value)} max={lot.quantity} placeholder="Quantity" required />
+          <input
+            className="form-control"
+            inputMode="decimal"
+            value={quantity}
+            onChange={(event) => setQuantity(event.target.value)}
+            max={lot.quantity}
+            placeholder="Quantity"
+            required
+          />
         </label>
         <label className="form-field">
           <span className="form-label">Price (₹ per quintal)</span>
-          <input className="form-control" inputMode="decimal" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="e.g. 2350" required />
+          <input
+            className="form-control"
+            inputMode="decimal"
+            value={price}
+            onChange={(event) => setPrice(event.target.value)}
+            placeholder="e.g. 2350"
+            required
+          />
         </label>
         <label className="form-field">
           <span className="form-label">Offer expires</span>
-          <input className="form-control" type="datetime-local" value={validUntil} onChange={(event) => setValidUntil(event.target.value)} required />
+          <input
+            className="form-control"
+            type="datetime-local"
+            value={validUntil}
+            onChange={(event) => setValidUntil(event.target.value)}
+            required
+          />
         </label>
         <label className="form-field marketplace-offer-terms">
           <span className="form-label">Additional terms (optional)</span>
-          <textarea className="form-control" rows={3} value={terms} onChange={(event) => setTerms(event.target.value)} maxLength={1000} placeholder="Delivery, grading or other agreed terms" />
+          <textarea
+            className="form-control"
+            rows={3}
+            value={terms}
+            onChange={(event) => setTerms(event.target.value)}
+            maxLength={1000}
+            placeholder="Delivery, grading or other agreed terms"
+          />
         </label>
-        {error ? <p className="form-alert" role="alert">{error}</p> : null}
+        {error ? (
+          <p className="form-alert" role="alert">
+            {error}
+          </p>
+        ) : null}
         <button type="submit" className="button button-primary" disabled={pending}>
           {pending ? "Sending…" : "Send offer"}
         </button>
@@ -210,17 +242,30 @@ export function MarketplaceBoard() {
       <section className="panel" aria-labelledby="published-lots-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="published-lots-heading">Published produce lots</h2>
+            <h2 className="panel-title" id="published-lots-heading">
+              Published produce lots
+            </h2>
             <p className="panel-caption">Only active farmer listings are shown here.</p>
           </div>
         </div>
-        {error ? <p className="form-alert service-alert" role="alert">{error}</p> : null}
+        {error ? (
+          <p className="form-alert service-alert" role="alert">
+            {error}
+          </p>
+        ) : null}
         {loading ? (
-          <div className="empty-state"><p className="empty-copy" role="status">Loading published lots…</p></div>
+          <div className="empty-state">
+            <p className="empty-copy" role="status">
+              Loading published lots…
+            </p>
+          </div>
         ) : lots.length === 0 ? (
           <div className="empty-state">
             <h3 className="empty-title">No published produce available</h3>
-            <p className="empty-copy">There are no active farmer listings to show right now. Draft and paused lots stay out of this marketplace.</p>
+            <p className="empty-copy">
+              There are no active farmer listings to show right now. Draft and paused lots stay out
+              of this marketplace.
+            </p>
           </div>
         ) : (
           <div className="marketplace-lot-list">
@@ -232,17 +277,24 @@ export function MarketplaceBoard() {
                   <div className="marketplace-lot-heading">
                     <div>
                       <p className="eyebrow">Produce listing</p>
-                      <h3>{lot.crop}{lot.variety ? ` · ${lot.variety}` : ""}</h3>
+                      <h3>
+                        {lot.crop}
+                        {lot.variety ? ` · ${lot.variety}` : ""}
+                      </h3>
                       <p>{[lot.grade, lot.approximate_area].filter(Boolean).join(" · ")}</p>
                     </div>
-                    <strong>{lot.quantity} {lot.unit}</strong>
+                    <strong>
+                      {lot.quantity} {lot.unit}
+                    </strong>
                   </div>
                   <p className="marketplace-lot-dates">
-                    Available from {formatDate(lot.available_from)} · Sell by {formatDate(lot.sell_by)}
+                    Available from {formatDate(lot.available_from)} · Sell by{" "}
+                    {formatDate(lot.sell_by)}
                   </p>
                   {activeOffer ? (
                     <p className="marketplace-existing-offer">
-                      Your offer is awaiting a farmer decision. It expires {formatDateTime(existing.valid_until)}.
+                      Your offer is awaiting a farmer decision. It expires{" "}
+                      {formatDateTime(existing.valid_until)}.
                     </p>
                   ) : (
                     <OfferForm lot={lot} onSent={addOffer} />
@@ -257,22 +309,33 @@ export function MarketplaceBoard() {
       <section className="panel" aria-labelledby="buyer-offers-heading">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title" id="buyer-offers-heading">Offers you have sent</h2>
+            <h2 className="panel-title" id="buyer-offers-heading">
+              Offers you have sent
+            </h2>
             <p className="panel-caption">{offers.length} offer(s)</p>
           </div>
         </div>
         {offers.length === 0 ? (
-          <div className="empty-state"><p className="empty-copy">Your sent offers will appear here.</p></div>
+          <div className="empty-state">
+            <p className="empty-copy">Your sent offers will appear here.</p>
+          </div>
         ) : (
           <ul className="buyer-offer-list">
             {offers.map((offer) => (
               <li className="buyer-offer-row" key={offer.id}>
                 <div>
                   <strong>{formatPrice(offer.price_paise_per_quintal)} / quintal</strong>
-                  <span>{offer.quantity} {offer.unit} · expires {formatDateTime(offer.valid_until)}</span>
+                  <span>
+                    {offer.quantity} {offer.unit} · expires {formatDateTime(offer.valid_until)}
+                  </span>
                   <time dateTime={offer.created_at}>Sent {formatDateTime(offer.created_at)}</time>
                 </div>
-                <span className={"produce-status produce-status-" + (offer.is_expired && offer.status === "pending" ? "expired" : offer.status)}>
+                <span
+                  className={
+                    "produce-status produce-status-" +
+                    (offer.is_expired && offer.status === "pending" ? "expired" : offer.status)
+                  }
+                >
                   {offer.is_expired && offer.status === "pending" ? "Expired" : offer.status}
                 </span>
               </li>

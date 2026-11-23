@@ -9,7 +9,10 @@ export async function PATCH(request: NextRequest) {
 
   const session = await getFarmessSession();
   if (!session || session.role !== "buyer") {
-    return NextResponse.json({ error: "Sign in with a buyer account to withdraw an offer." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Sign in with a buyer account to withdraw an offer." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
