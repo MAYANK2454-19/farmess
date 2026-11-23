@@ -70,20 +70,20 @@ export function validateBuyerRequirement(
   } else if (crop.length > MAX_CROP_LENGTH) {
     errors.push({
       field: "crop",
-      message: \`Crop must be at most \${MAX_CROP_LENGTH} characters.\`,
+      message: "Crop must be at most " + MAX_CROP_LENGTH + " characters.",
     });
   }
 
   if (variety.length > MAX_ATTRIBUTE_LENGTH) {
     errors.push({
       field: "variety",
-      message: \`Variety must be at most \${MAX_ATTRIBUTE_LENGTH} characters.\`,
+      message: "Variety must be at most " + MAX_ATTRIBUTE_LENGTH + " characters.",
     });
   }
   if (grade.length > MAX_ATTRIBUTE_LENGTH) {
     errors.push({
       field: "grade",
-      message: \`Grade must be at most \${MAX_ATTRIBUTE_LENGTH} characters.\`,
+      message: "Grade must be at most " + MAX_ATTRIBUTE_LENGTH + " characters.",
     });
   }
 
@@ -102,7 +102,7 @@ export function validateBuyerRequirement(
   } else if (locationArea.length > MAX_LOCATION_LENGTH) {
     errors.push({
       field: "locationArea",
-      message: \`Pickup area must be at most \${MAX_LOCATION_LENGTH} characters.\`,
+      message: "Pickup area must be at most " + MAX_LOCATION_LENGTH + " characters.",
     });
   }
 
@@ -112,14 +112,10 @@ export function validateBuyerRequirement(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(
       requiredAt,
     );
-  const parsedDate = Date.parse(dateOnly ? \`\${requiredAt}T00:00:00.000Z\` : requiredAt);
+  const parsedDate = Date.parse(dateOnly ? requiredAt + "T00:00:00.000Z" : requiredAt);
   const dateIsReal = isRealCalendarDate(requiredAt.slice(0, 10));
 
-  if (
-    (!dateOnly && !dateTime) ||
-    !dateIsReal ||
-    !Number.isFinite(parsedDate)
-  ) {
+  if ((!dateOnly && !dateTime) || !dateIsReal || !Number.isFinite(parsedDate)) {
     errors.push({
       field: "requiredAt",
       message: "Required date must be a valid ISO date or ISO timestamp with a timezone.",
