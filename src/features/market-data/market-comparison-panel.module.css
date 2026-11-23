@@ -150,3 +150,14 @@
     padding: 9px 8px;
   }
 }
+
+
+@media print {
+  .comparison {
+    break-inside: auto;
+  }
+
+  .table tr {
+    break-inside: avoid;
+  }
+}
