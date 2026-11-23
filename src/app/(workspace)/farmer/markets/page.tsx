@@ -235,12 +235,12 @@ export default function MarketsPage() {
           >
             {loading ? "Refreshing…" : "Refresh data"}
           </button>
+          {shareStatus && (
+            <p className={styles.shareStatus} role="status" aria-live="polite">
+              {shareStatus}
+            </p>
+          )}
         </div>
-        {shareStatus && (
-          <p className={styles.shareStatus} role="status" aria-live="polite">
-            {shareStatus}
-          </p>
-        )}
       </div>
 
       <div className="preview-banner" role="note">
