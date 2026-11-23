@@ -7,10 +7,15 @@ export default async function WorkspaceRootLayout({ children }: { children: Reac
   const session = await getFarmessSession();
 
   if (!session) redirect("/login");
-  if (session.role !== "farmer") redirect("/workspace-unavailable");
 
   return (
-    <WorkspaceLayout user={{ displayName: session.displayName, email: session.email }}>
+    <WorkspaceLayout
+      user={{
+        displayName: session.displayName,
+        email: session.email,
+        role: session.role,
+      }}
+    >
       {children}
     </WorkspaceLayout>
   );
