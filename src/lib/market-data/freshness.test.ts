@@ -32,3 +32,11 @@ test("handles malformed observation dates", () => {
 test("rejects an invalid freshness configuration", () => {
   assert.throws(() => assessMarketDataFreshness("2026-11-22", now, -1), RangeError);
 });
+
+test("rejects impossible calendar dates rather than normalizing them", () => {
+  for (const observationDate of ["2026-02-30", "2026-13-01", "2026-04-31"]) {
+    const result = assessMarketDataFreshness(observationDate, now);
+    assert.equal(result.status, "invalid");
+    assert.equal(result.ageHours, null);
+  }
+});
