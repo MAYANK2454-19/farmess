@@ -405,7 +405,9 @@ export default function MarketsPage() {
 
         {!loading && filteredRecords.length > 0 && <MarketSummaryPanel records={filteredRecords} />}
 
-        {!loading && filteredRecords.length > 0 && <MarketComparisonPanel records={filteredRecords} />}
+        {!loading && filteredRecords.length > 0 && (
+          <MarketComparisonPanel records={filteredRecords} />
+        )}
 
         {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
 
