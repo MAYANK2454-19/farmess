@@ -26,7 +26,11 @@ function validDate(value: string) {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-function optionalText(body: Record<string, unknown>, key: string, max: number) {
+function optionalText(
+  body: Record<string, unknown>,
+  key: string,
+  max: number,
+): { value: string | null; valid: boolean } {
   const value = body[key];
   if (value === undefined || value === null || value === "") {
     return { value: null as string | null, valid: true };
@@ -190,10 +194,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const rateBasis = body.rate_basis ?? (price === null ? "quote_required" : null);
-  if (!RATE_BASES.includes(rateBasis as (typeof RATE_BASES)[number])) {
+  const rateBasisValue = body.rate_basis ?? (price === null ? "quote_required" : null);
+  if (
+    typeof rateBasisValue !== "string" ||
+    !RATE_BASES.includes(rateBasisValue as (typeof RATE_BASES)[number])
+  ) {
     return NextResponse.json({ error: "Choose the unit for the listed rate." }, { status: 400 });
   }
+  const rateBasis = rateBasisValue as (typeof RATE_BASES)[number];
   if (price === null && rateBasis !== "quote_required") {
     return NextResponse.json({ error: "Enter a rate or choose quote required." }, { status: 400 });
   }
