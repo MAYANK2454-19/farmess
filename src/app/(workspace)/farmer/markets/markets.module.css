@@ -382,7 +382,19 @@
     color: #17231b !important;
   }
 
+  :global(body) * {
+    visibility: hidden !important;
+  }
+
+  .page,
+  .page * {
+    visibility: visible !important;
+  }
+
   .page {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     max-width: none;
     margin: 0;
