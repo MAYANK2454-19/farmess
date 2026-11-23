@@ -1,76 +1,106 @@
 import Link from "next/link";
+import { Icon } from "@/components/icons";
 
 export default function FarmerOverviewPage() {
   return (
     <main className="content farm-overview">
-      <div className="page-heading">
+      <section className="overview-intro" aria-labelledby="overview-title">
         <div>
-          <p className="eyebrow">Farmess</p>
-          <h1>Your farm</h1>
-          <p className="page-subtitle">
-            Keep your produce details, market information and selling costs together.
+          <p className="eyebrow">Farmer workspace</p>
+          <h1 id="overview-title">Your next sale starts here.</h1>
+          <p className="overview-lede">
+            Keep a clear record of what you have, check reported market prices and understand the
+            costs behind each selling decision.
           </p>
         </div>
         <Link href="/farmer/produce/new" className="button button-primary">
-          Add produce
+          <Icon name="plus" size={16} />
+          Add a produce lot
         </Link>
-      </div>
-
-      <section className="farm-overview-section" aria-labelledby="produce-heading">
-        <div className="section-heading">
-          <div>
-            <h2 id="produce-heading">Your produce</h2>
-            <p>Produce lots you have added will appear here.</p>
-          </div>
-          <Link href="/farmer/produce" className="text-link">
-            View all produce
-          </Link>
-        </div>
-        <div className="simple-empty-state">
-          <h3>No produce added</h3>
-          <p>
-            Start with one lot. Add the crop, quantity, grade and the date you need to sell by. You
-            can review the details before submitting.
-          </p>
-          <Link href="/farmer/produce/new" className="text-link">
-            Add your first lot
-          </Link>
-        </div>
       </section>
 
-      <section className="farm-overview-section" aria-labelledby="next-heading">
-        <div className="section-heading">
-          <div>
-            <h2 id="next-heading">What you can do</h2>
-            <p>Use the information available to plan your next step.</p>
+      <div className="overview-columns">
+        <section className="overview-section" aria-labelledby="produce-heading">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Your inventory</p>
+              <h2 id="produce-heading">Produce lots</h2>
+              <p>Lots you add will be listed here.</p>
+            </div>
+            <Link href="/farmer/produce" className="text-link">
+              View all lots
+            </Link>
           </div>
-        </div>
-        <div className="quick-links">
-          <Link href="/farmer/markets" className="quick-link">
-            <span className="quick-link-title">Check market prices</span>
-            <span className="quick-link-copy">
-              View reported mandi prices with their source and observation date.
+
+          <div className="overview-empty">
+            <span className="overview-empty-number" aria-hidden="true">
+              01
             </span>
-            <span className="quick-link-action">Open market prices</span>
+            <div>
+              <h3>No produce recorded yet</h3>
+              <p>
+                Start with one lot. Add the crop, quantity, grade, collection area and the date you
+                need to sell by. You can review the details before submitting.
+              </p>
+              <Link href="/farmer/produce/new">Record your first lot <span aria-hidden="true">→</span></Link>
+            </div>
+          </div>
+        </section>
+
+        <aside className="overview-aside" aria-labelledby="steps-heading">
+          <p className="aside-kicker">A practical order</p>
+          <h2 id="steps-heading">Plan before you sell.</h2>
+          <ol className="step-list">
+            <li>
+              <div>
+                <strong>Record your produce</strong>
+                <p>Note the quantity, quality and when it will be ready.</p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Check nearby markets</strong>
+                <p>Compare dated mandi reports, not unverified price promises.</p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Work out your net return</strong>
+                <p>Include transport, handling and other costs before deciding.</p>
+              </div>
+            </li>
+          </ol>
+        </aside>
+      </div>
+
+      <section className="overview-tools" aria-labelledby="tools-heading">
+        <p className="eyebrow">Available tools</p>
+        <h2 id="tools-heading">Useful for your next decision</h2>
+        <p className="overview-tools-intro">
+          Start with the information currently available in Farmess.
+        </p>
+        <div className="tool-links">
+          <Link href="/farmer/markets" className="tool-link">
+            <strong>Market prices</strong>
+            <span>View reported prices with their market, observation date and source.</span>
+            <em>Explore market reports →</em>
           </Link>
-          <Link href="/farmer/compare" className="quick-link">
-            <span className="quick-link-title">Work out your net return</span>
-            <span className="quick-link-copy">
-              Enter a selling rate and the costs you expect to pay.
-            </span>
-            <span className="quick-link-action">Open calculator</span>
+          <Link href="/farmer/compare" className="tool-link">
+            <strong>Net return calculator</strong>
+            <span>Enter a selling rate and the costs you expect to pay.</span>
+            <em>Calculate a scenario →</em>
           </Link>
-          <Link href="/farmer/produce" className="quick-link">
-            <span className="quick-link-title">Manage produce</span>
-            <span className="quick-link-copy">Review the produce details you have entered.</span>
-            <span className="quick-link-action">View produce</span>
+          <Link href="/farmer/produce" className="tool-link">
+            <strong>Produce records</strong>
+            <span>Review the produce details you have entered.</span>
+            <em>Open your produce →</em>
           </Link>
         </div>
       </section>
 
       <p className="preview-footnote">
-        Preview build: sign-in and saved records are not connected. Details entered in forms are not
-        stored in an account yet.
+        Preview mode: sign-in and saved produce records are being connected. Do not use this preview
+        as a record of a completed sale.
       </p>
     </main>
   );
