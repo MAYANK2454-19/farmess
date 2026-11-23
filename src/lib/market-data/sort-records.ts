@@ -7,8 +7,8 @@ function compareNullablePrices(
   right: string | null,
   direction: "asc" | "desc",
 ): number {
-  const leftValue = left === null ? Number.NaN : Number(left);
-  const rightValue = right === null ? Number.NaN : Number(right);
+  const leftValue = left === null || left.trim() === "" ? Number.NaN : Number(left);
+  const rightValue = right === null || right.trim() === "" ? Number.NaN : Number(right);
   const leftValid = Number.isFinite(leftValue);
   const rightValid = Number.isFinite(rightValue);
 
