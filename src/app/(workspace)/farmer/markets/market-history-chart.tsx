@@ -58,7 +58,8 @@ export function MarketHistoryChart({ records }: Props) {
       const price = point.modalPrice === null ? null : Number(point.modalPrice);
       const timestamp = Date.parse(`${point.observationDate}T00:00:00.000Z`);
       const x = timeRange <= 0 ? 408 : 56 + ((timestamp - firstTimestamp) / timeRange) * 704;
-      const y = price === null || !Number.isFinite(price) ? null : 22 + ((max - price) / range) * 170;
+      const y =
+        price === null || !Number.isFinite(price) ? null : 22 + ((max - price) / range) * 170;
 
       return {
         id: point.id,
@@ -109,8 +110,8 @@ export function MarketHistoryChart({ records }: Props) {
 
   const hasTrend = Boolean(
     selected?.status === "available" &&
-      chart &&
-      chart.points.filter((point) => point.price !== null).length >= 2,
+    chart &&
+    chart.points.filter((point) => point.price !== null).length >= 2,
   );
 
   return (
@@ -129,8 +130,7 @@ export function MarketHistoryChart({ records }: Props) {
           >
             {reportedSeries.map((series) => (
               <option key={series.id} value={series.id}>
-                {series.commodity} · {series.market} ·{" "}
-                {series.variety ?? "Unspecified variety"}
+                {series.commodity} · {series.market} · {series.variety ?? "Unspecified variety"}
               </option>
             ))}
           </select>
@@ -176,19 +176,8 @@ export function MarketHistoryChart({ records }: Props) {
 
                   return (
                     <g key={step}>
-                      <line
-                        x1="56"
-                        x2="760"
-                        y1={y}
-                        y2={y}
-                        className={styles.gridLine}
-                      />
-                      <text
-                        x="48"
-                        y={y + 4}
-                        textAnchor="end"
-                        className={styles.axisLabel}
-                      >
+                      <line x1="56" x2="760" y1={y} y2={y} className={styles.gridLine} />
+                      <text x="48" y={y + 4} textAnchor="end" className={styles.axisLabel}>
                         ₹{formatPrice(value.toFixed(2))}
                       </text>
                     </g>
@@ -199,13 +188,7 @@ export function MarketHistoryChart({ records }: Props) {
                 ))}
                 {chart!.points.map((point) =>
                   point.y === null ? null : (
-                    <circle
-                      key={point.id}
-                      cx={point.x}
-                      cy={point.y}
-                      r="5"
-                      className={styles.point}
-                    >
+                    <circle key={point.id} cx={point.x} cy={point.y} r="5" className={styles.point}>
                       <title>
                         {formatDate(point.date)}: ₹{formatPrice(point.price!.toFixed(2))}
                       </title>
@@ -217,12 +200,7 @@ export function MarketHistoryChart({ records }: Props) {
                     <text x="56" y="228" className={styles.axisLabel}>
                       {formatDate(chart!.points[0].date)}
                     </text>
-                    <text
-                      x="760"
-                      y="228"
-                      textAnchor="end"
-                      className={styles.axisLabel}
-                    >
+                    <text x="760" y="228" textAnchor="end" className={styles.axisLabel}>
                       {formatDate(chart!.points[chart!.points.length - 1].date)}
                     </text>
                   </>
