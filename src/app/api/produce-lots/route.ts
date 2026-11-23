@@ -1,0 +1,92 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { getFarmessSession } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
+import { parseLotDraftRequest } from "@/features/lots/lot-request";
+
+const LOT_SELECT =
+  "id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,status,created_at";
+
+export async function GET() {
+  const session = await getFarmessSession();
+  if (!session) {
+    return NextResponse.json({ error: "Sign in to view your produce lots." }, { status: 401 });
+  }
+
+  if (session.role !== "farmer") {
+    return NextResponse.json({ error: "This account cannot manage farmer produce lots." }, { status: 403 });
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("produce_lots")
+    .select(LOT_SELECT)
+    .eq("owner_id", session.userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return NextResponse.json({ error: "Unable to load your produce lots." }, { status: 500 });
+  }
+
+  return NextResponse.json({ lots: data ?? [] }, { headers: { "Cache-Control": "private, no-store" } });
+}
+
+export async function POST(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  if (!origin || origin !== request.nextUrl.origin) {
+    return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
+  }
+
+  const session = await getFarmessSession();
+  if (!session) {
+    return NextResponse.json({ error: "Sign in before saving a produce lot." }, { status: 401 });
+  }
+
+  if (session.role !== "farmer") {
+    return NextResponse.json({ error: "This account cannot create farmer produce lots." }, { status: 403 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Send the produce details as JSON." }, { status: 400 });
+  }
+
+  const parsed = parseLotDraftRequest(body);
+  if (parsed.status === "invalid") {
+    return NextResponse.json(
+      { error: "Review the produce details and correct the marked fields.", fields: parsed.errors },
+      { status: 400 },
+    );
+  }
+
+  const quantity = Number(parsed.data.quantity);
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    return NextResponse.json({ error: "Enter a valid positive quantity." }, { status: 400 });
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("produce_lots")
+    .insert({
+      owner_id: session.userId,
+      crop: parsed.data.crop,
+      variety: parsed.data.variety || null,
+      grade: parsed.data.grade || null,
+      quantity,
+      unit: parsed.data.unit,
+      approximate_area: parsed.data.location,
+      available_from: parsed.data.availableAt,
+      sell_by: parsed.data.sellBy,
+      notes: parsed.data.notes || null,
+      status: "draft",
+    })
+    .select(LOT_SELECT)
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: "Your lot could not be saved. Please try again." }, { status: 500 });
+  }
+
+  return NextResponse.json({ lot: data }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
+}
