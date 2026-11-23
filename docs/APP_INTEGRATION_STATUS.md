@@ -17,7 +17,9 @@ The application branch connects the following flows to authenticated server hand
 - Farmer transport/storage discovery and service-request creation.
 - Profile preferences, consent audit events, notifications and sale activity.
 
-Writes derive owner, requester, provider and participant identities from the authenticated session. RLS and database constraints remain the final authorization boundary.
+Writes derive owner, requester, provider and participant identities from the authenticated session. RLS and database constraints remain the final authorization boundary. The buyer API cannot select the farmer's `owner_id` column. Offer creation uses one narrowly scoped `SECURITY DEFINER` RPC, `public.create_buyer_offer`, which checks the trusted buyer role, published-lot state, quantity, unit and expiry; its search path is empty and execution is revoked from PUBLIC/anon. Supabase's security advisor still warns because authenticated users can execute a definer function, so keep this RPC limited to the validated operation and review any changes carefully.
+
+The private `private.ml_model_registry` table is currently in a schema that has no USAGE grant for anon/authenticated and no table SELECT grant for those roles; the service role has access. However, Supabase reports its RLS flag is disabled. Before any client-facing access is added, agree the service/admin policy and enable RLS. The proposed RLS statement is `ALTER TABLE private.ml_model_registry ENABLE ROW LEVEL SECURITY;`; it has deliberately not been applied automatically without agreed policies.
 
 ## Market data and price forecasting
 
@@ -52,6 +54,7 @@ Buyer requirement matching is currently deterministic rule-based matching on cro
 - Sale/payment evidence capture beyond the current agreement/activity record. Farmess does not process payments.
 - Market-data source availability, permitted API access, regular ingestion and enough validated observations to evaluate forecasts.
 - Enough representative logistics feedback and actual service-request outcomes to validate a learning-to-rank model. Explicit preference feedback is not the same as successful service completion.
+- Enable RLS and define least-privilege policies for the private model registry before exposing it to any client-facing role.
 - Production deployment and full unit, integration, RLS-denial and end-to-end test evidence for this integrated branch.
 
 Do not present any item in this section as a completed live capability until it has been implemented and tested end to end.
