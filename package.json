@@ -38,5 +38,5 @@
     "tailwindcss": "4.3.5",
     "typescript": "^5.9.3"
   },
-  "description": "Farmer-first produce, market and services workspace"
+  "description": "Farmers, buyers and service providers workspace"
 }
