@@ -1,11 +1,18 @@
-import { FeaturePlaceholder } from "@/components/feature-placeholder";
+import { NotificationList } from "@/features/notifications/notification-list";
+
 export default function NotificationsPage() {
   return (
-    <FeaturePlaceholder
-      title="Notifications"
-      subtitle="Updates related to your lots, offers and service requests."
-      owner="Atharv + Prince"
-      scope="Notifications will be persisted, scoped to the signed-in recipient, and created from real server-side events. Read/unread actions will be connected after the database foundation."
-    />
+    <main className="content module-page">
+      <div className="page-heading">
+        <div>
+          <p className="eyebrow">Account</p>
+          <h1>Notifications</h1>
+          <p className="page-subtitle">
+            Updates created for your account, such as buyer offers and changes to service requests.
+          </p>
+        </div>
+      </div>
+      <NotificationList />
+    </main>
   );
 }
