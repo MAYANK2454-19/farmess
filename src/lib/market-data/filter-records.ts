@@ -16,7 +16,7 @@ export const EMPTY_MARKET_RECORD_FILTERS: MarketRecordFilters = {
 
 function parseDateBound(value: string, label: string): string | null {
   if (!value) return null;
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     throw new RangeError(`${label} must be a valid date.`);
   }
 
@@ -54,7 +54,7 @@ export function filterMarketPriceRecords(
 
   return records.filter((record) => {
     if (fromDate || toDate) {
-      if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(record.observationDate)) return false;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(record.observationDate)) return false;
       if (fromDate && record.observationDate < fromDate) return false;
       if (toDate && record.observationDate > toDate) return false;
     }
