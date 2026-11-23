@@ -4,11 +4,7 @@ import test from "node:test";
 import { sortMarketPriceRecords } from "./sort-records.ts";
 import type { MarketPriceRecord } from "./types.ts";
 
-function record(
-  id: string,
-  observationDate: string,
-  modalPrice: string | null,
-): MarketPriceRecord {
+function record(id: string, observationDate: string, modalPrice: string | null): MarketPriceRecord {
   return {
     id,
     commodity: "Wheat",
