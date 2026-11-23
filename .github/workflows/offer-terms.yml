@@ -1,0 +1,25 @@
+name: Offer terms validation tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  offer-terms:
+    name: Offer terms domain tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Offer terms unit tests
+        run: node --experimental-strip-types --test src/features/offers/terms.test.ts
