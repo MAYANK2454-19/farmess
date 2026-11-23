@@ -26,9 +26,9 @@ test("parent navigation entries remain active for their nested screens", () => {
 test("account routes receive their own active state and page labels", () => {
   assert.equal(isActiveRoute("/notifications", "/notifications"), true);
   assert.equal(isActiveRoute("/profile/security", "/profile"), true);
-  assert.equal(getWorkspacePageLabel("/profile"), "Profile & privacy");
-  assert.equal(getWorkspacePageLabel("/notifications"), "Notifications");
-  assert.equal(getWorkspacePageLabel("/farmer/produce/new"), "My Produce");
+  assert.equal(getWorkspacePageLabel("/profile", "farmer"), "Profile & privacy");
+  assert.equal(getWorkspacePageLabel("/notifications", "farmer"), "Notifications");
+  assert.equal(getWorkspacePageLabel("/farmer/produce/new", "farmer"), "My Produce");
 });
 
 test("primary and account navigation destinations have matching route files", () => {

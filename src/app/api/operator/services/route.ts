@@ -26,7 +26,11 @@ function validDate(value: string) {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-function optionalText(body: Record<string, unknown>, key: string, max: number) {
+function optionalText(
+  body: Record<string, unknown>,
+  key: string,
+  max: number,
+): { value: string | null; valid: boolean } {
   const value = body[key];
   if (value === undefined || value === null || value === "") {
     return { value: null as string | null, valid: true };

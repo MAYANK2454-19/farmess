@@ -109,18 +109,15 @@ export async function POST(request: NextRequest) {
   }
 
   let feedbackNote: string | null = null;
-  if (
-    record.feedback_note !== undefined &&
-    record.feedback_note !== null &&
-    record.feedback_note !== ""
-  ) {
-    if (typeof record.feedback_note !== "string" || record.feedback_note.trim().length > 300) {
+  const note = record.feedback_note;
+  if (note !== undefined && note !== null && note !== "") {
+    if (typeof note !== "string" || note.trim().length > 300) {
       return NextResponse.json(
         { error: "Feedback note must be 300 characters or fewer." },
         { status: 400 },
       );
     }
-    feedbackNote = record.feedback_note.trim() || null;
+    feedbackNote = note.trim() || null;
   }
 
   const supabase = await createClient();

@@ -9,7 +9,6 @@ import {
   ACCOUNT_NAVIGATION,
   NAVIGATION_BY_ROLE,
   MOBILE_NAVIGATION_BY_ROLE,
-  getWorkspacePageLabel,
   isActiveRoute,
 } from "@/lib/routes";
 
@@ -30,7 +29,6 @@ function Brand() {
         </span>
         <span className="brand-name">farmess</span>
       </Link>
-      <p className="brand-subtitle">A better way to plan your sale</p>
     </div>
   );
 }
@@ -71,10 +69,10 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
     <div className="workspace">
       <aside className="sidebar" aria-label="Primary navigation">
         <Brand />
-        <p className="nav-section-label">Workspace</p>
         <NavigationLinks items={NAVIGATION_BY_ROLE[user.role]} pathname={pathname} />
-        <p className="nav-section-label">Account</p>
-        <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
+        <div className="sidebar-account-nav">
+          <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
+        </div>
         <div className="sidebar-bottom">
           <div className="sidebar-account">
             <span className="sidebar-avatar" aria-hidden="true">
@@ -85,10 +83,6 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
               <span className="sidebar-user-email">{user.email ?? "Signed in"}</span>
             </span>
           </div>
-          <p className="sidebar-preview-label">Farmess workspace</p>
-          <p className="sidebar-preview-copy">
-            Market reports show their source and date. Other records stay within your account.
-          </p>
         </div>
       </aside>
 
@@ -100,16 +94,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
             </span>
             <span>farmess</span>
           </Link>
-          <span className="topbar-context">{getWorkspacePageLabel(pathname, user.role)}</span>
           <div className="topbar-right">
-            <Link href="/notifications" className="topbar-link">
-              <Icon name="bell" size={15} />
-              <span>Notifications</span>
-            </Link>
-            <Link href="/profile" className="topbar-link">
-              <Icon name="user" size={15} />
-              <span>Profile</span>
-            </Link>
             <SignOutButton />
           </div>
         </header>

@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
         status: source.status,
         recordsReceived: 0,
         recordsUpserted: 0,
-        message: source.message ?? "The source returned no usable observations.",
+        message:
+          "message" in source ? source.message : "The source returned no usable observations.",
       },
       { status: source.status === "unavailable" ? 503 : 200 },
     );
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
     records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
-      : (source.message?.slice(0, 500) ?? null),
+      : ("message" in source ? source.message.slice(0, 500) : null),
   });
 
   if (upsertError || auditError) {
