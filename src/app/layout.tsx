@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Farmess | Know the market. Understand the costs.",
+  title: "Farmess — Farmer workspace",
   description:
-    "Farmess helps farmers compare selling options with market context, visible costs and transparent estimates.",
+    "Record produce, compare reported mandi prices and understand the costs behind a selling decision.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
