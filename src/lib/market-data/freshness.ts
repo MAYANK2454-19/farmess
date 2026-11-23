@@ -20,9 +20,7 @@ function isRealCalendarDate(value: string): boolean {
   date.setUTCHours(0, 0, 0, 0);
 
   return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
   );
 }
 
@@ -56,9 +54,7 @@ export function assessMarketDataFreshness(
       status: "stale",
       ageHours,
       message:
-        "Observation is older than the configured " +
-        maxAgeHours +
-        "-hour freshness window.",
+        "Observation is older than the configured " + maxAgeHours + "-hour freshness window.",
     };
   }
 
