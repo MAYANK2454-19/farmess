@@ -235,7 +235,17 @@ export function MarketplaceBoard() {
     setOffers((current) => [offer, ...current]);
   }
 
-  const offersByLot = new Map(offers.map((offer) => [offer.lot_id, offer]));
+  const offersByLot = new Map<string, Offer>();
+  for (const offer of offers) {
+    const current = offersByLot.get(offer.lot_id);
+    if (
+      !current ||
+      (offer.status === "pending" && !offer.is_expired &&
+        (current.status !== "pending" || current.is_expired))
+    ) {
+      offersByLot.set(offer.lot_id, offer);
+    }
+  }
 
   return (
     <div className="marketplace-board">
