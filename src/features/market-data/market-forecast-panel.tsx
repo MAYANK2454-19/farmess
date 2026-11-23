@@ -65,15 +65,22 @@ function dateLabel(value: string) {
       }).format(date);
 }
 
+type ForecastRequestState = {
+  key: string;
+  result?: ForecastResponse;
+  error?: string;
+};
+
 export function MarketForecastPanel({ crop, market }: { crop: string; market: string }) {
-  const [result, setResult] = useState<ForecastResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const requestKey = `${crop.trim()}\u001f${market.trim()}`;
+  const [requestState, setRequestState] = useState<ForecastRequestState | null>(null);
+  const isCurrentRequest = requestState?.key === requestKey;
+  const loading = !isCurrentRequest;
+  const error = isCurrentRequest ? (requestState.error ?? "") : "";
+  const result = isCurrentRequest ? (requestState.result ?? null) : null;
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError("");
 
     const params = new URLSearchParams();
     if (crop.trim()) params.set("crop", crop.trim());
@@ -89,23 +96,22 @@ export function MarketForecastPanel({ crop, market }: { crop: string; market: st
               : "Forecast could not be loaded.",
           );
         }
-        if (active) setResult(payload as ForecastResponse);
+        if (active) setRequestState({ key: requestKey, result: payload as ForecastResponse });
       })
       .catch((requestError: unknown) => {
         if (active) {
-          setError(
-            requestError instanceof Error ? requestError.message : "Forecast could not be loaded.",
-          );
+          setRequestState({
+            key: requestKey,
+            error:
+              requestError instanceof Error ? requestError.message : "Forecast could not be loaded.",
+          });
         }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
       });
 
     return () => {
       active = false;
     };
-  }, [crop, market]);
+  }, [crop, market, requestKey]);
 
   return (
     <section className="panel market-forecast-panel" aria-labelledby="market-forecast-heading">
