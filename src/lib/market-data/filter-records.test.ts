@@ -77,7 +77,6 @@ test("combines date and modal-price filters", () => {
   );
 });
 
-
 test("excludes malformed observation dates only when a date bound is active", () => {
   const result = filterMarketPriceRecords(records, {
     ...EMPTY_MARKET_RECORD_FILTERS,
