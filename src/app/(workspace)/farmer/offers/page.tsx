@@ -1,11 +1,18 @@
-import { FeaturePlaceholder } from "@/components/feature-placeholder";
-export default function OffersPage() {
+import { OfferInbox } from "@/features/offers/offer-inbox";
+
+export default function BuyerOffersPage() {
   return (
-    <FeaturePlaceholder
-      title="Buyer Offers"
-      subtitle="Review buyer quotations and their terms."
-      owner="Atharv"
-      scope="The marketplace lane will connect requirements, eligible lots, offer validity, farmer responses and server-confirmed offer states."
-    />
+    <main className="content module-page">
+      <div className="page-heading">
+        <div>
+          <p className="eyebrow">Selling</p>
+          <h1>Buyer offers</h1>
+          <p className="page-subtitle">
+            Review the price, quantity and validity period of offers received for your produce.
+          </p>
+        </div>
+      </div>
+      <OfferInbox />
+    </main>
   );
 }
