@@ -137,7 +137,9 @@ function ListingCard({
           </p>
           <h3>{listing.title}</h3>
         </div>
-        <strong className="service-price">{formatPrice(listing.price_paise, listing.rate_basis)}</strong>
+        <strong className="service-price">
+          {formatPrice(listing.price_paise, listing.rate_basis)}
+        </strong>
       </div>
       <p className="service-area">
         {listing.service_area}
@@ -155,9 +157,11 @@ function ListingCard({
       <div className="service-listing-tags">
         <span>{listing.verification_state.replaceAll("_", " ")}</span>
         {listing.cold_chain_available ? <span>Cold-chain service</span> : null}
-        {listing.crop_suitability.length
-          ? <span>Suitable for {listing.crop_suitability.join(", ")}</span>
-          : <span>Crop suitability not specified</span>}
+        {listing.crop_suitability.length ? (
+          <span>Suitable for {listing.crop_suitability.join(", ")}</span>
+        ) : (
+          <span>Crop suitability not specified</span>
+        )}
       </div>
 
       {sent ? (

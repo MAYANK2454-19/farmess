@@ -46,7 +46,11 @@ function isStale(observationDate: string, now: Date): boolean {
   return ageMs < -24 * 60 * 60 * 1000 || ageMs > FRESH_OBSERVATION_DAYS * 24 * 60 * 60 * 1000;
 }
 
-async function getOwnLot(supabase: Awaited<ReturnType<typeof createClient>>, lotId: string, ownerId: string) {
+async function getOwnLot(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  lotId: string,
+  ownerId: string,
+) {
   return supabase
     .from("produce_lots")
     .select("id,crop,quantity,unit,approximate_area,available_from,sell_by,status")
@@ -76,7 +80,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Sign in to compare market net returns." }, { status: 401 });
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Market decision support is available to farmer accounts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Market decision support is available to farmer accounts." },
+      { status: 403 },
+    );
   }
 
   const lotId = request.nextUrl.searchParams.get("lotId");
@@ -90,7 +97,10 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { data: lot, error: lotError } = await getOwnLot(supabase, lotId, session.userId);
   if (lotError || !lot) {
-    return NextResponse.json({ error: "The selected produce lot could not be found in your account." }, { status: 404 });
+    return NextResponse.json(
+      { error: "The selected produce lot could not be found in your account." },
+      { status: 404 },
+    );
   }
 
   const { data: observations, error: observationError } = await getMarketObservations(
@@ -98,7 +108,10 @@ export async function GET(request: NextRequest) {
     lot.crop,
   );
   if (observationError) {
-    return NextResponse.json({ error: "Source-backed market observations could not be loaded." }, { status: 503 });
+    return NextResponse.json(
+      { error: "Source-backed market observations could not be loaded." },
+      { status: 503 },
+    );
   }
 
   const latestByMarket = new Map<string, (typeof observations)[number]>();
@@ -172,7 +185,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sign in to compare market net returns." }, { status: 401 });
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Market decision support is available to farmer accounts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Market decision support is available to farmer accounts." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -186,12 +202,17 @@ export async function POST(request: NextRequest) {
     !isRecord(body) ||
     Object.keys(body).some((key) => key !== "lotId" && key !== "options") ||
     typeof body.lotId !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.lotId) ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      body.lotId,
+    ) ||
     !Array.isArray(body.options) ||
     body.options.length < 2 ||
     body.options.length > MAX_MARKETS
   ) {
-    return NextResponse.json({ error: "Choose a lot and at least two market options (up to eight)." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose a lot and at least two market options (up to eight)." },
+      { status: 400 },
+    );
   }
 
   const optionInputs: { id: string; deductions: Record<DeductionField, string> }[] = [];
@@ -201,14 +222,22 @@ export async function POST(request: NextRequest) {
       !isRecord(option) ||
       Object.keys(option).some((key) => key !== "id" && key !== "deductions") ||
       typeof option.id !== "string" ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(option.id) ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        option.id,
+      ) ||
       !isRecord(option.deductions) ||
       Object.keys(option.deductions).some((key) => !DEDUCTION_KEYS.includes(key as DeductionField))
     ) {
-      return NextResponse.json({ error: "One or more market cost entries are invalid." }, { status: 400 });
+      return NextResponse.json(
+        { error: "One or more market cost entries are invalid." },
+        { status: 400 },
+      );
     }
     if (seen.has(option.id)) {
-      return NextResponse.json({ error: "Each market option can be included only once." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Each market option can be included only once." },
+        { status: 400 },
+      );
     }
     seen.add(option.id);
 
@@ -216,7 +245,10 @@ export async function POST(request: NextRequest) {
     for (const key of DEDUCTION_KEYS) {
       const value = option.deductions[key];
       if (typeof value !== "string" || value.trim().length > 18) {
-        return NextResponse.json({ error: "Enter each market deduction in rupees. Use 0 when there is no cost." }, { status: 400 });
+        return NextResponse.json(
+          { error: "Enter each market deduction in rupees. Use 0 when there is no cost." },
+          { status: 400 },
+        );
       }
       deductions[key] = value.trim();
     }
@@ -226,7 +258,10 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: lot, error: lotError } = await getOwnLot(supabase, body.lotId, session.userId);
   if (lotError || !lot) {
-    return NextResponse.json({ error: "The selected produce lot could not be found." }, { status: 404 });
+    return NextResponse.json(
+      { error: "The selected produce lot could not be found." },
+      { status: 404 },
+    );
   }
 
   const { data: observations, error: observationError } = await supabase
@@ -235,10 +270,16 @@ export async function POST(request: NextRequest) {
       "id,crop,market_name,district,state,modal_price_paise_per_quintal,observation_date,retrieved_at,source_name,source_url",
     )
     .eq("crop", lot.crop)
-    .in("id", optionInputs.map((item) => item.id));
+    .in(
+      "id",
+      optionInputs.map((item) => item.id),
+    );
 
   if (observationError || !observations || observations.length !== optionInputs.length) {
-    return NextResponse.json({ error: "One or more selected market reports are unavailable for this crop." }, { status: 409 });
+    return NextResponse.json(
+      { error: "One or more selected market reports are unavailable for this crop." },
+      { status: 409 },
+    );
   }
 
   const optionById = new Map(optionInputs.map((item) => [item.id, item]));
@@ -264,7 +305,12 @@ export async function POST(request: NextRequest) {
       priceUnit: unit,
       deductions: input.deductions,
       feasibility: stale
-        ? { status: "infeasible", reasons: [`Observation dated ${observation.observation_date} is older than ${FRESH_OBSERVATION_DAYS} days and is not ranked as current.`] }
+        ? {
+            status: "infeasible",
+            reasons: [
+              `Observation dated ${observation.observation_date} is older than ${FRESH_OBSERVATION_DAYS} days and is not ranked as current.`,
+            ],
+          }
         : { status: "feasible" },
       observationDate: observation.observation_date,
       retrievedAt: observation.retrieved_at,

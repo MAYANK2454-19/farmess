@@ -32,7 +32,9 @@ export async function GET() {
   const [lotsResult, offersResult] = await Promise.all([
     supabase
       .from("buyer_marketplace_lots")
-      .select("id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,created_at")
+      .select(
+        "id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(100),
     supabase

@@ -51,9 +51,7 @@ export function LogisticsFeedbackForm({
 
       setSaved(true);
     } catch (submitError) {
-      setError(
-        submitError instanceof Error ? submitError.message : "Feedback could not be saved.",
-      );
+      setError(submitError instanceof Error ? submitError.message : "Feedback could not be saved.");
     } finally {
       setPending(false);
     }

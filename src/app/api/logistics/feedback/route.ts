@@ -13,10 +13,16 @@ export async function POST(request: NextRequest) {
 
   const session = await getFarmessSession();
   if (!session) {
-    return NextResponse.json({ error: "Sign in to send recommendation feedback." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sign in to send recommendation feedback." },
+      { status: 401 },
+    );
   }
   if (session.role !== "farmer") {
-    return NextResponse.json({ error: "Only a farmer account can rate logistics recommendations." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only a farmer account can rate logistics recommendations." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
@@ -45,7 +51,10 @@ export async function POST(request: NextRequest) {
     Array.isArray(body) ||
     Object.keys(body).some((key) => !allowed.includes(key as (typeof allowed)[number]))
   ) {
-    return NextResponse.json({ error: "The feedback contains unsupported fields." }, { status: 400 });
+    return NextResponse.json(
+      { error: "The feedback contains unsupported fields." },
+      { status: 400 },
+    );
   }
 
   const record = body as Record<string, unknown>;
@@ -64,7 +73,10 @@ export async function POST(request: NextRequest) {
     record.rank_position < 1 ||
     record.rank_position > 100
   ) {
-    return NextResponse.json({ error: "Recommendation position must be from 1 to 100." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Recommendation position must be from 1 to 100." },
+      { status: 400 },
+    );
   }
   if (
     typeof record.distance_meters !== "number" ||
@@ -77,7 +89,10 @@ export async function POST(request: NextRequest) {
 
   for (const key of ["capacity_match", "crop_match", "date_match", "cold_chain_match"] as const) {
     if (!isOptionalBoolean(record[key] ?? null)) {
-      return NextResponse.json({ error: "Recommendation match fields must be true, false or unknown." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Recommendation match fields must be true, false or unknown." },
+        { status: 400 },
+      );
     }
   }
 
@@ -87,13 +102,23 @@ export async function POST(request: NextRequest) {
     record.user_feedback < 1 ||
     record.user_feedback > 5
   ) {
-    return NextResponse.json({ error: "Rating must be a whole number from 1 to 5." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Rating must be a whole number from 1 to 5." },
+      { status: 400 },
+    );
   }
 
   let feedbackNote: string | null = null;
-  if (record.feedback_note !== undefined && record.feedback_note !== null && record.feedback_note !== "") {
+  if (
+    record.feedback_note !== undefined &&
+    record.feedback_note !== null &&
+    record.feedback_note !== ""
+  ) {
     if (typeof record.feedback_note !== "string" || record.feedback_note.trim().length > 300) {
-      return NextResponse.json({ error: "Feedback note must be 300 characters or fewer." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Feedback note must be 300 characters or fewer." },
+        { status: 400 },
+      );
     }
     feedbackNote = record.feedback_note.trim() || null;
   }
@@ -107,7 +132,10 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   if (listingError || !listing) {
-    return NextResponse.json({ error: "This provider listing is no longer available." }, { status: 404 });
+    return NextResponse.json(
+      { error: "This provider listing is no longer available." },
+      { status: 404 },
+    );
   }
 
   const { data, error } = await supabase
@@ -138,5 +166,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Your feedback could not be saved." }, { status: 409 });
   }
 
-  return NextResponse.json({ feedback: data }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
+  return NextResponse.json(
+    { feedback: data },
+    { status: 201, headers: { "Cache-Control": "private, no-store" } },
+  );
 }

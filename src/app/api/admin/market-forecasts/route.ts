@@ -81,14 +81,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sign in with a data-steward account." }, { status: 401 });
   }
   if (session.role !== "admin") {
-    return NextResponse.json({ error: "Only an authorised Farmess data steward can stage forecasts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only an authorised Farmess data steward can stage forecasts." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Send the candidate manifest and forecast points." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Send the candidate manifest and forecast points." },
+      { status: 400 },
+    );
   }
 
   const allowed = [
@@ -114,7 +120,10 @@ export async function POST(request: NextRequest) {
     !isRecord(body) ||
     Object.keys(body).some((key) => !allowed.includes(key as (typeof allowed)[number]))
   ) {
-    return NextResponse.json({ error: "The candidate manifest contains unsupported fields." }, { status: 400 });
+    return NextResponse.json(
+      { error: "The candidate manifest contains unsupported fields." },
+      { status: 400 },
+    );
   }
 
   if (
@@ -126,7 +135,10 @@ export async function POST(request: NextRequest) {
     (body.state !== null && body.state !== undefined && !isText(body.state, 120)) ||
     (body.district !== null && body.district !== undefined && !isText(body.district, 120))
   ) {
-    return NextResponse.json({ error: "Crop, market or model identity is missing or too long." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Crop, market or model identity is missing or too long." },
+      { status: 400 },
+    );
   }
 
   if (
@@ -138,7 +150,10 @@ export async function POST(request: NextRequest) {
     !Number.isSafeInteger(body.training_observation_count) ||
     body.training_observation_count < 90
   ) {
-    return NextResponse.json({ error: "At least 90 observations and a 1–30 day forecast horizon are required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "At least 90 observations and a 1–30 day forecast horizon are required." },
+      { status: 400 },
+    );
   }
 
   if (
@@ -177,7 +192,10 @@ export async function POST(request: NextRequest) {
   }
 
   if (points.some((point) => point.target_date <= body.training_end)) {
-    return NextResponse.json({ error: "Forecast dates must occur after the training period." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Forecast dates must occur after the training period." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
@@ -206,7 +224,10 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (runError || !run) {
-    return NextResponse.json({ error: "The candidate forecast could not be staged." }, { status: 409 });
+    return NextResponse.json(
+      { error: "The candidate forecast could not be staged." },
+      { status: 409 },
+    );
   }
 
   const { error: pointError } = await supabase
@@ -215,18 +236,18 @@ export async function POST(request: NextRequest) {
 
   if (pointError) {
     // Candidate rows are hidden from users. Clean up a partial staging result.
-    await supabase
-      .from("market_forecast_runs")
-      .delete()
-      .eq("id", run.id)
-      .eq("status", "candidate");
-    return NextResponse.json({ error: "Forecast points could not be staged; the candidate was not published." }, { status: 409 });
+    await supabase.from("market_forecast_runs").delete().eq("id", run.id).eq("status", "candidate");
+    return NextResponse.json(
+      { error: "Forecast points could not be staged; the candidate was not published." },
+      { status: 409 },
+    );
   }
 
   return NextResponse.json(
     {
       candidate: run,
-      message: "Candidate staged privately. A separate human approval decision is required before users can see it.",
+      message:
+        "Candidate staged privately. A separate human approval decision is required before users can see it.",
     },
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
   );
@@ -242,14 +263,20 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Sign in with a data-steward account." }, { status: 401 });
   }
   if (session.role !== "admin") {
-    return NextResponse.json({ error: "Only an authorised Farmess data steward can review forecasts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only an authorised Farmess data steward can review forecasts." },
+      { status: 403 },
+    );
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Send a candidate ID, decision and review note." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Send a candidate ID, decision and review note." },
+      { status: 400 },
+    );
   }
 
   if (
@@ -257,11 +284,16 @@ export async function PATCH(request: NextRequest) {
     Object.keys(body).some((key) => key !== "id" && key !== "decision" && key !== "review_notes") ||
     typeof body.id !== "string" ||
     !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id) ||
-    (body.decision !== "approved" && body.decision !== "rejected" && body.decision !== "disabled") ||
+    (body.decision !== "approved" &&
+      body.decision !== "rejected" &&
+      body.decision !== "disabled") ||
     !isText(body.review_notes, 1000) ||
     body.review_notes.trim().length < 20
   ) {
-    return NextResponse.json({ error: "Choose a valid candidate, decision and review note of at least 20 characters." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose a valid candidate, decision and review note of at least 20 characters." },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
@@ -280,13 +312,22 @@ export async function PATCH(request: NextRequest) {
 
   if (error || !data) {
     return NextResponse.json(
-      { error: "The candidate could not be reviewed. Check its evaluation, review history and current status." },
+      {
+        error:
+          "The candidate could not be reviewed. Check its evaluation, review history and current status.",
+      },
       { status: 409 },
     );
   }
 
   return NextResponse.json(
-    { forecastRun: data, message: body.decision === "approved" ? "Forecast approved for read-only publication." : "Forecast review decision recorded." },
+    {
+      forecastRun: data,
+      message:
+        body.decision === "approved"
+          ? "Forecast approved for read-only publication."
+          : "Forecast review decision recorded.",
+    },
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }

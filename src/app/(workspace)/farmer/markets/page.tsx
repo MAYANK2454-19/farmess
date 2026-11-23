@@ -276,9 +276,7 @@ export default function MarketsPage() {
 
         {!loading && records.length > 0 && <MarketHistoryChart records={records} />}
 
-        {!loading && (
-          <MarketForecastPanel crop={filters.commodity} market={filters.market} />
-        )}
+        {!loading && <MarketForecastPanel crop={filters.commodity} market={filters.market} />}
 
         {!loading && records.length > 0 && (
           <div className={styles.recordList}>

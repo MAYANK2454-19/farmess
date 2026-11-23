@@ -2637,7 +2637,6 @@ h1 {
   }
 }
 
-
 /* Locality-based logistics discovery */
 .logistics-discovery {
   display: grid;
@@ -3123,7 +3122,6 @@ h1 {
   }
 }
 
-
 .logistics-feedback {
   padding-top: 10px;
   border-top: 1px solid var(--line);
@@ -3165,7 +3163,6 @@ h1 {
     width: 100%;
   }
 }
-
 
 .buyer-matches {
   display: grid;
@@ -3288,4 +3285,3 @@ h1 {
     justify-items: start;
   }
 }
-

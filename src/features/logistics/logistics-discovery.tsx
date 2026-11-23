@@ -258,7 +258,9 @@ function RecommendationCard({
         <div className="logistics-explanation">
           <strong>Why it appears</strong>
           <ul>
-            {recommendation.reasons.map((reason) => <li key={reason}>{reason}</li>)}
+            {recommendation.reasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
           </ul>
         </div>
       ) : null}
@@ -266,7 +268,9 @@ function RecommendationCard({
         <div className="logistics-unknowns">
           <strong>Confirm before choosing</strong>
           <ul>
-            {recommendation.unknowns.map((unknown) => <li key={unknown}>{unknown}</li>)}
+            {recommendation.unknowns.map((unknown) => (
+              <li key={unknown}>{unknown}</li>
+            ))}
           </ul>
         </div>
       ) : null}
@@ -288,8 +292,8 @@ function RecommendationCard({
       ) : null}
       <LogisticsFeedbackForm listing={listing} rankPosition={rankPosition} />
       <p className="logistics-result-disclaimer">
-        Straight-line distance only. Price bases differ and are not directly comparable unless their units match.
-        A request is not a confirmed booking.
+        Straight-line distance only. Price bases differ and are not directly comparable unless their
+        units match. A request is not a confirmed booking.
       </p>
     </article>
   );
@@ -318,7 +322,9 @@ export function LogisticsDiscovery() {
     setLocationMessage("Requesting your location permission…");
 
     if (!navigator.geolocation) {
-      setLocationMessage("This browser does not support location sharing. Enter coordinates manually.");
+      setLocationMessage(
+        "This browser does not support location sharing. Enter coordinates manually.",
+      );
       return;
     }
 
@@ -331,7 +337,9 @@ export function LogisticsDiscovery() {
         setOrigin(next);
         setLatitude(next.latitude.toFixed(6));
         setLongitude(next.longitude.toFixed(6));
-        setLocationMessage("Location received. It will be used for this search and is not saved to your profile.");
+        setLocationMessage(
+          "Location received. It will be used for this search and is not saved to your profile.",
+        );
       },
       (positionError) => {
         setLocationMessage(
@@ -408,9 +416,7 @@ export function LogisticsDiscovery() {
       setRecommendations(result.recommendations ?? []);
     } catch (searchError) {
       setError(
-        searchError instanceof Error
-          ? searchError.message
-          : "Local services could not be found.",
+        searchError instanceof Error ? searchError.message : "Local services could not be found.",
       );
       setRecommendations([]);
     } finally {
@@ -419,7 +425,9 @@ export function LogisticsDiscovery() {
   }
 
   function onRequestSent() {
-    setRequestMessage("Your service request was sent. The provider still needs to confirm availability.");
+    setRequestMessage(
+      "Your service request was sent. The provider still needs to confirm availability.",
+    );
   }
 
   return (
@@ -428,8 +436,9 @@ export function LogisticsDiscovery() {
         <p className="eyebrow">Locality-based support</p>
         <h2 id="logistics-discovery-heading">Find transport and storage near a location</h2>
         <p>
-          Search Farmess provider listings by distance, service type, crop, quantity, date and cold-chain need.
-          Location access is optional and starts only when you press the location button.
+          Search Farmess provider listings by distance, service type, crop, quantity, date and
+          cold-chain need. Location access is optional and starts only when you press the location
+          button.
         </p>
       </div>
 
@@ -437,26 +446,51 @@ export function LogisticsDiscovery() {
         <div className="logistics-location-control">
           <div>
             <strong>Search origin</strong>
-            <p>Your coordinates are sent to Farmess for this search only. They are not written to your profile or shown to providers.</p>
+            <p>
+              Your coordinates are sent to Farmess for this search only. They are not written to
+              your profile or shown to providers.
+            </p>
           </div>
           <button type="button" className="button button-secondary" onClick={useCurrentLocation}>
             Use my current location
           </button>
         </div>
-        {locationMessage ? <p className="form-help" role="status">{locationMessage}</p> : null}
+        {locationMessage ? (
+          <p className="form-help" role="status">
+            {locationMessage}
+          </p>
+        ) : null}
 
         <div className="form-grid">
           <label className="form-field">
             <span className="form-label">Latitude</span>
-            <input className="form-control" value={latitude} onChange={(event) => setLatitude(event.target.value)} inputMode="decimal" placeholder="e.g. 32.7266" required />
+            <input
+              className="form-control"
+              value={latitude}
+              onChange={(event) => setLatitude(event.target.value)}
+              inputMode="decimal"
+              placeholder="e.g. 32.7266"
+              required
+            />
           </label>
           <label className="form-field">
             <span className="form-label">Longitude</span>
-            <input className="form-control" value={longitude} onChange={(event) => setLongitude(event.target.value)} inputMode="decimal" placeholder="e.g. 74.8570" required />
+            <input
+              className="form-control"
+              value={longitude}
+              onChange={(event) => setLongitude(event.target.value)}
+              inputMode="decimal"
+              placeholder="e.g. 74.8570"
+              required
+            />
           </label>
           <label className="form-field">
             <span className="form-label">Search radius</span>
-            <select className="form-control" value={radiusKm} onChange={(event) => setRadiusKm(event.target.value)}>
+            <select
+              className="form-control"
+              value={radiusKm}
+              onChange={(event) => setRadiusKm(event.target.value)}
+            >
               <option value="5">5 km</option>
               <option value="10">10 km</option>
               <option value="25">25 km</option>
@@ -466,7 +500,11 @@ export function LogisticsDiscovery() {
           </label>
           <label className="form-field">
             <span className="form-label">Service type</span>
-            <select className="form-control" value={serviceType} onChange={(event) => setServiceType(event.target.value)}>
+            <select
+              className="form-control"
+              value={serviceType}
+              onChange={(event) => setServiceType(event.target.value)}
+            >
               <option value="">Transport and storage</option>
               <option value="transport">Transport</option>
               <option value="storage">Storage</option>
@@ -474,13 +512,30 @@ export function LogisticsDiscovery() {
           </label>
           <label className="form-field">
             <span className="form-label">Crop (optional)</span>
-            <input className="form-control" value={crop} onChange={(event) => setCrop(event.target.value)} maxLength={80} placeholder="e.g. Tomato" />
+            <input
+              className="form-control"
+              value={crop}
+              onChange={(event) => setCrop(event.target.value)}
+              maxLength={80}
+              placeholder="e.g. Tomato"
+            />
           </label>
           <div className="form-field">
             <span className="form-label">Quantity (optional)</span>
             <div className="service-quantity">
-              <input className="form-control" inputMode="decimal" value={quantity} onChange={(event) => setQuantity(event.target.value)} placeholder="Quantity" />
-              <select className="form-control" value={unit} onChange={(event) => setUnit(event.target.value)} aria-label="Quantity unit">
+              <input
+                className="form-control"
+                inputMode="decimal"
+                value={quantity}
+                onChange={(event) => setQuantity(event.target.value)}
+                placeholder="Quantity"
+              />
+              <select
+                className="form-control"
+                value={unit}
+                onChange={(event) => setUnit(event.target.value)}
+                aria-label="Quantity unit"
+              >
                 <option value="kg">kg</option>
                 <option value="quintal">quintal</option>
                 <option value="tonne">tonne</option>
@@ -489,20 +544,40 @@ export function LogisticsDiscovery() {
           </div>
           <label className="form-field">
             <span className="form-label">Required date (optional)</span>
-            <input className="form-control" type="date" value={requiredDate} onChange={(event) => setRequiredDate(event.target.value)} />
+            <input
+              className="form-control"
+              type="date"
+              value={requiredDate}
+              onChange={(event) => setRequiredDate(event.target.value)}
+            />
           </label>
           <label className="form-field logistics-cold-chain">
             <span className="form-label">Storage / transport requirements</span>
             <span className="service-checkbox-row">
-              <input type="checkbox" checked={coldChain} onChange={(event) => setColdChain(event.target.checked)} />
+              <input
+                type="checkbox"
+                checked={coldChain}
+                onChange={(event) => setColdChain(event.target.checked)}
+              />
               <span>Cold-chain service required</span>
             </span>
           </label>
         </div>
-        {error ? <p className="form-alert" role="alert">{error}</p> : null}
-        {requestMessage ? <p className="form-success" role="status">{requestMessage}</p> : null}
+        {error ? (
+          <p className="form-alert" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {requestMessage ? (
+          <p className="form-success" role="status">
+            {requestMessage}
+          </p>
+        ) : null}
         <div className="form-footer">
-          <p className="form-warning">Map pins only show provider locations that have been explicitly published by the provider.</p>
+          <p className="form-warning">
+            Map pins only show provider locations that have been explicitly published by the
+            provider.
+          </p>
           <button type="submit" className="button button-primary" disabled={loading}>
             {loading ? "Searching nearby services…" : "Find local support"}
           </button>
@@ -517,14 +592,18 @@ export function LogisticsDiscovery() {
               <div>
                 <p className="eyebrow">Search results</p>
                 <h2 id="logistics-results-heading">Provider options within {radiusKm} km</h2>
-                <p>{recommendations.length} Farmess listing(s) found. Distance is straight-line, not road distance.</p>
+                <p>
+                  {recommendations.length} Farmess listing(s) found. Distance is straight-line, not
+                  road distance.
+                </p>
               </div>
             </div>
             {recommendations.length === 0 ? (
               <div className="panel empty-state">
                 <h3 className="empty-title">No mapped provider listings in this area</h3>
                 <p className="empty-copy">
-                  Try a wider search radius or remove a requirement. A provider only appears on this map when they have published service coordinates.
+                  Try a wider search radius or remove a requirement. A provider only appears on this
+                  map when they have published service coordinates.
                 </p>
               </div>
             ) : (

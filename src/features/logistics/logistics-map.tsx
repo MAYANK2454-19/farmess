@@ -32,8 +32,7 @@ export function LogisticsMap({
         });
 
         const tileUrl =
-          process.env.NEXT_PUBLIC_MAP_TILE_URL ||
-          "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+          process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
         L.tileLayer(tileUrl, {
           maxZoom: 19,
@@ -47,7 +46,8 @@ export function LogisticsMap({
         setReady(true);
       })
       .catch(() => {
-        if (active) setMapError("The map could not be loaded. The provider list is still available below.");
+        if (active)
+          setMapError("The map could not be loaded. The provider list is still available below.");
       });
 
     return () => {
@@ -87,10 +87,7 @@ export function LogisticsMap({
       const bounds = L.latLngBounds([[origin.latitude, origin.longitude]]);
       for (const recommendation of recommendations) {
         const listing = recommendation.listing;
-        if (
-          !Number.isFinite(listing.latitude) ||
-          !Number.isFinite(listing.longitude)
-        ) {
+        if (!Number.isFinite(listing.latitude) || !Number.isFinite(listing.longitude)) {
           continue;
         }
 
@@ -144,10 +141,20 @@ export function LogisticsMap({
           Report a map issue
         </a>
       </div>
-      {mapError ? <p className="form-alert" role="alert">{mapError}</p> : null}
-      <div ref={elementRef} className="logistics-map-canvas" role="application" aria-label="Map of nearby provider locations" />
+      {mapError ? (
+        <p className="form-alert" role="alert">
+          {mapError}
+        </p>
+      ) : null}
+      <div
+        ref={elementRef}
+        className="logistics-map-canvas"
+        role="application"
+        aria-label="Map of nearby provider locations"
+      />
       <p className="logistics-map-attribution">
-        Map tiles © OpenStreetMap contributors. Tile service is best-effort and may be unavailable; provider records are sourced from Farmess listings.
+        Map tiles © OpenStreetMap contributors. Tile service is best-effort and may be unavailable;
+        provider records are sourced from Farmess listings.
       </p>
     </section>
   );

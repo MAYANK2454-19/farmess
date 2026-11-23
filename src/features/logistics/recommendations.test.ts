@@ -120,28 +120,26 @@ test("rejects invalid search radius and malformed required quantity", () => {
   assert.throws(() => rankLogisticsCandidates([base()], { ...requirements, requiredQuantity: 0 }));
 });
 
-
 test("provider's stated service radius is a hard constraint", () => {
-  const [outside] = rankLogisticsCandidates(
-    [base({ service_radius_match: false })],
-    requirements,
-  );
+  const [outside] = rankLogisticsCandidates([base({ service_radius_match: false })], requirements);
   assert.equal(outside.status, "excluded");
-  assert.ok(outside.reasons.some((reason) => reason.includes("outside the provider's stated service radius")));
-
-  const [unknown] = rankLogisticsCandidates(
-    [base({ service_radius_match: null })],
-    requirements,
+  assert.ok(
+    outside.reasons.some((reason) =>
+      reason.includes("outside the provider's stated service radius"),
+    ),
   );
+
+  const [unknown] = rankLogisticsCandidates([base({ service_radius_match: null })], requirements);
   assert.equal(unknown.status, "needs_confirmation");
   assert.ok(unknown.unknowns.some((reason) => reason.includes("maximum service radius")));
 });
 
 test("provider search radius match contributes to explanation and score", () => {
-  const [matched] = rankLogisticsCandidates(
-    [base({ service_radius_match: true })],
-    requirements,
-  );
+  const [matched] = rankLogisticsCandidates([base({ service_radius_match: true })], requirements);
   assert.equal(matched.scoreBreakdown.serviceCoverage, 10);
-  assert.ok(matched.reasons.some((reason) => reason.includes("within the provider's stated service radius")));
+  assert.ok(
+    matched.reasons.some((reason) =>
+      reason.includes("within the provider's stated service radius"),
+    ),
+  );
 });

@@ -113,7 +113,9 @@ export function matchProduceLot(
   }
 
   if (!lot.locationArea?.trim() || !requirement.locationArea.trim()) {
-    unknowns.push("Locality compatibility is unknown because the farmer has not shared an approximate area.");
+    unknowns.push(
+      "Locality compatibility is unknown because the farmer has not shared an approximate area.",
+    );
   } else if (normalise(lot.locationArea) !== normalise(requirement.locationArea)) {
     incompatible = true;
     reasons.push("The published approximate area does not match the requested area.");
