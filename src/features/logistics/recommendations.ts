@@ -154,7 +154,10 @@ export function rankLogisticsCandidates(
     }
 
     let capacityScore = 5;
-    if (candidate.capacity_match === true) {
+    if (requirements.requiredQuantity === undefined || requirements.requiredQuantity === null) {
+      capacityScore = 15;
+      reasons.push("No quantity constraint was requested for this search.");
+    } else if (candidate.capacity_match === true) {
       capacityScore = 15;
       reasons.push("The stated provider capacity can accommodate the requested quantity.");
     } else if (candidate.capacity_match === false) {
@@ -238,7 +241,7 @@ export function rankLogisticsCandidates(
 
     const evaluated = [
       candidate.distance_meters,
-      candidate.capacity_match,
+      requirements.requiredQuantity == null ? true : candidate.capacity_match,
       cropRequested ? candidate.crop_match : true,
       dateRequested ? candidate.date_match : true,
       coldChainRequested ? candidate.cold_chain_match : true,
