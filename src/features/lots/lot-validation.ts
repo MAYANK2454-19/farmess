@@ -45,7 +45,7 @@ function isPositiveQuantity(value: string): boolean {
 
   const [whole, fractional = ""] = value.split(".");
   const thousandths = BigInt(whole) * 1000n + BigInt((fractional + "000").slice(0, 3));
-  return thousandths > 0n;
+  return thousandths > 0n && thousandths <= BigInt(Number.MAX_SAFE_INTEGER);
 }
 
 export function validateLotDraft(input: LotDraftInput): LotValidationResult {
