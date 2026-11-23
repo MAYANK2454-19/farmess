@@ -450,3 +450,10 @@
     -webkit-print-color-adjust: exact;
   }
 }
+
+
+@media print {
+  .marketComparisonPanel {
+    break-inside: auto;
+  }
+}
