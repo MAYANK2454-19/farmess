@@ -7,26 +7,34 @@ type Props = {
   scope: string;
 };
 
-export function FeaturePlaceholder({ title, subtitle }: Props) {
+export function FeaturePlaceholder({ title, subtitle, scope }: Props) {
   return (
     <main className="content module-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Farmess</p>
+          <p className="eyebrow">Farmer workspace</p>
           <h1>{title}</h1>
           <p className="page-subtitle">{subtitle}</p>
         </div>
       </div>
 
       <section className="module-unavailable" aria-labelledby="module-unavailable-title">
-        <h2 id="module-unavailable-title">This part is not ready yet</h2>
+        <p className="module-status">Not connected yet</p>
+        <h2 id="module-unavailable-title">{title} is being built.</h2>
+        <p>{scope}</p>
         <p>
-          This page is part of the Farmess plan, but the account and saved-record workflow has not
-          been connected. No offers, requests or activity are being created here in the meantime.
+          This section will show information from your account once sign-in and the saved-record
+          workflow are connected. It does not currently create or display real requests, offers or
+          activity.
         </p>
-        <Link href="/farmer" className="button button-secondary">
-          Back to overview
-        </Link>
+        <div className="topbar-right" style={{ justifyContent: "flex-start", marginTop: 18 }}>
+          <Link href="/farmer" className="button button-secondary">
+            Back to overview
+          </Link>
+          <Link href="/farmer/markets" className="button button-primary">
+            Check market prices
+          </Link>
+        </div>
       </section>
     </main>
   );
