@@ -26,7 +26,9 @@ const logisticsRequest: LogisticsRequestForTransition = {
   status: "pending",
 };
 
-test("buyer-to-farmer sale journey records an accepted offer and truthful sale timeline", () => {
+test(
+  "buyer-to-farmer sale journey records an accepted offer and truthful sale timeline",
+  () => {
   const unrelatedFarmer = transitionOffer(
     offer,
     { id: "farmer-2", role: "farmer" },
@@ -113,9 +115,12 @@ test("buyer-to-farmer sale journey records an accepted offer and truthful sale t
   assert.match(timeline[1].label, /^Disputed/);
   assert.match(timeline[2].label, /Not verified or processed by Farmess/);
   assert.equal(timeline[2].paymentVerification, "externally_reported");
-});
+  },
+);
 
-test("logistics journey requires the assigned provider and preserves pending until response", () => {
+test(
+  "logistics journey requires the assigned provider and preserves pending until response",
+  () => {
   assert.equal(logisticsRequest.status, "pending");
 
   const unrelatedProvider = transitionLogisticsRequest(
@@ -164,9 +169,12 @@ test("logistics journey requires the assigned provider and preserves pending unt
     eventVersion: "accepted-v1",
   });
   assert.equal(farmerNotification.recipientUserId, logisticsRequest.farmerId);
-});
+  },
+);
 
-test("expired offers cannot be accepted and terminal logistics requests cannot be cancelled", () => {
+test(
+  "expired offers cannot be accepted and terminal logistics requests cannot be cancelled",
+  () => {
   const expired = transitionOffer(
     { ...offer, validUntil: "2026-11-21T10:00:00.000Z" },
     { id: "farmer-1", role: "farmer" },
