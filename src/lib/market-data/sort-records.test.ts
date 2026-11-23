@@ -71,6 +71,19 @@ test("sorts modal prices low to high and keeps missing prices last", () => {
   );
 });
 
+test("keeps invalid and blank modal prices last in price sorts", () => {
+  const values = [
+    record("invalid", "2026-11-22", "not-a-price"),
+    record("valid", "2026-11-21", "0.00"),
+    record("blank", "2026-11-20", " "),
+  ];
+
+  assert.deepEqual(
+    sortMarketPriceRecords(values, "modal-low").map(({ id }) => id),
+    ["valid", "invalid", "blank"],
+  );
+});
+
 test("preserves source order when sort values are equal or unavailable", () => {
   const tied = [
     record("first", "2026-11-22", "1800.00"),
