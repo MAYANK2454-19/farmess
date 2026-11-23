@@ -47,10 +47,13 @@ jobs:
         run: npm run typecheck
 
       - name: Unit tests
+        if: always()
         run: npm test
 
       - name: Focused OGD pagination tests
+        if: always()
         run: node --experimental-strip-types --test src/lib/market-data/ogd-pagination.test.ts
 
       - name: Production build
+        if: always()
         run: npm run build
