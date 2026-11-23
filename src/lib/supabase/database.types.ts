@@ -543,12 +543,14 @@ export type Database = {
         Row: {
           approximate_area: string
           available_from: string
+          buyer_market_area: string | null
           created_at: string
           crop: string
           grade: string | null
           id: string
           notes: string | null
           owner_id: string
+          published_at: string | null
           quantity: number
           sell_by: string
           status: string
@@ -559,12 +561,14 @@ export type Database = {
         Insert: {
           approximate_area: string
           available_from: string
+          buyer_market_area?: string | null
           created_at?: string
           crop: string
           grade?: string | null
           id?: string
           notes?: string | null
           owner_id: string
+          published_at?: string | null
           quantity: number
           sell_by: string
           status?: string
@@ -575,12 +579,14 @@ export type Database = {
         Update: {
           approximate_area?: string
           available_from?: string
+          buyer_market_area?: string | null
           created_at?: string
           crop?: string
           grade?: string | null
           id?: string
           notes?: string | null
           owner_id?: string
+          published_at?: string | null
           quantity?: number
           sell_by?: string
           status?: string
