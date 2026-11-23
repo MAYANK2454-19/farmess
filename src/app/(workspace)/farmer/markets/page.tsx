@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
+import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
 import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
 import styles from "./markets.module.css";
 
@@ -272,6 +273,10 @@ export default function MarketsPage() {
             <strong>Older observations</strong>
             <span>{result.message}</span>
           </div>
+        )}
+
+        {!loading && result && result.sourceQuality.received > 0 && (
+          <SourceQualityPanel quality={result.sourceQuality} />
         )}
 
         {!loading && records.length > 0 && <MarketHistoryChart records={records} />}
