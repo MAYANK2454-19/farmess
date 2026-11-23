@@ -13,9 +13,7 @@ function csvCell(value: CsvCell): string {
 }
 
 /** Export the comparable reported-price rows without widening the active filters. */
-export function marketPriceComparisonsToCsv(
-  comparisons: readonly MarketComparisonGroup[],
-): string {
+export function marketPriceComparisonsToCsv(comparisons: readonly MarketComparisonGroup[]): string {
   const columns: CsvColumn[] = [
     ["Commodity", (group) => group.commodity],
     ["Variety", (group) => group.variety],
