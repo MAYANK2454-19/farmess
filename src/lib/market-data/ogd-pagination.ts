@@ -1,6 +1,7 @@
 export type OgdPageFetcher = (url: URL, init: RequestInit) => Promise<Response>;
 
 const OGD_PAGE_SIZE = 100;
+const OGD_TOTAL_TIMEOUT_MS = 10_000;
 
 function readRecords(payload: unknown): unknown[] {
   if (
@@ -30,6 +31,7 @@ export async function fetchOgdRecordsPaginated(
   }
 
   const records: unknown[] = [];
+  const signal = AbortSignal.timeout(OGD_TOTAL_TIMEOUT_MS);
 
   while (records.length < requestedLimit) {
     const pageLimit = Math.min(OGD_PAGE_SIZE, requestedLimit - records.length);
@@ -40,7 +42,7 @@ export async function fetchOgdRecordsPaginated(
     const response = await fetchPage(pageUrl, {
       headers: { Accept: "application/json" },
       cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
+      signal,
     });
 
     if (!response.ok) {
