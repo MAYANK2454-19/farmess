@@ -33,10 +33,10 @@ The detached checkout is intentional for a local preview; it does not modify the
 ```powershell
 node --version
 npm --version
-npm install
+npm ci
 ```
 
-The Node version must be v22 or newer.
+The Node version must be v22 or newer. The PR branch lockfile has been refreshed to include Leaflet and its type dependencies, so `npm ci` should now complete cleanly.
 
 ## 3. Add local environment variables
 
