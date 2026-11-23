@@ -3,7 +3,7 @@ import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
 const LISTING_SELECT =
-  "id,title,service_type,service_area,destination_area,description,price_paise,capacity_quantity,capacity_unit,available_from,available_until";
+  "id,title,service_type,service_area,destination_area,description,price_paise,rate_basis,capacity_quantity,capacity_unit,available_from,available_until,service_radius_km,crop_suitability,cold_chain_available,verification_state";
 
 const REQUEST_SELECT =
   "id,listing_id,origin_area,destination_area,requested_date,requested_quantity,unit,status,message,created_at,updated_at";
