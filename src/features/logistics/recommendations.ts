@@ -14,6 +14,7 @@ export type NearbyServiceCandidate = {
   available_from: string | null;
   available_until: string | null;
   service_radius_km: number | null;
+  service_radius_match: LogisticsMatch;
   crop_suitability: string[];
   cold_chain_available: boolean;
   verification_state:
@@ -35,7 +36,6 @@ export type LogisticsRequirements = {
   unit?: "kg" | "quintal" | "tonne" | null;
   requiredDate?: string | null;
   requiresColdChain?: boolean;
-  preferredServiceType?: "transport" | "storage" | null;
   maximumRadiusMeters: number;
 };
 
@@ -54,6 +54,7 @@ export type LogisticsRecommendation = {
     coldChain: number;
     verification: number;
     pricingTransparency: number;
+    serviceCoverage: number;
   };
   rankingVersion: "rules-v1";
   method: "explainable-heuristic";
@@ -64,10 +65,6 @@ const KNOWN_UNITS = ["kg", "quintal", "tonne"] as const;
 
 function roundScore(value: number): number {
   return Math.round(Math.max(0, Math.min(100, value)) * 10) / 10;
-}
-
-function normalise(value: string): string {
-  return value.trim().toLocaleLowerCase("en-IN");
 }
 
 function proximityScore(distanceMeters: number, maximumRadiusMeters: number): number {
@@ -136,6 +133,12 @@ export function rankLogisticsCandidates(
       exclusions.push("This provider listing is suspended.");
     }
     if (
+      requirements.preferredServiceType &&
+      candidate.service_type !== requirements.preferredServiceType
+    ) {
+      exclusions.push("This listing does not match the selected service type.");
+    }
+    if (
       !Number.isFinite(candidate.latitude) ||
       !Number.isFinite(candidate.longitude) ||
       candidate.latitude < -90 ||
@@ -195,6 +198,17 @@ export function rankLogisticsCandidates(
       unknowns.push("Provider availability for the requested date is not confirmed.");
     }
 
+    let serviceCoverageScore = 3;
+    if (candidate.service_radius_match === true) {
+      serviceCoverageScore = 10;
+      reasons.push("The origin falls within the provider's stated service radius.");
+    } else if (candidate.service_radius_match === false) {
+      serviceCoverageScore = 0;
+      exclusions.push("The origin is outside the provider's stated service radius.");
+    } else {
+      unknowns.push("The provider has not specified a maximum service radius.");
+    }
+
     let coldChainScore = 10;
     if (coldChainRequested) {
       if (candidate.cold_chain_match === true) {
@@ -230,17 +244,19 @@ export function rankLogisticsCandidates(
     }
 
     const score = roundScore(
-      proximity +
+      roundScore(proximity * 0.8) +
         capacityScore +
         cropScore +
         availabilityScore +
         coldChainScore +
         verification +
-        pricingTransparency,
+        pricingTransparency +
+        serviceCoverageScore,
     );
 
     const evaluated = [
       candidate.distance_meters,
+      candidate.service_radius_match,
       requirements.requiredQuantity == null ? true : candidate.capacity_match,
       cropRequested ? candidate.crop_match : true,
       dateRequested ? candidate.date_match : true,
@@ -274,6 +290,7 @@ export function rankLogisticsCandidates(
         coldChain: coldChainScore,
         verification,
         pricingTransparency,
+        serviceCoverage: serviceCoverageScore,
       },
       rankingVersion: "rules-v1",
       method: "explainable-heuristic",
