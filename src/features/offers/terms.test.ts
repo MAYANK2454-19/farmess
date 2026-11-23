@@ -36,3 +36,13 @@ test("rejects expired or invalid validity", () => {
   );
   assert.equal(validateOfferTerms({ ...valid, validUntil: "not-a-date" }, now).valid, false);
 });
+
+
+test("accepts the largest safe integer price and rejects an unsafe integer", () => {
+  const safe = validateOfferTerms({ ...valid, pricePaise: Number.MAX_SAFE_INTEGER }, now);
+  const unsafe = validateOfferTerms({ ...valid, pricePaise: Number.MAX_SAFE_INTEGER + 1 }, now);
+
+  assert.equal(safe.valid, true);
+  assert.equal(unsafe.valid, false);
+  assert.match(unsafe.errors.join(" "), /positive integer number of paise/);
+});
