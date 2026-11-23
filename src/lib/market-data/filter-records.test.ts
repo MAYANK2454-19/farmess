@@ -31,7 +31,8 @@ const records = [
   record("middle", "2026-11-21", "2200"),
   record("high", "2026-11-23", "2800"),
   record("missing", "2026-11-22", null),
-  record("invalid", "2026-11-22", "not-a-price"),
+  record("invalid-date", "not-a-date", "2600"),
+  record("invalid-price", "2026-11-23", "not-a-price"),
 ];
 
 test("returns a new list with all records when no filters are active", () => {
@@ -84,7 +85,7 @@ test("excludes malformed observation dates only when a date bound is active", ()
   });
   assert.deepEqual(
     result.map(({ id }) => id),
-    ["middle", "high", "missing"],
+    ["middle", "high", "missing", "invalid-price"],
   );
 });
 
