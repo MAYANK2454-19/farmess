@@ -8,10 +8,7 @@ export default async function OperatorOverviewPage() {
 
   const [listings, requests] = session
     ? await Promise.all([
-        supabase
-          .from("service_listings")
-          .select("id,status")
-          .eq("operator_id", session.userId),
+        supabase.from("service_listings").select("id,status").eq("operator_id", session.userId),
         supabase
           .from("service_requests")
           .select("id,status")
@@ -32,7 +29,8 @@ export default async function OperatorOverviewPage() {
           <p className="eyebrow">Service provider workspace</p>
           <h1>Keep your capacity visible.</h1>
           <p className="overview-lede">
-            Manage the transport and storage services you offer, then respond to requests with clear availability and terms.
+            Manage the transport and storage services you offer, then respond to requests with clear
+            availability and terms.
           </p>
         </div>
         <Link href="/operator/services" className="button button-primary">
@@ -57,7 +55,8 @@ export default async function OperatorOverviewPage() {
         <p className="eyebrow">Daily work</p>
         <h2>Keep service information current.</h2>
         <p className="overview-tools-intro">
-          Only services you publish as active are visible to farmers and buyers. Pause a listing when capacity is full.
+          Only services you publish as active are visible to farmers and buyers. Pause a listing
+          when capacity is full.
         </p>
         <div className="tool-links">
           <Link href="/operator/services" className="tool-link">
