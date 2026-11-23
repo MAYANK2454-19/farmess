@@ -12,6 +12,7 @@ on:
       - feat/market-import-duplicate-reconciliation
       - feat/ogd-market-data-pagination
       - feat/market-source-quality-diagnostics
+      - feat/market-source-quality-ui
       - feat/market-record-freshness-labels
     paths:
       - "src/lib/market-data/ogd-pagination.ts"
