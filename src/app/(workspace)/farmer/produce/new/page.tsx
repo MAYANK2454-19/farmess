@@ -5,21 +5,17 @@ export default function CreateProduceLotPage() {
     <main className="content module-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">My Produce</p>
+          <p className="eyebrow">My produce</p>
           <h1>Add a produce lot</h1>
           <p className="page-subtitle">
-            Tell us what you have available and when it needs to be sold.
+            Record what is available, where it can be collected and when it needs to be sold.
           </p>
         </div>
       </div>
-      <div className="preview-banner" role="status">
-        <span className="banner-dot" />
-        <span>
-          <strong>Prototype form.</strong> Client-side validation and local review are available;
-          account sign-in, server validation and persistent saving are still to be connected.
-        </span>
-      </div>
       <LotForm />
+      <p className="preview-footnote">
+        This preview checks the details in your browser only. It does not save or publish a lot.
+      </p>
     </main>
   );
 }
