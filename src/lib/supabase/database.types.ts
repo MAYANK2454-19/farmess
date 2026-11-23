@@ -239,12 +239,58 @@ export type Database = {
           },
         ]
       }
+      market_forecast_review_events: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          forecast_run_id: string
+          id: string
+          new_status: string
+          previous_status: string | null
+          review_note: string | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          forecast_run_id: string
+          id?: string
+          new_status: string
+          previous_status?: string | null
+          review_note?: string | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          forecast_run_id?: string
+          id?: string
+          new_status?: string
+          previous_status?: string | null
+          review_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_forecast_review_events_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_forecast_review_events_forecast_run_id_fkey"
+            columns: ["forecast_run_id"]
+            isOneToOne: false
+            referencedRelation: "market_forecast_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_forecast_runs: {
         Row: {
           approved_at: string | null
           baseline_mae_paise_per_quintal: number | null
           baseline_smape_percent: number | null
           created_at: string
+          created_by_user_id: string | null
           crop: string
           district: string | null
           generated_at: string
@@ -255,6 +301,8 @@ export type Database = {
           model_name: string
           model_smape_percent: number | null
           model_version: string
+          review_notes: string | null
+          reviewed_by_user_id: string | null
           state: string | null
           status: string
           training_end: string | null
@@ -267,6 +315,7 @@ export type Database = {
           baseline_mae_paise_per_quintal?: number | null
           baseline_smape_percent?: number | null
           created_at?: string
+          created_by_user_id?: string | null
           crop: string
           district?: string | null
           generated_at?: string
@@ -277,6 +326,8 @@ export type Database = {
           model_name: string
           model_smape_percent?: number | null
           model_version: string
+          review_notes?: string | null
+          reviewed_by_user_id?: string | null
           state?: string | null
           status?: string
           training_end?: string | null
@@ -289,6 +340,7 @@ export type Database = {
           baseline_mae_paise_per_quintal?: number | null
           baseline_smape_percent?: number | null
           created_at?: string
+          created_by_user_id?: string | null
           crop?: string
           district?: string | null
           generated_at?: string
@@ -299,6 +351,8 @@ export type Database = {
           model_name?: string
           model_smape_percent?: number | null
           model_version?: string
+          review_notes?: string | null
+          reviewed_by_user_id?: string | null
           state?: string | null
           status?: string
           training_end?: string | null
@@ -306,7 +360,22 @@ export type Database = {
           training_start?: string | null
           variety?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_forecast_runs_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_forecast_runs_reviewed_by_user_id_fkey"
+            columns: ["reviewed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_observations: {
         Row: {
