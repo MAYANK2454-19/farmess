@@ -456,7 +456,9 @@ export default function MarketsPage() {
 
         {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
 
-        {!loading && <MarketForecastPanel crop={appliedFilters.commodity} market={appliedFilters.market} />}
+        {!loading && (
+          <MarketForecastPanel crop={appliedFilters.commodity} market={appliedFilters.market} />
+        )}
 
         {!loading && records.length > 0 && filteredRecords.length === 0 && (
           <div className={`panel ${styles.statePanel}`} role="status">
