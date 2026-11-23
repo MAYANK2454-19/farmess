@@ -8,6 +8,7 @@ on:
       - feat/market-source-quality-ui
       - feat/market-record-freshness-labels
       - feat/market-observation-sorting
+      - feat/market-observation-advanced-filters
   pull_request:
     branches:
       - feat/market-import-duplicate-reconciliation
