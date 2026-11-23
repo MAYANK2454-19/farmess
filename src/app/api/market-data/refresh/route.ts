@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { parseMarketSearchFilters } from "@/lib/market-data/filters";
-import { reconcileMarketObservationBatch } from "@/lib/market-data/import-batch";
 import { SOURCE_NAME } from "@/lib/market-data/normalize";
 import { searchOgdPrices } from "@/lib/market-data/ogd-provider";
 
@@ -107,7 +106,8 @@ export async function POST(request: NextRequest) {
         status: source.status,
         recordsReceived: 0,
         recordsUpserted: 0,
-        message: source.message ?? "The source returned no usable observations.",
+        message:
+          "message" in source ? source.message : "The source returned no usable observations.",
       },
       { status: source.status === "unavailable" ? 503 : 200 },
     );
@@ -143,38 +143,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const batch = reconcileMarketObservationBatch(rows.map((entry) => entry.row));
-
-  if (batch.status === "conflicting-duplicates") {
-    const { error: auditError } = await supabase.from("market_data_ingestion_runs").insert({
-      actor_user_id: session.userId,
-      source_name: source.sourceName,
-      status: "partial",
-      request_filters: filters,
-      records_received: source.records.length,
-      records_upserted: 0,
-      error_message: `Import withheld because ${batch.conflictCount} natural observation key(s) contained conflicting prices or provenance.`,
-    });
-
-    if (auditError) {
-      return NextResponse.json(
-        { error: "Conflicting source rows were detected, but the audit record could not be written." },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        status: "conflict",
-        recordsReceived: source.records.length,
-        recordsUpserted: 0,
-        message: "The source response repeated an observation key with different values. No observations were imported.",
-      },
-      { status: 422 },
-    );
-  }
-
-  const observations = batch.rows;
+  const observations = rows.map((entry) => entry.row);
 
   const { error: upsertError } = await supabase.from("market_observations").upsert(observations, {
     onConflict: "crop,variety,state,district,market_name,observation_date,source_name",
@@ -191,7 +160,7 @@ export async function POST(request: NextRequest) {
     records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
-      : (source.message?.slice(0, 500) ?? null),
+      : ("message" in source ? source.message.slice(0, 500) : null),
   });
 
   if (upsertError || auditError) {
@@ -209,7 +178,6 @@ export async function POST(request: NextRequest) {
       status: source.status,
       recordsReceived: source.records.length,
       recordsUpserted: observations.length,
-      duplicatesRemoved: batch.duplicatesRemoved,
       retrievedAt: source.retrievedAt,
       message:
         source.status === "stale"
