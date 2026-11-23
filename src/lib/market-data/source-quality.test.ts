@@ -19,12 +19,15 @@ const emptyQuality: MarketSourceQuality = {
 };
 
 test("shows only rejection reasons with positive counts in stable order", () => {
-  assert.deepEqual(getMarketSourceQualityReasons(emptyQuality), [
-    { reason: "invalid_record", label: "Unreadable source row", count: 1 },
-    { reason: "invalid_observation_date", label: "Invalid observation date", count: 1 },
-    { reason: "missing_prices", label: "No price values reported", count: 1 },
-    { reason: "inconsistent_prices", label: "Price values do not agree", count: 1 },
-  ]);
+  assert.deepEqual(
+    getMarketSourceQualityReasons(emptyQuality),
+    [
+      { reason: "invalid_record", label: "Unreadable source row", count: 1 },
+      { reason: "invalid_observation_date", label: "Invalid observation date", count: 1 },
+      { reason: "missing_prices", label: "No price values reported", count: 1 },
+      { reason: "inconsistent_prices", label: "Price values do not agree", count: 1 },
+    ],
+  );
 });
 
 test("returns an empty breakdown when every source row is accepted", () => {
@@ -56,8 +59,9 @@ test("does not display zero, negative or non-integer rejection counts", () => {
     },
   };
 
-  assert.deepEqual(
-    getMarketSourceQualityReasons(quality).map((item) => item.reason),
-    ["invalid_observation_date", "missing_prices", "inconsistent_prices"],
-  );
+  assert.deepEqual(getMarketSourceQualityReasons(quality).map((item) => item.reason), [
+    "invalid_observation_date",
+    "missing_prices",
+    "inconsistent_prices",
+  ]);
 });
