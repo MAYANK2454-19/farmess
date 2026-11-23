@@ -100,3 +100,14 @@ test("returns a field error instead of throwing for a non-string date at runtime
     assert.ok(result.errors.some((error) => error.field === "requiredAt"));
   }
 });
+
+test("rejects impossible dates inside timezone-qualified timestamps", () => {
+  const result = validateBuyerRequirement({
+    ...validDraft,
+    requiredAt: "2026-02-30T10:00:00+05:30",
+  });
+  assert.equal(result.valid, false);
+  if (!result.valid) {
+    assert.ok(result.errors.some((error) => error.field === "requiredAt"));
+  }
+});
