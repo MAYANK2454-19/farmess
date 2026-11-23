@@ -226,6 +226,7 @@ export function MarketplaceBoard() {
           <div className="marketplace-lot-list">
             {lots.map((lot) => {
               const existing = offersByLot.get(lot.id);
+              const activeOffer = existing && existing.status === "pending" && !existing.is_expired;
               return (
                 <article className="marketplace-lot" key={lot.id}>
                   <div className="marketplace-lot-heading">
@@ -239,9 +240,9 @@ export function MarketplaceBoard() {
                   <p className="marketplace-lot-dates">
                     Available from {formatDate(lot.available_from)} · Sell by {formatDate(lot.sell_by)}
                   </p>
-                  {existing ? (
+                  {activeOffer ? (
                     <p className="marketplace-existing-offer">
-                      Your latest offer: {existing.status}{existing.is_expired ? " · expired" : ""}
+                      Your offer is awaiting a farmer decision. It expires {formatDateTime(existing.valid_until)}.
                     </p>
                   ) : (
                     <OfferForm lot={lot} onSent={addOffer} />
