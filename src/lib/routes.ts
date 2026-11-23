@@ -72,7 +72,10 @@ export function isActiveRoute(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function getWorkspacePageLabel(pathname: string, role: keyof typeof NAVIGATION_BY_ROLE): string {
+export function getWorkspacePageLabel(
+  pathname: string,
+  role: keyof typeof NAVIGATION_BY_ROLE,
+): string {
   const item = [...NAVIGATION_BY_ROLE[role], ...ACCOUNT_NAVIGATION].find((entry) =>
     isActiveRoute(pathname, entry.href),
   );
