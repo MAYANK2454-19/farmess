@@ -22,7 +22,7 @@ Optional individual price fields remain allowed when at least one valid price is
 
 ## API response
 
-The admin market refresh response includes `recordsReceived`, `recordsAccepted`, `recordsRejected` and the full `sourceQuality` report. The ingestion audit's received count reflects raw source rows, while upserted count continues to reflect rows actually stored.
+The admin market refresh response includes `recordsReceived`, `recordsAccepted`, `recordsRejected` and the full `sourceQuality` report. The ingestion audit's received count reflects raw source rows, while upserted count continues to reflect rows actually stored. Duplicate reconciliation remains active before the database upsert.
 
 These diagnostics are aggregate counters only; they do not persist rejected row payloads or expose API credentials. They do not change freshness classification, source attribution, price units, pagination limits or duplicate reconciliation.
 
