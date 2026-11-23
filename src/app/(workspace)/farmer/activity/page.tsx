@@ -1,11 +1,18 @@
-import { FeaturePlaceholder } from "@/components/feature-placeholder";
-export default function ActivityPage() {
+import { SaleActivityTimeline } from "@/features/activity/sale-activity-timeline";
+
+export default function SaleActivityPage() {
   return (
-    <FeaturePlaceholder
-      title="Sale Activity"
-      subtitle="A record of offer, dispatch, weighment and delivery milestones."
-      owner="Atharv"
-      scope="The activity timeline will show only persisted events and available evidence. Farmess will not claim to process a payment unless a real integration is approved and implemented."
-    />
+    <main className="content module-page">
+      <div className="page-heading">
+        <div>
+          <p className="eyebrow">Selling</p>
+          <h1>Sale activity</h1>
+          <p className="page-subtitle">
+            Follow changes recorded for sales where you are a participant.
+          </p>
+        </div>
+      </div>
+      <SaleActivityTimeline />
+    </main>
   );
 }
