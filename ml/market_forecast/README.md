@@ -22,7 +22,7 @@ Use Python 3.12. Create a virtual environment, install `requirements.txt`, then 
 
     python train.py --input market_observations.csv --output-dir ./artifacts --horizon-days 7
 
-Each series needs at least 90 unique dated observations. The script reserves the final chronological 20% for a walk-forward holdout, builds lag/rolling/date features only from earlier observations, trains a `HistGradientBoostingRegressor`, and compares it with a last-observation persistence baseline using MAE and sMAPE.
+Each series needs at least 120 unique dated observations. The script reserves the final chronological 20% for a walk-forward holdout, builds lag/rolling/date features only from earlier observations, trains a `HistGradientBoostingRegressor`, and compares it with a last-observation persistence baseline using MAE and sMAPE.
 
 A series becomes a `candidate` only when it beats the persistence baseline on both metrics. Otherwise it is rejected. The output directory receives model artifacts, manifests, seven-day recursive forecast points and a summary.
 
