@@ -37,7 +37,7 @@ The detailed boundary between implemented and pending functionality is in [docs/
 Requirements: Node.js 22 or newer.
 
 1. Check out the integrated backend branch for PR #60.
-2. Run `npm ci`.
+2. Run `npm install` (this checkout's lockfile is being synchronized with the Leaflet dependencies).
 3. Create a root `.env.local` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. See [docs/LOCAL_DEVELOPMENT.md](./docs/LOCAL_DEVELOPMENT.md) for exact steps and local Auth redirect configuration.
 4. Run `npm run dev` and open http://localhost:3000.
 
