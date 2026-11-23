@@ -63,7 +63,8 @@ export function validateBuyerRequirement(
   const crop = typeof draft.crop === "string" ? draft.crop.trim() : "";
   const variety = typeof draft.variety === "string" ? draft.variety.trim() : "";
   const grade = typeof draft.grade === "string" ? draft.grade.trim() : "";
-  const locationArea = typeof draft.locationArea === "string" ? draft.locationArea.trim() : "";
+  const locationArea =
+    typeof draft.locationArea === "string" ? draft.locationArea.trim() : "";
 
   if (!crop) {
     errors.push({ field: "crop", message: "Crop is required." });
@@ -112,10 +113,16 @@ export function validateBuyerRequirement(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(
       requiredAt,
     );
-  const parsedDate = Date.parse(dateOnly ? requiredAt + "T00:00:00.000Z" : requiredAt);
+  const parsedDate = Date.parse(
+    dateOnly ? requiredAt + "T00:00:00.000Z" : requiredAt,
+  );
   const dateIsReal = isRealCalendarDate(requiredAt.slice(0, 10));
 
-  if ((!dateOnly && !dateTime) || !dateIsReal || !Number.isFinite(parsedDate)) {
+  if (
+    (!dateOnly && !dateTime) ||
+    !dateIsReal ||
+    !Number.isFinite(parsedDate)
+  ) {
     errors.push({
       field: "requiredAt",
       message: "Required date must be a valid ISO date or ISO timestamp with a timezone.",
