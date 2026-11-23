@@ -8,17 +8,30 @@ export interface MarketDataFreshnessResult {
 
 const DEFAULT_MAX_AGE_HOURS = 48;
 
+function isRealCalendarDate(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  date.setUTCHours(0, 0, 0, 0);
+
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}
+
 export function assessMarketDataFreshness(
   observationDate: string,
   now = new Date(),
   maxAgeHours = DEFAULT_MAX_AGE_HOURS,
 ): MarketDataFreshnessResult {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(observationDate)) {
-    return { status: "invalid", ageHours: null, message: "Observation date is invalid." };
-  }
-
-  const observation = new Date(observationDate + "T00:00:00.000Z");
-  if (Number.isNaN(observation.getTime())) {
+  if (!isRealCalendarDate(observationDate)) {
     return { status: "invalid", ageHours: null, message: "Observation date is invalid." };
   }
 
@@ -26,7 +39,9 @@ export function assessMarketDataFreshness(
     throw new RangeError("maxAgeHours must be a finite non-negative number.");
   }
 
+  const observation = new Date(observationDate + "T00:00:00.000Z");
   const ageHours = (now.getTime() - observation.getTime()) / 3_600_000;
+
   if (ageHours < 0) {
     return {
       status: "future",
@@ -39,7 +54,10 @@ export function assessMarketDataFreshness(
     return {
       status: "stale",
       ageHours,
-      message: "Observation is older than the configured " + maxAgeHours + "-hour freshness window.",
+      message:
+        "Observation is older than the configured " +
+        maxAgeHours +
+        "-hour freshness window.",
     };
   }
 
