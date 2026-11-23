@@ -33,9 +33,7 @@ export async function GET(request: NextRequest) {
         : role === "admin"
           ? "/workspace-unavailable"
           : "/farmer";
-  const destination = request.nextUrl.searchParams.has("next")
-    ? nextPath
-    : roleHome;
+  const destination = request.nextUrl.searchParams.has("next") ? nextPath : roleHome;
 
   const displayName = user?.user_metadata?.display_name;
   if (user && typeof displayName === "string" && displayName.trim()) {
