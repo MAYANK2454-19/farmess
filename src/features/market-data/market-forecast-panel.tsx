@@ -74,10 +74,10 @@ type ForecastRequestState = {
 export function MarketForecastPanel({ crop, market }: { crop: string; market: string }) {
   const requestKey = `${crop.trim()}\u001f${market.trim()}`;
   const [requestState, setRequestState] = useState<ForecastRequestState | null>(null);
-  const isCurrentRequest = requestState?.key === requestKey;
-  const loading = !isCurrentRequest;
-  const error = isCurrentRequest ? (requestState.error ?? "") : "";
-  const result = isCurrentRequest ? (requestState.result ?? null) : null;
+  const currentRequest = requestState?.key === requestKey ? requestState : null;
+  const loading = currentRequest === null;
+  const error = currentRequest?.error ?? "";
+  const result = currentRequest?.result ?? null;
 
   useEffect(() => {
     let active = true;
