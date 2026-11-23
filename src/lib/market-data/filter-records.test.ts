@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  EMPTY_MARKET_RECORD_FILTERS,
-  filterMarketPriceRecords,
-} from "./filter-records.ts";
+import { EMPTY_MARKET_RECORD_FILTERS, filterMarketPriceRecords } from "./filter-records.ts";
 import type { MarketPriceRecord } from "./types.ts";
 
 function record(id: string, observationDate: string, modalPrice: string | null): MarketPriceRecord {
@@ -49,7 +46,10 @@ test("applies inclusive observation date bounds", () => {
     fromDate: "2026-11-21",
     toDate: "2026-11-22",
   });
-  assert.deepEqual(result.map(({ id }) => id), ["middle", "missing"]);
+  assert.deepEqual(
+    result.map(({ id }) => id),
+    ["middle", "missing"],
+  );
 });
 
 test("applies inclusive modal-price bounds and excludes missing or invalid prices", () => {
@@ -58,7 +58,10 @@ test("applies inclusive modal-price bounds and excludes missing or invalid price
     minModalPrice: "2200",
     maxModalPrice: "2400",
   });
-  assert.deepEqual(result.map(({ id }) => id), ["middle"]);
+  assert.deepEqual(
+    result.map(({ id }) => id),
+    ["middle"],
+  );
 });
 
 test("combines date and modal-price filters", () => {
@@ -68,7 +71,10 @@ test("combines date and modal-price filters", () => {
     minModalPrice: "2000",
     maxModalPrice: "3000",
   });
-  assert.deepEqual(result.map(({ id }) => id), ["middle", "high"]);
+  assert.deepEqual(
+    result.map(({ id }) => id),
+    ["middle", "high"],
+  );
 });
 
 test("rejects reversed date and price ranges", () => {
