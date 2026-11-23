@@ -106,15 +106,11 @@ export function OperatorRequestManager() {
       }
 
       setRequests((current) =>
-        current.map((item) =>
-          item.id === id ? { ...item, status: decision } : item,
-        ),
+        current.map((item) => (item.id === id ? { ...item, status: decision } : item)),
       );
     } catch (requestError) {
       setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "This request could not be updated.",
+        requestError instanceof Error ? requestError.message : "This request could not be updated.",
       );
     } finally {
       setPendingId(null);
@@ -125,7 +121,9 @@ export function OperatorRequestManager() {
     <section className="panel" aria-labelledby="incoming-requests-heading">
       <div className="panel-header">
         <div>
-          <h2 className="panel-title" id="incoming-requests-heading">Incoming requests</h2>
+          <h2 className="panel-title" id="incoming-requests-heading">
+            Incoming requests
+          </h2>
           <p className="panel-caption">
             {loading ? "Loading…" : `${requests.length} request(s) for your services`}
           </p>
@@ -140,7 +138,9 @@ export function OperatorRequestManager() {
 
       {loading ? (
         <div className="empty-state">
-          <p className="empty-copy" role="status">Loading requests…</p>
+          <p className="empty-copy" role="status">
+            Loading requests…
+          </p>
         </div>
       ) : requests.length === 0 ? (
         <div className="empty-state">

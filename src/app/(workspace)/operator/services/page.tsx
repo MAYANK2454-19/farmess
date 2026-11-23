@@ -8,7 +8,8 @@ export default function OperatorServicesPage() {
           <p className="eyebrow">Service provider</p>
           <h1>Your services</h1>
           <p className="page-subtitle">
-            Publish transport or storage capacity, describe its coverage and keep availability up to date.
+            Publish transport or storage capacity, describe its coverage and keep availability up to
+            date.
           </p>
         </div>
       </div>
