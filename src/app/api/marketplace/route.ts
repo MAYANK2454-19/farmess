@@ -22,7 +22,10 @@ export async function GET() {
     return NextResponse.json({ error: "Sign in to browse produce lots." }, { status: 401 });
   }
   if (session.role !== "buyer") {
-    return NextResponse.json({ error: "The marketplace is available to buyer accounts." }, { status: 403 });
+    return NextResponse.json(
+      { error: "The marketplace is available to buyer accounts." },
+      { status: 403 },
+    );
   }
 
   const supabase = await createClient();
@@ -77,7 +80,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Send offer details as JSON." }, { status: 400 });
   }
 
-  const allowedKeys = ["lot_id", "quantity", "unit", "price_paise_per_quintal", "valid_until", "terms"];
+  const allowedKeys = [
+    "lot_id",
+    "quantity",
+    "unit",
+    "price_paise_per_quintal",
+    "valid_until",
+    "terms",
+  ];
   if (
     !isRecord(body) ||
     Object.keys(body).some((key) => !allowedKeys.includes(key)) ||
@@ -102,22 +112,33 @@ export async function POST(request: NextRequest) {
 
   const price = body.price_paise_per_quintal;
   if (typeof price !== "number" || !Number.isSafeInteger(price) || price <= 0) {
-    return NextResponse.json({ error: "Enter a positive whole-number price in paise per quintal." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Enter a positive whole-number price in paise per quintal." },
+      { status: 400 },
+    );
   }
 
   if (
     typeof body.valid_until !== "string" ||
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(body.valid_until) ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(
+      body.valid_until,
+    ) ||
     !Number.isFinite(Date.parse(body.valid_until)) ||
     Date.parse(body.valid_until) <= Date.now()
   ) {
-    return NextResponse.json({ error: "Choose a valid offer expiry in the future." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose a valid offer expiry in the future." },
+      { status: 400 },
+    );
   }
 
   let terms: string | null = null;
   if (body.terms !== undefined && body.terms !== null && body.terms !== "") {
     if (typeof body.terms !== "string" || body.terms.trim().length > 1000) {
-      return NextResponse.json({ error: "Offer terms must be 1000 characters or fewer." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Offer terms must be 1000 characters or fewer." },
+        { status: 400 },
+      );
     }
     terms = body.terms.trim() || null;
   }
@@ -131,7 +152,10 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   if (lotError || !lot) {
-    return NextResponse.json({ error: "This produce lot is no longer available." }, { status: 404 });
+    return NextResponse.json(
+      { error: "This produce lot is no longer available." },
+      { status: 404 },
+    );
   }
 
   if (lot.owner_id === session.userId || lot.unit !== body.unit || quantity > lot.quantity) {
@@ -159,7 +183,10 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     return NextResponse.json(
-      { error: "The offer could not be sent. The lot may have changed or its available quantity may be committed." },
+      {
+        error:
+          "The offer could not be sent. The lot may have changed or its available quantity may be committed.",
+      },
       { status: 409 },
     );
   }
