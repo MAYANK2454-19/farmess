@@ -52,6 +52,7 @@ function formatTimestamp(value: string): string {
 
 export default function MarketsPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<MarketDataResult | null>(null);
   const [sortOrder, setSortOrder] = useState<MarketRecordSortOrder>("newest");
   const [draftRecordFilters, setDraftRecordFilters] = useState<MarketRecordFilters>(
@@ -108,6 +109,7 @@ export default function MarketsPage() {
     function restoreSearchState() {
       const restored = parseMarketSearchState(window.location.search);
       setFilters(restored.filters);
+      setAppliedFilters(restored.filters);
       setDraftRecordFilters(restored.recordFilters);
       setAppliedRecordFilters(restored.recordFilters);
       setSortOrder(restored.sortOrder);
@@ -122,12 +124,14 @@ export default function MarketsPage() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setAppliedFilters(filters);
     updateSearchUrl({ filters, recordFilters: appliedRecordFilters, sortOrder });
     void loadPrices(filters);
   }
 
   function handleReset() {
     setFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
     updateSearchUrl({
       filters: EMPTY_FILTERS,
       recordFilters: appliedRecordFilters,
@@ -141,7 +145,7 @@ export default function MarketsPage() {
     try {
       filterMarketPriceRecords(records, draftRecordFilters);
       setAppliedRecordFilters(draftRecordFilters);
-      updateSearchUrl({ filters, recordFilters: draftRecordFilters, sortOrder });
+      updateSearchUrl({ filters: appliedFilters, recordFilters: draftRecordFilters, sortOrder });
       setRecordFilterError("");
     } catch (filterError) {
       setRecordFilterError(
@@ -153,7 +157,7 @@ export default function MarketsPage() {
   function handleRecordFilterReset() {
     setDraftRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
     setAppliedRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
-    updateSearchUrl({ filters, recordFilters: EMPTY_MARKET_RECORD_FILTERS, sortOrder });
+    updateSearchUrl({ filters: appliedFilters, recordFilters: EMPTY_MARKET_RECORD_FILTERS, sortOrder });
     setRecordFilterError("");
   }
 
@@ -208,7 +212,7 @@ export default function MarketsPage() {
           <button
             className="button button-secondary"
             type="button"
-            onClick={() => void loadPrices(filters)}
+            onClick={() => void loadPrices(appliedFilters)}
             disabled={loading}
           >
             {loading ? "Refreshing…" : "Refresh data"}
@@ -448,7 +452,7 @@ export default function MarketsPage() {
 
         {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
 
-        {!loading && <MarketForecastPanel crop={filters.commodity} market={filters.market} />}
+        {!loading && <MarketForecastPanel crop={appliedFilters.commodity} market={appliedFilters.market} />}
 
         {!loading && records.length > 0 && filteredRecords.length === 0 && (
           <div className={`panel ${styles.statePanel}`} role="status">
@@ -473,7 +477,7 @@ export default function MarketsPage() {
                     const nextSort = event.target.value as MarketRecordSortOrder;
                     setSortOrder(nextSort);
                     updateSearchUrl({
-                      filters,
+                      filters: appliedFilters,
                       recordFilters: appliedRecordFilters,
                       sortOrder: nextSort,
                     });
