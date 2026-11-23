@@ -8,13 +8,14 @@ import { searchOgdPrices } from "@/lib/market-data/ogd-provider";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function rupeesToPaise(value: string | null): number | null {
-  if (value === null) return null;
+function rupeesToPaise(value: string | null): { value: number | null; valid: boolean } {
+  if (value === null) return { value: null, valid: true };
   const rupees = Number(value);
   const paise = Math.round(rupees * 100);
-  return Number.isFinite(rupees) && rupees >= 0 && Number.isSafeInteger(paise)
-    ? paise
-    : null;
+  if (!Number.isFinite(rupees) || rupees < 0 || !Number.isSafeInteger(paise)) {
+    return { value: null, valid: false };
+  }
+  return { value: paise, valid: true };
 }
 
 function getFilters(request: NextRequest) {
@@ -100,32 +101,41 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const rows = source.records.map((record) => ({
-    crop: record.commodity,
-    variety: record.variety,
-    district: record.district,
-    state: record.state,
-    market_name: record.market,
-    min_price_paise_per_quintal: rupeesToPaise(record.minPrice),
-    max_price_paise_per_quintal: rupeesToPaise(record.maxPrice),
-    modal_price_paise_per_quintal: rupeesToPaise(record.modalPrice),
-    observation_date: record.observationDate,
-    retrieved_at: record.retrievedAt,
-    source_name: SOURCE_NAME,
-    source_url: record.sourceUrl,
-  }));
+  const rows = source.records.map((record) => {
+    const min = rupeesToPaise(record.minPrice);
+    const max = rupeesToPaise(record.maxPrice);
+    const modal = rupeesToPaise(record.modalPrice);
+    return {
+      valid: min.valid && max.valid && modal.valid,
+      row: {
+        crop: record.commodity,
+        variety: record.variety,
+        district: record.district,
+        state: record.state,
+        market_name: record.market,
+        min_price_paise_per_quintal: min.value,
+        max_price_paise_per_quintal: max.value,
+        modal_price_paise_per_quintal: modal.value,
+        observation_date: record.observationDate,
+        retrieved_at: record.retrievedAt,
+        source_name: SOURCE_NAME,
+        source_url: record.sourceUrl,
+      },
+    };
+  });
 
-  if (rows.some((row) =>
-    (row.min_price_paise_per_quintal !== null && row.min_price_paise_per_quintal === null) ||
-    (row.max_price_paise_per_quintal !== null && row.max_price_paise_per_quintal === null) ||
-    (row.modal_price_paise_per_quintal !== null && row.modal_price_paise_per_quintal === null)
-  )) {
-    return NextResponse.json({ error: "One or more validated prices could not be converted to paise." }, { status: 422 });
+  if (rows.some((entry) => !entry.valid)) {
+    return NextResponse.json(
+      { error: "One or more validated prices could not be converted to paise." },
+      { status: 422 },
+    );
   }
+
+  const observations = rows.map((entry) => entry.row);
 
   const { error: upsertError } = await supabase
     .from("market_observations")
-    .upsert(rows, {
+    .upsert(observations, {
       onConflict: "crop,variety,state,district,market_name,observation_date,source_name",
       ignoreDuplicates: false,
     });
@@ -137,7 +147,7 @@ export async function POST(request: NextRequest) {
     status: auditStatus,
     request_filters: filters,
     records_received: source.records.length,
-    records_upserted: upsertError ? 0 : rows.length,
+    records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
       : source.message?.slice(0, 500) ?? null,
@@ -154,7 +164,7 @@ export async function POST(request: NextRequest) {
     {
       status: source.status,
       recordsReceived: source.records.length,
-      recordsUpserted: rows.length,
+      recordsUpserted: observations.length,
       retrievedAt: source.retrievedAt,
       message:
         source.status === "stale"
