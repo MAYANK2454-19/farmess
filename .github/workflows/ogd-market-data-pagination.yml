@@ -1,0 +1,56 @@
+name: OGD market-data pagination
+
+on:
+  push:
+    branches:
+      - feat/ogd-market-data-pagination
+  pull_request:
+    branches:
+      - feat/market-import-duplicate-reconciliation
+    paths:
+      - "src/lib/market-data/ogd-pagination.ts"
+      - "src/lib/market-data/ogd-pagination.test.ts"
+      - "src/lib/market-data/ogd-provider.ts"
+      - "docs/OGD_MARKET_DATA_PAGINATION.md"
+      - ".github/workflows/ogd-market-data-pagination.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ogd-market-data-pagination-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Format, lint, typecheck, tests and production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prettier
+        run: npx prettier --check src/lib/market-data/ogd-pagination.ts src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/ogd-provider.ts docs/OGD_MARKET_DATA_PAGINATION.md .github/workflows/ogd-market-data-pagination.yml
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Focused OGD pagination tests
+        run: node --experimental-strip-types --test src/lib/market-data/ogd-pagination.test.ts
+
+      - name: Production build
+        run: npm run build
