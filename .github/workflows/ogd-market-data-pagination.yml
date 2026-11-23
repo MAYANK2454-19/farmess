@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Inspect formatted pagination test
+        run: npx prettier src/lib/market-data/ogd-pagination.test.ts
+
       - name: Prettier
         run: npx prettier --check src/lib/market-data/ogd-pagination.ts src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/ogd-provider.ts docs/OGD_MARKET_DATA_PAGINATION.md .github/workflows/ogd-market-data-pagination.yml
 
