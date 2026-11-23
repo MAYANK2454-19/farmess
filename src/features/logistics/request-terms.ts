@@ -47,11 +47,14 @@ export function validateLogisticsRequestTerms(
   if (!isValidDate(terms.requestedAt)) errors.push("Requested-at must be a valid date.");
   if (!isValidDate(terms.neededBy)) errors.push("Needed-by must be a valid date.");
 
+  if (isValidDate(terms.neededBy) && Date.parse(terms.neededBy) <= now.getTime()) {
+    errors.push("Needed-by must be in the future.");
+  }
+
   if (isValidDate(terms.requestedAt) && isValidDate(terms.neededBy)) {
     const requestedAt = Date.parse(terms.requestedAt);
     const neededBy = Date.parse(terms.neededBy);
     if (neededBy <= requestedAt) errors.push("Needed-by must be later than requested-at.");
-    if (neededBy <= now.getTime()) errors.push("Needed-by must be in the future.");
   }
 
   return { valid: errors.length === 0, errors };
