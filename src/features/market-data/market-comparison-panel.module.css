@@ -1,0 +1,152 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.heading,
+.comparisonHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.heading h2 {
+  margin: 0 0 4px;
+  color: var(--brand-primary);
+  font-size: 15px;
+}
+
+.heading p,
+.comparisonHeading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.unit {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  color: var(--brand-secondary);
+  background: var(--soft-green);
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.groups {
+  display: grid;
+  gap: 16px;
+}
+
+.comparison {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.comparisonHeading h3 {
+  margin: 0 0 4px;
+  color: var(--brand-primary);
+  font-size: 13px;
+}
+
+.spread {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 3px;
+  text-align: right;
+}
+
+.spread span,
+.spread small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.spread strong {
+  color: var(--brand-primary);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: left;
+}
+
+.table caption {
+  padding: 0 0 8px;
+  color: var(--muted);
+  text-align: left;
+  font-size: 10px;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--muted);
+  background: #f8faf7;
+  font-weight: 650;
+}
+
+.marketName {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+.lowest {
+  display: block;
+  margin-top: 3px;
+  color: #286247;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.price {
+  color: var(--brand-primary);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.empty,
+.disclaimer {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .panel {
+    padding: 15px;
+  }
+
+  .heading,
+  .comparisonHeading {
+    flex-direction: column;
+  }
+
+  .spread {
+    text-align: left;
+  }
+
+  .table th,
+  .table td {
+    padding: 9px 8px;
+  }
+}
