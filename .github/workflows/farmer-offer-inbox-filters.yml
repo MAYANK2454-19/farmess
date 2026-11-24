@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "src/features/offers/offer-inbox.ts"
+      - "src/features/offers/offer-inbox-filters.ts"
       - "src/features/offers/offer-inbox.test.ts"
       - "src/features/offers/offer-inbox.tsx"
       - ".github/workflows/farmer-offer-inbox-filters.yml"
