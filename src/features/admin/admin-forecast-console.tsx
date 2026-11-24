@@ -173,8 +173,8 @@ export function AdminForecastConsole({
           <div>
             <h2 className="panel-title">Stage an offline model candidate</h2>
             <p className="panel-caption">
-              Upload the text from one series&apos; manifest.json and forecast_points.json produced by
-              ml/market_forecast/train.py. The server repeats the evaluation and date checks.
+              Upload the text from one series&apos; manifest.json and forecast_points.json produced
+              by ml/market_forecast/train.py. The server repeats the evaluation and date checks.
             </p>
           </div>
         </div>

@@ -106,8 +106,8 @@ export default async function AdminOverviewPage() {
           ))}
         </div>
         <p className="admin-disclaimer">
-          Open-Meteo&apos;s paid customer key is required for production use. Do not paste API keys into
-          this page or any browser-visible form; add them through the approved secret manager.
+          Open-Meteo&apos;s paid customer key is required for production use. Do not paste API keys
+          into this page or any browser-visible form; add them through the approved secret manager.
         </p>
       </section>
 
