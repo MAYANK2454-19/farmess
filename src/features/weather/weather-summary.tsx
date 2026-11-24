@@ -18,13 +18,7 @@ function valueWithUnit(value: number | null, unit: string): string {
   return value === null ? "Unavailable" : String(Math.round(value)) + " " + unit;
 }
 
-export function WeatherSummary({
-  latitude,
-  longitude,
-}: {
-  latitude: number;
-  longitude: number;
-}) {
+export function WeatherSummary({ latitude, longitude }: { latitude: number; longitude: number }) {
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -53,9 +47,7 @@ export function WeatherSummary({
         setWeather(result);
       } catch (loadError) {
         if (controller.signal.aborted) return;
-        setError(
-          loadError instanceof Error ? loadError.message : "Weather data is unavailable.",
-        );
+        setError(loadError instanceof Error ? loadError.message : "Weather data is unavailable.");
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
@@ -75,7 +67,11 @@ export function WeatherSummary({
       </div>
 
       {loading ? <p role="status">Loading weather context…</p> : null}
-      {error ? <p className="form-help" role="status">{error}</p> : null}
+      {error ? (
+        <p className="form-help" role="status">
+          {error}
+        </p>
+      ) : null}
 
       {weather ? (
         <>
@@ -93,7 +89,8 @@ export function WeatherSummary({
               <strong>
                 {weather.nextSixHoursMaximumPrecipitationProbabilityPercent === null
                   ? "Unavailable"
-                  : String(Math.round(weather.nextSixHoursMaximumPrecipitationProbabilityPercent)) + "%"}
+                  : String(Math.round(weather.nextSixHoursMaximumPrecipitationProbabilityPercent)) +
+                    "%"}
               </strong>
             </div>
             <div>

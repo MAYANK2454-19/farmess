@@ -4,10 +4,10 @@ This document separates credentials the application currently consumes from serv
 
 ## Credentials consumed by application code
 
-| Provider | Environment variable | Purpose | Required for |
-| --- | --- | --- | --- |
-| OGD India / AGMARKNET | DATA_GOV_IN_API_KEY | Source-attributed mandi observations | Market price retrieval and admin ingestion |
-| HeiGIT openrouteservice | HEIGIT_API_KEY | Road distance and driving-time matrix | Road-route enrichment in logistics discovery |
+| Provider                     | Environment variable        | Purpose                                 | Required for                                 |
+| ---------------------------- | --------------------------- | --------------------------------------- | -------------------------------------------- |
+| OGD India / AGMARKNET        | DATA_GOV_IN_API_KEY         | Source-attributed mandi observations    | Market price retrieval and admin ingestion   |
+| HeiGIT openrouteservice      | HEIGIT_API_KEY              | Road distance and driving-time matrix   | Road-route enrichment in logistics discovery |
 | Open-Meteo paid customer API | OPEN_METEO_CUSTOMER_API_KEY | Commercial/high-volume weather requests | Optional; omit for non-commercial evaluation |
 
 All three variables are server-side. Do not prefix them with NEXT_PUBLIC_.
@@ -90,6 +90,7 @@ The script skips a provider when Enter is pressed at its prompt. It does not ask
 ## Verification checklist
 
 After configuring credentials, deploy a fresh Preview build and verify:
+
 - Market price retrieval reports a genuine OGD source status; the admin import audits each page and stores only validated records.
 - Logistics discovery still works without HEIGIT_API_KEY; with a valid key, route distances and durations appear for reachable provider listings.
 - Weather context appears after a farmer chooses a location; the source link and limitations remain visible.

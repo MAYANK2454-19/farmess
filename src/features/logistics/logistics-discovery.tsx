@@ -44,9 +44,7 @@ function formatDistance(meters: number) {
 }
 
 function formatRoadDistance(meters: number) {
-  return meters >= 1000
-    ? (meters / 1000).toFixed(1) + " km"
-    : Math.round(meters) + " m";
+  return meters >= 1000 ? (meters / 1000).toFixed(1) + " km" : Math.round(meters) + " m";
 }
 
 function formatTravelTime(seconds: number) {
