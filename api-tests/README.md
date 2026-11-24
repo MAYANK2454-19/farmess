@@ -15,6 +15,9 @@ Every Farmess API endpoint is listed in [`endpoints.json`](./endpoints.json) wit
 python api-tests/check_api.py                                   # live site, signed out
 python api-tests/check_api.py --base-url http://localhost:3000   # local dev server
 python api-tests/check_api.py --only Admin --report api-report.json
+python api-tests/check_api.py --list                             # show all 42 endpoints
+python api-tests/check_api.py --path produce-lots                 # one route, all methods
+python api-tests/check_api.py --path produce-lots --method POST   # one exact endpoint
 ```
 
 Signed out, protected endpoints must refuse with **401** and public endpoints must answer **200** (or **503** when a provider key such as `DATA_GOV_IN_API_KEY` is not configured; no data is ever invented). The checker also reports any status code that is not documented and any OpenAPI operation missing from the collection. It exits with a non-zero code on failure, so it can run in CI.

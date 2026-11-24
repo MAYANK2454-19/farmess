@@ -19,6 +19,8 @@ Examples
   python api-tests/check_api.py
   python api-tests/check_api.py --base-url http://localhost:3000
   python api-tests/check_api.py --only Admin --report api-report.json
+  python api-tests/check_api.py --path produce-lots --method POST
+  python api-tests/check_api.py --list
 """
 from __future__ import annotations
 
@@ -122,6 +124,13 @@ def main() -> int:
     parser.add_argument("--endpoints", type=Path, default=DEFAULT_ENDPOINTS)
     parser.add_argument("--openapi", type=Path, default=DEFAULT_OPENAPI)
     parser.add_argument("--only", help="Run only endpoints with this tag (e.g. Farmer, Admin)")
+    parser.add_argument(
+        "--path", help="Run only endpoints whose path contains this text (e.g. produce-lots)"
+    )
+    parser.add_argument("--method", help="Run only this HTTP method (GET, POST, PATCH)")
+    parser.add_argument(
+        "--list", action="store_true", help="List the endpoints in the collection and exit"
+    )
     parser.add_argument("--timeout", type=float, default=30.0)
     parser.add_argument("--report", type=Path, help="Write a JSON report to this file")
     args = parser.parse_args()
@@ -131,6 +140,19 @@ def main() -> int:
     endpoints = collection["endpoints"]
     if args.only:
         endpoints = [e for e in endpoints if e.get("tag", "").lower() == args.only.lower()]
+    if args.path:
+        endpoints = [e for e in endpoints if args.path.lower() in e["path"].lower()]
+    if args.method:
+        endpoints = [e for e in endpoints if e["method"] == args.method.upper()]
+
+    if args.list:
+        for endpoint in endpoints:
+            print(f"{endpoint['tag']:<12}{endpoint['method']:<7}{endpoint['path']}")
+        print(f"\n{len(endpoints)} endpoints")
+        return 0
+    if not endpoints:
+        print("No endpoints match those filters. Use --list to see them all.")
+        return 1
 
     cookie = os.environ.get("FARMESS_COOKIE", "").strip() or None
     mode = "signed in (FARMESS_COOKIE)" if cookie else "signed out"
