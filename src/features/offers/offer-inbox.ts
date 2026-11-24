@@ -1,4 +1,5 @@
-export type OfferInboxStatus = "all" | "pending" | "accepted" | "declined" | "withdrawn" | "expired";
+export type OfferInboxStatus =
+  "all" | "pending" | "accepted" | "declined" | "withdrawn" | "expired";
 export type OfferInboxSort = "newest" | "oldest";
 
 export type OfferInboxItem = {
