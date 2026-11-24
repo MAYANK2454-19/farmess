@@ -65,8 +65,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const serviceType = params.get("serviceType") || null;
-  if (serviceType !== null && serviceType !== "transport" && serviceType !== "storage") {
+  const serviceTypeValue = params.get("serviceType");
+  const serviceType: "transport" | "storage" | null =
+    serviceTypeValue === "transport" || serviceTypeValue === "storage" ? serviceTypeValue : null;
+  if (serviceTypeValue !== null && serviceType === null) {
     return NextResponse.json({ error: "Select transport or storage." }, { status: 400 });
   }
 
@@ -83,8 +85,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Enter a valid positive quantity." }, { status: 400 });
   }
 
-  const unit = params.get("unit") || null;
-  if (quantity !== null && unit !== "kg" && unit !== "quintal" && unit !== "tonne") {
+  const unitValue = params.get("unit");
+  const unit: "kg" | "quintal" | "tonne" | null =
+    unitValue === "kg" || unitValue === "quintal" || unitValue === "tonne" ? unitValue : null;
+  if (unitValue !== null && unit === null) {
+    return NextResponse.json(
+      { error: "Choose kg, quintal or tonne for the requested quantity." },
+      { status: 400 },
+    );
+  }
+  if (quantity !== null && unit === null) {
     return NextResponse.json(
       { error: "Choose kg, quintal or tonne for the requested quantity." },
       { status: 400 },
@@ -109,11 +119,11 @@ export async function GET(request: NextRequest) {
     p_latitude: latitude,
     p_longitude: longitude,
     p_radius_meters: Math.round(radiusKm * 1000),
-    p_service_type: serviceType,
-    p_crop: crop,
-    p_required_quantity: quantity,
-    p_unit: unit,
-    p_required_date: requiredDate,
+    p_service_type: serviceType ?? undefined,
+    p_crop: crop ?? undefined,
+    p_required_quantity: quantity ?? undefined,
+    p_unit: unit ?? undefined,
+    p_required_date: requiredDate ?? undefined,
     p_requires_cold_chain: coldChain,
   });
 

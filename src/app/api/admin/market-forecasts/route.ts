@@ -148,10 +148,10 @@ export async function POST(request: NextRequest) {
     body.horizon_days > 30 ||
     typeof body.training_observation_count !== "number" ||
     !Number.isSafeInteger(body.training_observation_count) ||
-    body.training_observation_count < 90
+    body.training_observation_count < 120
   ) {
     return NextResponse.json(
-      { error: "At least 90 observations and a 1–30 day forecast horizon are required." },
+      { error: "At least 120 observations and a 1–30 day forecast horizon are required." },
       { status: 400 },
     );
   }
@@ -191,7 +191,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (points.some((point) => point.target_date <= body.training_end)) {
+  const trainingEnd = body.training_end;
+  if (points.some((point) => point.target_date <= trainingEnd)) {
     return NextResponse.json(
       { error: "Forecast dates must occur after the training period." },
       { status: 400 },

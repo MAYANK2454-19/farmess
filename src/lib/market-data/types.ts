@@ -1,5 +1,20 @@
 export type MarketPriceValueType = "reported" | "demo";
 
+export type MarketSourceQualityRejectionReason =
+  | "invalid_record"
+  | "missing_identity"
+  | "invalid_observation_date"
+  | "invalid_price"
+  | "missing_prices"
+  | "inconsistent_prices";
+
+export type MarketSourceQuality = {
+  received: number;
+  accepted: number;
+  rejected: number;
+  rejectionReasons: Record<MarketSourceQualityRejectionReason, number>;
+};
+
 export type MarketPriceRecord = {
   id: string;
   commodity: string;
@@ -34,14 +49,22 @@ export type MarketDataResult =
       records: MarketPriceRecord[];
       retrievedAt: string;
       sourceName: string;
+      sourceQuality: MarketSourceQuality;
     }
-  | { status: "no-data"; records: []; retrievedAt: string; sourceName: string }
+  | {
+      status: "no-data";
+      records: [];
+      retrievedAt: string;
+      sourceName: string;
+      sourceQuality: MarketSourceQuality;
+    }
   | {
       status: "stale";
       records: MarketPriceRecord[];
       retrievedAt: string;
       sourceName: string;
       message: string;
+      sourceQuality: MarketSourceQuality;
     }
   | {
       status: "unavailable";
@@ -49,4 +72,5 @@ export type MarketDataResult =
       retrievedAt: string;
       sourceName: string;
       message: string;
+      sourceQuality: MarketSourceQuality;
     };

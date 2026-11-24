@@ -58,13 +58,11 @@ export async function POST(request: NextRequest) {
   }
 
   const record = body as Record<string, unknown>;
-  const uuid =
-    typeof record.service_listing_id === "string" &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      record.service_listing_id,
-    );
-
-  if (!uuid) {
+  const listingId = record.service_listing_id;
+  if (
+    typeof listingId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(listingId)
+  ) {
     return NextResponse.json({ error: "Select a valid service listing." }, { status: 400 });
   }
   if (
@@ -109,25 +107,22 @@ export async function POST(request: NextRequest) {
   }
 
   let feedbackNote: string | null = null;
-  if (
-    record.feedback_note !== undefined &&
-    record.feedback_note !== null &&
-    record.feedback_note !== ""
-  ) {
-    if (typeof record.feedback_note !== "string" || record.feedback_note.trim().length > 300) {
+  const note = record.feedback_note;
+  if (note !== undefined && note !== null && note !== "") {
+    if (typeof note !== "string" || note.trim().length > 300) {
       return NextResponse.json(
         { error: "Feedback note must be 300 characters or fewer." },
         { status: 400 },
       );
     }
-    feedbackNote = record.feedback_note.trim() || null;
+    feedbackNote = note.trim() || null;
   }
 
   const supabase = await createClient();
   const { data: listing, error: listingError } = await supabase
     .from("service_listings")
     .select("id,service_type,verification_state,rate_basis,price_paise,service_radius_km")
-    .eq("id", record.service_listing_id)
+    .eq("id", listingId)
     .eq("status", "active")
     .maybeSingle();
 
