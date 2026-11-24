@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/supabase/database.types";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { ROLE_DETAIL_FIELDS, parseRoleDetailsPatch } from "@/features/profile/role-details";
 
 type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 
@@ -14,6 +15,9 @@ const PROFILE_FIELDS = [
   "buyer_contact_disclosure",
   "provider_contact_disclosure",
 ] as const;
+
+const PROFILE_SELECT =
+  "role,display_name,phone_number,market_area,approximate_location_sharing,exact_location_disclosure,buyer_contact_disclosure,provider_contact_disclosure,own_transport,transport_vehicle_type,transport_capacity_quintal,farm_size_acres,primary_crops,organisation_name,buyer_type,operator_service_types,operator_fleet_size,operator_cold_chain";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -28,9 +32,7 @@ export async function GET() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      "display_name,phone_number,market_area,approximate_location_sharing,exact_location_disclosure,buyer_contact_disclosure,provider_contact_disclosure",
-    )
+    .select(PROFILE_SELECT)
     .eq("id", session.userId)
     .maybeSingle();
 
@@ -68,7 +70,11 @@ export async function PATCH(request: NextRequest) {
   const keys = Object.keys(body);
   if (
     keys.length === 0 ||
-    keys.some((key) => !PROFILE_FIELDS.includes(key as (typeof PROFILE_FIELDS)[number]))
+    keys.some(
+      (key) =>
+        !PROFILE_FIELDS.includes(key as (typeof PROFILE_FIELDS)[number]) &&
+        !(ROLE_DETAIL_FIELDS[session.role] as readonly string[]).includes(key),
+    )
   ) {
     return NextResponse.json(
       { error: "The update contains unsupported profile fields." },
@@ -137,14 +143,18 @@ export async function PATCH(request: NextRequest) {
     }
   }
 
+  const details = parseRoleDetailsPatch(body, session.role);
+  if (!details.ok) {
+    return NextResponse.json({ error: details.error }, { status: 400 });
+  }
+  Object.assign(update, details.update);
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
     .update(update)
     .eq("id", session.userId)
-    .select(
-      "display_name,phone_number,market_area,approximate_location_sharing,exact_location_disclosure,buyer_contact_disclosure,provider_contact_disclosure",
-    )
+    .select(PROFILE_SELECT)
     .single();
 
   if (error) {

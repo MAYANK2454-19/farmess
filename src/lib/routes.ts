@@ -27,6 +27,15 @@ export const OPERATOR_NAVIGATION = [
   { label: "Requests", href: "/operator/requests", icon: "activity", hindi: "अनुरोध" },
 ] as const;
 
+export const ADMIN_NAVIGATION = [
+  { label: "Overview", href: "/admin", icon: "overview", hindi: "सारांश" },
+  { label: "Access requests", href: "/admin/access-requests", icon: "user", hindi: "पहुँच अनुरोध" },
+  { label: "Market imports", href: "/admin/market-data", icon: "markets", hindi: "मंडी डेटा आयात" },
+  { label: "Data health", href: "/admin/market-health", icon: "activity", hindi: "डेटा गुणवत्ता" },
+  { label: "Provider review", href: "/admin/providers", icon: "shield", hindi: "सेवा सत्यापन" },
+  { label: "Forecast review", href: "/admin/forecasts", icon: "trend", hindi: "पूर्वानुमान समीक्षा" },
+] as const;
+
 export const ACCOUNT_NAVIGATION = [
   { label: "Notifications", href: "/notifications", icon: "bell", hindi: "सूचनाएँ" },
   { label: "Profile & privacy", href: "/profile", icon: "user", hindi: "प्रोफ़ाइल" },
@@ -36,7 +45,7 @@ export const NAVIGATION_BY_ROLE = {
   farmer: FARMER_NAVIGATION,
   buyer: BUYER_NAVIGATION,
   operator: OPERATOR_NAVIGATION,
-  admin: OPERATOR_NAVIGATION,
+  admin: ADMIN_NAVIGATION,
 } as const;
 
 export const MOBILE_NAVIGATION_BY_ROLE = {
@@ -48,7 +57,7 @@ export const MOBILE_NAVIGATION_BY_ROLE = {
   ],
   buyer: BUYER_NAVIGATION.slice(0, 4),
   operator: OPERATOR_NAVIGATION,
-  admin: OPERATOR_NAVIGATION,
+  admin: ADMIN_NAVIGATION.slice(0, 4),
 } as const;
 
 export const APP_ROUTE_FILES = [
@@ -73,10 +82,13 @@ export const APP_ROUTE_FILES = [
   { href: "/admin", file: "src/app/admin/page.tsx" },
   { href: "/admin/market-data", file: "src/app/admin/market-data/page.tsx" },
   { href: "/admin/forecasts", file: "src/app/admin/forecasts/page.tsx" },
+  { href: "/admin/access-requests", file: "src/app/admin/access-requests/page.tsx" },
+  { href: "/admin/market-health", file: "src/app/admin/market-health/page.tsx" },
+  { href: "/admin/providers", file: "src/app/admin/providers/page.tsx" },
 ] as const;
 
 export function isActiveRoute(pathname: string, href: string): boolean {
-  if (href === "/farmer" || href === "/buyer" || href === "/operator") {
+  if (href === "/farmer" || href === "/buyer" || href === "/operator" || href === "/admin") {
     return pathname === href;
   }
   return pathname === href || pathname.startsWith(href + "/");

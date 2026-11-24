@@ -705,6 +705,16 @@ export type Database = {
           provider_contact_disclosure: boolean;
           role: Database["public"]["Enums"]["farmess_role"];
           updated_at: string;
+          buyer_type: string | null;
+          farm_size_acres: number | null;
+          operator_cold_chain: boolean | null;
+          operator_fleet_size: number | null;
+          operator_service_types: string[] | null;
+          organisation_name: string | null;
+          own_transport: boolean | null;
+          primary_crops: string[] | null;
+          transport_capacity_quintal: number | null;
+          transport_vehicle_type: string | null;
         };
         Insert: {
           approximate_location_sharing?: boolean;
@@ -718,6 +728,16 @@ export type Database = {
           provider_contact_disclosure?: boolean;
           role?: Database["public"]["Enums"]["farmess_role"];
           updated_at?: string;
+          buyer_type?: string | null;
+          farm_size_acres?: number | null;
+          operator_cold_chain?: boolean | null;
+          operator_fleet_size?: number | null;
+          operator_service_types?: string[] | null;
+          organisation_name?: string | null;
+          own_transport?: boolean | null;
+          primary_crops?: string[] | null;
+          transport_capacity_quintal?: number | null;
+          transport_vehicle_type?: string | null;
         };
         Update: {
           approximate_location_sharing?: boolean;
@@ -731,6 +751,41 @@ export type Database = {
           provider_contact_disclosure?: boolean;
           role?: Database["public"]["Enums"]["farmess_role"];
           updated_at?: string;
+          buyer_type?: string | null;
+          farm_size_acres?: number | null;
+          operator_cold_chain?: boolean | null;
+          operator_fleet_size?: number | null;
+          operator_service_types?: string[] | null;
+          organisation_name?: string | null;
+          own_transport?: boolean | null;
+          primary_crops?: string[] | null;
+          transport_capacity_quintal?: number | null;
+          transport_vehicle_type?: string | null;
+        };
+        Relationships: [];
+      };
+      role_access_requests: {
+        Row: {
+          created_at: string;
+          id: string;
+          organisation_name: string;
+          reason: string;
+          requested_role: Database["public"]["Enums"]["farmess_role"];
+          requester_name: string;
+          review_note: string | null;
+          reviewed_at: string | null;
+          reviewed_by_user_id: string | null;
+          status: string;
+          user_id: string;
+        };
+        Insert: {
+          organisation_name: string;
+          reason: string;
+          requested_role: Database["public"]["Enums"]["farmess_role"];
+          requester_name: string;
+        };
+        Update: {
+          [_ in never]: never;
         };
         Relationships: [];
       };
@@ -1162,6 +1217,14 @@ export type Database = {
           status: string;
           updated_at: string;
         }[];
+      };
+      review_role_access_request: {
+        Args: {
+          p_decision: string;
+          p_request_id: string;
+          p_review_note: string;
+        };
+        Returns: Json;
       };
       review_service_listing_verification: {
         Args: {

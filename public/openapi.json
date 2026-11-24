@@ -1116,7 +1116,7 @@
       },
       "patch": {
         "tags": ["Account"],
-        "summary": "Update profile or consent (each consent change is audited)",
+        "summary": "Update profile, consent and role-specific details (farmer: own transport, vehicle, farm size, crops; buyer: organisation, buyer type; operator: organisation, services, fleet, cold chain)",
         "requestBody": {
           "required": true,
           "content": {
@@ -1401,6 +1401,148 @@
         "responses": {
           "200": {
             "description": "Decision and audit event saved"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/api/access-requests": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "The signed-in user's own buyer/operator access requests",
+        "responses": {
+          "200": {
+            "description": "Requests with status and review note"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Account"],
+        "summary": "Farmer account requests buyer or transport & storage access (admin reviews it)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["requested_role", "requester_name", "organisation_name", "reason"],
+                "additionalProperties": false,
+                "properties": {
+                  "requested_role": {
+                    "type": "string",
+                    "enum": ["buyer", "operator"],
+                    "description": "Admin can never be requested."
+                  },
+                  "requester_name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "organisation_name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Request submitted (pending)"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "A request is already pending"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/admin/access-requests": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "All access requests (admin only)",
+        "responses": {
+          "200": {
+            "description": "Requests, newest first"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Admin"],
+        "summary": "Approve or reject an access request with a review note; approval grants the role via an audited database function",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id", "decision", "review_note"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": ["approved", "rejected"]
+                  },
+                  "review_note": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision saved; approved users must sign in again"
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"

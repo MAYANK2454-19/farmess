@@ -136,3 +136,61 @@
     flex-direction: column;
   }
 }
+
+.portals {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 28px;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.portal {
+  display: grid;
+  gap: 1px;
+  justify-items: center;
+  padding: 9px 6px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.portal:hover {
+  color: var(--text);
+  background: var(--surface-muted);
+}
+
+.portalActive,
+.portalActive:hover {
+  color: #fff;
+  background: var(--khet);
+}
+
+.portalHindi {
+  color: var(--haldi-deep);
+  font-family: var(--font-hindi);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.portalActive .portalHindi {
+  color: var(--haldi);
+}
+
+@media (max-width: 420px) {
+  .portals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
