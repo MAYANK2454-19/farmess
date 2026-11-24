@@ -127,3 +127,14 @@ test("rejects invalid price intervals and malformed dates", () => {
   const invalidDate = [{ ...points[0], targetDate: "2026-02-30" }, points[1]];
   assert.equal(buildForecastCandidatePayload(manifest(), invalidDate).ok, false);
 });
+
+test("rejects out-of-order forecasts and forecast dates before the training end", () => {
+  const outOfOrder = [points[1], points[0]];
+  assert.equal(buildForecastCandidatePayload(manifest(), outOfOrder).ok, false);
+
+  const beforeTrainingEnd = [
+    { ...points[0], targetDate: "2026-09-30" },
+    points[1],
+  ];
+  assert.equal(buildForecastCandidatePayload(manifest(), beforeTrainingEnd).ok, false);
+});
