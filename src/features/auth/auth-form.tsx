@@ -114,7 +114,7 @@ export function AuthForm() {
         {isReset
           ? "Enter the email address associated with your Farmess account."
           : isSignUp
-            ? "Create a farmer account to keep your produce records in one place. Buyer and service-provider accounts are provisioned separately."
+            ? "Create a farmer account to keep your produce records in one place. Buyer, service-provider and data-steward accounts are provisioned separately."
             : "Sign in to manage your produce and selling decisions."}
       </p>
 

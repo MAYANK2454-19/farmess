@@ -41,15 +41,14 @@ function finiteNumber(value: unknown): value is number {
 }
 
 function isCalendarDate(value: unknown): value is string {
-  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 /**
  * Converts the two files written by ml/market_forecast/train.py into the
- * server API's staging contract. It rejects anything that is not an unevaluated
- * candidate; the server repeats every security and quality check.
+ * server API's staging contract. The server repeats every quality and access check.
  */
 export function buildForecastCandidatePayload(
   manifestValue: unknown,
@@ -61,7 +60,10 @@ export function buildForecastCandidatePayload(
   if (manifestValue.domain !== "market_price_forecast") {
     return { ok: false, error: "This is not a Farmess market-price forecast manifest." };
   }
-  if (manifestValue.approvalStatus !== "candidate" || manifestValue.automaticallyApproved !== false) {
+  if (
+    manifestValue.approvalStatus !== "candidate" ||
+    manifestValue.automaticallyApproved !== false
+  ) {
     return { ok: false, error: "Only an evaluated candidate awaiting human review can be staged." };
   }
   if (manifestValue.currency !== "INR" || manifestValue.priceUnit !== "paise/quintal") {
@@ -95,11 +97,9 @@ export function buildForecastCandidatePayload(
     !nonEmptyText(crop) ||
     !nonEmptyText(market) ||
     !nonEmptyText(modelName) ||
-    !nonEmptyText(modelVersion) ||
-    !nonEmptyText(trainingStart) ||
-    !nonEmptyText(trainingEnd)
+    !nonEmptyText(modelVersion)
   ) {
-    return { ok: false, error: "The crop, market, model or training identity is incomplete." };
+    return { ok: false, error: "The crop, market or model identity is incomplete." };
   }
   if (
     typeof horizon !== "number" ||
@@ -126,7 +126,11 @@ export function buildForecastCandidatePayload(
   ) {
     return { ok: false, error: "The candidate must beat persistence on both MAE and sMAPE." };
   }
-  if (!isCalendarDate(trainingStart) || !isCalendarDate(trainingEnd) || trainingStart > trainingEnd) {
+  if (
+    !isCalendarDate(trainingStart) ||
+    !isCalendarDate(trainingEnd) ||
+    trainingStart > trainingEnd
+  ) {
     return { ok: false, error: "The model training date range is invalid." };
   }
   if (!Array.isArray(pointsValue) || pointsValue.length !== horizon) {
@@ -144,8 +148,8 @@ export function buildForecastCandidatePayload(
     const lower = point.lowerBoundPaisePerQuintal;
     const upper = point.upperBoundPaisePerQuintal;
     if (
-      !nonEmptyText(targetDate) ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(targetDate) ||
+      !isCalendarDate(targetDate) ||
+      targetDate <= previousDate ||
       !finiteNumber(predicted) ||
       !finiteNumber(lower) ||
       !finiteNumber(upper) ||
