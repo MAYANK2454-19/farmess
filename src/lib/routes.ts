@@ -65,6 +65,9 @@ export const APP_ROUTE_FILES = [
   { href: "/operator/requests", file: "src/app/(workspace)/operator/requests/page.tsx" },
   { href: "/notifications", file: "src/app/(workspace)/notifications/page.tsx" },
   { href: "/profile", file: "src/app/(workspace)/profile/page.tsx" },
+  { href: "/admin", file: "src/app/admin/page.tsx" },
+  { href: "/admin/market-data", file: "src/app/admin/market-data/page.tsx" },
+  { href: "/admin/forecasts", file: "src/app/admin/forecasts/page.tsx" },
 ] as const;
 
 export function isActiveRoute(pathname: string, href: string): boolean {
