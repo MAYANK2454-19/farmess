@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { parseServiceRequestCancellation } from "@/features/logistics/request-cancellation";
 
 const LISTING_SELECT =
   "id,title,service_type,service_area,destination_area,description,price_paise,rate_basis,capacity_quantity,capacity_unit,available_from,available_until,service_radius_km,crop_suitability,cold_chain_available,verification_state";
@@ -230,5 +231,54 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     { request: created },
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
+  );
+}
+
+
+export async function PATCH(request: NextRequest) {
+  if (request.headers.get("origin") !== request.nextUrl.origin) {
+    return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
+  }
+
+  const session = await getFarmessSession();
+  if (!session || session.role !== "farmer") {
+    return NextResponse.json(
+      { error: "Sign in with a farmer account to cancel a service request." },
+      { status: 403 },
+    );
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Send a valid cancellation request as JSON." }, { status: 400 });
+  }
+
+  const parsed = parseServiceRequestCancellation(body);
+  if (!parsed.valid) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("service_requests")
+    .update({ status: "cancelled" })
+    .eq("id", parsed.id)
+    .eq("requester_id", session.userId)
+    .in("status", ["pending", "accepted"])
+    .select("id,status,updated_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    return NextResponse.json(
+      { error: "This request is no longer cancellable or does not belong to your account." },
+      { status: 409 },
+    );
+  }
+
+  return NextResponse.json(
+    { request: data },
+    { headers: { "Cache-Control": "private, no-store" } },
   );
 }
