@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
       status: "candidate",
       created_by_user_id: session.userId,
     })
-    .select("id,status,created_at")
+    .select("id,status,created_at,validated_observation_count,training_observation_count")
     .single();
 
   if (runError || !run) {

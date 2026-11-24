@@ -88,10 +88,12 @@ export function AdminForecastConsole({
       };
       if (!response.ok) throw new Error(payload.error ?? "The candidate could not be staged.");
 
-      if (payload.candidate?.id) {
+      const candidateId = payload.candidate?.id;
+      const candidateCreatedAt = payload.candidate?.created_at ?? new Date().toISOString();
+      if (candidateId) {
         setCandidates((current) => [
           {
-            id: payload.candidate!.id!,
+            id: candidateId,
             crop: conversion.payload.crop,
             variety: conversion.payload.variety,
             state: conversion.payload.state,
@@ -108,12 +110,12 @@ export function AdminForecastConsole({
             model_mae_paise_per_quintal: conversion.payload.model_mae_paise_per_quintal,
             baseline_smape_percent: conversion.payload.baseline_smape_percent,
             model_smape_percent: conversion.payload.model_smape_percent,
-            created_at: payload.candidate.created_at ?? new Date().toISOString(),
+            created_at: candidateCreatedAt,
             points: conversion.payload.points.map((point) => ({
               ...point,
             })),
           },
-          ...current.filter((candidate) => candidate.id !== payload.candidate!.id),
+          ...current.filter((candidate) => candidate.id !== candidateId),
         ]);
       }
       setManifestText("");
