@@ -5,12 +5,14 @@ on:
     branches:
       - main
       - feat/ui/field-ready-farmess-redesign
+      - feat/produce-quality-inspection-workflow
   push:
     branches:
       - main
       - feat/m6-produce-quality-inspection
       - feat/farmess-quality-inspection-rebased
       - feat/produce-quality-inspection-workflow
+      - feat/farmer-lot-selling-window-reminders
 
 permissions:
   contents: write
