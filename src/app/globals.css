@@ -3394,3 +3394,24 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.service-request-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.produce-status-cancelled,
+.produce-status-declined {
+  color: #606a61;
+  background: #f1f3ef;
+  border-color: #dfe5dc;
+}
+
+@media (max-width: 600px) {
+  .service-request-cancel {
+    justify-content: flex-start;
+  }
+}

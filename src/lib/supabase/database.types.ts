@@ -639,6 +639,59 @@ export type Database = {
           },
         ];
       };
+      produce_quality_inspections: {
+        Row: {
+          assessor_id: string;
+          checks: Json;
+          completed_checks: number;
+          created_at: string;
+          id: string;
+          inspected_at: string;
+          issues: string[];
+          lot_id: string;
+          observations: string;
+          owner_id: string;
+          status: string;
+          total_checks: number;
+        };
+        Insert: {
+          assessor_id: string;
+          checks?: Json;
+          completed_checks: number;
+          created_at?: string;
+          id?: string;
+          inspected_at: string;
+          issues?: string[];
+          lot_id: string;
+          observations?: string;
+          owner_id: string;
+          status: string;
+          total_checks?: number;
+        };
+        Update: {
+          assessor_id?: string;
+          checks?: Json;
+          completed_checks?: number;
+          created_at?: string;
+          id?: string;
+          inspected_at?: string;
+          issues?: string[];
+          lot_id?: string;
+          observations?: string;
+          owner_id?: string;
+          status?: string;
+          total_checks?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "produce_quality_inspections_lot_owner_fk";
+            columns: ["lot_id", "owner_id"];
+            isOneToOne: false;
+            referencedRelation: "produce_lots";
+            referencedColumns: ["id", "owner_id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           approximate_location_sharing: boolean;
@@ -880,6 +933,51 @@ export type Database = {
           },
         ];
       };
+      service_listing_verification_events: {
+        Row: {
+          created_at: string;
+          id: string;
+          listing_id: string;
+          new_state: string;
+          previous_state: string;
+          review_note: string;
+          reviewed_by_user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          listing_id: string;
+          new_state: string;
+          previous_state: string;
+          review_note: string;
+          reviewed_by_user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          listing_id?: string;
+          new_state?: string;
+          previous_state?: string;
+          review_note?: string;
+          reviewed_by_user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "service_listing_verification_events_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "service_listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "service_listing_verification_events_reviewed_by_user_id_fkey";
+            columns: ["reviewed_by_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       service_requests: {
         Row: {
           created_at: string;
@@ -1054,6 +1152,24 @@ export type Database = {
           title: string;
           verification_state: string;
         }[];
+      };
+      cancel_accepted_service_request: {
+        Args: {
+          p_request_id: string;
+        };
+        Returns: {
+          id: string;
+          status: string;
+          updated_at: string;
+        }[];
+      };
+      review_service_listing_verification: {
+        Args: {
+          p_listing_id: string;
+          p_review_note: string;
+          p_verification_state: string;
+        };
+        Returns: Json;
       };
     };
     Enums: {

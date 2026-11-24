@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { parseOperatorListingUpdate } from "@/features/operators/listing-update";
 
 const LISTING_SELECT =
   "id,title,service_type,service_area,destination_area,description,price_paise,capacity_quantity,capacity_unit,available_from,available_until,status,created_at,service_location,destination_location,service_radius_km,crop_suitability,cold_chain_available,verification_state,rate_basis";
@@ -406,31 +407,60 @@ export async function PATCH(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Send a listing ID and status." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Send valid listing update details as JSON." },
+      { status: 400 },
+    );
   }
 
-  if (
-    !isRecord(body) ||
-    Object.keys(body).some((key) => key !== "id" && key !== "status") ||
-    typeof body.id !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id) ||
-    (body.status !== "active" && body.status !== "paused" && body.status !== "closed")
-  ) {
-    return NextResponse.json({ error: "Choose a valid listing and status." }, { status: 400 });
+  if (!isRecord(body) || typeof body.id !== "string") {
+    return NextResponse.json({ error: "Choose a valid service listing." }, { status: 400 });
   }
 
   const supabase = await createClient();
+
+  // Preserve the existing pause / activate / close action as a separate, narrow update.
+  if (Object.keys(body).length === 2 && "status" in body) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id) ||
+      (body.status !== "active" && body.status !== "paused" && body.status !== "closed")
+    ) {
+      return NextResponse.json({ error: "Choose a valid listing and status." }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from("service_listings")
+      .update({ status: body.status })
+      .eq("id", body.id)
+      .eq("operator_id", session.userId)
+      .select("id,status")
+      .maybeSingle();
+
+    if (error || !data) {
+      return NextResponse.json({ error: "This listing could not be updated." }, { status: 409 });
+    }
+    return NextResponse.json({ listing: data });
+  }
+
+  const parsed = parseOperatorListingUpdate(body);
+  if (!parsed.valid) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  }
+
   const { data, error } = await supabase
     .from("service_listings")
-    .update({ status: body.status })
+    .update(parsed.value)
     .eq("id", body.id)
     .eq("operator_id", session.userId)
-    .select("id,status")
+    .select("id,status,capacity_quantity,capacity_unit,available_from,available_until")
     .maybeSingle();
 
   if (error || !data) {
     return NextResponse.json({ error: "This listing could not be updated." }, { status: 409 });
   }
 
-  return NextResponse.json({ listing: data });
+  return NextResponse.json(
+    { listing: data },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }

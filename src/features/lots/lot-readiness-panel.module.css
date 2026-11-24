@@ -1,0 +1,136 @@
+.panel {
+  margin: 0 0 24px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.heading h2 {
+  margin: 0 0 5px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+.description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+.summary > div {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  background: var(--page);
+  border: 1px solid var(--line);
+}
+.summary strong {
+  color: var(--brand-primary);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.summary span,
+.dates {
+  color: var(--muted);
+  font-size: 11px;
+}
+.list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 0;
+  border-top: 1px solid var(--line);
+}
+.itemMain {
+  min-width: 0;
+}
+.itemHeading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.itemHeading > strong {
+  font-size: 13px;
+}
+.status,
+.lotStatus {
+  padding: 3px 7px;
+  color: #46544a;
+  background: #f1f4f1;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+.status[data-status="expired"],
+.status[data-status="due_soon"] {
+  color: #7a4b1d;
+  background: #fbf4e9;
+  border-color: #ead9bc;
+}
+.status[data-status="upcoming"] {
+  color: #345a70;
+  background: #eef5f8;
+  border-color: #d4e3eb;
+}
+.itemMain p {
+  margin: 5px 0 3px;
+  color: #4f5d52;
+  font-size: 12px;
+}
+.action {
+  flex: 0 0 auto;
+  color: var(--brand-secondary);
+  font-size: 11px;
+  font-weight: 650;
+}
+.action:hover {
+  text-decoration: underline;
+}
+.empty {
+  margin: 0;
+  padding: 18px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.disclaimer {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+}
+@media (max-width: 700px) {
+  .panel {
+    padding: 16px;
+  }
+  .heading,
+  .item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

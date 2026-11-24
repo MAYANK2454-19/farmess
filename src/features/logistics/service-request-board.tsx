@@ -254,6 +254,8 @@ export function ServiceRequestBoard() {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -295,6 +297,40 @@ export function ServiceRequestBoard() {
 
   const listingTitle = (id: string) =>
     listings.find((listing) => listing.id === id)?.title ?? "Service listing";
+
+  async function cancelRequest(id: string) {
+    setCancellingId(id);
+    setError("");
+
+    try {
+      const response = await fetch("/api/service-requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ id, action: "cancel" }),
+      });
+      const result = (await response.json()) as {
+        request?: { id: string; status: string; updated_at: string };
+        error?: string;
+      };
+
+      if (!response.ok || !result.request) {
+        throw new Error(result.error ?? "This service request could not be cancelled.");
+      }
+
+      setRequests((current) =>
+        current.map((item) => (item.id === id ? { ...item, status: "cancelled" } : item)),
+      );
+      setCancelConfirmId(null);
+    } catch (cancelError) {
+      setError(
+        cancelError instanceof Error
+          ? cancelError.message
+          : "This service request could not be cancelled.",
+      );
+    } finally {
+      setCancellingId(null);
+    }
+  }
 
   return (
     <div className="service-board">
@@ -369,6 +405,39 @@ export function ServiceRequestBoard() {
                 <span className={"produce-status produce-status-" + request.status}>
                   {request.status}
                 </span>
+                {request.status === "pending" || request.status === "accepted" ? (
+                  <div className="service-request-cancel">
+                    {cancelConfirmId === request.id ? (
+                      <>
+                        <span>Cancel this request?</span>
+                        <button
+                          type="button"
+                          className="button button-secondary"
+                          onClick={() => void cancelRequest(request.id)}
+                          disabled={cancellingId === request.id}
+                        >
+                          {cancellingId === request.id ? "Cancelling…" : "Confirm cancel"}
+                        </button>
+                        <button
+                          type="button"
+                          className="text-link"
+                          onClick={() => setCancelConfirmId(null)}
+                          disabled={cancellingId === request.id}
+                        >
+                          Keep request
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-link"
+                        onClick={() => setCancelConfirmId(request.id)}
+                      >
+                        Cancel request
+                      </button>
+                    )}
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>

@@ -575,3 +575,91 @@
     width: 100%;
   }
 }
+
+.admin-health-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.admin-health-quality-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.admin-health-quality-grid > div {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid #e5ece3;
+  border-radius: 0.75rem;
+  background: #fbfcfa;
+}
+
+.admin-health-quality-grid strong {
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-health-quality-grid span {
+  color: #65776a;
+  font-size: 0.76rem;
+}
+
+@media (max-width: 900px) {
+  .admin-health-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-health-quality-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-health-grid,
+  .admin-health-quality-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-verification-form {
+  display: grid;
+  gap: 0.8rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #edf1eb;
+}
+
+.admin-verification-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #425c4b;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.admin-verification-form select,
+.admin-verification-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d6e1d4;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #18352a;
+  padding: 0.72rem 0.8rem;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.admin-verification-form textarea {
+  min-height: 86px;
+  resize: vertical;
+}
+
+.admin-verification-form select:focus-visible,
+.admin-verification-form textarea:focus-visible {
+  outline: 2px solid #6d9f79;
+  outline-offset: 1px;
+}
