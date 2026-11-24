@@ -21,4 +21,6 @@ Availability and capacity are provider-entered statements, not a confirmed booki
 
 ## Verification
 
+The API update is deliberately restricted to the listing owner and does not accept administrative or location fields.
+
 Focused tests cover valid updates, clearing optional fields, paired capacity values, supported units, positive quantities, strict calendar dates, reversed date windows, unknown fields and malformed IDs.
