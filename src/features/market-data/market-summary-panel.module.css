@@ -46,7 +46,7 @@
   min-width: 0;
   gap: 7px;
   padding: 14px;
-  background: #f8faf7;
+  background: var(--surface-muted);
   border: 1px solid var(--line);
   border-radius: 9px;
 }

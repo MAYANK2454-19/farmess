@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { BrandLogo, BrandMark } from "@/components/brand-logo";
 import { Icon, type IconName } from "@/components/icons";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
@@ -21,10 +22,14 @@ type WorkspaceUser = {
   role: WorkspaceRole;
 };
 
+type NavItem = { label: string; href: string; icon: string; hindi?: string };
+
+const SIDEBAR_STORAGE_KEY = "farmess.sidebar";
+
 const ROLE_LABEL: Record<WorkspaceRole, string> = {
-  farmer: "Farmer workspace",
-  buyer: "Buyer workspace",
-  operator: "Operator workspace",
+  farmer: "Farmer",
+  buyer: "Buyer",
+  operator: "Service operator",
   admin: "Admin",
 };
 
@@ -36,31 +41,62 @@ const HOME_BY_ROLE: Record<WorkspaceRole, string> = {
 };
 
 function initialsOf(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  const initials = parts
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join("");
   return initials || "F";
 }
 
-function Brand({ href }: { href: string }) {
-  return (
-    <Link href={href} className="brand" aria-label="Farmess home">
-      <span className="brand-mark">
-        <Icon name="leaf" size={17} />
-      </span>
-      <span className="brand-name">Farmess</span>
-    </Link>
-  );
+/*
+ * Sidebar collapse preference: persisted in localStorage, read through
+ * useSyncExternalStore. An in-memory copy keeps the toggle working when
+ * storage is unavailable (private mode, blocked site data).
+ */
+const SIDEBAR_CHANGE_EVENT = "farmess:sidebar-change";
+let memoryCollapsed = false;
+
+function readStoredCollapse(): boolean {
+  try {
+    const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    return stored === null ? memoryCollapsed : stored === "collapsed";
+  } catch {
+    return memoryCollapsed;
+  }
 }
+
+function storeCollapse(collapsed: boolean) {
+  memoryCollapsed = collapsed;
+  try {
+    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, collapsed ? "collapsed" : "expanded");
+  } catch {
+    // Storage unavailable; the in-memory value still applies for this visit.
+  }
+  window.dispatchEvent(new Event(SIDEBAR_CHANGE_EVENT));
+}
+
+function subscribeToCollapse(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(SIDEBAR_CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(SIDEBAR_CHANGE_EVENT, onChange);
+  };
+}
+
+const serverCollapseSnapshot = () => false;
 
 function NavigationLinks({
   items,
   pathname,
+  collapsed,
 }: {
-  items: readonly { label: string; href: string; icon: string }[];
+  items: readonly NavItem[];
   pathname: string;
+  collapsed: boolean;
 }) {
   return (
     <nav className="nav-list">
@@ -72,11 +108,19 @@ function NavigationLinks({
             href={item.href}
             className={"nav-link" + (active ? " active" : "")}
             aria-current={active ? "page" : undefined}
+            title={collapsed ? item.label : undefined}
           >
             <span className="nav-icon">
-              <Icon name={item.icon as IconName} size={17} />
+              <Icon name={item.icon as IconName} size={19} />
             </span>
-            <span>{item.label}</span>
+            <span className="nav-text">
+              <span className="nav-label">{item.label}</span>
+              {item.hindi ? (
+                <span className="nav-hindi" lang="hi">
+                  {item.hindi}
+                </span>
+              ) : null}
+            </span>
           </Link>
         );
       })}
@@ -86,44 +130,124 @@ function NavigationLinks({
 
 export function WorkspaceLayout({ children, user }: { children: ReactNode; user: WorkspaceUser }) {
   const pathname = usePathname();
+  const collapsed = useSyncExternalStore(
+    subscribeToCollapse,
+    readStoredCollapse,
+    serverCollapseSnapshot,
+  );
+  // The drawer remembers the page it was opened on, so navigating closes it.
+  const [drawerPath, setDrawerPath] = useState<string | null>(null);
+  const drawerOpen = drawerPath === pathname;
+  const setDrawerOpen = useCallback(
+    (open: boolean) => setDrawerPath(open ? pathname : null),
+    [pathname],
+  );
   const home = HOME_BY_ROLE[user.role];
   const pageLabel = getWorkspacePageLabel(pathname, user.role);
-  const initials = initialsOf(user.displayName);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDrawerPath(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [drawerOpen]);
+
+  const toggleCollapsed = useCallback(() => storeCollapse(!readStoredCollapse()), []);
 
   return (
-    <div className="workspace">
-      <aside className="sidebar" aria-label="Primary navigation">
-        <div className="brand-block">
-          <Brand href={home} />
-          <span className="role-badge">{ROLE_LABEL[user.role]}</span>
+    <div
+      className="workspace"
+      data-sidebar={collapsed ? "collapsed" : "expanded"}
+      data-drawer={drawerOpen ? "open" : "closed"}
+    >
+      <aside className="sidebar" id="workspace-sidebar" aria-label="Primary navigation">
+        <div className="sidebar-head">
+          <Link href={home} className="brand" aria-label="Farmess home">
+            <BrandLogo size={34} tone="light" />
+          </Link>
+          <button
+            type="button"
+            className="sidebar-toggle"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
+            aria-controls="workspace-sidebar"
+          >
+            <Icon name="sidebar" size={18} />
+          </button>
+          <button
+            type="button"
+            className="drawer-close"
+            onClick={() => setDrawerOpen(false)}
+            aria-label="Close menu"
+          >
+            <Icon name="close" size={18} />
+          </button>
+        </div>
+
+        <div className="sidebar-role">
+          <span className="sidebar-avatar" aria-hidden="true">
+            {initialsOf(user.displayName)}
+          </span>
+          <span className="sidebar-role-copy">
+            <strong>{user.displayName}</strong>
+            <span>{ROLE_LABEL[user.role]} workspace</span>
+          </span>
         </div>
 
         <p className="nav-section-label">Workspace</p>
-        <NavigationLinks items={NAVIGATION_BY_ROLE[user.role]} pathname={pathname} />
+        <NavigationLinks
+          items={NAVIGATION_BY_ROLE[user.role]}
+          pathname={pathname}
+          collapsed={collapsed}
+        />
 
         <p className="nav-section-label">Account</p>
-        <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
+        <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} collapsed={collapsed} />
 
         <div className="sidebar-bottom">
           <div className="sidebar-trust">
-            <Icon name="shield" size={16} />
-            <span>Prices show their source and date. Unknown costs are never counted as zero.</span>
+            <Icon name="shield" size={17} />
+            <span>
+              Every price shows its source and date. Unknown costs are never counted as zero.
+            </span>
           </div>
         </div>
       </aside>
 
+      <button
+        type="button"
+        className="drawer-scrim"
+        aria-label="Close menu"
+        tabIndex={drawerOpen ? 0 : -1}
+        onClick={() => setDrawerOpen(false)}
+      />
+
       <div className="main-area">
         <header className="topbar">
+          <button
+            type="button"
+            className="topbar-menu"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={drawerOpen}
+            aria-controls="workspace-sidebar"
+          >
+            <Icon name="menu" size={20} />
+          </button>
           <Link href={home} className="mobile-brand" aria-label="Farmess home">
-            <span className="brand-mark">
-              <Icon name="leaf" size={15} />
-            </span>
-            <span>Farmess</span>
+            <BrandMark size={30} />
           </Link>
-          <div className="topbar-context" aria-label="Current page">
+          <div className="topbar-context">
             <span className="topbar-crumb">{ROLE_LABEL[user.role]}</span>
-            <Icon name="chevron" size={14} className="topbar-crumb-separator" />
-            <span className="topbar-page">{pageLabel}</span>
+            <span className="topbar-crumb-separator" aria-hidden="true">
+              /
+            </span>
+            <span className="topbar-page" aria-current="page">
+              {pageLabel}
+            </span>
           </div>
           <div className="topbar-right">
             <Link
@@ -135,14 +259,8 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
             >
               <Icon name="bell" size={18} />
             </Link>
-            <Link href="/profile" className="topbar-user" aria-label="Profile and privacy">
-              <span className="sidebar-avatar" aria-hidden="true">
-                {initials}
-              </span>
-              <span className="topbar-user-copy">
-                <strong>{user.displayName}</strong>
-                <span>{user.email ?? "Signed in"}</span>
-              </span>
+            <Link href="/profile" className="topbar-icon-button" aria-label="Profile and privacy">
+              <Icon name="user" size={18} />
             </Link>
             <SignOutButton />
           </div>
@@ -160,7 +278,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
               className={"mobile-nav-link" + (active ? " active" : "")}
               aria-current={active ? "page" : undefined}
             >
-              <Icon name={item.icon as IconName} size={19} />
+              <Icon name={item.icon as IconName} size={20} />
               <span>{item.label}</span>
             </Link>
           );

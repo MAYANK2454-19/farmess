@@ -1,30 +1,35 @@
 export const FARMER_NAVIGATION = [
-  { label: "Overview", href: "/farmer", icon: "overview" },
-  { label: "My Produce", href: "/farmer/produce", icon: "produce" },
-  { label: "Market Prices", href: "/farmer/markets", icon: "markets" },
-  { label: "Compare Markets", href: "/farmer/compare", icon: "compare" },
-  { label: "Buyer Offers", href: "/farmer/offers", icon: "offers" },
-  { label: "Transport & Storage", href: "/farmer/logistics", icon: "logistics" },
-  { label: "Sale Activity", href: "/farmer/activity", icon: "activity" },
+  { label: "Overview", href: "/farmer", icon: "overview", hindi: "सारांश" },
+  { label: "My Produce", href: "/farmer/produce", icon: "produce", hindi: "मेरी उपज" },
+  { label: "Market Prices", href: "/farmer/markets", icon: "markets", hindi: "मंडी भाव" },
+  { label: "Compare Markets", href: "/farmer/compare", icon: "compare", hindi: "शुद्ध आय तुलना" },
+  { label: "Buyer Offers", href: "/farmer/offers", icon: "offers", hindi: "खरीदार प्रस्ताव" },
+  {
+    label: "Transport & Storage",
+    href: "/farmer/logistics",
+    icon: "logistics",
+    hindi: "परिवहन व भंडारण",
+  },
+  { label: "Sale Activity", href: "/farmer/activity", icon: "activity", hindi: "बिक्री" },
 ] as const;
 
 export const BUYER_NAVIGATION = [
-  { label: "Overview", href: "/buyer", icon: "overview" },
-  { label: "My Requirements", href: "/buyer/requirements", icon: "produce" },
-  { label: "Matches", href: "/buyer/matches", icon: "compare" },
-  { label: "Marketplace", href: "/buyer/marketplace", icon: "markets" },
-  { label: "My Offers", href: "/buyer/offers", icon: "offers" },
+  { label: "Overview", href: "/buyer", icon: "overview", hindi: "सारांश" },
+  { label: "My Requirements", href: "/buyer/requirements", icon: "produce", hindi: "मेरी ज़रूरतें" },
+  { label: "Matches", href: "/buyer/matches", icon: "compare", hindi: "मिलान" },
+  { label: "Marketplace", href: "/buyer/marketplace", icon: "markets", hindi: "बाज़ार" },
+  { label: "My Offers", href: "/buyer/offers", icon: "offers", hindi: "मेरे प्रस्ताव" },
 ] as const;
 
 export const OPERATOR_NAVIGATION = [
-  { label: "Overview", href: "/operator", icon: "overview" },
-  { label: "Service Listings", href: "/operator/services", icon: "logistics" },
-  { label: "Requests", href: "/operator/requests", icon: "activity" },
+  { label: "Overview", href: "/operator", icon: "overview", hindi: "सारांश" },
+  { label: "Service Listings", href: "/operator/services", icon: "logistics", hindi: "सेवाएँ" },
+  { label: "Requests", href: "/operator/requests", icon: "activity", hindi: "अनुरोध" },
 ] as const;
 
 export const ACCOUNT_NAVIGATION = [
-  { label: "Notifications", href: "/notifications", icon: "bell" },
-  { label: "Profile & privacy", href: "/profile", icon: "user" },
+  { label: "Notifications", href: "/notifications", icon: "bell", hindi: "सूचनाएँ" },
+  { label: "Profile & privacy", href: "/profile", icon: "user", hindi: "प्रोफ़ाइल" },
 ] as const;
 
 export const NAVIGATION_BY_ROLE = {
@@ -36,7 +41,7 @@ export const NAVIGATION_BY_ROLE = {
 
 export const MOBILE_NAVIGATION_BY_ROLE = {
   farmer: [
-    { label: "Overview", href: "/farmer", icon: "overview" },
+    { label: "Overview", href: "/farmer", icon: "overview", hindi: "सारांश" },
     { label: "Produce", href: "/farmer/produce", icon: "produce" },
     { label: "Markets", href: "/farmer/markets", icon: "markets" },
     { label: "Compare", href: "/farmer/compare", icon: "compare" },

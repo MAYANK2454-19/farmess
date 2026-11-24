@@ -109,7 +109,7 @@
 
 .table th {
   color: var(--muted);
-  background: #f8faf7;
+  background: var(--surface-muted);
   font-weight: 650;
 }
 
@@ -121,7 +121,7 @@
 .lowest {
   display: block;
   margin-top: 3px;
-  color: #286247;
+  color: var(--khet-mid);
   font-size: 12px;
   font-weight: 700;
 }

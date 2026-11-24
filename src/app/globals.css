@@ -2,36 +2,52 @@
 
 :root {
   color-scheme: light;
-  /* Farmess design tokens — aligned with the Round 2 style guide. */
-  --brand-primary: #173d32;
-  --brand-primary-hover: #102e25;
-  --brand-secondary: #336b52;
-  --brand-tint: #e8f0eb;
-  --brand-tint-strong: #d3e4d9;
-  --page: #f7f8f5;
+  /*
+   * Farmess design tokens.
+   * Khet (field green) is the brand ground, haldi (turmeric) the single warm
+   * accent, mitti (terracotta) is reserved for urgency and warnings.
+   */
+  --khet: #12372c;
+  --khet-deep: #0b2620;
+  --khet-mid: #2f6b4f;
+  --khet-leaf: #8fc2a0;
+  --haldi: #e8a33a;
+  --haldi-deep: #c9821c;
+  --haldi-soft: #fbeacb;
+  --mitti: #b8532f;
+  --mitti-soft: #f6e3d8;
+  --paper: #f5f3ec;
+
+  --brand-primary: var(--khet);
+  --brand-primary-hover: var(--khet-deep);
+  --brand-secondary: var(--khet-mid);
+  --brand-tint: #e3ede6;
+  --brand-tint-strong: #cde0d3;
+  --page: var(--paper);
   --surface: #ffffff;
-  --surface-muted: #fafbf9;
-  --text: #1d2823;
-  --text-secondary: #3d4a44;
-  --muted: #63706a;
-  --subtle: #8b968f;
-  --line: #e3e8e3;
-  --line-strong: #cfd8d1;
-  --accent: #336b52;
-  --harvest: #c59a4a;
-  --warning: #c75a38;
-  --warning-tint: #fbeee8;
-  --info-tint: #eef4f8;
-  --soft-green: #e8f0eb;
-  --soft-gold: #f8f1e3;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --shadow-xs: 0 1px 2px rgba(23, 61, 50, 0.05);
-  --shadow: 0 1px 2px rgba(23, 61, 50, 0.04), 0 4px 16px -4px rgba(23, 61, 50, 0.08);
-  --shadow-lg: 0 12px 40px -12px rgba(23, 61, 50, 0.22);
-  --font-sans: var(--font-inter), "Inter", "Segoe UI", system-ui, sans-serif;
-  --font-display: var(--font-sans);
+  --surface-muted: #faf8f2;
+  --text: #13251f;
+  --text-secondary: #3e524a;
+  --muted: #66786f;
+  --subtle: #8e9c94;
+  --line: #e5e1d5;
+  --line-strong: #d3cebf;
+  --accent: var(--khet-mid);
+  --harvest: var(--haldi);
+  --warning: var(--mitti);
+  --warning-tint: var(--mitti-soft);
+  --info-tint: #edf2ef;
+  --soft-green: #e3ede6;
+  --soft-gold: var(--haldi-soft);
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --shadow-xs: 0 1px 2px rgba(19, 37, 31, 0.05);
+  --shadow: 0 1px 2px rgba(19, 37, 31, 0.04), 0 6px 20px -8px rgba(19, 37, 31, 0.1);
+  --shadow-lg: 0 18px 48px -16px rgba(19, 37, 31, 0.28);
+  --font-sans: var(--font-instrument), "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-bricolage), "Bricolage Grotesque", var(--font-sans);
+  --font-hindi: var(--font-devanagari), "Noto Sans Devanagari", var(--font-sans);
 }
 
 * {
@@ -98,7 +114,7 @@ textarea:focus-visible {
   flex-direction: column;
   padding: 27px 19px 20px;
   overflow-y: auto;
-  color: #f4f7f2;
+  color: var(--surface-muted);
   background: var(--brand-primary);
 }
 
@@ -120,7 +136,7 @@ textarea:focus-visible {
   height: 34px;
   place-items: center;
   color: var(--brand-primary);
-  background: #f4f7f2;
+  background: var(--surface-muted);
   border-radius: var(--radius-sm);
 }
 
@@ -237,7 +253,7 @@ textarea:focus-visible {
 }
 
 .topbar-context {
-  color: #4e5c51;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -253,7 +269,7 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #4b584e;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   transition: color 140ms ease;
@@ -345,18 +361,18 @@ h1 {
 
 .button-primary:hover {
   color: #fff;
-  background: #24583a;
+  background: var(--khet-mid);
 }
 
 .button-secondary {
   color: var(--brand-primary);
   background: #fff;
-  border-color: #cfdacf;
+  border-color: var(--line-strong);
 }
 
 .button-secondary:hover {
-  background: #f2f7f2;
-  border-color: #aabdab;
+  background: var(--surface-muted);
+  border-color: var(--line-strong);
 }
 
 .preview-banner {
@@ -365,9 +381,9 @@ h1 {
   gap: 10px;
   margin-bottom: 22px;
   padding: 12px 14px;
-  color: #536454;
-  background: #f0f6ef;
-  border: 1px solid #dce9db;
+  color: var(--text-secondary);
+  background: var(--brand-tint);
+  border: 1px solid var(--line);
   border-left: 3px solid var(--brand-secondary);
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -400,7 +416,7 @@ h1 {
   justify-content: space-between;
   gap: 12px;
   padding: 18px 19px 14px;
-  border-bottom: 1px solid #e9eee8;
+  border-bottom: 1px solid var(--line);
 }
 
 .panel-title {
@@ -412,7 +428,7 @@ h1 {
 
 .panel-caption {
   margin: 4px 0 0;
-  color: #7a867c;
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -423,7 +439,7 @@ h1 {
 }
 
 .text-link:hover {
-  color: #173f2b;
+  color: var(--khet);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -791,7 +807,7 @@ h1 {
 }
 
 .form-label {
-  color: #344238;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 650;
 }
@@ -802,12 +818,12 @@ h1 {
   padding: 0 12px;
   color: var(--text);
   background: #fff;
-  border: 1px solid #cfdacf;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
 }
 
 .form-control::placeholder {
-  color: #95a096;
+  color: var(--subtle);
 }
 
 .form-control:focus {
@@ -1059,7 +1075,7 @@ h1 {
   padding: 7px 10px;
   color: #58665b;
   background: #f5f8f4;
-  border: 1px solid #cfdacf;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 12px;
@@ -1180,7 +1196,7 @@ h1 {
     justify-items: center;
     gap: 3px;
     padding: 5px 2px;
-    color: #6f7d71;
+    color: var(--muted);
     font-size: 12px;
     font-weight: 600;
   }
@@ -1309,7 +1325,7 @@ h1 {
   padding: 7px 10px;
   color: #526456;
   background: transparent;
-  border: 1px solid #cfdacf;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 12px;
@@ -1333,7 +1349,7 @@ h1 {
 }
 
 .sign-out-error {
-  color: #8b342d;
+  color: var(--mitti);
   font-size: 12px;
 }
 
@@ -1353,7 +1369,7 @@ h1 {
   flex: 0 0 31px;
   place-items: center;
   color: var(--brand-primary);
-  background: #e5f0e3;
+  background: var(--brand-tint);
   border-radius: 50%;
   font-size: 13px;
   font-weight: 700;
@@ -1395,8 +1411,8 @@ h1 {
   flex-direction: column;
   justify-content: space-between;
   padding: 40px clamp(28px, 5vw, 76px);
-  color: #f4f7f2;
-  background: #173f2b;
+  color: var(--surface-muted);
+  background: var(--khet);
 }
 
 .auth-wordmark {
@@ -1416,8 +1432,8 @@ h1 {
   width: 35px;
   height: 35px;
   place-items: center;
-  color: #173f2b;
-  background: #f4f7f2;
+  color: var(--khet);
+  background: var(--surface-muted);
   border-radius: var(--radius-sm);
   font-family: var(--font-display);
   font-size: 23px;
@@ -1563,7 +1579,7 @@ h1 {
 
 .produce-table th {
   color: #6b786d;
-  background: #f7faf6;
+  background: var(--surface-muted);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1577,7 +1593,7 @@ h1 {
 
 .produce-table td strong {
   display: block;
-  color: #1d2b20;
+  color: var(--text);
   font-size: 13px;
   font-weight: 650;
 }
@@ -1597,18 +1613,18 @@ h1 {
   display: inline-flex;
   align-items: center;
   padding: 4px 7px;
-  color: #315f42;
-  background: #eff6ee;
-  border: 1px solid #dce9db;
+  color: var(--khet-mid);
+  background: var(--brand-tint);
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 650;
 }
 
 .produce-status-published {
-  color: #235d36;
-  background: #eaf4e9;
-  border-color: #cfe3ce;
+  color: var(--khet-mid);
+  background: var(--brand-tint);
+  border-color: var(--line-strong);
 }
 
 .produce-status-closed,
@@ -1640,7 +1656,7 @@ h1 {
 }
 
 .overview-lot-row strong {
-  color: #1d2b20;
+  color: var(--text);
   font-size: 14px;
   font-weight: 650;
 }
@@ -1697,15 +1713,15 @@ h1 {
 }
 
 .form-alert {
-  color: #8b342d;
-  background: #fff4f1;
-  border-left: 3px solid #c45d4e;
+  color: var(--mitti);
+  background: var(--mitti-soft);
+  border-left: 3px solid var(--mitti);
 }
 
 .form-success {
-  color: #24583a;
-  background: #eff6ee;
-  border-left: 3px solid #2f7447;
+  color: var(--khet-mid);
+  background: var(--brand-tint);
+  border-left: 3px solid var(--khet-mid);
 }
 
 .profile-footer {
@@ -1798,8 +1814,8 @@ h1 {
 
 .notification-unread {
   padding: 3px 6px;
-  color: #24583a;
-  background: #eaf4e9;
+  color: var(--khet-mid);
+  background: var(--brand-tint);
   border: 1px solid #d3e6d1;
   border-radius: var(--radius-sm);
   font-size: 11px;
@@ -1889,12 +1905,12 @@ h1 {
 .offer-note {
   max-width: 700px;
   padding-left: 10px;
-  border-left: 2px solid #dce9db;
+  border-left: 2px solid var(--line);
 }
 
 .offer-dates {
   margin-top: 8px;
-  color: #859087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
@@ -1961,7 +1977,7 @@ h1 {
 }
 
 .activity-item time {
-  color: #859087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
@@ -1971,8 +1987,8 @@ h1 {
   width: 9px;
   height: 9px;
   margin-top: 4px;
-  background: #2f7447;
-  border: 2px solid #e5f0e3;
+  background: var(--khet-mid);
+  border: 2px solid var(--brand-tint);
   border-radius: 50%;
 }
 
@@ -2047,7 +2063,7 @@ h1 {
 }
 
 .service-availability {
-  color: #849087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
@@ -2320,13 +2336,13 @@ h1 {
 
 .marketplace-lot-dates {
   margin-top: 12px;
-  color: #849087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
 .marketplace-existing-offer {
   margin-top: 10px;
-  color: #315f42;
+  color: var(--khet-mid);
 }
 
 .marketplace-offer-details {
@@ -2586,14 +2602,14 @@ h1 {
 }
 
 .operator-request-main time {
-  color: #849087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
 .operator-request-message {
   max-width: 720px;
   padding-left: 10px;
-  border-left: 2px solid #dce9db;
+  border-left: 2px solid var(--line);
 }
 
 .operator-request-actions {
@@ -2744,8 +2760,8 @@ h1 {
   height: 390px;
   min-height: 280px;
   overflow: hidden;
-  background: #edf1eb;
-  border: 1px solid #dfe7df;
+  background: var(--brand-tint);
+  border: 1px solid var(--line);
   z-index: 0;
 }
 
@@ -2753,7 +2769,7 @@ h1 {
   width: 100%;
   height: 100%;
   font: inherit;
-  background: #edf1eb;
+  background: var(--brand-tint);
 }
 
 .logistics-map-attribution {
@@ -2776,7 +2792,7 @@ h1 {
   height: 25px;
   place-items: center;
   color: white;
-  background: #173f2b;
+  background: var(--khet);
   border: 2px solid white;
   border-radius: 50% 50% 50% 2px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
@@ -2790,7 +2806,7 @@ h1 {
 }
 
 .farmess-map-marker-origin span {
-  color: #173f2b;
+  color: var(--khet);
   background: #c6e2c3;
 }
 
@@ -2845,7 +2861,7 @@ h1 {
 }
 
 .logistics-result-recommended {
-  border-left-color: #2f7447;
+  border-left-color: var(--khet-mid);
 }
 
 .logistics-result-excluded {
@@ -2896,7 +2912,7 @@ h1 {
 }
 
 .logistics-result-score span {
-  color: #879187;
+  color: var(--subtle);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2921,7 +2937,7 @@ h1 {
 }
 
 .logistics-result-facts span {
-  color: #849087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
@@ -2934,7 +2950,7 @@ h1 {
 .logistics-explanation,
 .logistics-unknowns {
   padding: 11px 13px;
-  background: #f7faf6;
+  background: var(--surface-muted);
   border-left: 2px solid #8ca98d;
 }
 
@@ -2975,7 +2991,7 @@ h1 {
 }
 
 .logistics-result-footer > span {
-  color: #849087;
+  color: var(--subtle);
   font-size: 12px;
 }
 
@@ -3013,7 +3029,7 @@ h1 {
 
 .logistics-result-disclaimer {
   margin: 0;
-  color: #879187;
+  color: var(--subtle);
   font-size: 12px;
   line-height: 1.6;
 }
@@ -3056,7 +3072,7 @@ h1 {
 
 .operator-location-fields legend {
   padding: 0 6px;
-  color: #344238;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -3193,7 +3209,7 @@ h1 {
 
 .buyer-match-count {
   flex: 0 0 auto;
-  color: #738175;
+  color: var(--muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -3269,7 +3285,7 @@ h1 {
 }
 
 .buyer-match-actions > span {
-  color: #738175;
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -3280,9 +3296,9 @@ h1 {
 }
 
 .produce-status-match {
-  color: #235d36;
-  background: #eaf4e9;
-  border-color: #cfe3ce;
+  color: var(--khet-mid);
+  background: var(--brand-tint);
+  border-color: var(--line-strong);
 }
 
 .produce-status-no_match {

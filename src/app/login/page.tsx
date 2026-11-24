@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand-logo";
 import { Icon, type IconName } from "@/components/icons";
 import { AuthForm } from "@/features/auth/auth-form";
 
@@ -28,22 +29,21 @@ const VALUE_POINTS: { icon: IconName; title: string; copy: string }[] = [
 export default function LoginPage() {
   return (
     <main className="auth-page">
-      <section className="auth-aside">
+      <section className="auth-aside field-ground">
         <Link href="/" className="auth-wordmark" aria-label="Farmess home">
-          <span className="auth-mark">
-            <Icon name="leaf" size={18} />
-          </span>
-          <span>Farmess</span>
+          <BrandLogo size={36} tone="light" />
         </Link>
 
         <div className="auth-aside-copy">
-          <p className="auth-aside-kicker">Farmer-to-market decision support</p>
+          <p className="auth-aside-kicker" lang="hi">
+            खेत से मंडी तक
+          </p>
           <h2>Know the market. Understand the costs. Decide with confidence.</h2>
           <ul className="auth-points">
             {VALUE_POINTS.map((point) => (
               <li key={point.title}>
                 <span className="auth-point-icon" aria-hidden="true">
-                  <Icon name={point.icon} size={18} />
+                  <Icon name={point.icon} size={19} />
                 </span>
                 <span>
                   <strong>{point.title}</strong>
