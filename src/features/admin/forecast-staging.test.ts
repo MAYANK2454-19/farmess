@@ -89,9 +89,30 @@ test("rejects models that do not beat both persistence metrics", () => {
   );
 });
 
-test("rejects a short training series or incorrect horizon point count", () => {
+test("accepts 120 validated observations while keeping the holdout out of training rows", () => {
+  const result = buildForecastCandidatePayload(
+    manifest({ totalValidatedObservations: 120, trainingObservationCount: 96 }),
+    points,
+  );
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.payload.validated_observation_count, 120);
+  assert.equal(result.payload.training_observation_count, 96);
+});
+
+test("rejects insufficient validated observations or an invalid training split", () => {
   assert.equal(
-    buildForecastCandidatePayload(manifest({ trainingObservationCount: 119 }), points).ok,
+    buildForecastCandidatePayload(
+      manifest({ totalValidatedObservations: 119, trainingObservationCount: 95 }),
+      points,
+    ).ok,
+    false,
+  );
+  assert.equal(
+    buildForecastCandidatePayload(
+      manifest({ totalValidatedObservations: 120, trainingObservationCount: 39 }),
+      points,
+    ).ok,
     false,
   );
   assert.equal(buildForecastCandidatePayload(manifest(), points.slice(0, 1)).ok, false);

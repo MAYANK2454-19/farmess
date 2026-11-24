@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
     "model_name",
     "model_version",
     "training_observation_count",
+    "validated_observation_count",
     "training_start",
     "training_end",
     "baseline_mae_paise_per_quintal",
@@ -148,10 +149,17 @@ export async function POST(request: NextRequest) {
     body.horizon_days > 30 ||
     typeof body.training_observation_count !== "number" ||
     !Number.isSafeInteger(body.training_observation_count) ||
-    body.training_observation_count < 120
+    body.training_observation_count < 40 ||
+    typeof body.validated_observation_count !== "number" ||
+    !Number.isSafeInteger(body.validated_observation_count) ||
+    body.validated_observation_count < 120 ||
+    body.training_observation_count > body.validated_observation_count
   ) {
     return NextResponse.json(
-      { error: "At least 120 observations and a 1–30 day forecast horizon are required." },
+      {
+        error:
+          "At least 120 unique validated observations and 40 actual training rows are required.",
+      },
       { status: 400 },
     );
   }

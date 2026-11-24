@@ -10,6 +10,7 @@ export type ForecastCandidatePayload = {
   model_name: string;
   model_version: string;
   training_observation_count: number;
+  validated_observation_count: number;
   training_start: string;
   training_end: string;
   baseline_mae_paise_per_quintal: number;
@@ -88,6 +89,7 @@ export function buildForecastCandidatePayload(
   const trainingEnd = manifestValue.trainingEnd;
   const horizon = manifestValue.forecastHorizonDays;
   const observationCount = manifestValue.trainingObservationCount;
+  const validatedObservationCount = manifestValue.totalValidatedObservations;
   const baselineMae = evaluation.baseline.maePaisePerQuintal;
   const modelMae = evaluation.model.maePaisePerQuintal;
   const baselineSmape = evaluation.baseline.smapePercent;
@@ -108,9 +110,17 @@ export function buildForecastCandidatePayload(
     horizon > 30 ||
     typeof observationCount !== "number" ||
     !Number.isSafeInteger(observationCount) ||
-    observationCount < 120
+    observationCount < 40 ||
+    typeof validatedObservationCount !== "number" ||
+    !Number.isSafeInteger(validatedObservationCount) ||
+    validatedObservationCount < 120 ||
+    observationCount > validatedObservationCount
   ) {
-    return { ok: false, error: "At least 120 training observations and a 1–30 day horizon are required." };
+    return {
+      ok: false,
+      error:
+        "At least 120 unique validated observations and 40 actual training rows are required.",
+    };
   }
   if (
     !finiteNumber(baselineMae) ||
@@ -180,6 +190,7 @@ export function buildForecastCandidatePayload(
       model_name: modelName.trim(),
       model_version: modelVersion.trim(),
       training_observation_count: observationCount,
+      validated_observation_count: validatedObservationCount,
       training_start: trainingStart,
       training_end: trainingEnd,
       baseline_mae_paise_per_quintal: baselineMae,

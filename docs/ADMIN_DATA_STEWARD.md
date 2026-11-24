@@ -22,7 +22,7 @@ The provider key is the server-only `DATA_GOV_IN_API_KEY`. The UI shows only whe
 
 Open `/admin/forecasts` after running the offline trainer in `ml/market_forecast`.
 
-For each crop/market series, paste the contents of its `manifest.json` and `forecast_points.json` output files. The client conversion checks that the manifest is a Farmess INR-pa​​ise-per-quintal candidate, was not automatically approved, has at least 120 training observations, beats the persistence baseline on both MAE and sMAPE, and contains a complete sequential forecast horizon. The server repeats the policy checks and persists the run as `candidate`.
+For each crop/market series, paste the contents of its `manifest.json` and `forecast_points.json` output files. The client conversion checks that the manifest is a Farmess INR-pa​​ise-per-quintal candidate, was not automatically approved, has at least 120 unique validated dated observations (the held-out evaluation rows stay outside the stored training count), beats the persistence baseline on both MAE and sMAPE, and contains a complete sequential forecast horizon. The server repeats the policy checks and persists the run as `candidate`.
 
 A data steward must inspect the series identity, source history, training dates, baseline comparison, point dates and intervals. Record a review note of at least 20 characters before approving or rejecting. Approved forecasts are read-only to end users. Staging alone never publishes a forecast.
 
