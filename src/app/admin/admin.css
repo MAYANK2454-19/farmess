@@ -593,9 +593,9 @@
   gap: 0.35rem;
   min-width: 0;
   padding: 0.85rem;
-  border: 1px solid #e5ece3;
+  border: 1px solid var(--brand-tint);
   border-radius: 0.75rem;
-  background: #fbfcfa;
+  background: var(--surface-muted);
 }
 
 .admin-health-quality-grid strong {
@@ -604,7 +604,7 @@
 }
 
 .admin-health-quality-grid span {
-  color: #65776a;
+  color: var(--muted);
   font-size: 0.76rem;
 }
 
@@ -629,13 +629,13 @@
   display: grid;
   gap: 0.8rem;
   padding-top: 0.85rem;
-  border-top: 1px solid #edf1eb;
+  border-top: 1px solid var(--brand-tint);
 }
 
 .admin-verification-form label {
   display: grid;
   gap: 0.4rem;
-  color: #425c4b;
+  color: var(--khet-mid);
   font-size: 0.82rem;
   font-weight: 650;
 }
@@ -644,10 +644,10 @@
 .admin-verification-form textarea {
   width: 100%;
   min-width: 0;
-  border: 1px solid #d6e1d4;
+  border: 1px solid var(--line-strong);
   border-radius: 0.65rem;
   background: #fff;
-  color: #18352a;
+  color: var(--khet);
   padding: 0.72rem 0.8rem;
   font: inherit;
   font-size: 0.9rem;
@@ -660,6 +660,6 @@
 
 .admin-verification-form select:focus-visible,
 .admin-verification-form textarea:focus-visible {
-  outline: 2px solid #6d9f79;
+  outline: 2px solid var(--khet-leaf);
   outline-offset: 1px;
 }
