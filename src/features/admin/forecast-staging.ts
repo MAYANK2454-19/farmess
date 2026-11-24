@@ -1,0 +1,177 @@
+type JsonRecord = Record<string, unknown>;
+
+export type ForecastCandidatePayload = {
+  crop: string;
+  variety: string | null;
+  state: string | null;
+  district: string | null;
+  market_name: string;
+  horizon_days: number;
+  model_name: string;
+  model_version: string;
+  training_observation_count: number;
+  training_start: string;
+  training_end: string;
+  baseline_mae_paise_per_quintal: number;
+  model_mae_paise_per_quintal: number;
+  baseline_smape_percent: number;
+  model_smape_percent: number;
+  points: Array<{
+    target_date: string;
+    predicted_modal_price_paise_per_quintal: number;
+    lower_bound_paise_per_quintal: number;
+    upper_bound_paise_per_quintal: number;
+  }>;
+};
+
+export type ForecastPayloadResult =
+  | { ok: true; payload: ForecastCandidatePayload }
+  | { ok: false; error: string };
+
+function isRecord(value: unknown): value is JsonRecord {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function nonEmptyText(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function finiteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+/**
+ * Converts the two files written by ml/market_forecast/train.py into the
+ * server API's staging contract. It rejects anything that is not an unevaluated
+ * candidate; the server repeats every security and quality check.
+ */
+export function buildForecastCandidatePayload(
+  manifestValue: unknown,
+  pointsValue: unknown,
+): ForecastPayloadResult {
+  if (!isRecord(manifestValue) || !isRecord(manifestValue.series)) {
+    return { ok: false, error: "The manifest must contain a series object." };
+  }
+  if (manifestValue.domain !== "market_price_forecast") {
+    return { ok: false, error: "This is not a Farmess market-price forecast manifest." };
+  }
+  if (manifestValue.approvalStatus !== "candidate" || manifestValue.automaticallyApproved !== false) {
+    return { ok: false, error: "Only an evaluated candidate awaiting human review can be staged." };
+  }
+  if (manifestValue.currency !== "INR" || manifestValue.priceUnit !== "paise/quintal") {
+    return { ok: false, error: "The candidate must use INR paise per quintal." };
+  }
+
+  const series = manifestValue.series;
+  const evaluation = manifestValue.evaluation;
+  if (
+    !isRecord(evaluation) ||
+    !isRecord(evaluation.baseline) ||
+    !isRecord(evaluation.model)
+  ) {
+    return { ok: false, error: "The manifest is missing its baseline/model evaluation." };
+  }
+
+  const crop = series.crop;
+  const market = series.market_name;
+  const modelName = manifestValue.modelName;
+  const modelVersion = manifestValue.modelVersion;
+  const trainingStart = manifestValue.trainingStart;
+  const trainingEnd = manifestValue.trainingEnd;
+  const horizon = manifestValue.forecastHorizonDays;
+  const observationCount = manifestValue.trainingObservationCount;
+  const baselineMae = evaluation.baseline.maePaisePerQuintal;
+  const modelMae = evaluation.model.maePaisePerQuintal;
+  const baselineSmape = evaluation.baseline.smapePercent;
+  const modelSmape = evaluation.model.smapePercent;
+
+  if (
+    !nonEmptyText(crop) ||
+    !nonEmptyText(market) ||
+    !nonEmptyText(modelName) ||
+    !nonEmptyText(modelVersion) ||
+    !nonEmptyText(trainingStart) ||
+    !nonEmptyText(trainingEnd)
+  ) {
+    return { ok: false, error: "The crop, market, model or training identity is incomplete." };
+  }
+  if (
+    !Number.isSafeInteger(horizon) ||
+    typeof horizon !== "number" ||
+    horizon < 1 ||
+    horizon > 30 ||
+    !Number.isSafeInteger(observationCount) ||
+    typeof observationCount !== "number" ||
+    observationCount < 120
+  ) {
+    return { ok: false, error: "At least 120 training observations and a 1–30 day horizon are required." };
+  }
+  if (
+    !finiteNumber(baselineMae) ||
+    !finiteNumber(modelMae) ||
+    !finiteNumber(baselineSmape) ||
+    !finiteNumber(modelSmape) ||
+    baselineMae <= 0 ||
+    baselineSmape <= 0 ||
+    modelMae < 0 ||
+    modelSmape < 0 ||
+    modelMae >= baselineMae ||
+    modelSmape >= baselineSmape
+  ) {
+    return { ok: false, error: "The candidate must beat persistence on both MAE and sMAPE." };
+  }
+  if (!Array.isArray(pointsValue) || pointsValue.length !== horizon) {
+    return { ok: false, error: "The forecast-points file must contain exactly the declared horizon." };
+  }
+
+  const points: ForecastCandidatePayload["points"] = [];
+  for (const point of pointsValue) {
+    if (!isRecord(point)) {
+      return { ok: false, error: "A forecast point is not a valid object." };
+    }
+    const targetDate = point.targetDate;
+    const predicted = point.predictedModalPricePaisePerQuintal;
+    const lower = point.lowerBoundPaisePerQuintal;
+    const upper = point.upperBoundPaisePerQuintal;
+    if (
+      !nonEmptyText(targetDate) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(targetDate) ||
+      !finiteNumber(predicted) ||
+      !finiteNumber(lower) ||
+      !finiteNumber(upper) ||
+      lower <= 0 ||
+      lower > predicted ||
+      predicted > upper
+    ) {
+      return { ok: false, error: "A forecast point has an invalid date or price interval." };
+    }
+    points.push({
+      target_date: targetDate,
+      predicted_modal_price_paise_per_quintal: predicted,
+      lower_bound_paise_per_quintal: lower,
+      upper_bound_paise_per_quintal: upper,
+    });
+  }
+
+  return {
+    ok: true,
+    payload: {
+      crop: crop.trim(),
+      variety: nonEmptyText(series.variety) ? series.variety.trim() : null,
+      state: nonEmptyText(series.state) ? series.state.trim() : null,
+      district: nonEmptyText(series.district) ? series.district.trim() : null,
+      market_name: market.trim(),
+      horizon_days: horizon,
+      model_name: modelName.trim(),
+      model_version: modelVersion.trim(),
+      training_observation_count: observationCount,
+      training_start: trainingStart,
+      training_end: trainingEnd,
+      baseline_mae_paise_per_quintal: baselineMae,
+      model_mae_paise_per_quintal: modelMae,
+      baseline_smape_percent: baselineSmape,
+      model_smape_percent: modelSmape,
+      points,
+    },
+  };
+}
