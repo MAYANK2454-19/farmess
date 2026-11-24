@@ -5,7 +5,7 @@ Operators can update the capacity and availability window of their own transport
 ## Editable fields
 
 - Capacity quantity and unit are updated together. Both can be cleared when the provider no longer has a reliable capacity figure.
-- Availability start and end are optional calendar dates. Either can be cleared independently.
+- Availability start and end are optional ISO calendar dates (YYYY-MM-DD). Either can be cleared independently.
 - An end date cannot precede a start date.
 - The API accepts only the listing ID and these four fields. Verification state, operator identity, price, service coordinates and listing status are not editable through this action.
 
