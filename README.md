@@ -13,7 +13,7 @@ The integrated backend branch contains the first connected application and datab
 - [x] Supabase schema, role-aware Row Level Security and private farmer lot persistence
 - [x] Farmer inventory selling-window reminders based on entered availability and sell-by dates
 - [x] Buyer requirements, published-lot discovery and guarded offer lifecycle
-- [x] Operator transport/storage listings, provider capacity/availability updates, farmer cancellation and provider cancellation of accepted requests
+- [x] Operator transport/storage listings, provider capacity/availability updates, request queue search/status filters, farmer cancellation and provider cancellation of accepted requests
 - [x] Notification, profile/consent and sale-activity persistence
 - [x] Admin market-data import, forecast review, read-only coverage/freshness diagnostics and provider verification audit
 - [x] Source-attributed market-price adapter and admin-only ingestion endpoint
