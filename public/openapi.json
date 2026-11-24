@@ -1,0 +1,659 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Farmess API",
+    "version": "1.0.0",
+    "description": "Server route handlers for Farmess (Next.js App Router). Authentication is the Supabase SSR session cookie set by /login — sign in on the same origin, then use \"Try it out\". Role checks run in every handler and Row Level Security is enforced in PostgreSQL. Errors are JSON objects with an `error` message; 401 = not signed in, 403 = wrong role or not the record owner, 409 = state conflict, 503 = provider or key unavailable (no data is ever fabricated)."
+  },
+  "servers": [{ "url": "/", "description": "Same origin as the web app" }],
+  "security": [{ "supabaseSession": [] }],
+  "tags": [
+    { "name": "Farmer", "description": "Produce lots, decisions and offers" },
+    { "name": "Market data", "description": "Reported mandi prices and approved forecasts" },
+    { "name": "Logistics", "description": "Transport and storage discovery and requests" },
+    { "name": "Buyer", "description": "Requirements, matches, marketplace and offers" },
+    { "name": "Operator", "description": "Service listings and request handling" },
+    { "name": "Account", "description": "Profile, notifications and activity" },
+    { "name": "Admin", "description": "Data-steward imports and forecast review" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "supabaseSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sb-access-token",
+        "description": "Supabase SSR auth cookies set after signing in at /login (cookie names are prefixed per project)."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": { "error": { "type": "string" } }
+      },
+      "LotDraft": {
+        "type": "object",
+        "required": ["crop", "quantity", "unit", "location", "availableAt", "sellBy"],
+        "properties": {
+          "crop": { "type": "string", "example": "Tomato" },
+          "variety": { "type": "string", "example": "Hybrid" },
+          "grade": { "type": "string", "example": "A" },
+          "quantity": { "type": "number", "exclusiveMinimum": 0, "example": 12.5 },
+          "unit": { "type": "string", "enum": ["kg", "quintal", "tonne"] },
+          "location": {
+            "type": "string",
+            "description": "Village, locality or nearby market area — not an exact home address.",
+            "example": "Narwal mandi area, Jammu"
+          },
+          "availableAt": { "type": "string", "format": "date" },
+          "sellBy": { "type": "string", "format": "date" },
+          "notes": { "type": "string" }
+        }
+      },
+      "LotStatusChange": {
+        "type": "object",
+        "required": ["id", "action"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "action": { "type": "string", "enum": ["publish", "withdraw"] }
+        }
+      },
+      "MarketSearchResult": {
+        "type": "object",
+        "description": "Normalised OGD India / AGMARKNET daily observations. Each record carries market, observation date, unit, source and freshness. `status` is `unavailable` when the provider or API key is missing.",
+        "properties": {
+          "status": { "type": "string", "examples": ["ok", "empty", "unavailable"] },
+          "records": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "GenericBody": {
+        "type": "object",
+        "description": "Validated server-side; unknown or invalid fields are rejected with 400.",
+        "additionalProperties": true
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid input",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Unauthorized": {
+        "description": "Not signed in",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Forbidden": {
+        "description": "Wrong role or not the owner",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Conflict": {
+        "description": "State conflict (e.g. already published, quantity exceeded)",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Unavailable": {
+        "description": "External provider, key or database unavailable — no fallback data is invented",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "ServerError": {
+        "description": "Unexpected server error",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  },
+  "paths": {
+    "/api/produce-lots": {
+      "get": {
+        "tags": ["Farmer"],
+        "summary": "List the signed-in farmer's produce lots",
+        "responses": {
+          "200": { "description": "Lots owned by the farmer" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Farmer"],
+        "summary": "Create a private draft produce lot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LotDraft" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Draft lot created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Farmer"],
+        "summary": "Publish a draft lot to buyers or withdraw a published lot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LotStatusChange" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status changed" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/market-prices": {
+      "get": {
+        "tags": ["Market data"],
+        "summary": "Search reported daily mandi prices (OGD India / AGMARKNET)",
+        "security": [],
+        "parameters": [
+          {
+            "name": "commodity",
+            "in": "query",
+            "schema": { "type": "string" },
+            "example": "Tomato"
+          },
+          { "name": "state", "in": "query", "schema": { "type": "string" } },
+          { "name": "district", "in": "query", "schema": { "type": "string" } },
+          { "name": "market", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "minimum": 0 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Observations with provenance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MarketSearchResult" }
+              }
+            }
+          },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      }
+    },
+    "/api/market-decisions": {
+      "get": {
+        "tags": ["Farmer"],
+        "summary": "Net-realisation comparison for one of the farmer's lots",
+        "parameters": [
+          {
+            "name": "lotId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Comparison with every deduction and completeness state" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lot not found" },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      },
+      "post": {
+        "tags": ["Farmer"],
+        "summary": "Record a selling-option comparison for a lot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Comparison saved" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lot not found" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/market-forecasts": {
+      "get": {
+        "tags": ["Market data"],
+        "summary": "Human-approved price forecasts only (with model and baseline metrics)",
+        "security": [],
+        "responses": {
+          "200": { "description": "Approved forecast runs; empty when none are approved" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      }
+    },
+    "/api/offers": {
+      "get": {
+        "tags": ["Farmer"],
+        "summary": "Buyer offers on the farmer's lots",
+        "responses": {
+          "200": { "description": "Offers with validity and status" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Farmer"],
+        "summary": "Accept or decline an offer (accepting records a sale and notifications)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Offer updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/logistics/discover": {
+      "get": {
+        "tags": ["Logistics"],
+        "summary": "Rank nearby transport/storage services with an explainable rules-v1 score",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "minimum": -90, "maximum": 90 }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "minimum": -180, "maximum": 180 }
+          },
+          { "name": "radiusKm", "in": "query", "schema": { "type": "number", "default": 25 } },
+          { "name": "serviceType", "in": "query", "schema": { "type": "string" } },
+          { "name": "crop", "in": "query", "schema": { "type": "string" } },
+          {
+            "name": "quantity",
+            "in": "query",
+            "schema": { "type": "number", "exclusiveMinimum": 0 }
+          },
+          { "name": "unit", "in": "query", "schema": { "type": "string" } },
+          { "name": "date", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "coldChain", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranked services with reasons; road distance when HeiGIT is configured"
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      }
+    },
+    "/api/logistics/feedback": {
+      "post": {
+        "tags": ["Logistics"],
+        "summary": "Rate a recommendation 1–5 (training label for the offline ranker)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Feedback stored" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Recommendation not found" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/service-requests": {
+      "get": {
+        "tags": ["Logistics"],
+        "summary": "The farmer's transport/storage requests",
+        "responses": {
+          "200": { "description": "Requests and provider responses" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Logistics"],
+        "summary": "Request a service from an active listing (pending until the provider confirms)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Request created (pending)" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Listing not found" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/weather/forecast": {
+      "get": {
+        "tags": ["Logistics"],
+        "summary": "Weather snapshot and next-6-hour rain probability for a farmer-selected locality (Open-Meteo)",
+        "parameters": [
+          { "name": "lat", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "lng", "in": "query", "required": true, "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": { "description": "Weather context with attribution" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "502": { "description": "Provider error" },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      }
+    },
+    "/api/buyer-requirements": {
+      "get": {
+        "tags": ["Buyer"],
+        "summary": "The buyer's requirements",
+        "responses": {
+          "200": { "description": "Requirements" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Buyer"],
+        "summary": "Create a requirement (crop, grade, quantity, location, required date, terms)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "patch": {
+        "tags": ["Buyer"],
+        "summary": "Update or close a requirement",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/buyer-matches": {
+      "get": {
+        "tags": ["Buyer"],
+        "summary": "Deterministic, explainable matches between requirements and published lots",
+        "responses": {
+          "200": { "description": "Matches with reasons" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      }
+    },
+    "/api/marketplace": {
+      "get": {
+        "tags": ["Buyer"],
+        "summary": "Safe published-lot projection (no farmer contact or exact location)",
+        "responses": {
+          "200": { "description": "Published lots" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Buyer"],
+        "summary": "Submit an offer on a published lot (validated by a narrow database RPC)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Offer created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/buyer-offers": {
+      "patch": {
+        "tags": ["Buyer"],
+        "summary": "Withdraw the buyer's own pending offer",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Withdrawn" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/operator/services": {
+      "get": {
+        "tags": ["Operator"],
+        "summary": "The operator's service listings",
+        "responses": {
+          "200": { "description": "Listings" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Operator"],
+        "summary": "Create a transport or storage listing",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "patch": {
+        "tags": ["Operator"],
+        "summary": "Update or deactivate a listing",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/operator/requests": {
+      "get": {
+        "tags": ["Operator"],
+        "summary": "Service requests assigned to the operator",
+        "responses": {
+          "200": { "description": "Requests" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "patch": {
+        "tags": ["Operator"],
+        "summary": "Accept, decline or ask for clarification on a request",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Recipient-scoped notification inbox",
+        "responses": {
+          "200": { "description": "Notifications and unread count" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "patch": {
+        "tags": ["Account"],
+        "summary": "Mark one or all notifications read",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Profile and privacy preferences",
+        "responses": {
+          "200": { "description": "Profile" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "patch": {
+        "tags": ["Account"],
+        "summary": "Update profile or consent (each consent change is audited)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/activity": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Sale activity timeline for the participant",
+        "responses": {
+          "200": { "description": "Timeline" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/market-data/refresh": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Admin-only bounded OGD import (≤500 records per call) with an ingestion audit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import summary: received, accepted, rejected, duplicate, saved"
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "422": { "description": "Provider response failed validation" }
+        }
+      }
+    },
+    "/api/admin/market-forecasts": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Stage an offline forecast candidate (never published automatically)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Staged" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "description": "Candidate fails evaluation rules" }
+        }
+      },
+      "patch": {
+        "tags": ["Admin"],
+        "summary": "Approve or reject a staged candidate with a review note",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericBody" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Reviewed" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    }
+  }
+}
