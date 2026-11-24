@@ -4,6 +4,8 @@ Farmers can cancel their own transport or storage request while it is pending or
 
 ## Behaviour
 
+The cancellation action is available in the farmer workspace under Transport and storage → My requests.
+
 - The farmer confirms cancellation from the My requests list.
 - The server accepts only an exact request ID and the `cancel` action.
 - The update is scoped to the authenticated requester and current `pending` or `accepted` state.
