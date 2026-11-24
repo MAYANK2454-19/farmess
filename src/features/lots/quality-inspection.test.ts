@@ -78,7 +78,7 @@ test("rejects unknown checks and unsupported check results", () => {
       ...completeDraft.checks,
       unknown_check: "acceptable",
       appearance: "maybe",
-    } as QualityInspectionDraft["checks"],
+    } as unknown as QualityInspectionDraft["checks"],
   });
   assert.equal(result.valid, false);
   assert.ok(result.errors.some((error) => error.includes("Unknown quality check")));
