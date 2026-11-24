@@ -14,7 +14,7 @@
 .heading h2 {
   margin: 0 0 4px;
   color: var(--brand-primary);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .heading p,
@@ -22,7 +22,7 @@
 .cleanMessage {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -32,7 +32,7 @@
   border-radius: 7px;
   color: var(--brand-secondary);
   background: var(--soft-green);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -53,7 +53,7 @@
 
 .metrics dt {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .metrics dd {
@@ -72,7 +72,7 @@
 .details summary {
   color: var(--brand-secondary);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -89,7 +89,7 @@
   justify-content: space-between;
   gap: 12px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .details li strong {
@@ -100,7 +100,7 @@
 .note {
   padding-top: 10px;
   border-top: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 @media (max-width: 560px) {
@@ -121,7 +121,7 @@
   }
 
   .metrics dt {
-    font-size: 9px;
+    font-size: 12px;
   }
 
   .metrics dd {

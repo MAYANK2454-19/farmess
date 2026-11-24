@@ -21,7 +21,7 @@
 .emptyState p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -30,7 +30,7 @@
   flex: 0 1 340px;
   gap: 6px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -39,7 +39,7 @@
   flex-wrap: wrap;
   gap: 7px 14px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .context strong {
@@ -68,7 +68,7 @@
 
 .axisLabel {
   fill: #77847a;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .trendLine {
@@ -92,7 +92,7 @@
   gap: 7px;
   padding: 0 12px 5px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .legendDot {
@@ -118,7 +118,7 @@
 
 .emptyState strong {
   color: var(--brand-primary);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .gapNotice {
@@ -127,7 +127,7 @@
   background: var(--soft-gold);
   border: 1px solid #eee4ce;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -140,14 +140,14 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .historyTable caption {
   padding: 0 0 9px;
   color: var(--brand-primary);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-align: left;
 }
@@ -176,7 +176,7 @@
 .disclaimer {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 

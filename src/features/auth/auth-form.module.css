@@ -4,8 +4,8 @@
 
 .kicker {
   margin: 0 0 12px;
-  color: #2f7447;
-  font-size: 10px;
+  color: var(--brand-secondary);
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -13,18 +13,18 @@
 
 .title {
   margin: 0 0 10px;
-  color: #131a15;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(30px, 4vw, 40px);
-  font-weight: 500;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 650;
   line-height: 1.12;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.02em;
 }
 
 .description {
   margin: 0 0 27px;
-  color: #69766c;
-  font-size: 13px;
+  color: var(--muted);
+  font-size: 14px;
   line-height: 1.7;
 }
 
@@ -37,7 +37,7 @@
   display: grid;
   gap: 7px;
   color: #344238;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -45,11 +45,11 @@
   width: 100%;
   min-height: 46px;
   padding: 0 13px;
-  color: #131a15;
+  color: var(--text);
   background: #fff;
-  border: 1px solid #cfdacf;
-  border-radius: 2px;
-  font-size: 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
   font-weight: 400;
 }
 
@@ -58,26 +58,26 @@
 }
 
 .field input:focus {
-  border-color: #2f7447;
-  outline: 2px solid rgba(47, 116, 71, 0.12);
-  outline-offset: 0;
+  border-color: var(--brand-secondary);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(51, 107, 82, 0.16);
 }
 
 .submit {
   min-height: 46px;
   margin-top: 2px;
   color: #fff;
-  background: #173f2b;
-  border: 1px solid #173f2b;
-  border-radius: 2px;
+  background: var(--brand-primary);
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
   transition: background 140ms ease;
 }
 
 .submit:hover {
-  background: #24583a;
+  background: var(--brand-primary-hover);
 }
 
 .submit:disabled {
@@ -89,7 +89,7 @@
 .message {
   margin: 0;
   padding: 10px 12px;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -100,9 +100,9 @@
 }
 
 .message {
-  color: #24583a;
+  color: var(--brand-primary-hover);
   background: #eff6ee;
-  border-left: 3px solid #2f7447;
+  border-left: 3px solid var(--brand-secondary);
 }
 
 .switches {
@@ -117,11 +117,11 @@
 
 .switches button {
   padding: 0;
-  color: #2f7447;
+  color: var(--brand-secondary);
   background: transparent;
   border: 0;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 

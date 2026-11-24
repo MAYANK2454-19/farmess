@@ -99,7 +99,7 @@ export function LotForm() {
   if (review) {
     return (
       <section className="panel module-card" aria-labelledby="review-lot-heading">
-        <div className="module-status">Local review only</div>
+        <div className="module-status">Step 2 of 2 · Review before saving</div>
         <h2 id="review-lot-heading">Review your produce lot</h2>
         <p>
           Check the information below before saving. New lots are stored as private drafts and are
@@ -174,7 +174,7 @@ export function LotForm() {
 
   return (
     <form className="panel module-card" onSubmit={handleSubmit} noValidate>
-      <div className="module-status">P0 farmer flow · validated form</div>
+      <div className="module-status">Step 1 of 2 · Lot details</div>
       <h2>Produce lot details</h2>
       <p>
         Enter what you have available and when it can be collected. Use a village, locality or
