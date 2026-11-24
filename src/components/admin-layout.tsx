@@ -8,14 +8,24 @@ const navigation = [
   { label: "Forecast review", href: "/admin/forecasts" },
 ];
 
-export function AdminLayout({ children, displayName }: { children: ReactNode; displayName: string }) {
+export function AdminLayout({
+  children,
+  displayName,
+}: {
+  children: ReactNode;
+  displayName: string;
+}) {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar" aria-label="Admin navigation">
-        <Link href="/admin" className="admin-brand">farmess <span>STEWARDSHIP</span></Link>
+        <Link href="/admin" className="admin-brand">
+          farmess <span>STEWARDSHIP</span>
+        </Link>
         <nav className="admin-nav">
           {navigation.map((item) => (
-            <Link href={item.href} key={item.href}>{item.label}</Link>
+            <Link href={item.href} key={item.href}>
+              {item.label}
+            </Link>
           ))}
         </nav>
         <div className="admin-sidebar-footer">

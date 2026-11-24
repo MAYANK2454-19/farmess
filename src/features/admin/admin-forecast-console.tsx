@@ -179,8 +179,8 @@ export function AdminForecastConsole({
           </div>
         </div>
         <div className="admin-notice">
-          Only a candidate which beats the persistence baseline on both MAE and sMAPE can be
-          staged. Staging does not publish a forecast. A separate human review is required.
+          Only a candidate which beats the persistence baseline on both MAE and sMAPE can be staged.
+          Staging does not publish a forecast. A separate human review is required.
         </div>
         <form className="admin-form" onSubmit={stageCandidate}>
           <label className="admin-full-field">
@@ -203,8 +203,16 @@ export function AdminForecastConsole({
               required
             />
           </label>
-          {stageError ? <p className="admin-error" role="alert">{stageError}</p> : null}
-          {stageMessage ? <p className="admin-success" role="status">{stageMessage}</p> : null}
+          {stageError ? (
+            <p className="admin-error" role="alert">
+              {stageError}
+            </p>
+          ) : null}
+          {stageMessage ? (
+            <p className="admin-success" role="status">
+              {stageMessage}
+            </p>
+          ) : null}
           <button className="button button-primary" type="submit" disabled={stagePending}>
             {stagePending ? "Checking candidate…" : "Stage candidate for review"}
           </button>
@@ -223,34 +231,66 @@ export function AdminForecastConsole({
           <span className="admin-status">{candidates.length} pending</span>
         </div>
 
-        {reviewError ? <p className="admin-error" role="alert">{reviewError}</p> : null}
+        {reviewError ? (
+          <p className="admin-error" role="alert">
+            {reviewError}
+          </p>
+        ) : null}
         {candidates.length === 0 ? (
           <div className="panel admin-empty">
             <strong>No forecast candidates are waiting for review.</strong>
-            <p>Once real market observations are available, train a candidate and stage its two output files above.</p>
+            <p>
+              Once real market observations are available, train a candidate and stage its two
+              output files above.
+            </p>
           </div>
         ) : (
           candidates.map((candidate) => (
             <article className="panel admin-candidate" key={candidate.id}>
               <div className="admin-candidate-heading">
                 <div>
-                  <p className="eyebrow">{[candidate.state, candidate.district].filter(Boolean).join(" · ")}</p>
-                  <h3>{candidate.crop} · {candidate.market_name}</h3>
-                  <p className="panel-caption">{candidate.model_name} · {candidate.model_version}</p>
+                  <p className="eyebrow">
+                    {[candidate.state, candidate.district].filter(Boolean).join(" · ")}
+                  </p>
+                  <h3>
+                    {candidate.crop} · {candidate.market_name}
+                  </h3>
+                  <p className="panel-caption">
+                    {candidate.model_name} · {candidate.model_version}
+                  </p>
                 </div>
                 <span className="admin-status">Candidate</span>
               </div>
               <div className="admin-metrics">
-                <span>Training rows <strong>{candidate.training_observation_count}</strong></span>
-                <span>Training period <strong>{dateLabel(candidate.training_start)} – {dateLabel(candidate.training_end)}</strong></span>
-                <span>Horizon <strong>{candidate.horizon_days} days</strong></span>
-                <span>Forecast points <strong>{candidate.points.length}</strong></span>
+                <span>
+                  Training rows <strong>{candidate.training_observation_count}</strong>
+                </span>
+                <span>
+                  Training period{" "}
+                  <strong>
+                    {dateLabel(candidate.training_start)} – {dateLabel(candidate.training_end)}
+                  </strong>
+                </span>
+                <span>
+                  Horizon <strong>{candidate.horizon_days} days</strong>
+                </span>
+                <span>
+                  Forecast points <strong>{candidate.points.length}</strong>
+                </span>
               </div>
               <div className="admin-metrics">
-                <span>Baseline MAE <strong>{money(candidate.baseline_mae_paise_per_quintal)}</strong></span>
-                <span>Model MAE <strong>{money(candidate.model_mae_paise_per_quintal)}</strong></span>
-                <span>Baseline sMAPE <strong>{candidate.baseline_smape_percent ?? "—"}%</strong></span>
-                <span>Model sMAPE <strong>{candidate.model_smape_percent ?? "—"}%</strong></span>
+                <span>
+                  Baseline MAE <strong>{money(candidate.baseline_mae_paise_per_quintal)}</strong>
+                </span>
+                <span>
+                  Model MAE <strong>{money(candidate.model_mae_paise_per_quintal)}</strong>
+                </span>
+                <span>
+                  Baseline sMAPE <strong>{candidate.baseline_smape_percent ?? "—"}%</strong>
+                </span>
+                <span>
+                  Model sMAPE <strong>{candidate.model_smape_percent ?? "—"}%</strong>
+                </span>
               </div>
               {candidate.points.length > 0 ? (
                 <div className="table-wrap">
@@ -275,12 +315,18 @@ export function AdminForecastConsole({
                     </tbody>
                   </table>
                 </div>
-              ) : <p className="admin-notice">No forecast points are attached. Do not approve this candidate.</p>}
+              ) : (
+                <p className="admin-notice">
+                  No forecast points are attached. Do not approve this candidate.
+                </p>
+              )}
               <label className="admin-full-field">
                 Human review note (minimum 20 characters)
                 <textarea
                   value={notes[candidate.id] ?? ""}
-                  onChange={(event) => setNotes((current) => ({ ...current, [candidate.id]: event.target.value }))}
+                  onChange={(event) =>
+                    setNotes((current) => ({ ...current, [candidate.id]: event.target.value }))
+                  }
                   rows={3}
                   minLength={20}
                   maxLength={1000}

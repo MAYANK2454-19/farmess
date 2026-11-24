@@ -26,8 +26,7 @@ export type ForecastCandidatePayload = {
 };
 
 export type ForecastPayloadResult =
-  | { ok: true; payload: ForecastCandidatePayload }
-  | { ok: false; error: string };
+  { ok: true; payload: ForecastCandidatePayload } | { ok: false; error: string };
 
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -73,11 +72,7 @@ export function buildForecastCandidatePayload(
 
   const series = manifestValue.series;
   const evaluation = manifestValue.evaluation;
-  if (
-    !isRecord(evaluation) ||
-    !isRecord(evaluation.baseline) ||
-    !isRecord(evaluation.model)
-  ) {
+  if (!isRecord(evaluation) || !isRecord(evaluation.baseline) || !isRecord(evaluation.model)) {
     return { ok: false, error: "The manifest is missing its baseline/model evaluation." };
   }
 
@@ -118,8 +113,7 @@ export function buildForecastCandidatePayload(
   ) {
     return {
       ok: false,
-      error:
-        "At least 120 unique validated observations and 40 actual training rows are required.",
+      error: "At least 120 unique validated observations and 40 actual training rows are required.",
     };
   }
   if (
@@ -144,7 +138,10 @@ export function buildForecastCandidatePayload(
     return { ok: false, error: "The model training date range is invalid." };
   }
   if (!Array.isArray(pointsValue) || pointsValue.length !== horizon) {
-    return { ok: false, error: "The forecast-points file must contain exactly the declared horizon." };
+    return {
+      ok: false,
+      error: "The forecast-points file must contain exactly the declared horizon.",
+    };
   }
 
   const points: ForecastCandidatePayload["points"] = [];

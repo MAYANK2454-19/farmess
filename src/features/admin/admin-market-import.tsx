@@ -110,8 +110,8 @@ export function AdminMarketImport({
           <div>
             <h2 className="panel-title">Import mandi observations</h2>
             <p className="panel-caption">
-              Request source records from OGD/AGMARKNET. Every import is validated, deduplicated
-              and recorded in the ingestion audit.
+              Request source records from OGD/AGMARKNET. Every import is validated, deduplicated and
+              recorded in the ingestion audit.
             </p>
           </div>
           <span className={apiKeyConfigured ? "admin-status admin-status-ready" : "admin-status"}>
@@ -130,44 +130,94 @@ export function AdminMarketImport({
           <div className="admin-form-grid">
             <label>
               Commodity
-              <input value={commodity} onChange={(event) => setCommodity(event.target.value)} placeholder="e.g. Onion" maxLength={120} />
+              <input
+                value={commodity}
+                onChange={(event) => setCommodity(event.target.value)}
+                placeholder="e.g. Onion"
+                maxLength={120}
+              />
             </label>
             <label>
               State
-              <input value={state} onChange={(event) => setState(event.target.value)} placeholder="e.g. Maharashtra" maxLength={120} />
+              <input
+                value={state}
+                onChange={(event) => setState(event.target.value)}
+                placeholder="e.g. Maharashtra"
+                maxLength={120}
+              />
             </label>
             <label>
               District
-              <input value={district} onChange={(event) => setDistrict(event.target.value)} placeholder="Optional district" maxLength={120} />
+              <input
+                value={district}
+                onChange={(event) => setDistrict(event.target.value)}
+                placeholder="Optional district"
+                maxLength={120}
+              />
             </label>
             <label>
               Mandi
-              <input value={market} onChange={(event) => setMarket(event.target.value)} placeholder="Optional market" maxLength={120} />
+              <input
+                value={market}
+                onChange={(event) => setMarket(event.target.value)}
+                placeholder="Optional market"
+                maxLength={120}
+              />
             </label>
             <label>
               Records per page
-              <input type="number" min={1} max={500} step={1} value={limit} onChange={(event) => setLimit(event.target.value)} required />
+              <input
+                type="number"
+                min={1}
+                max={500}
+                step={1}
+                value={limit}
+                onChange={(event) => setLimit(event.target.value)}
+                required
+              />
             </label>
             <label>
               Source offset
-              <input type="number" min={0} max={100000} step={1} value={offset} onChange={(event) => setOffset(event.target.value)} required />
+              <input
+                type="number"
+                min={0}
+                max={100000}
+                step={1}
+                value={offset}
+                onChange={(event) => setOffset(event.target.value)}
+                required
+              />
             </label>
           </div>
           <p className="admin-help">
             Use offset 0 for the newest source page. Increase it in later requests to import
             historical pages without restarting from the first page.
           </p>
-          {error ? <p className="admin-error" role="alert">{error}</p> : null}
+          {error ? (
+            <p className="admin-error" role="alert">
+              {error}
+            </p>
+          ) : null}
           {result ? (
             <div className="admin-result" role="status">
               <strong>Import result: {result.status ?? "completed"}</strong>
               <p>{result.message ?? "The source response was processed."}</p>
               <div className="admin-metrics">
-                <span>Received <strong>{result.recordsReceived ?? 0}</strong></span>
-                <span>Accepted <strong>{result.recordsAccepted ?? 0}</strong></span>
-                <span>Rejected <strong>{result.recordsRejected ?? 0}</strong></span>
-                <span>Upserted <strong>{result.recordsUpserted ?? 0}</strong></span>
-                <span>Duplicates removed <strong>{result.duplicatesRemoved ?? 0}</strong></span>
+                <span>
+                  Received <strong>{result.recordsReceived ?? 0}</strong>
+                </span>
+                <span>
+                  Accepted <strong>{result.recordsAccepted ?? 0}</strong>
+                </span>
+                <span>
+                  Rejected <strong>{result.recordsRejected ?? 0}</strong>
+                </span>
+                <span>
+                  Upserted <strong>{result.recordsUpserted ?? 0}</strong>
+                </span>
+                <span>
+                  Duplicates removed <strong>{result.duplicatesRemoved ?? 0}</strong>
+                </span>
               </div>
             </div>
           ) : null}
@@ -208,10 +258,14 @@ export function AdminMarketImport({
                   <tr key={run.id}>
                     <td>{dateTime(run.started_at)}</td>
                     <td>{run.source_name}</td>
-                    <td><span className="admin-status">{run.status}</span></td>
+                    <td>
+                      <span className="admin-status">{run.status}</span>
+                    </td>
                     <td>{run.records_received}</td>
                     <td>{run.records_upserted}</td>
-                    <td><code>{JSON.stringify(run.request_filters)}</code></td>
+                    <td>
+                      <code>{JSON.stringify(run.request_filters)}</code>
+                    </td>
                     <td>{run.error_message ?? "—"}</td>
                   </tr>
                 ))}

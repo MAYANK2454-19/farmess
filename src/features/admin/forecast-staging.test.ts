@@ -71,10 +71,7 @@ test("rejects automatically approved or non-INR manifests", () => {
     buildForecastCandidatePayload(manifest({ automaticallyApproved: true }), points).ok,
     false,
   );
-  assert.equal(
-    buildForecastCandidatePayload(manifest({ priceUnit: "INR/kg" }), points).ok,
-    false,
-  );
+  assert.equal(buildForecastCandidatePayload(manifest({ priceUnit: "INR/kg" }), points).ok, false);
 });
 
 test("rejects models that do not beat both persistence metrics", () => {
@@ -83,10 +80,7 @@ test("rejects models that do not beat both persistence metrics", () => {
     baseline: { maePaisePerQuintal: 12000, smapePercent: 12 },
     model: { maePaisePerQuintal: 11000, smapePercent: 12 },
   };
-  assert.equal(
-    buildForecastCandidatePayload({ ...candidate, evaluation }, points).ok,
-    false,
-  );
+  assert.equal(buildForecastCandidatePayload({ ...candidate, evaluation }, points).ok, false);
 });
 
 test("accepts 120 validated observations while keeping the holdout out of training rows", () => {
@@ -119,10 +113,7 @@ test("rejects insufficient validated observations or an invalid training split",
 });
 
 test("rejects invalid price intervals and malformed dates", () => {
-  const invalidInterval = [
-    { ...points[0], lowerBoundPaisePerQuintal: 300000 },
-    points[1],
-  ];
+  const invalidInterval = [{ ...points[0], lowerBoundPaisePerQuintal: 300000 }, points[1]];
   assert.equal(buildForecastCandidatePayload(manifest(), invalidInterval).ok, false);
   const invalidDate = [{ ...points[0], targetDate: "2026-02-30" }, points[1]];
   assert.equal(buildForecastCandidatePayload(manifest(), invalidDate).ok, false);
@@ -132,9 +123,6 @@ test("rejects out-of-order forecasts and forecast dates before the training end"
   const outOfOrder = [points[1], points[0]];
   assert.equal(buildForecastCandidatePayload(manifest(), outOfOrder).ok, false);
 
-  const beforeTrainingEnd = [
-    { ...points[0], targetDate: "2026-09-30" },
-    points[1],
-  ];
+  const beforeTrainingEnd = [{ ...points[0], targetDate: "2026-09-30" }, points[1]];
   assert.equal(buildForecastCandidatePayload(manifest(), beforeTrainingEnd).ok, false);
 });
