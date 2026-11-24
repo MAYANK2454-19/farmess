@@ -6,11 +6,29 @@ on:
       - feat/ogd-market-data-pagination
       - feat/market-source-quality-diagnostics
       - feat/market-source-quality-ui
+      - feat/market-record-freshness-labels
+      - feat/market-observation-sorting
+      - feat/market-observation-advanced-filters
+      - feat/market-price-summary-insights
+      - feat/printable-market-observation-report
+      - feat/market-mandi-price-comparison
+      - feat/market-comparison-csv-export
+      - feat/market-filter-shareable-links
+      - feat/market-copy-share-link
   pull_request:
     branches:
       - feat/market-import-duplicate-reconciliation
       - feat/ogd-market-data-pagination
       - feat/market-source-quality-diagnostics
+      - feat/market-source-quality-ui
+      - feat/market-record-freshness-labels
+      - feat/market-observation-sorting
+      - feat/market-observation-advanced-filters
+      - feat/market-price-summary-insights
+      - feat/printable-market-observation-report
+      - feat/market-mandi-price-comparison
+      - feat/market-comparison-csv-export
+      - feat/market-filter-shareable-links
     paths:
       - "src/lib/market-data/ogd-pagination.ts"
       - "src/lib/market-data/ogd-pagination.test.ts"
@@ -20,13 +38,41 @@ on:
       - "src/lib/market-data/normalize-diagnostics.test.ts"
       - "src/lib/market-data/source-quality.ts"
       - "src/lib/market-data/source-quality.test.ts"
+      - "src/lib/market-data/record-freshness.ts"
+      - "src/lib/market-data/record-freshness.test.ts"
+      - "src/lib/market-data/sort-records.ts"
+      - "src/lib/market-data/sort-records.test.ts"
+      - "src/lib/market-data/filter-records.ts"
+      - "src/lib/market-data/filter-records.test.ts"
+      - "src/lib/market-data/summary.ts"
+      - "src/lib/market-data/summary.test.ts"
+      - "src/lib/market-data/market-comparison.ts"
+      - "src/lib/market-data/market-comparison.test.ts"
+      - "src/lib/market-data/market-comparison-csv.ts"
+      - "src/lib/market-data/market-comparison-csv.test.ts"
+      - "src/lib/market-data/market-search-state.ts"
+      - "src/lib/market-data/market-search-state.test.ts"
+      - "src/features/market-data/market-comparison-panel.tsx"
+      - "src/features/market-data/market-comparison-panel.module.css"
+      - "src/features/market-data/market-summary-panel.tsx"
+      - "src/features/market-data/market-summary-panel.module.css"
       - "src/features/market-data/source-quality-panel.tsx"
       - "src/features/market-data/source-quality-panel.module.css"
       - "src/app/(workspace)/farmer/markets/page.tsx"
+      - "src/app/(workspace)/farmer/markets/markets.module.css"
+      - "docs/PRINTABLE_MARKET_OBSERVATION_REPORT.md"
       - "src/app/api/market-data/refresh/route.ts"
       - "docs/OGD_MARKET_DATA_PAGINATION.md"
       - "docs/OGD_SOURCE_QUALITY_DIAGNOSTICS.md"
       - "docs/MARKET_SOURCE_QUALITY_UI.md"
+      - "docs/MARKET_RECORD_FRESHNESS_LABELS.md"
+      - "docs/MARKET_OBSERVATION_SORTING.md"
+      - "docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md"
+      - "docs/MARKET_PRICE_SUMMARY_INSIGHTS.md"
+      - "docs/MARKET_MANDI_PRICE_COMPARISON.md"
+      - "docs/MARKET_COMPARISON_CSV_EXPORT.md"
+      - "docs/MARKET_FILTER_SHAREABLE_LINKS.md"
+      - "docs/MARKET_COPY_SHARE_LINK.md"
       - ".github/workflows/ogd-market-data-pagination.yml"
 
 permissions:
@@ -53,7 +99,7 @@ jobs:
         run: npm ci
 
       - name: Prettier
-        run: npx prettier --check src/lib/market-data/source-quality.ts src/lib/market-data/source-quality.test.ts src/features/market-data/source-quality-panel.tsx src/features/market-data/source-quality-panel.module.css 'src/app/(workspace)/farmer/markets/page.tsx' docs/MARKET_SOURCE_QUALITY_UI.md src/lib/market-data/ogd-pagination.ts src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/ogd-provider.ts src/lib/market-data/normalize.ts src/lib/market-data/types.ts src/lib/market-data/normalize-diagnostics.test.ts src/app/api/market-data/refresh/route.ts docs/OGD_MARKET_DATA_PAGINATION.md docs/OGD_SOURCE_QUALITY_DIAGNOSTICS.md .github/workflows/ogd-market-data-pagination.yml
+        run: npx prettier --check src/lib/market-data/market-comparison.ts src/lib/market-data/market-comparison.test.ts src/lib/market-data/market-comparison-csv.ts src/lib/market-data/market-comparison-csv.test.ts src/features/market-data/market-comparison-panel.tsx src/features/market-data/market-comparison-panel.module.css docs/MARKET_COMPARISON_CSV_EXPORT.md docs/MARKET_FILTER_SHAREABLE_LINKS.md docs/MARKET_COPY_SHARE_LINK.md docs/MARKET_MANDI_PRICE_COMPARISON.md src/lib/market-data/summary.ts src/lib/market-data/summary.test.ts src/features/market-data/market-summary-panel.tsx src/features/market-data/market-summary-panel.module.css docs/MARKET_PRICE_SUMMARY_INSIGHTS.md src/lib/market-data/filter-records.ts src/lib/market-data/filter-records.test.ts docs/MARKET_OBSERVATION_ADVANCED_FILTERS.md src/lib/market-data/sort-records.ts src/lib/market-data/sort-records.test.ts 'src/app/(workspace)/farmer/markets/page.tsx' 'src/app/(workspace)/farmer/markets/markets.module.css' docs/MARKET_OBSERVATION_SORTING.md docs/PRINTABLE_MARKET_OBSERVATION_REPORT.md .github/workflows/ogd-market-data-pagination.yml
 
       - name: ESLint
         run: npm run lint
@@ -65,9 +111,9 @@ jobs:
         if: always()
         run: npm test
 
-      - name: Focused OGD tests
+      - name: Focused market-data summary, filter and sorting tests
         if: always()
-        run: node --experimental-strip-types --test src/lib/market-data/ogd-pagination.test.ts src/lib/market-data/normalize-diagnostics.test.ts src/lib/market-data/source-quality.test.ts
+        run: node --experimental-strip-types --test src/lib/market-data/market-comparison.test.ts src/lib/market-data/market-comparison-csv.test.ts src/lib/market-data/market-search-state.test.ts src/lib/market-data/summary.test.ts src/lib/market-data/filter-records.test.ts src/lib/market-data/sort-records.test.ts
 
       - name: Production build
         if: always()
