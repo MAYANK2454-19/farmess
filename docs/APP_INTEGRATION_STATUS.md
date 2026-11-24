@@ -26,7 +26,7 @@ The private `private.ml_model_registry` table is currently in a schema that has 
 - `GET /api/market-prices` uses the server-side market-data adapter and preserves source status/provenance in the response.
 - `POST /api/market-data/refresh` is admin-only. It validates normalized source observations, converts INR to paise, upserts dated records and records an ingestion audit entry.
 - `GET /api/market-forecasts` returns only approved forecast runs. Without an approved run, the API reports insufficient data rather than inventing a forecast.
-- `ml/market_forecast/train.py` is an offline HistGradientBoosting candidate pipeline. It groups dated observations by crop/variety/geography/market, requires at least 90 unique observations in a series, uses a chronological holdout and must beat a last-observation baseline on both MAE and sMAPE. Candidate forecasts require a separate human review before publication.
+- `ml/market_forecast/train.py` is an offline HistGradientBoosting candidate pipeline. It groups dated observations by crop/variety/geography/market, requires at least 120 unique observations in a series, uses a chronological holdout and must beat a last-observation baseline on both MAE and sMAPE. Candidate forecasts require a separate human review before publication.
 
 **There is no trained market-forecast model or approved forecast at this time.** The database had no market observations when inspected. A market-data steward/admin account and a permitted, functioning data source are needed before this pipeline can be trained.
 
