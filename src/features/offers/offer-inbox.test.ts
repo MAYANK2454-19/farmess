@@ -54,11 +54,15 @@ test("status filter separates expired pending offers from actionable pending off
   const items = [offer({ id: "live" }), offer({ id: "expired", is_expired: true })];
 
   assert.deepEqual(
-    filterOfferInbox(items, { status: "pending", query: "", sort: "newest" }).map((item) => item.id),
+    filterOfferInbox(items, { status: "pending", query: "", sort: "newest" }).map(
+      (item) => item.id,
+    ),
     ["live"],
   );
   assert.deepEqual(
-    filterOfferInbox(items, { status: "expired", query: "", sort: "newest" }).map((item) => item.id),
+    filterOfferInbox(items, { status: "expired", query: "", sort: "newest" }).map(
+      (item) => item.id,
+    ),
     ["expired"],
   );
 });
