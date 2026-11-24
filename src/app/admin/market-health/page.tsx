@@ -98,11 +98,26 @@ export default async function AdminMarketHealthPage() {
               </p>
             </div>
             <div className="admin-health-quality-grid">
-              <div><strong>{health.freshness.fresh}</strong><span>Within 48 hours</span></div>
-              <div><strong>{health.freshness.stale}</strong><span>Older than 48 hours</span></div>
-              <div><strong>{health.freshness.future}</strong><span>Future-dated</span></div>
-              <div><strong>{health.freshness.invalid}</strong><span>Invalid dates</span></div>
-              <div><strong>{health.missingModalPriceCount}</strong><span>Missing modal price</span></div>
+              <div>
+                <strong>{health.freshness.fresh}</strong>
+                <span>Within 48 hours</span>
+              </div>
+              <div>
+                <strong>{health.freshness.stale}</strong>
+                <span>Older than 48 hours</span>
+              </div>
+              <div>
+                <strong>{health.freshness.future}</strong>
+                <span>Future-dated</span>
+              </div>
+              <div>
+                <strong>{health.freshness.invalid}</strong>
+                <span>Invalid dates</span>
+              </div>
+              <div>
+                <strong>{health.missingModalPriceCount}</strong>
+                <span>Missing modal price</span>
+              </div>
             </div>
             <p className="admin-help">
               Valid observation dates in this sample: {formatDate(health.dateRange.oldest)} to{" "}
@@ -123,14 +138,25 @@ export default async function AdminMarketHealthPage() {
             ) : (
               <div className="table-wrap">
                 <table className="produce-table">
-                  <thead><tr><th>Market</th><th>Observations</th><th>Latest date</th><th>Latest status</th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th>Market</th>
+                      <th>Observations</th>
+                      <th>Latest date</th>
+                      <th>Latest status</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {health.marketsNeedingReview.map((market) => (
                       <tr key={market.name}>
-                        <td><strong>{market.name}</strong></td>
+                        <td>
+                          <strong>{market.name}</strong>
+                        </td>
                         <td>{market.observations}</td>
                         <td>{formatDate(market.latestObservationDate)}</td>
-                        <td><span className="admin-status">{statusLabel(market.latestStatus)}</span></td>
+                        <td>
+                          <span className="admin-status">{statusLabel(market.latestStatus)}</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -152,14 +178,25 @@ export default async function AdminMarketHealthPage() {
             ) : (
               <div className="table-wrap">
                 <table className="produce-table">
-                  <thead><tr><th>Source</th><th>Observations in sample</th><th>Latest date</th><th>Latest status</th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th>Source</th>
+                      <th>Observations in sample</th>
+                      <th>Latest date</th>
+                      <th>Latest status</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {health.sources.map((source) => (
                       <tr key={source.name}>
-                        <td><strong>{source.name}</strong></td>
+                        <td>
+                          <strong>{source.name}</strong>
+                        </td>
                         <td>{source.observations}</td>
                         <td>{formatDate(source.latestObservationDate)}</td>
-                        <td><span className="admin-status">{statusLabel(source.latestStatus)}</span></td>
+                        <td>
+                          <span className="admin-status">{statusLabel(source.latestStatus)}</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
