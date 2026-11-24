@@ -15,9 +15,7 @@ function isCalendarDate(value: unknown): value is string {
   return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
 
-export function parseOperatorListingUpdate(
-  input: unknown,
-): OperatorListingUpdateResult {
+export function parseOperatorListingUpdate(input: unknown): OperatorListingUpdateResult {
   if (typeof input !== "object" || input === null || Array.isArray(input)) {
     return { valid: false, error: "Send valid listing availability and capacity details." };
   }
@@ -34,7 +32,9 @@ export function parseOperatorListingUpdate(
     Object.keys(body).length !== allowed.length ||
     Object.keys(body).some((key) => !allowed.includes(key)) ||
     typeof body.id !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id)
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      body.id,
+    )
   ) {
     return { valid: false, error: "Choose a valid listing and only editable fields." };
   }
