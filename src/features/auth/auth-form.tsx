@@ -10,7 +10,7 @@ type AuthMode = "sign-in" | "sign-up" | "reset";
 function workspaceForRole(role: unknown): string {
   if (role === "buyer") return "/buyer";
   if (role === "operator") return "/operator";
-  if (role === "admin") return "/workspace-unavailable";
+  if (role === "admin") return "/admin";
   return "/farmer";
 }
 
