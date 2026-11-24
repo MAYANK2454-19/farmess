@@ -7,10 +7,7 @@ const requestId = "a0b1c2d3-e4f5-4678-9012-abcdefabcdef";
 test("accepts an exact provider cancellation action", () => {
   assert.deepEqual(
     parseProviderRequestCancellation({ id: requestId, action: "cancel" }),
-    {
-      valid: true,
-      id: requestId,
-    },
+    { valid: true, id: requestId },
   );
 });
 
