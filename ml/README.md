@@ -4,11 +4,11 @@ Farmess keeps predictive models separate from ordinary application logic. A pred
 
 ## Current components
 
-| Component | Current implementation | What users see |
-| --- | --- | --- |
-| Mandi price forecasting | Offline HistGradientBoosting regressor, trained separately for each crop/market series | Only approved forecast runs are visible. Without an approved run, the API returns an explicit insufficient-data response. |
-| Local logistics discovery | PostGIS radius search plus an explainable rules-based ranking | Nearby active provider listings and match explanations. This is not currently an ML prediction. |
-| Logistics preference ranker | Offline HistGradientBoosting classifier trained from explicit 1–2 / 4–5 recommendation feedback | Candidate model only; never claims that a provider will accept or complete a request. |
+| Component                   | Current implementation                                                                          | What users see                                                                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Mandi price forecasting     | Offline HistGradientBoosting regressor, trained separately for each crop/market series          | Only approved forecast runs are visible. Without an approved run, the API returns an explicit insufficient-data response. |
+| Local logistics discovery   | PostGIS radius search plus an explainable rules-based ranking                                   | Nearby active provider listings and match explanations. This is not currently an ML prediction.                           |
+| Logistics preference ranker | Offline HistGradientBoosting classifier trained from explicit 1–2 / 4–5 recommendation feedback | Candidate model only; never claims that a provider will accept or complete a request.                                     |
 
 No synthetic rows are inserted into the production database to make these components appear active.
 
