@@ -3415,3 +3415,109 @@ h1 {
     justify-content: flex-start;
   }
 }
+
+
+/* Farmer offer inbox filters */
+.offer-inbox-tools {
+  display: grid;
+  gap: 13px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.offer-inbox-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.offer-inbox-tab {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  color: var(--text-secondary);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.offer-inbox-tab[aria-pressed="true"] {
+  color: var(--brand-primary);
+  background: var(--brand-tint);
+  border-color: #b8d2ba;
+}
+
+.offer-inbox-tab-count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.offer-inbox-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 210px);
+  gap: 10px;
+}
+
+.offer-inbox-search,
+.offer-inbox-sort {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 11px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.offer-inbox-search-label,
+.offer-inbox-sort-label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.offer-inbox-results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.offer-inbox-clear {
+  padding: 0;
+  color: var(--brand-secondary);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.offer-inbox-clear:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.offer-inbox-empty {
+  min-height: 150px;
+}
+
+@media (max-width: 560px) {
+  .offer-inbox-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-inbox-tools {
+    padding-inline: 15px;
+  }
+}
