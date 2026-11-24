@@ -1,8 +1,9 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -53,3 +54,5 @@ export async function PATCH(request: NextRequest) {
 
   return NextResponse.json({ offer: data });
 }
+
+export const PATCH = withApiLogging("/api/buyer-offers", "PATCH", handlePATCH);

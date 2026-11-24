@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { parseAccessRequest } from "@/features/access/access-request";
 import { getFarmessSession } from "@/lib/auth/session";
@@ -9,7 +10,7 @@ const REQUEST_SELECT =
   "id,requested_role,requester_name,organisation_name,reason,status,review_note,created_at,reviewed_at";
 
 /** The signed-in user's own buyer/operator access requests. */
-export async function GET() {
+async function handleGET() {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json({ error: "Sign in to view access requests." }, { status: 401 });
@@ -34,7 +35,7 @@ export async function GET() {
 }
 
 /** A farmer account asks for buyer or operator access; an admin reviews it. */
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -88,3 +89,6 @@ export async function POST(request: NextRequest) {
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/access-requests", "GET", handleGET);
+export const POST = withApiLogging("/api/access-requests", "POST", handlePOST);

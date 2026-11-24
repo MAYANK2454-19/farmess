@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { parseProviderVerificationReview } from "@/features/admin/provider-verification";
 import { getFarmessSession } from "@/lib/auth/session";
@@ -5,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -63,3 +64,5 @@ export async function PATCH(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const PATCH = withApiLogging("/api/admin/provider-verification", "PATCH", handlePATCH);

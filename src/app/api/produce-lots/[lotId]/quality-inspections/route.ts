@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { assessProduceQuality, type QualityCheck } from "@/features/lots/quality-inspection";
 import { getFarmessSession } from "@/lib/auth/session";
@@ -22,7 +23,7 @@ async function getFarmerLot(lotId: string, ownerId: string) {
     .maybeSingle();
 }
 
-export async function GET(_request: NextRequest, context: RouteContext) {
+async function handleGET(_request: NextRequest, context: RouteContext) {
   const session = await getFarmessSession();
   if (!session)
     return NextResponse.json({ error: "Sign in to view inspections." }, { status: 401 });
@@ -53,7 +54,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   );
 }
 
-export async function POST(request: NextRequest, context: RouteContext) {
+async function handlePOST(request: NextRequest, context: RouteContext) {
   if (request.headers.get("origin") !== request.nextUrl.origin)
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   const session = await getFarmessSession();
@@ -132,3 +133,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging(
+  "/api/produce-lots/[lotId]/quality-inspections",
+  "GET",
+  handleGET,
+);
+export const POST = withApiLogging(
+  "/api/produce-lots/[lotId]/quality-inspections",
+  "POST",
+  handlePOST,
+);

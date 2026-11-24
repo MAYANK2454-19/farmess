@@ -1,8 +1,9 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET() {
+async function handleGET() {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json({ error: "Sign in to view your notifications." }, { status: 401 });
@@ -26,7 +27,7 @@ export async function GET() {
   );
 }
 
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -70,3 +71,6 @@ export async function PATCH(request: NextRequest) {
 
   return NextResponse.json({ updated: Boolean(data) });
 }
+
+export const GET = withApiLogging("/api/notifications", "GET", handleGET);
+export const PATCH = withApiLogging("/api/notifications", "PATCH", handlePATCH);

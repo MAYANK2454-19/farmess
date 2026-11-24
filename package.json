@@ -14,7 +14,8 @@
     "test": "node scripts/run-tests.mjs",
     "format": "prettier --write .",
     "format:check": "node scripts/check-format.mjs",
-    "prepare": "simple-git-hooks || true"
+    "prepare": "simple-git-hooks || true",
+    "seed:demo": "node scripts/seed-demo-data.mjs"
   },
   "simple-git-hooks": {
     "pre-commit": "sh scripts/pre-commit.sh"

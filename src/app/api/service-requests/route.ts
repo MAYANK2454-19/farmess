@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -42,7 +43,7 @@ function optionalText(
   return { value: normalized || null, valid: true };
 }
 
-export async function GET() {
+async function handleGET() {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json(
@@ -89,7 +90,7 @@ export async function GET() {
   );
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -234,7 +235,7 @@ export async function POST(request: NextRequest) {
   );
 }
 
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -284,3 +285,7 @@ export async function PATCH(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/service-requests", "GET", handleGET);
+export const POST = withApiLogging("/api/service-requests", "POST", handlePOST);
+export const PATCH = withApiLogging("/api/service-requests", "PATCH", handlePATCH);

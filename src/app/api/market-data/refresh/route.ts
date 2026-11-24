@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -19,7 +20,7 @@ function rupeesToPaise(value: string | null): { value: number | null; valid: boo
   return { value: paise, valid: true };
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -251,3 +252,5 @@ export async function POST(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const POST = withApiLogging("/api/market-data/refresh", "POST", handlePOST);

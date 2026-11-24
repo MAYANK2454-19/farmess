@@ -1,9 +1,10 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const crop = params.get("crop")?.trim() || null;
   const market = params.get("market")?.trim() || null;
@@ -86,3 +87,5 @@ export async function GET(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/market-forecasts", "GET", handleGET);
