@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
-import { nextSixHourMaxPrecipitationProbability } from "@/lib/weather/forecast";
+import {
+  nextSixHourMaxPrecipitationProbability,
+  resolveOpenMeteoEndpoint,
+} from "@/lib/weather/forecast";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -71,12 +74,14 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const customerKey = process.env.OPEN_METEO_CUSTOMER_API_KEY?.trim();
-  const isVercelProduction = process.env.VERCEL_ENV === "production";
+  const customerKey = process.env.OPEN_METEO_CUSTOMER_API_KEY?.trim() || undefined;
+  const endpoint = resolveOpenMeteoEndpoint({
+    customerKey,
+    isVercelProduction: process.env.VERCEL_ENV === "production",
+    nonCommercialUseDeclared: process.env.OPEN_METEO_NON_COMMERCIAL_USE?.trim() === "true",
+  });
 
-  // Open-Meteo's public endpoint is for non-commercial evaluation only.
-  // Require a paid customer key for Vercel production deployments.
-  if (isVercelProduction && !customerKey) {
+  if (!endpoint) {
     return NextResponse.json(
       {
         error: "Weather forecasts are not enabled for this production deployment.",
@@ -85,9 +90,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const endpoint = customerKey
-    ? "https://customer-api.open-meteo.com/v1/forecast"
-    : "https://api.open-meteo.com/v1/forecast";
   const url = new URL(endpoint);
   url.searchParams.set("latitude", String(latitude));
   url.searchParams.set("longitude", String(longitude));

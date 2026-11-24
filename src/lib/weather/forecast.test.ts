@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { nextSixHourMaxPrecipitationProbability } from "./forecast.ts";
+import {
+  OPEN_METEO_CUSTOMER_ENDPOINT,
+  OPEN_METEO_PUBLIC_ENDPOINT,
+  nextSixHourMaxPrecipitationProbability,
+  resolveOpenMeteoEndpoint,
+} from "./forecast.ts";
 
 test("uses the six hourly readings starting at the current provider time", () => {
   const result = nextSixHourMaxPrecipitationProbability(
@@ -45,5 +50,51 @@ test("ignores invalid precipitation readings and returns null when none remain",
   assert.equal(
     nextSixHourMaxPrecipitationProbability(["2026-11-24T10:00"], [101], "2026-11-24T10:00"),
     null,
+  );
+});
+
+test("a paid customer key always selects the customer endpoint", () => {
+  for (const isVercelProduction of [true, false]) {
+    assert.equal(
+      resolveOpenMeteoEndpoint({
+        customerKey: "key",
+        isVercelProduction,
+        nonCommercialUseDeclared: false,
+      }),
+      OPEN_METEO_CUSTOMER_ENDPOINT,
+    );
+  }
+});
+
+test("production without a key or non-commercial declaration keeps weather disabled", () => {
+  assert.equal(
+    resolveOpenMeteoEndpoint({
+      customerKey: undefined,
+      isVercelProduction: true,
+      nonCommercialUseDeclared: false,
+    }),
+    null,
+  );
+});
+
+test("a non-commercial declaration allows the public endpoint in production", () => {
+  assert.equal(
+    resolveOpenMeteoEndpoint({
+      customerKey: undefined,
+      isVercelProduction: true,
+      nonCommercialUseDeclared: true,
+    }),
+    OPEN_METEO_PUBLIC_ENDPOINT,
+  );
+});
+
+test("non-production evaluation uses the public endpoint", () => {
+  assert.equal(
+    resolveOpenMeteoEndpoint({
+      customerKey: undefined,
+      isVercelProduction: false,
+      nonCommercialUseDeclared: false,
+    }),
+    OPEN_METEO_PUBLIC_ENDPOINT,
   );
 });

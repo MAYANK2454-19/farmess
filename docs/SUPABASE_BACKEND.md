@@ -98,7 +98,7 @@ Consequences:
 ## Remaining operational setup
 
 - Supply the owner-generated `DATA_GOV_IN_API_KEY` for mandi imports and `HEIGIT_API_KEY` for optional road routing.
-- A paid `OPEN_METEO_CUSTOMER_API_KEY` is required for weather on Vercel production; the public no-key endpoint is used only for non-production evaluation.
+- Weather on Vercel production needs a paid `OPEN_METEO_CUSTOMER_API_KEY`, or `OPEN_METEO_NON_COMMERCIAL_USE=true` when the owner confirms the deployment is non-commercial (free public endpoint).
 - Configure a verified-domain SMTP provider separately in Supabase Auth to deliver confirmation and password-reset emails reliably.
 - Create and test dedicated farmer, buyer, operator and admin accounts; verify access-denial paths and full user journeys against a new Vercel preview.
 - Populate service listings and market observations only from real providers and source-attributed records.
