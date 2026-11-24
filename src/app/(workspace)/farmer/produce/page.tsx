@@ -96,6 +96,7 @@ export default async function MyProducePage() {
                   <th scope="col">Available from</th>
                   <th scope="col">Sell by</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Quality checks</th>
                   <th scope="col">Marketplace</th>
                 </tr>
               </thead>
@@ -121,6 +122,11 @@ export default async function MyProducePage() {
                       <span className={"produce-status produce-status-" + lot.status}>
                         {formatStatus(lot.status)}
                       </span>
+                    </td>
+                    <td>
+                      <Link href={`/farmer/produce/${lot.id}/quality`} className="text-link">
+                        Record / view
+                      </Link>
                     </td>
                     <td>
                       <LotStatusButton lotId={lot.id} status={lot.status} />
