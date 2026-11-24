@@ -77,7 +77,8 @@ export function AdminProviderVerificationConsole({
     event.preventDefault();
     if (busyId) return;
 
-    const verificationState = states[listing.id] ?? (listing.verification_state as ProviderVerificationState);
+    const verificationState =
+      states[listing.id] ?? (listing.verification_state as ProviderVerificationState);
     const reviewNote = notes[listing.id] ?? "";
     if (reviewNote.trim().length < 20 || reviewNote.trim().length > 500) {
       setError("Review note must contain 20 to 500 characters.");
@@ -99,7 +100,8 @@ export function AdminProviderVerificationConsole({
         }),
       });
       const payload = (await response.json()) as { error?: string; message?: string };
-      if (!response.ok) throw new Error(payload.error ?? "The verification decision could not be saved.");
+      if (!response.ok)
+        throw new Error(payload.error ?? "The verification decision could not be saved.");
 
       setListings((current) =>
         current.map((item) =>
@@ -122,8 +124,16 @@ export function AdminProviderVerificationConsole({
 
   return (
     <div className="admin-stack">
-      {error ? <p className="admin-error" role="alert">{error}</p> : null}
-      {message ? <p className="admin-success" role="status">{message}</p> : null}
+      {error ? (
+        <p className="admin-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {message ? (
+        <p className="admin-success" role="status">
+          {message}
+        </p>
+      ) : null}
       <section className="admin-candidate-list">
         <div className="panel-header">
           <div>
@@ -145,28 +155,59 @@ export function AdminProviderVerificationConsole({
             <article className="panel admin-candidate" key={listing.id}>
               <div className="admin-candidate-heading">
                 <div>
-                  <p className="eyebrow">{listing.service_type} · {listing.service_area}</p>
+                  <p className="eyebrow">
+                    {listing.service_type} · {listing.service_area}
+                  </p>
                   <h3>{listing.title}</h3>
                   <p className="panel-caption">
                     Listing {listing.id} · Operator {listing.operator_id}
                   </p>
                 </div>
-                <span className="admin-status">{STATE_LABELS[listing.verification_state as ProviderVerificationState] ?? listing.verification_state}</span>
+                <span className="admin-status">
+                  {STATE_LABELS[listing.verification_state as ProviderVerificationState] ??
+                    listing.verification_state}
+                </span>
               </div>
               {listing.description ? <p>{listing.description}</p> : null}
               <div className="admin-metrics">
-                <span>Destination <strong>{listing.destination_area ?? "Not specified"}</strong></span>
-                <span>Rate <strong>{moneyLabel(listing.price_paise, listing.rate_basis)}</strong></span>
-                <span>Capacity <strong>{listing.capacity_quantity === null ? "Not specified" : `${listing.capacity_quantity} ${listing.capacity_unit ?? ""}`}</strong></span>
-                <span>Availability <strong>{dateLabel(listing.available_from)} – {dateLabel(listing.available_until)}</strong></span>
-                <span>Listing status <strong>{listing.status}</strong></span>
-                <span>Submitted <strong>{dateLabel(listing.created_at.slice(0, 10))}</strong></span>
+                <span>
+                  Destination <strong>{listing.destination_area ?? "Not specified"}</strong>
+                </span>
+                <span>
+                  Rate <strong>{moneyLabel(listing.price_paise, listing.rate_basis)}</strong>
+                </span>
+                <span>
+                  Capacity{" "}
+                  <strong>
+                    {listing.capacity_quantity === null
+                      ? "Not specified"
+                      : `${listing.capacity_quantity} ${listing.capacity_unit ?? ""}`}
+                  </strong>
+                </span>
+                <span>
+                  Availability{" "}
+                  <strong>
+                    {dateLabel(listing.available_from)} – {dateLabel(listing.available_until)}
+                  </strong>
+                </span>
+                <span>
+                  Listing status <strong>{listing.status}</strong>
+                </span>
+                <span>
+                  Submitted <strong>{dateLabel(listing.created_at.slice(0, 10))}</strong>
+                </span>
               </div>
-              <form className="admin-verification-form" onSubmit={(event) => void submitReview(event, listing)}>
+              <form
+                className="admin-verification-form"
+                onSubmit={(event) => void submitReview(event, listing)}
+              >
                 <label>
                   Platform decision
                   <select
-                    value={states[listing.id] ?? (listing.verification_state as ProviderVerificationState)}
+                    value={
+                      states[listing.id] ??
+                      (listing.verification_state as ProviderVerificationState)
+                    }
                     onChange={(event) =>
                       setStates((current) => ({
                         ...current,
@@ -176,7 +217,9 @@ export function AdminProviderVerificationConsole({
                     disabled={busyId === listing.id}
                   >
                     {PROVIDER_VERIFICATION_STATES.map((state) => (
-                      <option value={state} key={state}>{STATE_LABELS[state]}</option>
+                      <option value={state} key={state}>
+                        {STATE_LABELS[state]}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -184,7 +227,9 @@ export function AdminProviderVerificationConsole({
                   Review note (20–500 characters)
                   <textarea
                     value={notes[listing.id] ?? ""}
-                    onChange={(event) => setNotes((current) => ({ ...current, [listing.id]: event.target.value }))}
+                    onChange={(event) =>
+                      setNotes((current) => ({ ...current, [listing.id]: event.target.value }))
+                    }
                     minLength={20}
                     maxLength={500}
                     rows={3}
@@ -193,7 +238,11 @@ export function AdminProviderVerificationConsole({
                     disabled={busyId === listing.id}
                   />
                 </label>
-                <button className="button button-primary" type="submit" disabled={busyId === listing.id}>
+                <button
+                  className="button button-primary"
+                  type="submit"
+                  disabled={busyId === listing.id}
+                >
                   {busyId === listing.id ? "Saving review…" : "Save verification decision"}
                 </button>
               </form>
@@ -205,7 +254,9 @@ export function AdminProviderVerificationConsole({
       <section className="admin-panel">
         <div className="admin-section-heading">
           <h2>Recent verification audit</h2>
-          <p>Every successful decision records the previous state, new state, reviewer and reason.</p>
+          <p>
+            Every successful decision records the previous state, new state, reviewer and reason.
+          </p>
         </div>
         {initialEvents.length === 0 ? (
           <div className="admin-empty">
@@ -216,14 +267,29 @@ export function AdminProviderVerificationConsole({
           <div className="table-wrap">
             <table className="produce-table">
               <thead>
-                <tr><th>Listing</th><th>Change</th><th>Reviewer</th><th>Reason</th><th>Date</th></tr>
+                <tr>
+                  <th>Listing</th>
+                  <th>Change</th>
+                  <th>Reviewer</th>
+                  <th>Reason</th>
+                  <th>Date</th>
+                </tr>
               </thead>
               <tbody>
                 {initialEvents.map((item) => (
                   <tr key={item.id}>
-                    <td><code>{item.listing_id}</code></td>
-                    <td>{STATE_LABELS[item.previous_state as ProviderVerificationState] ?? item.previous_state} → {STATE_LABELS[item.new_state as ProviderVerificationState] ?? item.new_state}</td>
-                    <td><code>{item.reviewed_by_user_id}</code></td>
+                    <td>
+                      <code>{item.listing_id}</code>
+                    </td>
+                    <td>
+                      {STATE_LABELS[item.previous_state as ProviderVerificationState] ??
+                        item.previous_state}{" "}
+                      →{" "}
+                      {STATE_LABELS[item.new_state as ProviderVerificationState] ?? item.new_state}
+                    </td>
+                    <td>
+                      <code>{item.reviewed_by_user_id}</code>
+                    </td>
                     <td>{item.review_note}</td>
                     <td>{dateLabel(item.created_at)}</td>
                   </tr>

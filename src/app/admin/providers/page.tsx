@@ -51,10 +51,7 @@ export default async function AdminProvidersPage() {
           and check admin RLS policies.
         </p>
       ) : (
-        <AdminProviderVerificationConsole
-          initialListings={listings}
-          initialEvents={events}
-        />
+        <AdminProviderVerificationConsole initialListings={listings} initialEvents={events} />
       )}
     </main>
   );
