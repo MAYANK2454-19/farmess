@@ -1,0 +1,31 @@
+name: Farmer service-request cancellation
+
+on:
+  pull_request:
+    paths:
+      - "src/features/logistics/request-cancellation.ts"
+      - "src/features/logistics/request-cancellation.test.ts"
+      - "src/features/logistics/service-request-board.tsx"
+      - "src/app/api/service-requests/route.ts"
+      - "docs/FARMER_SERVICE_REQUEST_CANCELLATION.md"
+      - ".github/workflows/farmer-service-request-cancellation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Focused cancellation tests
+        run: node --experimental-strip-types --test src/features/logistics/request-cancellation.test.ts
+      - name: ESLint
+        run: npm run lint
+      - name: TypeScript
+        run: npm run typecheck
