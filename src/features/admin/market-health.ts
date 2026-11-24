@@ -1,4 +1,4 @@
-import { assessMarketDataFreshness } from "@/lib/market-data/freshness";
+import { assessMarketDataFreshness } from "../../lib/market-data/freshness.ts";
 
 export type MarketHealthInput = {
   crop: string;
