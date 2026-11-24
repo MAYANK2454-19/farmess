@@ -40,7 +40,12 @@ export function OperatorServiceManager() {
   const [saving, setSaving] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState({ capacity: "", unit: "quintal", from: "", until: "" });
+  const [editDraft, setEditDraft] = useState({
+    capacity: "",
+    unit: "quintal",
+    from: "",
+    until: "",
+  });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [title, setTitle] = useState("");
@@ -252,7 +257,9 @@ export function OperatorServiceManager() {
         current.map((item) => (item.id === id ? { ...item, ...result.listing } : item)),
       );
       setEditingId(null);
-      setMessage("Capacity and availability updated. Farmers will see the latest provider-entered details.");
+      setMessage(
+        "Capacity and availability updated. Farmers will see the latest provider-entered details.",
+      );
     } catch (saveError) {
       setError(
         saveError instanceof Error ? saveError.message : "Listing details could not be updated.",
@@ -562,7 +569,8 @@ export function OperatorServiceManager() {
                       : ""}
                   </span>
                   <span>
-                    Capacity: {listing.capacity_quantity === null
+                    Capacity:{" "}
+                    {listing.capacity_quantity === null
                       ? "not specified"
                       : `${listing.capacity_quantity} ${listing.capacity_unit ?? ""}`}
                     {" · "}
@@ -627,7 +635,11 @@ export function OperatorServiceManager() {
                       />
                     </label>
                     <div className="operator-listing-actions">
-                      <button className="button button-primary" type="submit" disabled={pendingId === listing.id}>
+                      <button
+                        className="button button-primary"
+                        type="submit"
+                        disabled={pendingId === listing.id}
+                      >
                         {pendingId === listing.id ? "Saving…" : "Save details"}
                       </button>
                       <button className="text-link" type="button" onClick={() => setEditingId(null)}>
