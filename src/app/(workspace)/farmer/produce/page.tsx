@@ -3,6 +3,7 @@ import { Icon } from "@/components/icons";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { LotStatusButton } from "@/features/lots/lot-status-button";
+import { LotReadinessPanel } from "@/features/lots/lot-readiness-panel";
 
 function formatDate(value: string) {
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -64,6 +65,24 @@ export default async function MyProducePage() {
         .
       </p>
 
+      {!error && lots ? (
+        <LotReadinessPanel
+          lots={lots.map((lot) => ({
+            id: lot.id,
+            crop: lot.crop,
+            available_from: lot.available_from,
+            sell_by: lot.sell_by,
+            status: lot.status,
+          }))}
+          today={new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(new Date())}
+        />
+      ) : null}
+
       <section className="panel" aria-labelledby="lots-heading">
         <div className="panel-header">
           <div>
@@ -96,6 +115,7 @@ export default async function MyProducePage() {
                   <th scope="col">Available from</th>
                   <th scope="col">Sell by</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Quality checks</th>
                   <th scope="col">Marketplace</th>
                 </tr>
               </thead>
@@ -121,6 +141,11 @@ export default async function MyProducePage() {
                       <span className={"produce-status produce-status-" + lot.status}>
                         {formatStatus(lot.status)}
                       </span>
+                    </td>
+                    <td>
+                      <Link href={`/farmer/produce/${lot.id}/quality`} className="text-link">
+                        Record / view
+                      </Link>
                     </td>
                     <td>
                       <LotStatusButton lotId={lot.id} status={lot.status} />

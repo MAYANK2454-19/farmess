@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { parseProviderRequestCancellation } from "@/features/operators/request-cancellation";
 
 const REQUEST_SELECT =
   "id,listing_id,origin_area,destination_area,requested_date,requested_quantity,unit,status,message,created_at";
@@ -84,8 +85,37 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Send a request ID and decision." }, { status: 400 });
   }
 
+  if (!isRecord(body)) {
+    return NextResponse.json(
+      { error: "Choose a valid request and accept/decline decision." },
+      { status: 400 },
+    );
+  }
+
+  if (body.action === "cancel") {
+    const parsed = parseProviderRequestCancellation(body);
+    if (!parsed.valid) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("cancel_accepted_service_request", {
+      p_request_id: parsed.id,
+    });
+    const cancelled = data?.[0];
+    if (error || !cancelled) {
+      return NextResponse.json(
+        { error: "This request is no longer accepted or does not belong to your account." },
+        { status: 409 },
+      );
+    }
+    return NextResponse.json(
+      { request: cancelled },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
+
   if (
-    !isRecord(body) ||
     Object.keys(body).some((key) => key !== "id" && key !== "decision") ||
     typeof body.id !== "string" ||
     !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id) ||

@@ -72,6 +72,15 @@ export default async function AdminOverviewPage() {
           </p>
           <strong>Open market imports →</strong>
         </Link>
+        <Link href="/admin/providers" className="admin-work-card">
+          <span className="admin-eyebrow">Marketplace trust</span>
+          <h2>Verify provider listings</h2>
+          <p>
+            Review transport and storage listings, record verification decisions and retain an
+            auditable reason for each change.
+          </p>
+          <strong>Open provider review →</strong>
+        </Link>
         <Link href="/admin/forecasts" className="admin-work-card">
           <span className="admin-eyebrow">Model governance</span>
           <h2>Review forecast candidates</h2>

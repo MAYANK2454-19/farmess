@@ -93,3 +93,14 @@ test("rejects excessively long observation notes", () => {
   assert.equal(result.valid, false);
   assert.ok(result.errors.some((error) => error.includes("1,000 characters")));
 });
+
+test("normalizes whitespace and preserves incomplete checks without inventing a grade", () => {
+  const result = assessProduceQuality({
+    ...completeDraft,
+    checks: { ...completeDraft.checks, appearance: "not_assessed" },
+    observations: "  damp packaging observed  ",
+  });
+  assert.equal(result.valid, true);
+  assert.equal(result.status, "incomplete");
+  assert.equal(result.normalized?.observations, "damp packaging observed");
+});

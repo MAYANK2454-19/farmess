@@ -5,6 +5,8 @@ import { SignOutButton } from "@/components/sign-out-button";
 const navigation = [
   { label: "Overview", href: "/admin" },
   { label: "Market imports", href: "/admin/market-data" },
+  { label: "Data health", href: "/admin/market-health" },
+  { label: "Provider review", href: "/admin/providers" },
   { label: "Forecast review", href: "/admin/forecasts" },
 ];
 

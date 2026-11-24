@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - feat/farmess-admin-console
+      - feat/admin-market-data-health-monitor
+      - feat/admin-provider-listing-verification
 
 permissions:
   contents: write
