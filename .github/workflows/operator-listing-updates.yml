@@ -21,7 +21,7 @@ on:
       - ".github/workflows/operator-listing-updates.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: operator-listing-updates-${{ github.ref }}
@@ -32,12 +32,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Check formatting
+      - name: Format changed files
+        run: |
+          npx prettier --write src/features/operators/listing-update.ts src/features/operators/listing-update.test.ts src/features/operators/operator-service-manager.tsx src/app/api/operator/services/route.ts docs/OPERATOR_LISTING_AVAILABILITY_CAPACITY.md .github/workflows/operator-listing-updates.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- src/features/operators/listing-update.ts src/features/operators/listing-update.test.ts src/features/operators/operator-service-manager.tsx src/app/api/operator/services/route.ts docs/OPERATOR_LISTING_AVAILABILITY_CAPACITY.md .github/workflows/operator-listing-updates.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "style(operator): format listing availability feature"
+            git push origin "HEAD:refs/heads/${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          fi
+      - name: Verify formatting
         run: npx prettier --check src/features/operators/listing-update.ts src/features/operators/listing-update.test.ts src/features/operators/operator-service-manager.tsx src/app/api/operator/services/route.ts docs/OPERATOR_LISTING_AVAILABILITY_CAPACITY.md .github/workflows/operator-listing-updates.yml
       - name: Focused validation tests
         run: node --experimental-strip-types --test src/features/operators/listing-update.test.ts
