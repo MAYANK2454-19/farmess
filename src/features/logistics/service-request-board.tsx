@@ -318,9 +318,7 @@ export function ServiceRequestBoard() {
       }
 
       setRequests((current) =>
-        current.map((item) =>
-          item.id === id ? { ...item, status: "cancelled" } : item,
-        ),
+        current.map((item) => (item.id === id ? { ...item, status: "cancelled" } : item)),
       );
       setCancelConfirmId(null);
     } catch (cancelError) {

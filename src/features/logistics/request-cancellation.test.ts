@@ -16,10 +16,7 @@ test("rejects malformed IDs and unknown actions", () => {
     parseServiceRequestCancellation({ id: "not-a-uuid", action: "cancel" }).valid,
     false,
   );
-  assert.equal(
-    parseServiceRequestCancellation({ id: requestId, action: "accept" }).valid,
-    false,
-  );
+  assert.equal(parseServiceRequestCancellation({ id: requestId, action: "accept" }).valid, false);
 });
 
 test("rejects extra fields and non-object payloads", () => {
