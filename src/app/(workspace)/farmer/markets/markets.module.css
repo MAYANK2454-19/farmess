@@ -12,11 +12,54 @@
   margin-bottom: 30px;
 }
 
+.shareStatus {
+  margin: 8px 0 0;
+  color: var(--brand-secondary);
+  font-size: 11px;
+}
+
 .filters {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   padding: 20px;
+}
+
+.advancedFilters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0 20px 20px;
+}
+
+.advancedFiltersHeading {
+  grid-column: 1 / -1;
+}
+
+.advancedFiltersHeading h3 {
+  margin: 0 0 4px;
+  color: var(--brand-primary);
+  font-size: 13px;
+}
+
+.advancedFiltersHeading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.advancedFilterActions {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterError {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #a33c3c;
+  font-size: 11px;
 }
 
 .filterActions {
@@ -127,6 +170,32 @@
   font-size: 11px;
 }
 
+.listToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.listToolbar > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.sortControl {
+  display: grid;
+  min-width: 220px;
+  gap: 5px;
+  color: var(--brand-primary);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.sortControl select {
+  min-height: 40px;
+}
+
 .recordList {
   display: grid;
   gap: 13px;
@@ -153,6 +222,38 @@
   margin: 0;
   color: var(--muted);
   font-size: 11px;
+}
+
+.recordBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.freshnessTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 9px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.freshnessfresh {
+  color: #286247;
+  background: #e8f3eb;
+}
+
+.freshnessstale {
+  color: #765f35;
+  background: #fbf2df;
+}
+
+.freshnessfuture,
+.freshnessinvalid {
+  color: #8b3e3e;
+  background: #f9eaea;
 }
 
 .priceGrid {
@@ -230,8 +331,26 @@
     flex-direction: column;
   }
 
+  .listToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sortControl {
+    min-width: 0;
+    width: 100%;
+  }
+
   .recordCard {
     padding: 15px;
+  }
+
+  .recordTop {
+    flex-direction: column;
+  }
+
+  .recordBadges {
+    justify-content: flex-start;
   }
 
   .priceGrid {
@@ -255,5 +374,91 @@
 @media (prefers-reduced-motion: reduce) {
   .spinner {
     animation: none;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  :global(body) {
+    background: #fff !important;
+    color: #17231b !important;
+  }
+
+  :global(body) * {
+    visibility: hidden !important;
+  }
+
+  .page,
+  .page * {
+    visibility: visible !important;
+  }
+
+  .page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .headingActions,
+  .filterPanel,
+  .listToolbar {
+    display: none !important;
+  }
+
+  .resultsSection {
+    display: block;
+  }
+
+  .resultsHeading,
+  .recordCard,
+  .priceGrid > div {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  .recordList {
+    gap: 8px;
+  }
+
+  .recordCard {
+    margin-bottom: 8px;
+    border: 1px solid #cbd5ce !important;
+    background: #fff !important;
+  }
+
+  .priceGrid > div {
+    background: #f5f7f5 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .sourceLink {
+    color: #17231b !important;
+    overflow-wrap: anywhere;
+  }
+
+  .sourceLink::after {
+    content: " — " attr(href);
+    font-weight: 400;
+  }
+
+  .freshnessTag,
+  .reportedTag {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+@media print {
+  .marketComparisonPanel {
+    break-inside: auto;
   }
 }

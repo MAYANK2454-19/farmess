@@ -36,6 +36,7 @@ export type LogisticsRequirements = {
   unit?: "kg" | "quintal" | "tonne" | null;
   requiredDate?: string | null;
   requiresColdChain?: boolean;
+  preferredServiceType?: "transport" | "storage" | null;
   maximumRadiusMeters: number;
 };
 
