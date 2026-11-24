@@ -43,13 +43,16 @@ export function QualityInspectionForm({ lotId }: { lotId: string }) {
         body: JSON.stringify({ checks, observations }),
       });
       const result = (await response.json()) as { error?: string; fields?: string[] };
-      if (!response.ok) throw new Error([result.error, ...(result.fields ?? [])].filter(Boolean).join(" "));
+      if (!response.ok)
+        throw new Error([result.error, ...(result.fields ?? [])].filter(Boolean).join(" "));
       setChecks({});
       setObservations("");
       setMessage("Inspection saved to this lot's private history.");
       router.refresh();
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Inspection could not be saved.");
+      setError(
+        requestError instanceof Error ? requestError.message : "Inspection could not be saved.",
+      );
     } finally {
       setPending(false);
     }
@@ -60,14 +63,20 @@ export function QualityInspectionForm({ lotId }: { lotId: string }) {
       <div className="panel-header">
         <div>
           <h2 className="panel-title">New quality observation</h2>
-          <p className="panel-caption">Record what you can observe. Leave unknown checks unselected.</p>
+          <p className="panel-caption">
+            Record what you can observe. Leave unknown checks unselected.
+          </p>
         </div>
       </div>
       <div className="form-grid">
         {QUALITY_CHECKS.map((check) => (
           <label className="form-field" key={check}>
             <span className="form-label">{CHECK_LABELS[check]}</span>
-            <select className="form-control" value={checks[check] ?? ""} onChange={(event) => updateCheck(check, event.target.value)}>
+            <select
+              className="form-control"
+              value={checks[check] ?? ""}
+              onChange={(event) => updateCheck(check, event.target.value)}
+            >
               <option value="">Not recorded</option>
               <option value="acceptable">No visible issue</option>
               <option value="issue_found">Issue observed</option>
@@ -77,16 +86,34 @@ export function QualityInspectionForm({ lotId }: { lotId: string }) {
         ))}
         <label className="form-field full">
           <span className="form-label">Inspection notes (optional)</span>
-          <textarea className="form-control" value={observations} onChange={(event) => setObservations(event.target.value)}
-            maxLength={1000} rows={4} placeholder="Describe visible observations, handling or packaging details." />
+          <textarea
+            className="form-control"
+            value={observations}
+            onChange={(event) => setObservations(event.target.value)}
+            maxLength={1000}
+            rows={4}
+            placeholder="Describe visible observations, handling or packaging details."
+          />
           <span className="form-help">{observations.length}/1,000 characters</span>
         </label>
       </div>
-      {error ? <p className="form-error" role="alert">{error}</p> : null}
-      {message ? <p className="form-success" role="status">{message}</p> : null}
+      {error ? (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {message ? (
+        <p className="form-success" role="status">
+          {message}
+        </p>
+      ) : null}
       <div className="form-footer">
-        <p className="form-warning">This is a farmer-entered observation, not a certified grade or food-safety result.</p>
-        <button className="button button-primary" type="submit" disabled={pending}>{pending ? "Saving…" : "Save inspection"}</button>
+        <p className="form-warning">
+          This is a farmer-entered observation, not a certified grade or food-safety result.
+        </p>
+        <button className="button button-primary" type="submit" disabled={pending}>
+          {pending ? "Saving…" : "Save inspection"}
+        </button>
       </div>
     </form>
   );
