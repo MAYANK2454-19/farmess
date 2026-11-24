@@ -62,7 +62,7 @@ jobs:
         run: npm run typecheck
       - name: Full unit tests
         run: npm test
-      - name: Focused quality inspection tests
-        run: node --experimental-strip-types --test src/features/lots/quality-inspection.test.ts
+      - name: Focused quality and lot-readiness tests
+        run: node --experimental-strip-types --test src/features/lots/quality-inspection.test.ts src/features/lots/lot-readiness.test.ts
       - name: Production build
         run: npm run build
