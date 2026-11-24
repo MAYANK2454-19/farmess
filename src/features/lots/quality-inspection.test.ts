@@ -64,11 +64,7 @@ test("rejects missing lot and assessor identifiers", () => {
 });
 
 test("rejects impossible dates and timestamps without timezone", () => {
-  for (const inspectedAt of [
-    "2026-02-30T10:00:00Z",
-    "2026-11-23T10:00:00",
-    "not-a-date",
-  ]) {
+  for (const inspectedAt of ["2026-02-30T10:00:00Z", "2026-11-23T10:00:00", "not-a-date"]) {
     const result = assessProduceQuality({ ...completeDraft, inspectedAt });
     assert.equal(result.valid, false);
     assert.ok(result.errors.some((error) => error.includes("ISO timestamp")));
