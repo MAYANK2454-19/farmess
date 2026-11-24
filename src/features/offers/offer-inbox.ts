@@ -46,7 +46,7 @@ export function filterOfferInbox(
   offers: readonly OfferInboxItem[],
   options: { status: OfferInboxStatus; query: string; sort: OfferInboxSort },
 ): OfferInboxItem[] {
-  const terms = options.query.toLocaleLowerCase("en-IN").trim().split(/\\s+/).filter(Boolean);
+  const terms = options.query.toLocaleLowerCase("en-IN").trim().split(/\s+/).filter(Boolean);
   const filtered = offers.filter((offer) => {
     const status = effectiveOfferInboxStatus(offer);
     if (options.status !== "all" && status !== options.status) return false;
