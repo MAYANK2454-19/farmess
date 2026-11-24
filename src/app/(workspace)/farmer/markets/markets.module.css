@@ -12,6 +12,12 @@
   margin-bottom: 30px;
 }
 
+.shareStatus {
+  margin: 8px 0 0;
+  color: var(--brand-secondary);
+  font-size: 11px;
+}
+
 .filters {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -448,5 +454,11 @@
   .reportedTag {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+}
+
+@media print {
+  .marketComparisonPanel {
+    break-inside: auto;
   }
 }
