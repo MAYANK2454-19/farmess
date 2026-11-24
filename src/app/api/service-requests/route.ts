@@ -234,7 +234,6 @@ export async function POST(request: NextRequest) {
   );
 }
 
-
 export async function PATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
@@ -252,7 +251,10 @@ export async function PATCH(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Send a valid cancellation request as JSON." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Send a valid cancellation request as JSON." },
+      { status: 400 },
+    );
   }
 
   const parsed = parseServiceRequestCancellation(body);
