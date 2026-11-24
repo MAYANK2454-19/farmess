@@ -24,7 +24,7 @@ The private `private.ml_model_registry` table is currently in a schema that has 
 ## Market data and price forecasting
 
 - `GET /api/market-prices` uses the server-side market-data adapter and preserves source status/provenance in the response.
-- `POST /api/market-data/refresh` is admin-only. It validates normalized source observations, converts INR to paise, upserts dated records and records an ingestion audit entry.
+- `POST /api/market-data/refresh` is admin-only. It validates normalized source observations, converts INR to paise, upserts dated records and records an ingestion audit entry. Each request is bounded to 500 records; a validated offset parameter supports incremental historical pages.
 - `GET /api/market-forecasts` returns only approved forecast runs. Without an approved run, the API reports insufficient data rather than inventing a forecast.
 - `ml/market_forecast/train.py` is an offline HistGradientBoosting candidate pipeline. It groups dated observations by crop/variety/geography/market, requires at least 120 unique observations in a series, uses a chronological holdout and must beat a last-observation baseline on both MAE and sMAPE. Candidate forecasts require a separate human review before publication.
 
@@ -34,6 +34,8 @@ The private `private.ml_model_registry` table is currently in a schema that has 
 
 - `GET /api/logistics/discover` requires a signed-in farmer and explicit latitude/longitude supplied after the user chooses to share their location.
 - The database function `find_nearby_service_listings` uses PostGIS distance filtering and supports a configurable search radius, transport/storage type, crop, quantity/unit, required date and cold-chain requirement.
+- When HEIGIT_API_KEY is configured, Farmess requests one-to-many road distance and driving duration from HeiGIT. If the key is missing or routing fails, discovery remains available and shows the existing straight-line distance only.
+- After a farmer chooses a search location, the logistics page can show an Open-Meteo weather snapshot. The public endpoint is for non-commercial evaluation and requires attribution; a paid customer key can be configured for commercial use.
 - `src/features/logistics/recommendations.ts` currently uses an explainable `rules-v1` heuristic. It scores proximity, capacity, crop suitability, date, cold chain, provider verification, pricing transparency and service coverage. Each recommendation reports reasons and unknowns; a recommendation is not a confirmed booking.
 - `logistics_recommendation_feedback` records a point-in-time feature snapshot and explicit feedback.
 - `ml/logistics_ranker/train.py` is an offline candidate model for explicit recommendation usefulness ratings. It requires at least 300 clear non-neutral labels, 30 distinct users and 20 distinct listings, with a chronological evaluation. User and provider IDs are excluded from model features; a candidate is not automatically deployed.

@@ -3286,3 +3286,79 @@ h1 {
     justify-items: start;
   }
 }
+
+
+.weather-summary {
+  display: grid;
+  gap: 14px;
+  margin-block: 20px;
+  padding: 18px;
+}
+
+.weather-summary-heading h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.weather-summary-heading p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.weather-summary-values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.weather-summary-values > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.weather-summary-values span,
+.logistics-result-road-route span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.weather-summary-values strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.weather-summary-attribution {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.weather-summary-attribution a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.logistics-result-road-route {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft-green);
+  font-size: 12px;
+}
+
+.logistics-result-road-route span {
+  color: var(--text);
+}
+
+@media (max-width: 720px) {
+  .weather-summary-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
