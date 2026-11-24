@@ -115,3 +115,37 @@ test("rejects limits outside the supported source request range", async () => {
     /limit must be a whole number/,
   );
 });
+
+test("starts at the requested historical offset and advances across later pages", async () => {
+  const calls: Array<{ limit: string | null; offset: string | null }> = [];
+  const records = await fetchOgdRecordsPaginated(
+    new URL("https://example.test/resource?offset=500&format=json"),
+    150,
+    async (url) => {
+      calls.push({
+        limit: url.searchParams.get("limit"),
+        offset: url.searchParams.get("offset"),
+      });
+      const offset = Number(url.searchParams.get("offset"));
+      const limit = Number(url.searchParams.get("limit"));
+      return jsonResponse(Array.from({ length: limit }, (_, index) => offset + index));
+    },
+  );
+
+  assert.equal(records.length, 150);
+  assert.deepEqual(calls, [
+    { limit: "100", offset: "500" },
+    { limit: "50", offset: "600" },
+  ]);
+});
+
+test("rejects source offsets outside the supported range", async () => {
+  await assert.rejects(
+    fetchOgdRecordsPaginated(
+      new URL("https://example.test/resource?offset=100001"),
+      10,
+      async () => jsonResponse([]),
+    ),
+    /offset must be a whole number from 0 to 100000/,
+  );
+});
