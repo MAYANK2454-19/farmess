@@ -2,6 +2,7 @@ import type { MarketSearchFilters } from "./types";
 
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 500;
+const MAX_OFFSET = 100_000;
 const MAX_FILTER_LENGTH = 100;
 
 function optionalFilter(value: string | null): string | undefined {
@@ -18,6 +19,15 @@ function parseLimit(value: string | null): number {
   return Math.min(parsed, MAX_LIMIT);
 }
 
+function parseOffset(value: string | null): number {
+  const trimmed = value?.trim();
+  if (!trimmed || !/^\d+$/.test(trimmed)) return 0;
+
+  const parsed = Number(trimmed);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) return 0;
+  return Math.min(parsed, MAX_OFFSET);
+}
+
 export function parseMarketSearchFilters(params: URLSearchParams): MarketSearchFilters {
   const commodity = optionalFilter(params.get("commodity"));
   const state = optionalFilter(params.get("state"));
@@ -30,5 +40,6 @@ export function parseMarketSearchFilters(params: URLSearchParams): MarketSearchF
     ...(district ? { district } : {}),
     ...(market ? { market } : {}),
     limit: parseLimit(params.get("limit")),
+    ...(params.has("offset") ? { offset: parseOffset(params.get("offset")) } : {}),
   };
 }

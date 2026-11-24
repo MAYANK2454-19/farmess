@@ -30,7 +30,7 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
   url.searchParams.set("api-key", apiKey);
   url.searchParams.set("format", "json");
   url.searchParams.set("limit", String(safeLimit(filters.limit)));
-  url.searchParams.set("offset", "0");
+  url.searchParams.set("offset", String(filters.offset ?? 0));
   if (filters.commodity) url.searchParams.set("filters[commodity]", filters.commodity);
   if (filters.state) url.searchParams.set("filters[state]", filters.state);
   if (filters.district) url.searchParams.set("filters[district]", filters.district);

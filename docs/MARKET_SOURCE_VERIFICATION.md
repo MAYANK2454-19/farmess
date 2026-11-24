@@ -30,6 +30,7 @@ The commonly published source price basis is INR per quintal. The adapter preser
 ## Access, terms and refresh
 
 - Access method: server-side OGD API request with an API key in the `api-key` query parameter; no key is committed to the repository.
+- Bounded pagination: each Farmess request retrieves at most 500 records and supports the OGD `offset` parameter (0–100000) so historical pages can be imported incrementally without a long-running multi-page request.
 - Required environment variable: `DATA_GOV_IN_API_KEY`.
 - Browser calls to the third-party API are prohibited; the app route proxies the request server-side.
 - Daily granularity means an observation is reported for a market/date, not a guaranteed current price. The API route labels records older than 48 hours as stale; it does not call daily observations live.

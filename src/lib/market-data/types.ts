@@ -26,6 +26,7 @@ export type MarketSearchFilters = {
   district?: string;
   market?: string;
   limit?: number;
+  offset?: number;
 };
 
 export type MarketDataResult =

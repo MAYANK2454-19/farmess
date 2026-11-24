@@ -8,6 +8,7 @@ import type {
 } from "@/features/logistics/recommendations";
 import { LogisticsMap } from "@/features/logistics/logistics-map";
 import { LogisticsFeedbackForm } from "@/features/logistics/logistics-feedback-form";
+import { WeatherSummary } from "@/features/weather/weather-summary";
 
 type Origin = { latitude: number; longitude: number };
 type ServiceRequest = Pick<
@@ -38,8 +39,22 @@ function formatPrice(value: number | null, basis: string) {
 
 function formatDistance(meters: number) {
   return meters >= 1000
-    ? `${(meters / 1000).toFixed(1)} km straight-line`
-    : `${Math.round(meters)} m straight-line`;
+    ? (meters / 1000).toFixed(1) + " km straight-line"
+    : Math.round(meters) + " m straight-line";
+}
+
+function formatRoadDistance(meters: number) {
+  return meters >= 1000
+    ? (meters / 1000).toFixed(1) + " km"
+    : Math.round(meters) + " m";
+}
+
+function formatTravelTime(seconds: number) {
+  const minutes = Math.max(1, Math.round(seconds / 60));
+  if (minutes < 60) return minutes + " min";
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return remainder > 0 ? hours + " hr " + remainder + " min" : hours + " hr";
 }
 
 function ProviderRequestForm({
@@ -256,6 +271,13 @@ function RecommendationCard({
           </strong>
         </div>
       </div>
+
+      {recommendation.roadRoute ? (
+        <div className="logistics-result-road-route">
+          <span>Road distance: {formatRoadDistance(recommendation.roadRoute.distanceMeters)}</span>
+          <span>Estimated drive: {formatTravelTime(recommendation.roadRoute.durationSeconds)}</span>
+        </div>
+      ) : null}
 
       {recommendation.reasons.length ? (
         <div className="logistics-explanation">
@@ -589,6 +611,7 @@ export function LogisticsDiscovery() {
 
       {searched && origin ? (
         <>
+          <WeatherSummary latitude={origin.latitude} longitude={origin.longitude} />
           <LogisticsMap origin={origin} recommendations={recommendations} />
           <section className="logistics-results" aria-labelledby="logistics-results-heading">
             <div className="section-heading">

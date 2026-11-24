@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { getRoadRoutes } from "@/lib/logistics/road-routing";
 import {
   rankLogisticsCandidates,
   type NearbyServiceCandidate,
@@ -148,10 +149,22 @@ export async function GET(request: NextRequest) {
     preferredServiceType: serviceType,
     maximumRadiusMeters: Math.round(radiusKm * 1000),
   });
+  const routing = await getRoadRoutes(
+    { latitude, longitude },
+    recommendations.map((recommendation) => ({
+      id: recommendation.listing.id,
+      latitude: recommendation.listing.latitude,
+      longitude: recommendation.listing.longitude,
+    })),
+  );
+  const recommendationsWithRoadRoutes = recommendations.map((recommendation) => ({
+    ...recommendation,
+    roadRoute: routing.routes[recommendation.listing.id] ?? null,
+  }));
 
   return NextResponse.json(
     {
-      recommendations,
+      recommendations: recommendationsWithRoadRoutes,
       search: {
         radiusKm,
         serviceType,
@@ -165,8 +178,10 @@ export async function GET(request: NextRequest) {
       metadata: {
         rankingVersion: "rules-v1",
         method: "explainable-heuristic",
+        roadRoutingStatus: routing.status,
+        roadRoutingProvider: "HeiGIT openrouteservice matrix",
         distanceMeaning:
-          "Straight-line distance to the provider's published service location; not road distance or travel time.",
+          "The ranking distance is straight-line. Road distance and travel time are shown separately when HeiGIT routing is configured and returns a route.",
         bookingMeaning: "A discovery result is not a booking. Provider confirmation is required.",
         verificationMeaning:
           "Provider verification reflects the evidence state stored in Farmess; it does not guarantee live availability.",
