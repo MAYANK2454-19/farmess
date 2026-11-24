@@ -59,10 +59,7 @@ test("classifies record freshness and flags markets by their latest observation"
 
 test("uses newest date for a market instead of treating its older history as stale", () => {
   const result = summarizeMarketDataHealth(
-    [
-      record({ observation_date: "2026-11-18" }),
-      record({ observation_date: "2026-11-24" }),
-    ],
+    [record({ observation_date: "2026-11-18" }), record({ observation_date: "2026-11-24" })],
     2,
     now,
   );
