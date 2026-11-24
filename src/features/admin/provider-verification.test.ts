@@ -18,11 +18,16 @@ function payload(overrides: Record<string, unknown> = {}) {
 }
 
 test("accepts and trims a valid platform verification review", () => {
-  assert.deepEqual(parseProviderVerificationReview(payload({ review_note: "  Contact and documents checked carefully.  " })), {
-    id: listingId,
-    verificationState: "platform_verified",
-    reviewNote: "Contact and documents checked carefully.",
-  });
+  assert.deepEqual(
+    parseProviderVerificationReview(
+      payload({ review_note: "  Contact and documents checked carefully.  " }),
+    ),
+    {
+      id: listingId,
+      verificationState: "platform_verified",
+      reviewNote: "Contact and documents checked carefully.",
+    },
+  );
 });
 
 test("accepts each supported verification state", () => {

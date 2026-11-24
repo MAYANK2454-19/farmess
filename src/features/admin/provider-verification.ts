@@ -21,9 +21,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /** Validate and normalize the complete admin review payload before it reaches the database RPC. */
-export function parseProviderVerificationReview(
-  value: unknown,
-): ProviderVerificationReview | null {
+export function parseProviderVerificationReview(value: unknown): ProviderVerificationReview | null {
   if (
     !isRecord(value) ||
     Object.keys(value).some(
@@ -32,9 +30,7 @@ export function parseProviderVerificationReview(
     typeof value.id !== "string" ||
     !UUID_PATTERN.test(value.id) ||
     typeof value.verification_state !== "string" ||
-    !PROVIDER_VERIFICATION_STATES.includes(
-      value.verification_state as ProviderVerificationState,
-    ) ||
+    !PROVIDER_VERIFICATION_STATES.includes(value.verification_state as ProviderVerificationState) ||
     typeof value.review_note !== "string"
   ) {
     return null;

@@ -25,7 +25,10 @@ export async function PATCH(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Send a listing ID, decision and review note." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Send a listing ID, decision and review note." },
+      { status: 400 },
+    );
   }
 
   const review = parseProviderVerificationReview(body);
@@ -48,7 +51,9 @@ export async function PATCH(request: NextRequest) {
 
   if (error || !data) {
     return NextResponse.json(
-      { error: "The verification decision could not be saved. Refresh and check the listing state." },
+      {
+        error: "The verification decision could not be saved. Refresh and check the listing state.",
+      },
       { status: 409 },
     );
   }
