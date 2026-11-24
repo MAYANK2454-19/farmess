@@ -1153,7 +1153,6 @@ export type Database = {
           verification_state: string;
         }[];
       };
-    };
       review_service_listing_verification: {
         Args: {
           p_listing_id: string;
@@ -1162,7 +1161,7 @@ export type Database = {
         };
         Returns: Json;
       };
-
+    };
     Enums: {
       farmer_consent_field:
         | "approximate_location_sharing"
