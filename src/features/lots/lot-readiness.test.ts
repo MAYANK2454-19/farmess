@@ -12,7 +12,10 @@ function lot(overrides: Partial<LotReadinessInput> = {}): LotReadinessInput {
   };
 }
 test("classifies a passed sell-by date as expired", () => {
-  const [result] = buildLotReadiness([lot({ available_from: "2026-11-20", sell_by: "2026-11-23" })], "2026-11-24");
+  const [result] = buildLotReadiness(
+    [lot({ available_from: "2026-11-20", sell_by: "2026-11-23" })],
+    "2026-11-24",
+  );
   assert.equal(result.readiness, "expired");
   assert.equal(result.daysUntilSellBy, -1);
 });
