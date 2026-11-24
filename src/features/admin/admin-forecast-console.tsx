@@ -344,7 +344,12 @@ export function AdminForecastConsole({
                 <button
                   className="button button-primary"
                   type="button"
-                  disabled={busyId === candidate.id || candidate.points.length === 0 || (candidate.validated_observation_count ?? 0) < 120 || candidate.training_observation_count < 90}
+                  disabled={
+                    busyId === candidate.id ||
+                    candidate.points.length === 0 ||
+                    (candidate.validated_observation_count ?? 0) < 120 ||
+                    candidate.training_observation_count < 90
+                  }
                   onClick={() => void reviewCandidate(candidate.id, "approved")}
                 >
                   {busyId === candidate.id ? "Saving…" : "Approve for publication"}

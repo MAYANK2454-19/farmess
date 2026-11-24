@@ -50,7 +50,8 @@ export default async function AdminForecastPage() {
 
   const candidates: ForecastCandidate[] = (runs ?? []).map((run) => ({
     ...run,
-    validated_observation_count: run.validated_observation_count === null ? null : Number(run.validated_observation_count),
+    validated_observation_count:
+      run.validated_observation_count === null ? null : Number(run.validated_observation_count),
     baseline_mae_paise_per_quintal:
       run.baseline_mae_paise_per_quintal === null
         ? null
