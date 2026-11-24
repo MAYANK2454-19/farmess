@@ -99,6 +99,7 @@ export async function GET(request: NextRequest) {
     if (!current || typeof current.time !== "string") {
       return NextResponse.json({ error: "The weather provider returned an unsupported response." }, { status: 502 });
     }
+    const currentTime = current.time;
 
     const times = Array.isArray(payload.hourly?.time)
       ? payload.hourly.time.filter((value): value is string => typeof value === "string")
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
     const probabilities = Array.isArray(payload.hourly?.precipitation_probability)
       ? payload.hourly.precipitation_probability
       : [];
-    const startIndex = Math.max(0, times.findIndex((value) => value >= current.time));
+    const startIndex = Math.max(0, times.findIndex((value) => value >= currentTime));
     const nextSixHours = probabilities
       .slice(startIndex, startIndex + 6)
       .map(finiteNumber)
