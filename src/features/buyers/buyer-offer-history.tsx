@@ -138,9 +138,7 @@ export function BuyerOfferHistory() {
           <h2 className="panel-title" id="buyer-offer-history-heading">
             Offers sent
           </h2>
-          <p className="panel-caption">
-            {loading ? "Loading…" : `${offers.length} sent offer(s)`}
-          </p>
+          <p className="panel-caption">{loading ? "Loading…" : `${offers.length} sent offer(s)`}</p>
         </div>
       </div>
       {error ? (
