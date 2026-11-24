@@ -9,7 +9,10 @@ async function handlePATCH(request: NextRequest) {
   }
 
   const session = await getFarmessSession();
-  if (!session || session.role !== "buyer") {
+  if (!session) {
+    return NextResponse.json({ error: "Sign in before withdrawing an offer." }, { status: 401 });
+  }
+  if (session.role !== "buyer") {
     return NextResponse.json(
       { error: "Sign in with a buyer account to withdraw an offer." },
       { status: 403 },

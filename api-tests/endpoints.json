@@ -1,0 +1,514 @@
+{
+  "$comment": "Farmess API collection. Generated from public/openapi.json; run api-tests/check_api.py to call every endpoint.",
+  "default_base_url": "https://farmess.vercel.app",
+  "endpoints": [
+    {
+      "name": "List the signed-in farmer's produce lots",
+      "tag": "Farmer",
+      "method": "GET",
+      "path": "/api/produce-lots",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 500]
+    },
+    {
+      "name": "Create a private draft produce lot",
+      "tag": "Farmer",
+      "method": "POST",
+      "path": "/api/produce-lots",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 500],
+      "body": {
+        "crop": "Tomato",
+        "variety": "Hybrid",
+        "grade": "A",
+        "quantity": 12.5,
+        "unit": "quintal",
+        "location": "Narwal mandi area, Jammu",
+        "availableAt": "2026-11-24",
+        "sellBy": "2026-11-29"
+      }
+    },
+    {
+      "name": "Publish a draft lot to buyers or withdraw a published lot",
+      "tag": "Farmer",
+      "method": "PATCH",
+      "path": "/api/produce-lots",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "action": "publish"
+      }
+    },
+    {
+      "name": "Search reported daily mandi prices (OGD India / AGMARKNET)",
+      "tag": "Market data",
+      "method": "GET",
+      "path": "/api/market-prices",
+      "auth": "public",
+      "expect_signed_out": [200, 503],
+      "expect_documented": [200, 503],
+      "query": {
+        "commodity": "Tomato",
+        "state": "Jammu and Kashmir",
+        "limit": "5"
+      }
+    },
+    {
+      "name": "Net-realisation comparison for one of the farmer's lots",
+      "tag": "Farmer",
+      "method": "GET",
+      "path": "/api/market-decisions",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 404, 503],
+      "query": {
+        "lotId": "00000000-0000-4000-8000-000000000000"
+      }
+    },
+    {
+      "name": "Record a selling-option comparison for a lot",
+      "tag": "Farmer",
+      "method": "POST",
+      "path": "/api/market-decisions",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 404, 409],
+      "body": {
+        "lotId": "00000000-0000-4000-8000-000000000000"
+      }
+    },
+    {
+      "name": "Human-approved price forecasts only (with model and baseline metrics)",
+      "tag": "Market data",
+      "method": "GET",
+      "path": "/api/market-forecasts",
+      "auth": "public",
+      "expect_signed_out": [200, 503],
+      "expect_documented": [200, 400, 503]
+    },
+    {
+      "name": "Buyer offers on the farmer's lots",
+      "tag": "Farmer",
+      "method": "GET",
+      "path": "/api/offers",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 500]
+    },
+    {
+      "name": "Accept or decline an offer (accepting records a sale and notifications)",
+      "tag": "Farmer",
+      "method": "PATCH",
+      "path": "/api/offers",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "action": "decline"
+      }
+    },
+    {
+      "name": "Rank nearby transport/storage services with an explainable rules-v1 score",
+      "tag": "Logistics",
+      "method": "GET",
+      "path": "/api/logistics/discover",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 503],
+      "query": {
+        "lat": "32.7266",
+        "lng": "74.857",
+        "radiusKm": "25"
+      }
+    },
+    {
+      "name": "Rate a recommendation 1–5 (training label for the offline ranker)",
+      "tag": "Logistics",
+      "method": "POST",
+      "path": "/api/logistics/feedback",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 404, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "user_feedback": 4
+      }
+    },
+    {
+      "name": "The farmer's transport/storage requests",
+      "tag": "Logistics",
+      "method": "GET",
+      "path": "/api/service-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 500]
+    },
+    {
+      "name": "Request a service from an active listing (pending until the provider confirms)",
+      "tag": "Logistics",
+      "method": "POST",
+      "path": "/api/service-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 404, 409],
+      "body": {
+        "listing_id": "00000000-0000-4000-8000-000000000000",
+        "requested_quantity": 10,
+        "unit": "quintal"
+      }
+    },
+    {
+      "name": "Cancel the farmer's own pending service request (same-origin only)",
+      "tag": "Logistics",
+      "method": "PATCH",
+      "path": "/api/service-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "action": "cancel"
+      }
+    },
+    {
+      "name": "Weather snapshot and next-6-hour rain probability for a farmer-selected locality (Open-Meteo)",
+      "tag": "Logistics",
+      "method": "GET",
+      "path": "/api/weather/forecast",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 502, 503],
+      "query": {
+        "lat": "32.7266",
+        "lng": "74.857"
+      }
+    },
+    {
+      "name": "The buyer's requirements",
+      "tag": "Buyer",
+      "method": "GET",
+      "path": "/api/buyer-requirements",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403]
+    },
+    {
+      "name": "Create a requirement (crop, grade, quantity, location, required date, terms)",
+      "tag": "Buyer",
+      "method": "POST",
+      "path": "/api/buyer-requirements",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403],
+      "body": {
+        "crop": "Tomato",
+        "market_area": "Jammu",
+        "min_quantity": 5,
+        "unit": "quintal"
+      }
+    },
+    {
+      "name": "Update or close a requirement",
+      "tag": "Buyer",
+      "method": "PATCH",
+      "path": "/api/buyer-requirements",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "status": "paused"
+      }
+    },
+    {
+      "name": "Deterministic, explainable matches between requirements and published lots",
+      "tag": "Buyer",
+      "method": "GET",
+      "path": "/api/buyer-matches",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 503]
+    },
+    {
+      "name": "Safe published-lot projection (no farmer contact or exact location)",
+      "tag": "Buyer",
+      "method": "GET",
+      "path": "/api/marketplace",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403]
+    },
+    {
+      "name": "Submit an offer on a published lot (validated by a narrow database RPC)",
+      "tag": "Buyer",
+      "method": "POST",
+      "path": "/api/marketplace",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 409],
+      "body": {
+        "lot_id": "00000000-0000-4000-8000-000000000000",
+        "quantity": 5,
+        "unit": "quintal",
+        "price_paise_per_quintal": 180000,
+        "valid_until": "2026-11-27"
+      }
+    },
+    {
+      "name": "Withdraw the buyer's own pending offer",
+      "tag": "Buyer",
+      "method": "PATCH",
+      "path": "/api/buyer-offers",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "action": "withdraw"
+      }
+    },
+    {
+      "name": "The operator's service listings",
+      "tag": "Operator",
+      "method": "GET",
+      "path": "/api/operator/services",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403]
+    },
+    {
+      "name": "Create a transport or storage listing",
+      "tag": "Operator",
+      "method": "POST",
+      "path": "/api/operator/services",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403],
+      "body": {
+        "title": "Mini-truck transport",
+        "service_type": "transport",
+        "service_area": "Jammu district",
+        "rate_basis": "per_trip"
+      }
+    },
+    {
+      "name": "Update or deactivate a listing",
+      "tag": "Operator",
+      "method": "PATCH",
+      "path": "/api/operator/services",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "status": "paused"
+      }
+    },
+    {
+      "name": "Service requests assigned to the operator",
+      "tag": "Operator",
+      "method": "GET",
+      "path": "/api/operator/requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403]
+    },
+    {
+      "name": "Accept or decline a pending request, or cancel an accepted one (action: cancel)",
+      "tag": "Operator",
+      "method": "PATCH",
+      "path": "/api/operator/requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "action": "accept"
+      }
+    },
+    {
+      "name": "Recipient-scoped notification inbox",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/notifications",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401]
+    },
+    {
+      "name": "Mark one or all notifications read",
+      "tag": "Account",
+      "method": "PATCH",
+      "path": "/api/notifications",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401],
+      "body": {
+        "all": true
+      }
+    },
+    {
+      "name": "Profile and privacy preferences",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/profile",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401]
+    },
+    {
+      "name": "Update profile, consent and role-specific details (farmer: own transport, vehicle, farm size, crops; buyer: organisation, buyer type; operator: organisation, services, fleet, cold chain)",
+      "tag": "Account",
+      "method": "PATCH",
+      "path": "/api/profile",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401],
+      "body": {
+        "display_name": "API check"
+      }
+    },
+    {
+      "name": "Sale activity timeline for the participant",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/activity",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 500]
+    },
+    {
+      "name": "Admin-only bounded OGD import (≤500 records per call) with an ingestion audit",
+      "tag": "Admin",
+      "method": "POST",
+      "path": "/api/market-data/refresh",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 422],
+      "body": {
+        "commodity": "Tomato",
+        "limit": 10
+      }
+    },
+    {
+      "name": "Stage an offline forecast candidate (never published automatically)",
+      "tag": "Admin",
+      "method": "POST",
+      "path": "/api/admin/market-forecasts",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 409, 422],
+      "body": {}
+    },
+    {
+      "name": "Approve or reject a staged candidate with a review note",
+      "tag": "Admin",
+      "method": "PATCH",
+      "path": "/api/admin/market-forecasts",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "decision": "rejected",
+        "review_notes": "API check"
+      }
+    },
+    {
+      "name": "Append-only quality inspection history for one of the farmer's lots",
+      "tag": "Farmer",
+      "method": "GET",
+      "path": "/api/produce-lots/{lotId}/quality-inspections",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 404],
+      "path_params": {
+        "lotId": "00000000-0000-4000-8000-000000000000"
+      }
+    },
+    {
+      "name": "Record a farmer-entered quality inspection (server timestamp; not a certified grade)",
+      "tag": "Farmer",
+      "method": "POST",
+      "path": "/api/produce-lots/{lotId}/quality-inspections",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 404, 500],
+      "path_params": {
+        "lotId": "00000000-0000-4000-8000-000000000000"
+      },
+      "body": {
+        "checks": {
+          "appearance": "acceptable"
+        },
+        "observations": "API check"
+      }
+    },
+    {
+      "name": "Change a provider listing's verification state with a 20–500 character review note (audited, same-origin only)",
+      "tag": "Admin",
+      "method": "PATCH",
+      "path": "/api/admin/provider-verification",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "verification_state": "contact_verified",
+        "review_note": "Automated API collection check"
+      }
+    },
+    {
+      "name": "The signed-in user's own buyer/operator access requests",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/access-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 500]
+    },
+    {
+      "name": "Farmer account requests buyer or transport & storage access (admin reviews it)",
+      "tag": "Account",
+      "method": "POST",
+      "path": "/api/access-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 409, 500],
+      "body": {
+        "requested_role": "buyer",
+        "requester_name": "API Check",
+        "organisation_name": "API Check Traders",
+        "reason": "Automated API collection check request."
+      }
+    },
+    {
+      "name": "All access requests (admin only)",
+      "tag": "Admin",
+      "method": "GET",
+      "path": "/api/admin/access-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 500]
+    },
+    {
+      "name": "Approve or reject an access request with a review note; approval grants the role via an audited database function",
+      "tag": "Admin",
+      "method": "PATCH",
+      "path": "/api/admin/access-requests",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "decision": "rejected",
+        "review_note": "Automated API collection check"
+      }
+    }
+  ]
+}

@@ -241,7 +241,13 @@ async function handlePATCH(request: NextRequest) {
   }
 
   const session = await getFarmessSession();
-  if (!session || session.role !== "farmer") {
+  if (!session) {
+    return NextResponse.json(
+      { error: "Sign in before cancelling a service request." },
+      { status: 401 },
+    );
+  }
+  if (session.role !== "farmer") {
     return NextResponse.json(
       { error: "Sign in with a farmer account to cancel a service request." },
       { status: 403 },

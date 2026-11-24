@@ -1,0 +1,2347 @@
+{
+  "info": {
+    "name": "Farmess API",
+    "description": "Every Farmess API endpoint with sample requests and status tests. Signed out (default), protected endpoints must return 401 and public ones 200 (or 503 when a provider key is not configured). To test signed in, set the collection variable 'cookie' to the Cookie header from a signed-in browser session.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://farmess.vercel.app"
+    },
+    {
+      "key": "cookie",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const cookie = pm.collectionVariables.get('cookie');",
+          "if (cookie) { pm.request.headers.upsert({ key: 'Cookie', value: cookie }); }"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Farmer",
+      "item": [
+        {
+          "name": "GET /api/produce-lots",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/produce-lots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "produce-lots"],
+              "query": [],
+              "variable": []
+            },
+            "description": "List the signed-in farmer's produce lots\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403, 500]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/produce-lots",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/produce-lots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "produce-lots"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Create a private draft produce lot\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 500].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"crop\": \"Tomato\",\n  \"variety\": \"Hybrid\",\n  \"grade\": \"A\",\n  \"quantity\": 12.5,\n  \"unit\": \"quintal\",\n  \"location\": \"Narwal mandi area, Jammu\",\n  \"availableAt\": \"2026-11-24\",\n  \"sellBy\": \"2026-11-29\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/produce-lots",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/produce-lots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "produce-lots"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Publish a draft lot to buyers or withdraw a published lot\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"action\": \"publish\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/market-decisions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/market-decisions?lotId=00000000-0000-4000-8000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "market-decisions"],
+              "query": [
+                {
+                  "key": "lotId",
+                  "value": "00000000-0000-4000-8000-000000000000"
+                }
+              ],
+              "variable": []
+            },
+            "description": "Net-realisation comparison for one of the farmer's lots\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 404, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 404, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/market-decisions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/market-decisions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "market-decisions"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Record a selling-option comparison for a lot\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 404, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lotId\": \"00000000-0000-4000-8000-000000000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 404, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/offers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offers"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Buyer offers on the farmer's lots\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403, 500]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/offers",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offers"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Accept or decline an offer (accepting records a sale and notifications)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"action\": \"decline\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/produce-lots/{lotId}/quality-inspections",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/produce-lots/:lotId/quality-inspections",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "produce-lots", ":lotId", "quality-inspections"],
+              "query": [],
+              "variable": [
+                {
+                  "key": "lotId",
+                  "value": "00000000-0000-4000-8000-000000000000"
+                }
+              ]
+            },
+            "description": "Append-only quality inspection history for one of the farmer's lots\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 404]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 404];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/produce-lots/{lotId}/quality-inspections",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/produce-lots/:lotId/quality-inspections",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "produce-lots", ":lotId", "quality-inspections"],
+              "query": [],
+              "variable": [
+                {
+                  "key": "lotId",
+                  "value": "00000000-0000-4000-8000-000000000000"
+                }
+              ]
+            },
+            "description": "Record a farmer-entered quality inspection (server timestamp; not a certified grade)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 404, 500].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checks\": {\n    \"appearance\": \"acceptable\"\n  },\n  \"observations\": \"API check\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 404, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Market data",
+      "item": [
+        {
+          "name": "GET /api/market-prices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/market-prices?commodity=Tomato&state=Jammu and Kashmir&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "market-prices"],
+              "query": [
+                {
+                  "key": "commodity",
+                  "value": "Tomato"
+                },
+                {
+                  "key": "state",
+                  "value": "Jammu and Kashmir"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ],
+              "variable": []
+            },
+            "description": "Search reported daily mandi prices (OGD India / AGMARKNET)\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [200, 503];",
+                  "const documented = [200, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/market-forecasts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/market-forecasts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "market-forecasts"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Human-approved price forecasts only (with model and baseline metrics)\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [200, 503];",
+                  "const documented = [200, 400, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Logistics",
+      "item": [
+        {
+          "name": "GET /api/logistics/discover",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/logistics/discover?lat=32.7266&lng=74.857&radiusKm=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logistics", "discover"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "32.7266"
+                },
+                {
+                  "key": "lng",
+                  "value": "74.857"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "25"
+                }
+              ],
+              "variable": []
+            },
+            "description": "Rank nearby transport/storage services with an explainable rules-v1 score\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/logistics/feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/logistics/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logistics", "feedback"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Rate a recommendation 1\u20135 (training label for the offline ranker)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 404, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"user_feedback\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 404, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/service-requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/service-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "service-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "The farmer's transport/storage requests\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403, 500]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/service-requests",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/service-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "service-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Request a service from an active listing (pending until the provider confirms)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 404, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listing_id\": \"00000000-0000-4000-8000-000000000000\",\n  \"requested_quantity\": 10,\n  \"unit\": \"quintal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 404, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/service-requests",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/service-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "service-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cancel the farmer's own pending service request (same-origin only)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"action\": \"cancel\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/weather/forecast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/weather/forecast?lat=32.7266&lng=74.857",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "weather", "forecast"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "32.7266"
+                },
+                {
+                  "key": "lng",
+                  "value": "74.857"
+                }
+              ],
+              "variable": []
+            },
+            "description": "Weather snapshot and next-6-hour rain probability for a farmer-selected locality (Open-Meteo)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 502, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 502, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Buyer",
+      "item": [
+        {
+          "name": "GET /api/buyer-requirements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buyer-requirements",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buyer-requirements"],
+              "query": [],
+              "variable": []
+            },
+            "description": "The buyer's requirements\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/buyer-requirements",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buyer-requirements",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buyer-requirements"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Create a requirement (crop, grade, quantity, location, required date, terms)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"crop\": \"Tomato\",\n  \"market_area\": \"Jammu\",\n  \"min_quantity\": 5,\n  \"unit\": \"quintal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/buyer-requirements",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buyer-requirements",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buyer-requirements"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Update or close a requirement\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"status\": \"paused\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/buyer-matches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buyer-matches",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buyer-matches"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Deterministic, explainable matches between requirements and published lots\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/marketplace",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/marketplace",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "marketplace"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Safe published-lot projection (no farmer contact or exact location)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/marketplace",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/marketplace",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "marketplace"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Submit an offer on a published lot (validated by a narrow database RPC)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lot_id\": \"00000000-0000-4000-8000-000000000000\",\n  \"quantity\": 5,\n  \"unit\": \"quintal\",\n  \"price_paise_per_quintal\": 180000,\n  \"valid_until\": \"2026-11-27\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/buyer-offers",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buyer-offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buyer-offers"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Withdraw the buyer's own pending offer\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"action\": \"withdraw\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Operator",
+      "item": [
+        {
+          "name": "GET /api/operator/services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "services"],
+              "query": [],
+              "variable": []
+            },
+            "description": "The operator's service listings\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/operator/services",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "services"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Create a transport or storage listing\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mini-truck transport\",\n  \"service_type\": \"transport\",\n  \"service_area\": \"Jammu district\",\n  \"rate_basis\": \"per_trip\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/operator/services",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "services"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Update or deactivate a listing\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"status\": \"paused\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/operator/requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Service requests assigned to the operator\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/operator/requests",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Accept or decline a pending request, or cancel an accepted one (action: cancel)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"action\": \"accept\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Account",
+      "item": [
+        {
+          "name": "GET /api/notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Recipient-scoped notification inbox\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/notifications",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mark one or all notifications read\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"all\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Profile and privacy preferences\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Update profile, consent and role-specific details (farmer: own transport, vehicle, farm size, crops; buyer: organisation, buyer type; operator: organisation, services, fleet, cold chain)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"API check\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/activity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/activity",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "activity"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Sale activity timeline for the participant\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 500]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/access-requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/access-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "access-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "The signed-in user's own buyer/operator access requests\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 500]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/access-requests",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/access-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "access-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Farmer account requests buyer or transport & storage access (admin reviews it)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 409, 500].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requested_role\": \"buyer\",\n  \"requester_name\": \"API Check\",\n  \"organisation_name\": \"API Check Traders\",\n  \"reason\": \"Automated API collection check request.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 409, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "POST /api/market-data/refresh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/market-data/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "market-data", "refresh"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Admin-only bounded OGD import (\u2264500 records per call) with an ingestion audit\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 422].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commodity\": \"Tomato\",\n  \"limit\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 422];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/admin/market-forecasts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/market-forecasts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "market-forecasts"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Stage an offline forecast candidate (never published automatically)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 409, 422].",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [201, 400, 401, 403, 409, 422];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/admin/market-forecasts",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/market-forecasts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "market-forecasts"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Approve or reject a staged candidate with a review note\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"decision\": \"rejected\",\n  \"review_notes\": \"API check\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/admin/provider-verification",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/provider-verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "provider-verification"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Change a provider listing's verification state with a 20\u2013500 character review note (audited, same-origin only)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"verification_state\": \"contact_verified\",\n  \"review_note\": \"Automated API collection check\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/admin/access-requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/access-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "access-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "All access requests (admin only)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403, 500]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403, 500];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/admin/access-requests",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/access-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "access-requests"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Approve or reject an access request with a review note; approval grants the role via an audited database function\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"decision\": \"rejected\",\n  \"review_note\": \"Automated API collection check\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
