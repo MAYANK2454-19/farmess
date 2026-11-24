@@ -13,10 +13,7 @@ test("accepts an exact provider cancellation action", () => {
 
 test("rejects malformed identifiers and unsupported actions", () => {
   assert.equal(parseProviderRequestCancellation({ id: "bad", action: "cancel" }).valid, false);
-  assert.equal(
-    parseProviderRequestCancellation({ id: requestId, action: "accept" }).valid,
-    false,
-  );
+  assert.equal(parseProviderRequestCancellation({ id: requestId, action: "accept" }).valid, false);
 });
 
 test("rejects extra fields and non-object payloads", () => {
