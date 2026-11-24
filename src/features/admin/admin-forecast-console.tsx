@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { buildForecastCandidatePayload } from "./forecast-staging";
 
@@ -54,6 +54,7 @@ export function AdminForecastConsole({
 }) {
   const router = useRouter();
   const [candidates, setCandidates] = useState(initialCandidates);
+  useEffect(() => setCandidates(initialCandidates), [initialCandidates]);
   const [manifestText, setManifestText] = useState("");
   const [pointsText, setPointsText] = useState("");
   const [stagePending, setStagePending] = useState(false);

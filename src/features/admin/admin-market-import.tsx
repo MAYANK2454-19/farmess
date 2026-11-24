@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 type IngestionRun = {
   id: string;
@@ -42,6 +43,7 @@ export function AdminMarketImport({
   runs: IngestionRun[];
   apiKeyConfigured: boolean;
 }) {
+  const router = useRouter();
   const [commodity, setCommodity] = useState("");
   const [state, setState] = useState("");
   const [district, setDistrict] = useState("");
@@ -89,6 +91,7 @@ export function AdminMarketImport({
         throw new Error(payload.error ?? payload.message ?? "Market data import failed.");
       }
       setResult(payload);
+      router.refresh();
     } catch (requestError) {
       setError(
         requestError instanceof Error

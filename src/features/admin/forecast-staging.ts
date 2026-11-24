@@ -40,6 +40,12 @@ function finiteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function isCalendarDate(value: unknown): value is string {
+  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 /**
  * Converts the two files written by ml/market_forecast/train.py into the
  * server API's staging contract. It rejects anything that is not an unevaluated
@@ -96,12 +102,12 @@ export function buildForecastCandidatePayload(
     return { ok: false, error: "The crop, market, model or training identity is incomplete." };
   }
   if (
-    !Number.isSafeInteger(horizon) ||
     typeof horizon !== "number" ||
+    !Number.isSafeInteger(horizon) ||
     horizon < 1 ||
     horizon > 30 ||
-    !Number.isSafeInteger(observationCount) ||
     typeof observationCount !== "number" ||
+    !Number.isSafeInteger(observationCount) ||
     observationCount < 120
   ) {
     return { ok: false, error: "At least 120 training observations and a 1–30 day horizon are required." };
@@ -120,11 +126,15 @@ export function buildForecastCandidatePayload(
   ) {
     return { ok: false, error: "The candidate must beat persistence on both MAE and sMAPE." };
   }
+  if (!isCalendarDate(trainingStart) || !isCalendarDate(trainingEnd) || trainingStart > trainingEnd) {
+    return { ok: false, error: "The model training date range is invalid." };
+  }
   if (!Array.isArray(pointsValue) || pointsValue.length !== horizon) {
     return { ok: false, error: "The forecast-points file must contain exactly the declared horizon." };
   }
 
   const points: ForecastCandidatePayload["points"] = [];
+  let previousDate = trainingEnd;
   for (const point of pointsValue) {
     if (!isRecord(point)) {
       return { ok: false, error: "A forecast point is not a valid object." };
@@ -151,6 +161,7 @@ export function buildForecastCandidatePayload(
       lower_bound_paise_per_quintal: lower,
       upper_bound_paise_per_quintal: upper,
     });
+    previousDate = targetDate;
   }
 
   return {
