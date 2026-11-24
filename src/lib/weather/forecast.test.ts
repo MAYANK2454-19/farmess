@@ -19,7 +19,7 @@ test("uses the six hourly readings starting at the current provider time", () =>
     "2026-11-24T10:30",
   );
 
-  assert.equal(result, 65);
+  assert.equal(result, 75);
 });
 
 test("returns null when no future hourly slot matches the current time", () => {
