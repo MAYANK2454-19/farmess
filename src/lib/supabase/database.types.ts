@@ -640,10 +640,57 @@ export type Database = {
         ];
       };
       produce_quality_inspections: {
-        Row: { assessor_id: string; checks: Json; completed_checks: number; created_at: string; id: string; inspected_at: string; issues: string[]; lot_id: string; observations: string; owner_id: string; status: string; total_checks: number; };
-        Insert: { assessor_id: string; checks?: Json; completed_checks: number; created_at?: string; id?: string; inspected_at: string; issues?: string[]; lot_id: string; observations?: string; owner_id: string; status: string; total_checks?: number; };
-        Update: { assessor_id?: string; checks?: Json; completed_checks?: number; created_at?: string; id?: string; inspected_at?: string; issues?: string[]; lot_id?: string; observations?: string; owner_id?: string; status?: string; total_checks?: number; };
-        Relationships: [{ foreignKeyName: "produce_quality_inspections_lot_owner_fk"; columns: ["lot_id", "owner_id"]; isOneToOne: false; referencedRelation: "produce_lots"; referencedColumns: ["id", "owner_id"]; }];
+        Row: {
+          assessor_id: string;
+          checks: Json;
+          completed_checks: number;
+          created_at: string;
+          id: string;
+          inspected_at: string;
+          issues: string[];
+          lot_id: string;
+          observations: string;
+          owner_id: string;
+          status: string;
+          total_checks: number;
+        };
+        Insert: {
+          assessor_id: string;
+          checks?: Json;
+          completed_checks: number;
+          created_at?: string;
+          id?: string;
+          inspected_at: string;
+          issues?: string[];
+          lot_id: string;
+          observations?: string;
+          owner_id: string;
+          status: string;
+          total_checks?: number;
+        };
+        Update: {
+          assessor_id?: string;
+          checks?: Json;
+          completed_checks?: number;
+          created_at?: string;
+          id?: string;
+          inspected_at?: string;
+          issues?: string[];
+          lot_id?: string;
+          observations?: string;
+          owner_id?: string;
+          status?: string;
+          total_checks?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "produce_quality_inspections_lot_owner_fk";
+            columns: ["lot_id", "owner_id"];
+            isOneToOne: false;
+            referencedRelation: "produce_lots";
+            referencedColumns: ["id", "owner_id"];
+          },
+        ];
       };
       profiles: {
         Row: {
