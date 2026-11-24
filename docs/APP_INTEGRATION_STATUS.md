@@ -52,7 +52,7 @@ Buyer requirement matching is currently deterministic rule-based matching on cro
 - Real-user end-to-end verification of sign-up, email delivery, reset links and role-scoped RLS on the team's Supabase Auth configuration.
 - A verified directory and onboarding process for transport and storage providers; listing availability must be reconfirmed by the provider.
 - Better buyer-lot matching signals and persistent matching/notification campaigns.
-- Provider contact disclosure with explicit farmer consent, dispatch/fulfilment milestones and capacity reservation. Farmer cancellation is supported before fulfilment; provider-side cancellation and fulfilment evidence remain outstanding.
+- Provider contact disclosure with explicit farmer consent, dispatch/fulfilment milestones and capacity reservation. Farmer and provider cancellation are supported before fulfilment; dispatch/fulfilment evidence and capacity reservation remain outstanding.
 - Sale/payment evidence capture beyond the current agreement/activity record. Farmess does not process payments.
 - Market-data source availability, permitted API access, regular ingestion and enough validated observations to evaluate forecasts.
 - Enough representative logistics feedback and actual service-request outcomes to validate a learning-to-rank model. Explicit preference feedback is not the same as successful service completion.
