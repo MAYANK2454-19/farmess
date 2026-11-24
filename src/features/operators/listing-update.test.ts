@@ -34,21 +34,12 @@ test("allows a provider to clear capacity and availability dates", () => {
 });
 
 test("rejects partial capacity values and unsupported units", () => {
-  assert.equal(
-    parseOperatorListingUpdate({ ...validUpdate, capacity_unit: null }).valid,
-    false,
-  );
-  assert.equal(
-    parseOperatorListingUpdate({ ...validUpdate, capacity_unit: "truck" }).valid,
-    false,
-  );
+  assert.equal(parseOperatorListingUpdate({ ...validUpdate, capacity_unit: null }).valid, false);
+  assert.equal(parseOperatorListingUpdate({ ...validUpdate, capacity_unit: "truck" }).valid, false);
 });
 
 test("rejects invalid quantities and malformed calendar dates", () => {
-  assert.equal(
-    parseOperatorListingUpdate({ ...validUpdate, capacity_quantity: 0 }).valid,
-    false,
-  );
+  assert.equal(parseOperatorListingUpdate({ ...validUpdate, capacity_quantity: 0 }).valid, false);
   assert.equal(
     parseOperatorListingUpdate({ ...validUpdate, available_from: "2026-02-30" }).valid,
     false,
@@ -70,8 +61,5 @@ test("rejects unknown fields and invalid listing identifiers", () => {
     parseOperatorListingUpdate({ ...validUpdate, verification_state: "platform_verified" }).valid,
     false,
   );
-  assert.equal(
-    parseOperatorListingUpdate({ ...validUpdate, id: "not-a-uuid" }).valid,
-    false,
-  );
+  assert.equal(parseOperatorListingUpdate({ ...validUpdate, id: "not-a-uuid" }).valid, false);
 });

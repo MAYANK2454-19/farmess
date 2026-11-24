@@ -642,7 +642,11 @@ export function OperatorServiceManager() {
                       >
                         {pendingId === listing.id ? "Saving…" : "Save details"}
                       </button>
-                      <button className="text-link" type="button" onClick={() => setEditingId(null)}>
+                      <button
+                        className="text-link"
+                        type="button"
+                        onClick={() => setEditingId(null)}
+                      >
                         Cancel
                       </button>
                     </div>

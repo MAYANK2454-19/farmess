@@ -422,9 +422,7 @@ export async function PATCH(request: NextRequest) {
   // Preserve the existing pause / activate / close action as a separate, narrow update.
   if (Object.keys(body).length === 2 && "status" in body) {
     if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        body.id,
-      ) ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id) ||
       (body.status !== "active" && body.status !== "paused" && body.status !== "closed")
     ) {
       return NextResponse.json({ error: "Choose a valid listing and status." }, { status: 400 });
