@@ -42,7 +42,7 @@ test("classifies record freshness and flags markets by their latest observation"
   const result = summarizeMarketDataHealth(
     [
       record({ observation_date: "2026-11-24" }),
-      record({ observation_date: "2026-11-19" }),
+      record({ observation_date: "2026-11-19", market_name: "Old Mandi" }),
       record({ observation_date: "2026-11-25", market_name: "Future Mandi" }),
     ],
     3,
@@ -53,7 +53,7 @@ test("classifies record freshness and flags markets by their latest observation"
   assert.equal(result.freshness.stale, 1);
   assert.equal(result.freshness.future, 1);
   assert.equal(result.marketsNeedingReview.length, 2);
-  assert.equal(result.marketsNeedingReview[0].name, "Lasalgaon, Nashik, Maharashtra");
+  assert.equal(result.marketsNeedingReview[0].name, "Old Mandi, Nashik, Maharashtra");
   assert.equal(result.marketsNeedingReview[0].latestStatus, "stale");
 });
 
