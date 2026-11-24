@@ -14,19 +14,39 @@ on:
       - ".github/workflows/farmer-service-request-cancellation.yml"
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: farmer-service-request-cancellation-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
+    if: github.event.pull_request.head.ref == 'feat/farmer-service-request-cancellation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Prettier
+      - name: Format changed files
+        run: |
+          npx prettier --write src/features/logistics/request-cancellation.ts src/features/logistics/request-cancellation.test.ts src/features/logistics/service-request-board.tsx src/app/api/service-requests/route.ts src/app/globals.css docs/FARMER_SERVICE_REQUEST_CANCELLATION.md docs/APP_INTEGRATION_STATUS.md README.md .github/workflows/farmer-service-request-cancellation.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- src/features/logistics/request-cancellation.ts src/features/logistics/request-cancellation.test.ts src/features/logistics/service-request-board.tsx src/app/api/service-requests/route.ts src/app/globals.css docs/FARMER_SERVICE_REQUEST_CANCELLATION.md docs/APP_INTEGRATION_STATUS.md README.md .github/workflows/farmer-service-request-cancellation.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "style(farmer): format service request cancellation"
+            TARGET_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+            git fetch origin "refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+            git rebase "refs/remotes/origin/$TARGET_BRANCH"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+      - name: Verify formatting
         run: npx prettier --check src/features/logistics/request-cancellation.ts src/features/logistics/request-cancellation.test.ts src/features/logistics/service-request-board.tsx src/app/api/service-requests/route.ts src/app/globals.css docs/FARMER_SERVICE_REQUEST_CANCELLATION.md docs/APP_INTEGRATION_STATUS.md README.md .github/workflows/farmer-service-request-cancellation.yml
       - name: Focused cancellation tests
         run: node --experimental-strip-types --test src/features/logistics/request-cancellation.test.ts
