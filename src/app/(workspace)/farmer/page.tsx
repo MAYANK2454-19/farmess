@@ -35,11 +35,9 @@ export default async function FarmerOverviewPage() {
     <main className="content farm-overview">
       <section className="overview-intro" aria-labelledby="overview-title">
         <div>
-          <p className="eyebrow">Farmer workspace</p>
-          <h1 id="overview-title">Your next sale starts here.</h1>
+          <h1 id="overview-title">Your produce and selling options.</h1>
           <p className="overview-lede">
-            Keep a clear record of what you have, check reported market prices and understand the
-            costs behind each selling decision.
+            Track your produce, compare reported market prices and estimate returns after costs.
           </p>
         </div>
         <Link href="/farmer/produce/new" className="button button-primary">
@@ -52,10 +50,9 @@ export default async function FarmerOverviewPage() {
         <section className="overview-section" aria-labelledby="produce-heading">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Your inventory</p>
               <h2 id="produce-heading">Produce lots</h2>
               <p>
-                {error ? "Your records could not be loaded." : `${lots?.length ?? 0} recent lot(s)`}
+                {error ? "Your records could not be loaded." : `${lots?.length ?? 0} recent lots`}
               </p>
             </div>
             <Link href="/farmer/produce" className="text-link">
@@ -111,7 +108,6 @@ export default async function FarmerOverviewPage() {
         </section>
 
         <aside className="overview-aside" aria-labelledby="steps-heading">
-          <p className="aside-kicker">A practical order</p>
           <h2 id="steps-heading">Plan before you sell.</h2>
           <ol className="step-list">
             <li>
@@ -137,26 +133,19 @@ export default async function FarmerOverviewPage() {
       </div>
 
       <section className="overview-tools" aria-labelledby="tools-heading">
-        <p className="eyebrow">Available tools</p>
-        <h2 id="tools-heading">Useful for your next decision</h2>
-        <p className="overview-tools-intro">
-          Start with the information currently available in Farmess.
-        </p>
+        <h2 id="tools-heading">Next steps</h2>
         <div className="tool-links">
           <Link href="/farmer/markets" className="tool-link">
             <strong>Market prices</strong>
             <span>View reported prices with their market, observation date and source.</span>
-            <em>Explore market reports →</em>
           </Link>
           <Link href="/farmer/compare" className="tool-link">
             <strong>Net return calculator</strong>
             <span>Enter a selling rate and the costs you expect to pay.</span>
-            <em>Calculate a scenario →</em>
           </Link>
           <Link href="/farmer/produce" className="tool-link">
             <strong>Produce records</strong>
             <span>Review the produce details you have entered.</span>
-            <em>Open your produce →</em>
           </Link>
         </div>
       </section>
