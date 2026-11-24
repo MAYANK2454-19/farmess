@@ -15,7 +15,9 @@
     "format": "prettier --write .",
     "format:check": "node scripts/check-format.mjs",
     "prepare": "simple-git-hooks || true",
-    "seed:demo": "node scripts/seed-demo-data.mjs"
+    "seed:demo": "node scripts/seed-demo-data.mjs",
+    "api:check": "python api-tests/check_api.py",
+    "api:collection": "node api-tests/build_endpoints.mjs && python api-tests/build_postman_collection.py"
   },
   "simple-git-hooks": {
     "pre-commit": "sh scripts/pre-commit.sh"

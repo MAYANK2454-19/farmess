@@ -217,7 +217,10 @@ async function handlePATCH(request: NextRequest) {
   }
 
   const session = await getFarmessSession();
-  if (!session || session.role !== "buyer") {
+  if (!session) {
+    return NextResponse.json({ error: "Sign in before updating a requirement." }, { status: 401 });
+  }
+  if (session.role !== "buyer") {
     return NextResponse.json(
       { error: "Sign in with a buyer account to update a requirement." },
       { status: 403 },

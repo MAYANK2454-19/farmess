@@ -397,7 +397,13 @@ async function handlePATCH(request: NextRequest) {
   }
 
   const session = await getFarmessSession();
-  if (!session || session.role !== "operator") {
+  if (!session) {
+    return NextResponse.json(
+      { error: "Sign in before updating a service listing." },
+      { status: 401 },
+    );
+  }
+  if (session.role !== "operator") {
     return NextResponse.json(
       { error: "Sign in with a service-provider account to update a listing." },
       { status: 403 },

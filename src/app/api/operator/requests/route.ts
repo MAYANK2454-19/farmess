@@ -72,7 +72,10 @@ async function handlePATCH(request: NextRequest) {
   }
 
   const session = await getFarmessSession();
-  if (!session || session.role !== "operator") {
+  if (!session) {
+    return NextResponse.json({ error: "Sign in before responding to a request." }, { status: 401 });
+  }
+  if (session.role !== "operator") {
     return NextResponse.json(
       { error: "Sign in with a service-provider account to respond." },
       { status: 403 },
