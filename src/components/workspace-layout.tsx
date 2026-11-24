@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { Icon } from "@/components/icons";
+import { Icon, type IconName } from "@/components/icons";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
   ACCOUNT_NAVIGATION,
   NAVIGATION_BY_ROLE,
   MOBILE_NAVIGATION_BY_ROLE,
+  getWorkspacePageLabel,
   isActiveRoute,
 } from "@/lib/routes";
 
@@ -20,16 +21,37 @@ type WorkspaceUser = {
   role: WorkspaceRole;
 };
 
-function Brand() {
+const ROLE_LABEL: Record<WorkspaceRole, string> = {
+  farmer: "Farmer workspace",
+  buyer: "Buyer workspace",
+  operator: "Operator workspace",
+  admin: "Admin",
+};
+
+const HOME_BY_ROLE: Record<WorkspaceRole, string> = {
+  farmer: "/farmer",
+  buyer: "/buyer",
+  operator: "/operator",
+  admin: "/admin",
+};
+
+function initialsOf(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const initials = parts
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+  return initials || "F";
+}
+
+function Brand({ href }: { href: string }) {
   return (
-    <div className="brand-block">
-      <Link href="/farmer" className="brand" aria-label="Farmess overview">
-        <span className="brand-mark">
-          <Icon name="leaf" size={18} />
-        </span>
-        <span className="brand-name">farmess</span>
-      </Link>
-    </div>
+    <Link href={href} className="brand" aria-label="Farmess home">
+      <span className="brand-mark">
+        <Icon name="leaf" size={17} />
+      </span>
+      <span className="brand-name">Farmess</span>
+    </Link>
   );
 }
 
@@ -52,7 +74,7 @@ function NavigationLinks({
             aria-current={active ? "page" : undefined}
           >
             <span className="nav-icon">
-              <Icon name={item.icon as Parameters<typeof Icon>[0]["name"]} size={16} />
+              <Icon name={item.icon as IconName} size={17} />
             </span>
             <span>{item.label}</span>
           </Link>
@@ -64,37 +86,64 @@ function NavigationLinks({
 
 export function WorkspaceLayout({ children, user }: { children: ReactNode; user: WorkspaceUser }) {
   const pathname = usePathname();
+  const home = HOME_BY_ROLE[user.role];
+  const pageLabel = getWorkspacePageLabel(pathname, user.role);
+  const initials = initialsOf(user.displayName);
 
   return (
     <div className="workspace">
       <aside className="sidebar" aria-label="Primary navigation">
-        <Brand />
-        <NavigationLinks items={NAVIGATION_BY_ROLE[user.role]} pathname={pathname} />
-        <div className="sidebar-account-nav">
-          <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
+        <div className="brand-block">
+          <Brand href={home} />
+          <span className="role-badge">{ROLE_LABEL[user.role]}</span>
         </div>
+
+        <p className="nav-section-label">Workspace</p>
+        <NavigationLinks items={NAVIGATION_BY_ROLE[user.role]} pathname={pathname} />
+
+        <p className="nav-section-label">Account</p>
+        <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} />
+
         <div className="sidebar-bottom">
-          <div className="sidebar-account">
-            <span className="sidebar-avatar" aria-hidden="true">
-              {user.displayName.slice(0, 1).toUpperCase()}
-            </span>
-            <span className="sidebar-user-copy">
-              <strong className="sidebar-user-name">{user.displayName}</strong>
-              <span className="sidebar-user-email">{user.email ?? "Signed in"}</span>
-            </span>
+          <div className="sidebar-trust">
+            <Icon name="shield" size={16} />
+            <span>Prices show their source and date. Unknown costs are never counted as zero.</span>
           </div>
         </div>
       </aside>
 
       <div className="main-area">
         <header className="topbar">
-          <Link href="/farmer" className="mobile-brand" aria-label="Farmess overview">
+          <Link href={home} className="mobile-brand" aria-label="Farmess home">
             <span className="brand-mark">
-              <Icon name="leaf" size={16} />
+              <Icon name="leaf" size={15} />
             </span>
-            <span>farmess</span>
+            <span>Farmess</span>
           </Link>
+          <div className="topbar-context" aria-label="Current page">
+            <span className="topbar-crumb">{ROLE_LABEL[user.role]}</span>
+            <Icon name="chevron" size={14} className="topbar-crumb-separator" />
+            <span className="topbar-page">{pageLabel}</span>
+          </div>
           <div className="topbar-right">
+            <Link
+              href="/notifications"
+              className={
+                "topbar-icon-button" + (isActiveRoute(pathname, "/notifications") ? " active" : "")
+              }
+              aria-label="Notifications"
+            >
+              <Icon name="bell" size={18} />
+            </Link>
+            <Link href="/profile" className="topbar-user" aria-label="Profile and privacy">
+              <span className="sidebar-avatar" aria-hidden="true">
+                {initials}
+              </span>
+              <span className="topbar-user-copy">
+                <strong>{user.displayName}</strong>
+                <span>{user.email ?? "Signed in"}</span>
+              </span>
+            </Link>
             <SignOutButton />
           </div>
         </header>
@@ -111,7 +160,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
               className={"mobile-nav-link" + (active ? " active" : "")}
               aria-current={active ? "page" : undefined}
             >
-              <Icon name={item.icon} size={17} />
+              <Icon name={item.icon as IconName} size={19} />
               <span>{item.label}</span>
             </Link>
           );

@@ -15,7 +15,7 @@
 .shareStatus {
   margin: 8px 0 0;
   color: var(--brand-secondary);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .filters {
@@ -39,13 +39,13 @@
 .advancedFiltersHeading h3 {
   margin: 0 0 4px;
   color: var(--brand-primary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .advancedFiltersHeading p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .advancedFilterActions {
@@ -59,7 +59,7 @@
   grid-column: 1 / -1;
   margin: 0;
   color: #a33c3c;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .filterActions {
@@ -94,7 +94,7 @@
 .resultsHeading p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .sourceTag,
@@ -105,7 +105,7 @@
   color: var(--brand-secondary);
   background: var(--soft-green);
   border-radius: 7px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -121,21 +121,21 @@
 
 .statePanel strong {
   color: var(--brand-primary);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .statePanel p {
   max-width: 540px;
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.65;
 }
 
 .statePanel .muted,
 .statePanel .timestamp {
   color: #89948d;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .statePanel button {
@@ -167,7 +167,7 @@
   background: var(--soft-gold);
   border: 1px solid #eee4ce;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .listToolbar {
@@ -180,7 +180,7 @@
 .listToolbar > p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .sortControl {
@@ -188,7 +188,7 @@
   min-width: 220px;
   gap: 5px;
   color: var(--brand-primary);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -221,7 +221,7 @@
 .recordTop p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .recordBadges {
@@ -236,7 +236,7 @@
   align-items: center;
   padding: 6px 9px;
   border-radius: 7px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -273,7 +273,7 @@
 
 .priceGrid span {
   color: #7c8880;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .priceGrid strong {
@@ -289,7 +289,7 @@
   padding-top: 12px;
   color: #818d85;
   border-top: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .recordMeta strong {
@@ -302,7 +302,7 @@
   gap: 5px;
   margin-top: 12px;
   color: var(--brand-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -362,7 +362,7 @@
   }
 
   .priceGrid strong {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .recordMeta {

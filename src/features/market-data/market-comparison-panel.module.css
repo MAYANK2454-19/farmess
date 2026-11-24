@@ -22,7 +22,7 @@
 .comparisonHeading p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -41,7 +41,7 @@
   color: var(--brand-secondary);
   background: var(--soft-green);
   border-radius: 7px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -60,7 +60,7 @@
 .comparisonHeading h3 {
   margin: 0 0 4px;
   color: var(--brand-primary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .spread {
@@ -73,7 +73,7 @@
 .spread span,
 .spread small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .spread strong {
@@ -89,7 +89,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: 13px;
   text-align: left;
 }
 
@@ -97,7 +97,7 @@
   padding: 0 0 8px;
   color: var(--muted);
   text-align: left;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .table th,
@@ -122,7 +122,7 @@
   display: block;
   margin-top: 3px;
   color: #286247;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -136,7 +136,7 @@
 .disclaimer {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.6;
 }
 

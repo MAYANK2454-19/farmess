@@ -2,19 +2,36 @@
 
 :root {
   color-scheme: light;
-  --brand-primary: #173f2b;
-  --brand-secondary: #2f7447;
-  --page: #f7f9f6;
+  /* Farmess design tokens — aligned with the Round 2 style guide. */
+  --brand-primary: #173d32;
+  --brand-primary-hover: #102e25;
+  --brand-secondary: #336b52;
+  --brand-tint: #e8f0eb;
+  --brand-tint-strong: #d3e4d9;
+  --page: #f7f8f5;
   --surface: #ffffff;
-  --text: #131a15;
-  --muted: #69766c;
-  --line: #dfe7df;
-  --accent: #2f7447;
-  --harvest: #2f7447;
-  --soft-green: #edf4ed;
-  --soft-gold: #edf4ed;
-  --shadow: none;
-  --font-sans: "Aptos", "Segoe UI", system-ui, sans-serif;
+  --surface-muted: #fafbf9;
+  --text: #1d2823;
+  --text-secondary: #3d4a44;
+  --muted: #63706a;
+  --subtle: #8b968f;
+  --line: #e3e8e3;
+  --line-strong: #cfd8d1;
+  --accent: #336b52;
+  --harvest: #c59a4a;
+  --warning: #c75a38;
+  --warning-tint: #fbeee8;
+  --info-tint: #eef4f8;
+  --soft-green: #e8f0eb;
+  --soft-gold: #f8f1e3;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-xs: 0 1px 2px rgba(23, 61, 50, 0.05);
+  --shadow: 0 1px 2px rgba(23, 61, 50, 0.04), 0 4px 16px -4px rgba(23, 61, 50, 0.08);
+  --shadow-lg: 0 12px 40px -12px rgba(23, 61, 50, 0.22);
+  --font-sans: var(--font-inter), "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-sans);
 }
 
 * {
@@ -32,7 +49,7 @@ body {
   color: var(--text);
   background: var(--page);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
@@ -104,12 +121,12 @@ textarea:focus-visible {
   place-items: center;
   color: var(--brand-primary);
   background: #f4f7f2;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .brand-name {
   color: #fff;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 25px;
   font-weight: 600;
   letter-spacing: -0.9px;
@@ -118,7 +135,7 @@ textarea:focus-visible {
 .brand-subtitle {
   margin: 8px 0 0 44px;
   color: rgba(244, 247, 242, 0.66);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -126,7 +143,7 @@ textarea:focus-visible {
 .nav-section-label {
   margin: 25px 10px 8px;
   color: rgba(244, 247, 242, 0.54);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -151,8 +168,8 @@ textarea:focus-visible {
   padding: 0 11px;
   color: rgba(244, 247, 242, 0.78);
   border-left: 2px solid transparent;
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
   font-weight: 520;
   transition:
     background 140ms ease,
@@ -190,14 +207,14 @@ textarea:focus-visible {
 .sidebar-preview-label {
   margin: 0 0 5px;
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
 .sidebar-preview-copy {
   margin: 0;
   color: rgba(244, 247, 242, 0.67);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
@@ -221,7 +238,7 @@ textarea:focus-visible {
 
 .topbar-context {
   color: #4e5c51;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -237,7 +254,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 7px;
   color: #4b584e;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   transition: color 140ms ease;
 }
@@ -263,7 +280,7 @@ textarea:focus-visible {
 .eyebrow {
   margin: 0 0 9px;
   color: var(--brand-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -279,7 +296,7 @@ p {
 h1 {
   margin-bottom: 9px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(30px, 3.4vw, 42px);
   font-weight: 500;
   line-height: 1.12;
@@ -290,7 +307,7 @@ h1 {
   max-width: 650px;
   margin-bottom: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
 }
 
@@ -302,9 +319,9 @@ h1 {
   gap: 9px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
   transition:
     background 140ms ease,
@@ -352,8 +369,8 @@ h1 {
   background: #f0f6ef;
   border: 1px solid #dce9db;
   border-left: 3px solid var(--brand-secondary);
-  border-radius: 2px;
-  font-size: 11px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -373,7 +390,7 @@ h1 {
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   box-shadow: none;
 }
 
@@ -389,19 +406,19 @@ h1 {
 .panel-title {
   margin: 0;
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 650;
 }
 
 .panel-caption {
   margin: 4px 0 0;
   color: #7a867c;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .text-link {
   color: var(--brand-secondary);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -427,7 +444,7 @@ h1 {
 .empty-title {
   margin: 0 0 7px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 650;
 }
 
@@ -435,7 +452,7 @@ h1 {
   max-width: 490px;
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.75;
 }
 
@@ -453,7 +470,7 @@ h1 {
 .module-unavailable h2 {
   margin: 0 0 9px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 24px;
   font-weight: 500;
   letter-spacing: -0.35px;
@@ -463,7 +480,7 @@ h1 {
   max-width: 660px;
   margin: 0 0 13px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.75;
 }
 
@@ -477,7 +494,7 @@ h1 {
   gap: 7px;
   margin-bottom: 14px;
   color: var(--brand-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -513,7 +530,7 @@ h1 {
   max-width: 600px;
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.8;
 }
 
@@ -540,7 +557,7 @@ h1 {
 .section-heading h2 {
   margin: 0 0 4px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 500;
   letter-spacing: -0.35px;
@@ -549,7 +566,7 @@ h1 {
 .section-heading p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .overview-empty {
@@ -567,14 +584,14 @@ h1 {
   place-items: center;
   color: var(--brand-primary);
   background: var(--soft-green);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .overview-empty h3 {
   margin: 0 0 6px;
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
 }
 
@@ -582,13 +599,13 @@ h1 {
   max-width: 540px;
   margin: 0 0 11px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.7;
 }
 
 .overview-empty a {
   color: var(--brand-secondary);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -605,7 +622,7 @@ h1 {
 .aside-kicker {
   margin: 0 0 6px;
   color: var(--brand-secondary);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -614,7 +631,7 @@ h1 {
 .overview-aside h2 {
   margin: 0 0 17px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 500;
   letter-spacing: -0.3px;
@@ -645,7 +662,7 @@ h1 {
   color: var(--brand-secondary);
   background: var(--soft-green);
   content: counter(farm-step, decimal-leading-zero);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -653,14 +670,14 @@ h1 {
   display: block;
   margin-bottom: 3px;
   color: var(--text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
 .step-list p {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
@@ -673,7 +690,7 @@ h1 {
 .overview-tools h2 {
   margin: 0 0 4px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 500;
 }
@@ -681,7 +698,7 @@ h1 {
 .overview-tools-intro {
   margin: 0 0 18px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .tool-links {
@@ -706,20 +723,20 @@ h1 {
 
 .tool-link strong {
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
 .tool-link span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
 .tool-link em {
   margin-top: auto;
   color: var(--brand-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 700;
 }
@@ -733,7 +750,7 @@ h1 {
   padding-top: 15px;
   color: #788379;
   border-top: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.7;
 }
 
@@ -745,7 +762,7 @@ h1 {
 .simple-empty-state h3 {
   margin: 0 0 7px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 650;
 }
 
@@ -753,7 +770,7 @@ h1 {
   max-width: 600px;
   margin: 0 0 12px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.7;
 }
 
@@ -775,7 +792,7 @@ h1 {
 
 .form-label {
   color: #344238;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -786,7 +803,7 @@ h1 {
   color: var(--text);
   background: #fff;
   border: 1px solid #cfdacf;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .form-control::placeholder {
@@ -801,7 +818,7 @@ h1 {
 
 .form-help {
   color: #758176;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.55;
 }
 
@@ -818,7 +835,7 @@ h1 {
 .form-warning {
   margin: 0;
   color: #657366;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -833,19 +850,19 @@ h1 {
   padding: 12px 13px;
   background: #f4f8f3;
   border: 1px solid #e2ebe0;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .review-item span {
   display: block;
   margin-bottom: 4px;
   color: #778479;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .review-item strong {
   color: #1e3325;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
@@ -880,7 +897,7 @@ h1 {
 .decision-path-heading h2 {
   margin: 0;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 21px;
   font-weight: 500;
 }
@@ -890,8 +907,8 @@ h1 {
   padding: 5px 8px;
   color: var(--brand-secondary);
   background: var(--soft-green);
-  border-radius: 2px;
-  font-size: 9px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -926,7 +943,7 @@ h1 {
   color: #fff;
   background: #809183;
   border-radius: 50%;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -938,13 +955,13 @@ h1 {
   display: block;
   margin-bottom: 3px;
   color: var(--text);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .decision-step p {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.55;
 }
 
@@ -977,8 +994,8 @@ h1 {
   color: var(--brand-secondary);
   background: var(--soft-green);
   border: 1px solid #d6e5d6;
-  border-radius: 2px;
-  font-size: 9px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1022,14 +1039,14 @@ h1 {
 .privacy-row strong {
   display: block;
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .privacy-row p {
   max-width: 560px;
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -1043,9 +1060,9 @@ h1 {
   color: #58665b;
   background: #f5f8f4;
   border: 1px solid #cfdacf;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -1117,7 +1134,7 @@ h1 {
     align-items: center;
     gap: 8px;
     color: var(--brand-primary);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-size: 21px;
     font-weight: 600;
     letter-spacing: -0.7px;
@@ -1164,7 +1181,7 @@ h1 {
     gap: 3px;
     padding: 5px 2px;
     color: #6f7d71;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -1293,9 +1310,9 @@ h1 {
   color: #526456;
   background: transparent;
   border: 1px solid #cfdacf;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -1317,7 +1334,7 @@ h1 {
 
 .sign-out-error {
   color: #8b342d;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .sidebar-account {
@@ -1338,7 +1355,7 @@ h1 {
   color: var(--brand-primary);
   background: #e5f0e3;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -1351,7 +1368,7 @@ h1 {
 .sidebar-user-name {
   overflow: hidden;
   color: #fff;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1360,7 +1377,7 @@ h1 {
 .sidebar-user-email {
   overflow: hidden;
   color: rgba(244, 247, 242, 0.63);
-  font-size: 9px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1388,7 +1405,7 @@ h1 {
   align-items: center;
   gap: 11px;
   color: #fff;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 25px;
   font-weight: 600;
   letter-spacing: -0.9px;
@@ -1401,8 +1418,8 @@ h1 {
   place-items: center;
   color: #173f2b;
   background: #f4f7f2;
-  border-radius: 2px;
-  font-family: Georgia, "Times New Roman", serif;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
   font-size: 23px;
 }
 
@@ -1414,7 +1431,7 @@ h1 {
 .auth-aside-kicker {
   margin: 0 0 15px;
   color: #b8d7bd;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1423,7 +1440,7 @@ h1 {
 .auth-aside-copy h2 {
   margin: 0 0 17px;
   color: #fff;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(32px, 4vw, 50px);
   font-weight: 500;
   line-height: 1.08;
@@ -1434,14 +1451,14 @@ h1 {
   max-width: 390px;
   margin: 0;
   color: rgba(244, 247, 242, 0.77);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.8;
 }
 
 .auth-aside-footer {
   margin: 0;
   color: rgba(244, 247, 242, 0.56);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .auth-main {
@@ -1510,7 +1527,7 @@ h1 {
   }
 
   .auth-aside-copy > p:last-child {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .auth-main {
@@ -1547,7 +1564,7 @@ h1 {
 .produce-table th {
   color: #6b786d;
   background: #f7faf6;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1555,13 +1572,13 @@ h1 {
 
 .produce-table td {
   color: #475449;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .produce-table td strong {
   display: block;
   color: #1d2b20;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -1569,7 +1586,7 @@ h1 {
   display: block;
   margin-top: 3px;
   color: #7b877d;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .produce-table tbody tr:last-child td {
@@ -1583,8 +1600,8 @@ h1 {
   color: #315f42;
   background: #eff6ee;
   border: 1px solid #dce9db;
-  border-radius: 2px;
-  font-size: 9px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -1624,13 +1641,13 @@ h1 {
 
 .overview-lot-row strong {
   color: #1d2b20;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
 .overview-lot-row > div > span {
   color: #788479;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overview-lot-row .produce-status {
@@ -1648,13 +1665,13 @@ h1 {
 .profile-card-heading h2 {
   margin: 0 0 5px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 500;
 }
 
 .profile-card-heading .page-subtitle {
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .privacy-checkbox {
@@ -1675,7 +1692,7 @@ h1 {
 .form-success {
   margin: 0 0 12px;
   padding: 10px 12px;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -1763,20 +1780,20 @@ h1 {
 
 .notification-title-row strong {
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
 .notification-copy p {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.65;
 }
 
 .notification-copy time {
   color: #849085;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .notification-unread {
@@ -1784,8 +1801,8 @@ h1 {
   color: #24583a;
   background: #eaf4e9;
   border: 1px solid #d3e6d1;
-  border-radius: 2px;
-  font-size: 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1851,7 +1868,7 @@ h1 {
 .offer-title-row h3 {
   margin: 0;
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
 }
 
@@ -1860,7 +1877,7 @@ h1 {
 .offer-dates {
   margin: 0 0 6px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.65;
 }
 
@@ -1878,7 +1895,7 @@ h1 {
 .offer-dates {
   margin-top: 8px;
   color: #859087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .offer-actions {
@@ -1891,7 +1908,7 @@ h1 {
 .offer-actions .button {
   min-height: 36px;
   padding-inline: 12px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .produce-status-expired {
@@ -1939,13 +1956,13 @@ h1 {
 .activity-item > div > p {
   margin: 0 0 6px;
   color: #2b382e;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.65;
 }
 
 .activity-item time {
   color: #859087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .activity-marker {
@@ -2001,14 +2018,14 @@ h1 {
 .service-listing-heading h3 {
   margin: 0;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 21px;
   font-weight: 500;
 }
 
 .service-price {
   color: var(--brand-primary);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -2016,7 +2033,7 @@ h1 {
 .service-area {
   margin: 10px 0 6px;
   color: #3e5043;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
@@ -2025,13 +2042,13 @@ h1 {
   max-width: 720px;
   margin: 0 0 7px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.7;
 }
 
 .service-availability {
   color: #849087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .service-request-details {
@@ -2044,7 +2061,7 @@ h1 {
   padding: 12px 0 2px;
   color: var(--brand-secondary);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -2104,14 +2121,14 @@ h1 {
 
 .service-request-row strong {
   color: var(--text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 
 .service-request-row span:not(.produce-status),
 .service-request-row time {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 @media (max-width: 600px) {
@@ -2214,7 +2231,7 @@ h1 {
 .buyer-requirement-title strong,
 .buyer-offer-row strong {
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
@@ -2225,7 +2242,7 @@ h1 {
 .buyer-offer-row p {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -2240,7 +2257,7 @@ h1 {
   background: transparent;
   border: 0;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .buyer-requirement-actions button:disabled {
@@ -2280,7 +2297,7 @@ h1 {
 .marketplace-lot-heading h3 {
   margin: 0 0 4px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 21px;
   font-weight: 500;
 }
@@ -2290,13 +2307,13 @@ h1 {
 .marketplace-existing-offer {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
 .marketplace-lot-heading > strong {
   color: var(--brand-primary);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -2304,7 +2321,7 @@ h1 {
 .marketplace-lot-dates {
   margin-top: 12px;
   color: #849087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .marketplace-existing-offer {
@@ -2322,7 +2339,7 @@ h1 {
   padding: 12px 0 2px;
   color: var(--brand-secondary);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -2356,7 +2373,7 @@ h1 {
   background: transparent;
   border: 0;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -2454,13 +2471,13 @@ h1 {
 
 .operator-summary span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
 .operator-summary strong {
   color: var(--brand-primary);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 34px;
   font-weight: 500;
   line-height: 1.15;
@@ -2470,7 +2487,7 @@ h1 {
   width: fit-content;
   margin-top: 4px;
   color: var(--brand-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -2505,14 +2522,14 @@ h1 {
 .operator-listing-row strong,
 .operator-request-heading strong {
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
 .operator-listing-row span:not(.produce-status),
 .operator-listing-row time {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -2530,7 +2547,7 @@ h1 {
   background: transparent;
   border: 0;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -2555,7 +2572,7 @@ h1 {
 .operator-request-route {
   margin: 0;
   color: #314a37;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
   line-height: 1.6;
 }
@@ -2564,13 +2581,13 @@ h1 {
 .operator-request-message {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
 .operator-request-main time {
   color: #849087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .operator-request-message {
@@ -2589,7 +2606,7 @@ h1 {
 .operator-request-actions .button {
   min-height: 36px;
   padding-inline: 12px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 @media (max-width: 760px) {
@@ -2654,7 +2671,7 @@ h1 {
 .logistics-results .section-heading h2 {
   margin: 0 0 7px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 25px;
   font-weight: 500;
   letter-spacing: -0.4px;
@@ -2664,7 +2681,7 @@ h1 {
 .logistics-map-heading > div > p:last-child {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.7;
 }
 
@@ -2687,7 +2704,7 @@ h1 {
   display: block;
   margin-bottom: 4px;
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
@@ -2695,7 +2712,7 @@ h1 {
   max-width: 650px;
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
@@ -2742,7 +2759,7 @@ h1 {
 .logistics-map-attribution {
   margin: 0;
   color: #7b887d;
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.55;
 }
 
@@ -2763,7 +2780,7 @@ h1 {
   border: 2px solid white;
   border-radius: 50% 50% 50% 2px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
   transform: rotate(-45deg);
 }
@@ -2778,14 +2795,14 @@ h1 {
 }
 
 .logistics-map-canvas .leaflet-popup-content-wrapper {
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .logistics-map-canvas .leaflet-popup-content {
   margin: 11px 13px;
   color: #24352a;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -2810,7 +2827,7 @@ h1 {
 .logistics-results .section-heading p {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .logistics-results-list {
@@ -2845,13 +2862,13 @@ h1 {
 
 .logistics-result-heading .eyebrow {
   margin-bottom: 5px;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .logistics-result-heading h3 {
   margin: 0 0 4px;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 21px;
   font-weight: 500;
 }
@@ -2859,7 +2876,7 @@ h1 {
 .logistics-result-area {
   margin: 0;
   color: #526255;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -2872,7 +2889,7 @@ h1 {
 
 .logistics-result-score strong {
   color: var(--brand-primary);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 26px;
   font-weight: 500;
   line-height: 1.1;
@@ -2880,7 +2897,7 @@ h1 {
 
 .logistics-result-score span {
   color: #879187;
-  font-size: 8px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -2905,12 +2922,12 @@ h1 {
 
 .logistics-result-facts span {
   color: #849087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .logistics-result-facts strong {
   color: #2c3b30;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -2931,7 +2948,7 @@ h1 {
   display: block;
   margin-bottom: 5px;
   color: #344b39;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -2946,7 +2963,7 @@ h1 {
   margin: 0;
   padding-left: 16px;
   color: #657267;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.55;
 }
 
@@ -2959,7 +2976,7 @@ h1 {
 
 .logistics-result-footer > span {
   color: #849087;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .provider-request-details {
@@ -2971,7 +2988,7 @@ h1 {
   width: fit-content;
   color: var(--brand-secondary);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -2997,7 +3014,7 @@ h1 {
 .logistics-result-disclaimer {
   margin: 0;
   color: #879187;
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -3016,7 +3033,7 @@ h1 {
 .logistics-directory-divider h2 {
   margin: 0;
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 23px;
   font-weight: 500;
 }
@@ -3024,7 +3041,7 @@ h1 {
 .logistics-directory-divider p:last-child {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .operator-location-fields {
@@ -3040,7 +3057,7 @@ h1 {
 .operator-location-fields legend {
   padding: 0 6px;
   color: #344238;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -3049,7 +3066,7 @@ h1 {
   align-items: flex-start;
   gap: 8px;
   color: #566357;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -3132,7 +3149,7 @@ h1 {
   width: fit-content;
   color: var(--brand-secondary);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -3147,12 +3164,12 @@ h1 {
 .logistics-feedback-form .button {
   min-height: 42px;
   padding-inline: 13px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .logistics-feedback-saved {
   margin: 0;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 @media (max-width: 760px) {
@@ -3177,7 +3194,7 @@ h1 {
 .buyer-match-count {
   flex: 0 0 auto;
   color: #738175;
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -3215,7 +3232,7 @@ h1 {
 
 .buyer-match-title strong {
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
 }
 
@@ -3223,7 +3240,7 @@ h1 {
 .buyer-match-main > span {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -3233,7 +3250,7 @@ h1 {
   margin: 5px 0 0;
   padding-left: 17px;
   color: #5e6e61;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.55;
 }
 
@@ -3253,7 +3270,7 @@ h1 {
 
 .buyer-match-actions > span {
   color: #738175;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .produce-status-partial {
@@ -3303,7 +3320,7 @@ h1 {
 .weather-summary-heading p {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .weather-summary-values {
@@ -3321,18 +3338,18 @@ h1 {
 .weather-summary-values span,
 .logistics-result-road-route span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .weather-summary-values strong {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 650;
 }
 
 .weather-summary-attribution {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .weather-summary-attribution a {
@@ -3349,7 +3366,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--soft-green);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .logistics-result-road-route span {

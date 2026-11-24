@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton() {
@@ -29,7 +30,8 @@ export function SignOutButton() {
   return (
     <div className="sign-out-control">
       <button className="topbar-action" type="button" onClick={handleSignOut} disabled={pending}>
-        {pending ? "Signing out…" : "Sign out"}
+        <Icon name="logout" size={16} />
+        <span>{pending ? "Signing out…" : "Sign out"}</span>
       </button>
       {error ? (
         <span className="sign-out-error" role="alert">

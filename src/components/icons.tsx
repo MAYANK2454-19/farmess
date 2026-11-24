@@ -13,7 +13,15 @@ type IconName =
   | "leaf"
   | "chevron"
   | "clock"
-  | "user";
+  | "user"
+  | "arrow"
+  | "alert"
+  | "trend"
+  | "rupee"
+  | "shield"
+  | "logout";
+
+export type { IconName };
 
 const paths: Record<IconName, ReactNode> = {
   overview: (
@@ -91,6 +99,32 @@ const paths: Record<IconName, ReactNode> = {
     <>
       <circle cx="12" cy="8" r="3.5" />
       <path d="M5 20c.8-3.2 3.2-5 7-5s6.2 1.8 7 5" />
+    </>
+  ),
+  arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
+  alert: (
+    <>
+      <path d="M12 4 2.8 19.5h18.4L12 4Z" />
+      <path d="M12 10v4.2M12 17.2v.1" />
+    </>
+  ),
+  trend: (
+    <>
+      <path d="M3.5 17.5 9 12l3.5 3.5 8-8" />
+      <path d="M15 7.5h5.5V13" />
+    </>
+  ),
+  rupee: <path d="M7 4.5h10M7 9h10M7 4.5h3.5a4.5 4.5 0 0 1 0 9H7l8 6.5" />,
+  shield: (
+    <>
+      <path d="M12 3.5 4.5 6.5v5.2c0 4.4 3.1 7.7 7.5 8.8 4.4-1.1 7.5-4.4 7.5-8.8V6.5L12 3.5Z" />
+      <path d="m8.8 12 2.2 2.2 4.2-4.4" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M14 4.5h4a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-4" />
+      <path d="M10 16.5 5.5 12 10 7.5M5.5 12H15" />
     </>
   ),
 };
