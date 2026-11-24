@@ -42,6 +42,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Format files and capture diff for exact formatting
+        run: |
+          npx prettier --write src/features/operators/request-queue.ts src/features/operators/request-queue.test.ts src/features/operators/operator-request-manager.tsx src/app/globals.css
+          git diff -- src/features/operators/request-queue.ts src/features/operators/request-queue.test.ts src/features/operators/operator-request-manager.tsx src/app/globals.css
       - name: Verify formatting
         run: npx prettier --check src/features/operators/request-queue.ts src/features/operators/request-queue.test.ts src/features/operators/operator-request-manager.tsx src/app/globals.css docs/OPERATOR_REQUEST_QUEUE_FILTERS.md docs/APP_INTEGRATION_STATUS.md README.md .github/workflows/operator-request-queue-filters.yml
       - name: Focused queue tests
