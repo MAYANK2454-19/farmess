@@ -561,6 +561,15 @@ export function OperatorServiceManager() {
                       ? ` · ${listing.service_radius_km} km service radius`
                       : ""}
                   </span>
+                  <span>
+                    Capacity: {listing.capacity_quantity === null
+                      ? "not specified"
+                      : `${listing.capacity_quantity} ${listing.capacity_unit ?? ""}`}
+                    {" · "}
+                    Availability: {listing.available_from ?? "not set"}
+                    {" – "}
+                    {listing.available_until ?? "not set"}
+                  </span>
                 </div>
                 {editingId === listing.id ? (
                   <form
