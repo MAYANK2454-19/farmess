@@ -11,6 +11,7 @@ The integrated backend branch contains the first connected application and datab
 - [x] Next.js App Router, TypeScript and responsive workspace shell
 - [x] Supabase Auth SSR clients, cookie refresh, sign-in/up, callback, password reset and sign-out
 - [x] Supabase schema, role-aware Row Level Security and private farmer lot persistence
+- [x] Farmer inventory selling-window reminders based on entered availability and sell-by dates
 - [x] Buyer requirements, published-lot discovery and guarded offer lifecycle
 - [x] Operator transport/storage listings and farmer service-request workflows
 - [x] Notification, profile/consent and sale-activity persistence

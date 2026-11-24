@@ -3,6 +3,7 @@ import { Icon } from "@/components/icons";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { LotStatusButton } from "@/features/lots/lot-status-button";
+import { LotReadinessPanel } from "@/features/lots/lot-readiness-panel";
 
 function formatDate(value: string) {
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -63,6 +64,13 @@ export default async function MyProducePage() {
         </Link>
         .
       </p>
+
+      {!error && lots ? (
+        <LotReadinessPanel
+          lots={lots.map((lot) => ({ id: lot.id, crop: lot.crop, available_from: lot.available_from, sell_by: lot.sell_by, status: lot.status }))}
+          today={new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())}
+        />
+      ) : null}
 
       <section className="panel" aria-labelledby="lots-heading">
         <div className="panel-header">
