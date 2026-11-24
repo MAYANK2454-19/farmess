@@ -1,25 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import {
+  countOfferInboxStatuses,
+  effectiveOfferInboxStatus,
+  filterOfferInbox,
+  type OfferInboxItem,
+  type OfferInboxSort,
+  type OfferInboxStatus,
+} from "./offer-inbox-filters";
 
-type Offer = Pick<
-  Database["public"]["Tables"]["offers"]["Row"],
-  | "id"
-  | "lot_id"
-  | "quantity"
-  | "unit"
-  | "price_paise_per_quintal"
-  | "valid_until"
-  | "status"
-  | "terms"
-  | "created_at"
-> & {
+type Offer = OfferInboxItem & {
   lot: Pick<Database["public"]["Tables"]["produce_lots"]["Row"], "id" | "crop" | "variety"> | null;
-  is_expired: boolean;
 };
 
 type OfferDecision = "accepted" | "declined";
+
+const STATUS_TABS: { value: OfferInboxStatus; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "pending", label: "Pending" },
+  { value: "accepted", label: "Accepted" },
+  { value: "declined", label: "Declined" },
+  { value: "withdrawn", label: "Withdrawn" },
+  { value: "expired", label: "Expired" },
+];
 
 function formatMoneyInPaise(value: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -48,6 +53,9 @@ export function OfferInbox() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<OfferInboxStatus>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<OfferInboxSort>("newest");
 
   useEffect(() => {
     let active = true;
@@ -74,6 +82,14 @@ export function OfferInbox() {
       active = false;
     };
   }, []);
+
+  const counts = useMemo(() => countOfferInboxStatuses(offers), [offers]);
+  const visibleOffers = useMemo(
+    () => filterOfferInbox(offers, { status: statusFilter, query: searchQuery, sort: sortOrder }),
+    [offers, statusFilter, searchQuery, sortOrder],
+  );
+  const hasActiveFilters =
+    statusFilter !== "all" || searchQuery.trim().length > 0 || sortOrder !== "newest";
 
   async function decide(id: string, decision: OfferDecision) {
     setPendingId(id);
@@ -131,6 +147,66 @@ export function OfferInbox() {
         </p>
       ) : null}
 
+      {!loading && offers.length > 0 ? (
+        <div className="offer-inbox-tools">
+          <div className="offer-inbox-tabs" role="group" aria-label="Filter offers by status">
+            {STATUS_TABS.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                className="offer-inbox-tab"
+                aria-pressed={statusFilter === tab.value}
+                onClick={() => setStatusFilter(tab.value)}
+              >
+                {tab.label}
+                <span className="offer-inbox-tab-count">{counts[tab.value]}</span>
+              </button>
+            ))}
+          </div>
+          <div className="offer-inbox-controls">
+            <label className="offer-inbox-search-label">
+              Search offers
+              <input
+                className="offer-inbox-search"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Crop, variety, terms, quantity or price"
+              />
+            </label>
+            <label className="offer-inbox-sort-label">
+              Sort by
+              <select
+                className="offer-inbox-sort"
+                value={sortOrder}
+                onChange={(event) => setSortOrder(event.target.value as OfferInboxSort)}
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+            </label>
+          </div>
+          <div className="offer-inbox-results">
+            <span>
+              Showing {visibleOffers.length} of {offers.length} offers
+            </span>
+            {hasActiveFilters ? (
+              <button
+                type="button"
+                className="offer-inbox-clear"
+                onClick={() => {
+                  setStatusFilter("all");
+                  setSearchQuery("");
+                  setSortOrder("newest");
+                }}
+              >
+                Clear filters
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       {loading ? (
         <div className="empty-state">
           <p className="empty-copy" role="status">
@@ -145,12 +221,17 @@ export function OfferInbox() {
             receive buyer offers until a separate publish workflow is available.
           </p>
         </div>
+      ) : visibleOffers.length === 0 ? (
+        <div className="empty-state offer-inbox-empty">
+          <h3 className="empty-title">No matching offers</h3>
+          <p className="empty-copy">
+            Try another status or search term. Clearing filters will show your full offer inbox.
+          </p>
+        </div>
       ) : (
         <ul className="offer-list">
-          {offers.map((offer) => {
-            const expired = offer.is_expired;
-            const effectiveStatus =
-              offer.status === "pending" && expired ? "expired" : offer.status;
+          {visibleOffers.map((offer) => {
+            const effectiveStatus = effectiveOfferInboxStatus(offer);
 
             return (
               <li className="offer-item" key={offer.id}>
@@ -186,8 +267,8 @@ export function OfferInbox() {
                       type="button"
                       className="button button-primary"
                       onClick={() => void decide(offer.id, "accepted")}
-                      disabled={pendingId === offer.id || expired}
-                      title={expired ? "This offer has expired." : undefined}
+                      disabled={pendingId === offer.id || offer.is_expired}
+                      title={offer.is_expired ? "This offer has expired." : undefined}
                     >
                       Accept offer
                     </button>
