@@ -62,6 +62,17 @@ export async function GET(request: NextRequest) {
   }
 
   const customerKey = process.env.OPEN_METEO_CUSTOMER_API_KEY?.trim();
+  const isVercelProduction = process.env.VERCEL_ENV === "production";
+
+  // Open-Meteo's public endpoint is for non-commercial evaluation only.
+  // Require a paid customer key for Vercel production deployments.
+  if (isVercelProduction && !customerKey) {
+    return NextResponse.json(
+      { error: "Weather forecasts are not enabled for this production deployment." },
+      { status: 503 },
+    );
+  }
+
   const endpoint = customerKey
     ? "https://customer-api.open-meteo.com/v1/forecast"
     : "https://api.open-meteo.com/v1/forecast";
