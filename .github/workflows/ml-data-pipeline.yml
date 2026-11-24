@@ -20,6 +20,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned ML dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ml/market_forecast/requirements.txt -r ml/logistics_ranker/requirements.txt
       - name: Compile ML utilities
         run: python -m compileall -q ml
       - name: Run exporter tests
