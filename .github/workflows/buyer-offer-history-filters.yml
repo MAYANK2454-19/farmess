@@ -1,0 +1,32 @@
+name: Buyer offer history filters
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/features/buyers/buyer-offer-history-filters.ts"
+      - "src/features/buyers/buyer-offer-history-filters.test.ts"
+      - "src/features/buyers/buyer-offer-history.tsx"
+      - ".github/workflows/buyer-offer-history-filters.yml"
+  push:
+    branches:
+      - "feat/buyer-offer-history-filters"
+
+permissions:
+  contents: read
+
+jobs:
+  buyer-offer-history:
+    name: Buyer offer history filter tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install repository dependencies
+        run: npm ci
+      - name: Run buyer offer history tests
+        run: node --experimental-strip-types --test src/features/buyers/buyer-offer-history-filters.test.ts
