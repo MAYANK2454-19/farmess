@@ -1,0 +1,51 @@
+name: Operator listing availability and capacity
+
+on:
+  pull_request:
+    paths:
+      - "src/features/operators/listing-update.ts"
+      - "src/features/operators/listing-update.test.ts"
+      - "src/features/operators/operator-service-manager.tsx"
+      - "src/app/api/operator/services/route.ts"
+      - "docs/OPERATOR_LISTING_AVAILABILITY_CAPACITY.md"
+      - ".github/workflows/operator-listing-updates.yml"
+  push:
+    branches:
+      - feat/operator-listing-availability-capacity
+    paths:
+      - "src/features/operators/listing-update.ts"
+      - "src/features/operators/listing-update.test.ts"
+      - "src/features/operators/operator-service-manager.tsx"
+      - "src/app/api/operator/services/route.ts"
+      - "docs/OPERATOR_LISTING_AVAILABILITY_CAPACITY.md"
+      - ".github/workflows/operator-listing-updates.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: operator-listing-updates-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check formatting
+        run: npx prettier --check src/features/operators/listing-update.ts src/features/operators/listing-update.test.ts src/features/operators/operator-service-manager.tsx src/app/api/operator/services/route.ts docs/OPERATOR_LISTING_AVAILABILITY_CAPACITY.md .github/workflows/operator-listing-updates.yml
+      - name: Focused validation tests
+        run: node --experimental-strip-types --test src/features/operators/listing-update.test.ts
+      - name: ESLint
+        run: npm run lint
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Full unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
