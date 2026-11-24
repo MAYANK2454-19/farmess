@@ -39,6 +39,8 @@ export function OperatorServiceManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState({ capacity: "", unit: "quintal", from: "", until: "" });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [title, setTitle] = useState("");
@@ -196,6 +198,64 @@ export function OperatorServiceManager() {
         updateError instanceof Error
           ? updateError.message
           : "The listing status could not be changed.",
+      );
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  function beginListingEdit(listing: Listing) {
+    setEditingId(listing.id);
+    setEditDraft({
+      capacity: listing.capacity_quantity === null ? "" : String(listing.capacity_quantity),
+      unit: listing.capacity_unit ?? "quintal",
+      from: listing.available_from ?? "",
+      until: listing.available_until ?? "",
+    });
+    setError("");
+    setMessage("");
+  }
+
+  async function saveListingDetails(event: FormEvent<HTMLFormElement>, id: string) {
+    event.preventDefault();
+    setPendingId(id);
+    setError("");
+    setMessage("");
+
+    const quantity = editDraft.capacity.trim() ? Number(editDraft.capacity) : null;
+    if (quantity !== null && (!Number.isFinite(quantity) || quantity <= 0)) {
+      setError("Capacity must be a positive number, or clear the field.");
+      setPendingId(null);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/operator/services", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          id,
+          capacity_quantity: quantity,
+          capacity_unit: quantity === null ? null : editDraft.unit,
+          available_from: editDraft.from || null,
+          available_until: editDraft.until || null,
+        }),
+      });
+      const result = (await response.json()) as {
+        listing?: Partial<Listing> & { id: string };
+        error?: string;
+      };
+      if (!response.ok || !result.listing) {
+        throw new Error(result.error ?? "Listing availability could not be updated.");
+      }
+      setListings((current) =>
+        current.map((item) => (item.id === id ? { ...item, ...result.listing } : item)),
+      );
+      setEditingId(null);
+      setMessage("Capacity and availability updated. Farmers will see the latest provider-entered details.");
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error ? saveError.message : "Listing details could not be updated.",
       );
     } finally {
       setPendingId(null);
@@ -502,7 +562,80 @@ export function OperatorServiceManager() {
                       : ""}
                   </span>
                 </div>
+                {editingId === listing.id ? (
+                  <form
+                    className="operator-service-form"
+                    onSubmit={(event) => void saveListingDetails(event, listing.id)}
+                    aria-label={`Update availability for ${listing.title}`}
+                  >
+                    <label className="form-field">
+                      <span className="form-label">Available capacity</span>
+                      <input
+                        className="form-control"
+                        inputMode="decimal"
+                        value={editDraft.capacity}
+                        onChange={(event) =>
+                          setEditDraft((current) => ({ ...current, capacity: event.target.value }))
+                        }
+                        placeholder="Leave blank if unknown"
+                      />
+                    </label>
+                    <label className="form-field">
+                      <span className="form-label">Capacity unit</span>
+                      <select
+                        className="form-control"
+                        value={editDraft.unit}
+                        disabled={!editDraft.capacity.trim()}
+                        onChange={(event) =>
+                          setEditDraft((current) => ({ ...current, unit: event.target.value }))
+                        }
+                      >
+                        <option value="kg">kg</option>
+                        <option value="quintal">quintal</option>
+                        <option value="tonne">tonne</option>
+                      </select>
+                    </label>
+                    <label className="form-field">
+                      <span className="form-label">Available from</span>
+                      <input
+                        className="form-control"
+                        type="date"
+                        value={editDraft.from}
+                        onChange={(event) =>
+                          setEditDraft((current) => ({ ...current, from: event.target.value }))
+                        }
+                      />
+                    </label>
+                    <label className="form-field">
+                      <span className="form-label">Available until</span>
+                      <input
+                        className="form-control"
+                        type="date"
+                        value={editDraft.until}
+                        onChange={(event) =>
+                          setEditDraft((current) => ({ ...current, until: event.target.value }))
+                        }
+                      />
+                    </label>
+                    <div className="operator-listing-actions">
+                      <button className="button button-primary" type="submit" disabled={pendingId === listing.id}>
+                        {pendingId === listing.id ? "Saving…" : "Save details"}
+                      </button>
+                      <button className="text-link" type="button" onClick={() => setEditingId(null)}>
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : null}
                 <div className="operator-listing-actions">
+                  <button
+                    className="text-link"
+                    type="button"
+                    disabled={pendingId === listing.id}
+                    onClick={() => beginListingEdit(listing)}
+                  >
+                    Update capacity / dates
+                  </button>
                   <span className={"produce-status produce-status-" + listing.status}>
                     {listing.status}
                   </span>
