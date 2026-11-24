@@ -12,7 +12,7 @@ function lot(overrides: Partial<LotReadinessInput> = {}): LotReadinessInput {
   };
 }
 test("classifies a passed sell-by date as expired", () => {
-  const [result] = buildLotReadiness([lot({ sell_by: "2026-11-23" })], "2026-11-24");
+  const [result] = buildLotReadiness([lot({ available_from: "2026-11-20", sell_by: "2026-11-23" })], "2026-11-24");
   assert.equal(result.readiness, "expired");
   assert.equal(result.daysUntilSellBy, -1);
 });
@@ -64,7 +64,7 @@ test("sorts by urgency, nearest sell-by date and crop name", () => {
     [
       lot({ id: "available", crop: "Apple", sell_by: "2026-12-01" }),
       lot({ id: "due-later", crop: "Potato", sell_by: "2026-11-27" }),
-      lot({ id: "expired", sell_by: "2026-11-20" }),
+      lot({ id: "expired", available_from: "2026-11-15", sell_by: "2026-11-20" }),
       lot({ id: "due-earlier", crop: "Onion", sell_by: "2026-11-25" }),
       lot({ id: "upcoming", available_from: "2026-11-26", sell_by: "2026-11-30" }),
     ],
