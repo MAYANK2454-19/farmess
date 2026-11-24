@@ -2,9 +2,15 @@ name: Produce quality inspection tests
 
 on:
   pull_request:
-    branches: [main, feat/ui/field-ready-farmess-redesign]
+    branches:
+      - main
+      - feat/ui/field-ready-farmess-redesign
   push:
-    branches: [main, feat/m6-produce-quality-inspection, feat/farmess-quality-inspection-rebased, feat/produce-quality-inspection-workflow]
+    branches:
+      - main
+      - feat/m6-produce-quality-inspection
+      - feat/farmess-quality-inspection-rebased
+      - feat/produce-quality-inspection-workflow
 
 permissions:
   contents: write
@@ -27,14 +33,14 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: Format changed files
+      - name: Format changed source files
         shell: bash
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           git fetch origin feat/ui/field-ready-farmess-redesign
           BASE_SHA="$(git merge-base origin/feat/ui/field-ready-farmess-redesign HEAD)"
-          mapfile -d '' FILES < <(git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.json' '*.css' '*.scss' '*.md' '*.yml' '*.yaml')
+          mapfile -d '' FILES < <(git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.json' '*.css' '*.scss' '*.md' '*.yml' '*.yaml' ':!.github/workflows/produce-quality-inspection.yml')
           if (("${#FILES[@]}" > 0)); then
             npx prettier --write --ignore-unknown "${FILES[@]}"
             git config user.name "github-actions[bot]"
