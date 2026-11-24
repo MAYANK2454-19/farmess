@@ -127,7 +127,7 @@ end;
 $$;
 
 revoke all on function public.review_service_listing_verification(uuid, text, text)
-  from public, anon;
+  from public, anon, authenticated;
 grant execute on function public.review_service_listing_verification(uuid, text, text)
   to authenticated;
 
