@@ -8,7 +8,7 @@ on:
       - "src/features/operators/request-cancellation.test.ts"
       - "src/features/operators/operator-request-manager.tsx"
       - "src/lib/supabase/database.types.ts"
-      - "supabase/migrations/20261124190000_farmess_operator_accepted_request_cancellation.sql"
+      - "supabase/migrations/20261124143144_farmess_operator_accepted_request_cancellation.sql"
       - "docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md"
       - "docs/APP_INTEGRATION_STATUS.md"
       - "README.md"
@@ -23,7 +23,7 @@ on:
       - "src/features/operators/request-cancellation.test.ts"
       - "src/features/operators/operator-request-manager.tsx"
       - "src/lib/supabase/database.types.ts"
-      - "supabase/migrations/20261124190000_farmess_operator_accepted_request_cancellation.sql"
+      - "supabase/migrations/20261124143144_farmess_operator_accepted_request_cancellation.sql"
       - "docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md"
       - ".github/workflows/operator-request-cancellation.yml"
 

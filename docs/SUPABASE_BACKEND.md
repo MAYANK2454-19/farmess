@@ -57,7 +57,7 @@ The schema does not process payments and does not claim that an accepted offer m
 
 ## Applied migration ledger
 
-The connected project currently records these 15 applied migrations; one validated-count migration is pending in PR #93:
+The connected project records these 20 applied migrations (verified 24 November 2026; file versions match the remote ledger):
 
 1. `20261122160345_farmess_core_backend`
 2. `20261122160439_farmess_core_backend_performance`
@@ -75,9 +75,11 @@ The connected project currently records these 15 applied migrations; one validat
 14. `20261123120135_farmess_buyer_offer_rpc_read_only_lot_validation`
 15. `20261123120834_farmess_buyer_lot_owner_privacy`
 
-Pending review/application in PR #93:
-
-16. `20261124124500_farmess_market_forecast_validated_observation_count`
+16. `20261124143055_farmess_market_forecast_validated_observation_count`
+17. `20261124143110_farmess_produce_quality_inspections`
+18. `20261124143129_farmess_admin_provider_verification_review`
+19. `20261124143144_farmess_operator_accepted_request_cancellation`
+20. `20261124143159_farmess_quality_inspection_server_timestamps`
 
 Before changing schema, link the Supabase CLI to the project, compare local and remote migration history, inspect the diff and apply only reviewed migrations. Do not reset the live project or make untracked DDL edits directly.
 
