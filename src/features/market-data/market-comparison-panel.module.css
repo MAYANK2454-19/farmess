@@ -26,6 +26,15 @@
   line-height: 1.55;
 }
 
+.headingActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .unit {
   flex: 0 0 auto;
   padding: 6px 9px;
@@ -141,6 +150,10 @@
     flex-direction: column;
   }
 
+  .headingActions {
+    justify-content: flex-start;
+  }
+
   .spread {
     text-align: left;
   }
@@ -152,6 +165,10 @@
 }
 
 @media print {
+  .headingActions {
+    display: none;
+  }
+
   .comparison {
     break-inside: auto;
   }
