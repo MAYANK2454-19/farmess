@@ -148,7 +148,10 @@ export function AdminProviderVerificationConsole({
         {listings.length === 0 ? (
           <div className="panel admin-empty">
             <strong>No provider listings are available to review.</strong>
-            <p>New operator listings begin as unverified. Verified listings remain available here for later review or suspension.</p>
+            <p>
+              New operator listings begin as unverified. Verified listings remain available here for
+              later review or suspension.
+            </p>
           </div>
         ) : (
           listings.map((listing) => (
