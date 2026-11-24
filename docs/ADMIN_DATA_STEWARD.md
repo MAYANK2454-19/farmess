@@ -36,6 +36,10 @@ The console does not train models in Vercel. Run training offline with Python 3.
 
 Add credentials through Vercel Environment Variables or the approved local secret helper. Never paste a key into this console, issue tracker or a browser form.
 
+## Provider verification
+
+Use `/admin/providers` to review operator transport and storage listings. Each state change is handled by an admin-only database RPC, validates the trusted Auth role and matching profile role, and writes an append-only audit event in the same transaction. See [ADMIN_PROVIDER_VERIFICATION.md](./ADMIN_PROVIDER_VERIFICATION.md) for the review boundary and evidence standard.
+
 ## Not included
 
-The current console does not provide account provisioning, service-listing verification, SMTP management, or automatic model training. Provider listings must still be entered by the operator account and verified through trusted project operations. Supabase Auth SMTP is configured separately in the Supabase dashboard.
+The console now includes a provider-listing verification queue at `/admin/providers`. Admins can record contact/document/platform verification or suspension with a required audit note. Account provisioning, SMTP management and automatic model training remain outside this console. Supabase Auth SMTP is configured separately in the Supabase dashboard.

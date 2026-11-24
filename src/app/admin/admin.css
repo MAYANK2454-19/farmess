@@ -624,3 +624,43 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.admin-verification-form {
+  display: grid;
+  gap: 0.8rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #edf1eb;
+}
+
+.admin-verification-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #425c4b;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.admin-verification-form select,
+.admin-verification-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d6e1d4;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #18352a;
+  padding: 0.72rem 0.8rem;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.admin-verification-form textarea {
+  min-height: 86px;
+  resize: vertical;
+}
+
+.admin-verification-form select:focus-visible,
+.admin-verification-form textarea:focus-visible {
+  outline: 2px solid #6d9f79;
+  outline-offset: 1px;
+}
