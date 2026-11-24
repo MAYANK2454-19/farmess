@@ -36,6 +36,7 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
   const url = new URL(OGD_API_URL);
   url.searchParams.set("api-key", apiKey);
   url.searchParams.set("format", "json");
+  url.searchParams.set("offset", String(filters.offset ?? 0));
   if (filters.commodity) url.searchParams.set("filters[commodity]", filters.commodity);
   if (filters.state) url.searchParams.set("filters[state]", filters.state);
   if (filters.district) url.searchParams.set("filters[district]", filters.district);

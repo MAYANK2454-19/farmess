@@ -1,11 +1,12 @@
-import test from "node:test";
 import assert from "node:assert/strict";
+import test from "node:test";
 
 import { parseMarketSearchFilters } from "./filters.ts";
 
 test("uses safe defaults when filters and limit are omitted", () => {
   assert.deepEqual(parseMarketSearchFilters(new URLSearchParams()), {
     limit: 100,
+    offset: 0,
   });
 });
 
@@ -21,6 +22,7 @@ test("trims optional filters and omits empty values", () => {
     commodity: "Onion",
     state: "Rajasthan",
     limit: 100,
+    offset: 0,
   });
 });
 
@@ -49,4 +51,15 @@ test("uses the default for blank, malformed, fractional and non-positive limits"
 test("uses the default for values outside the safe integer range", () => {
   const params = new URLSearchParams({ limit: "999999999999999999999999" });
   assert.equal(parseMarketSearchFilters(params).limit, 100);
+});
+
+test("accepts and bounds an OGD offset for incremental historical imports", () => {
+  assert.equal(parseMarketSearchFilters(new URLSearchParams({ offset: "500" })).offset, 500);
+  assert.equal(parseMarketSearchFilters(new URLSearchParams({ offset: "200000" })).offset, 100_000);
+});
+
+test("uses the first page for invalid or unsafe offsets", () => {
+  for (const value of ["-1", "1.5", "abc", "999999999999999999999"]) {
+    assert.equal(parseMarketSearchFilters(new URLSearchParams({ offset: value })).offset, 0);
+  }
 });

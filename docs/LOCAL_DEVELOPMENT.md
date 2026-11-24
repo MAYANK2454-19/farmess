@@ -46,9 +46,11 @@ Create `.env.local` in the repository root. Use the team's Supabase Project URL 
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 DATA_GOV_IN_API_KEY=
+HEIGIT_API_KEY=
+OPEN_METEO_CUSTOMER_API_KEY=
 ```
 
-The first two values are required. `DATA_GOV_IN_API_KEY` is optional and only needed if the configured government market-data source requires it.
+The first two values are required. `DATA_GOV_IN_API_KEY` enables OGD India mandi data and `HEIGIT_API_KEY` enables optional road-distance and drive-time enrichment. `OPEN_METEO_CUSTOMER_API_KEY` is only needed for the paid commercial weather endpoint; the public non-commercial evaluation endpoint requires no key.
 
 Use only the browser-safe `sb_publishable_...` key here. **Never** put a Supabase service-role or secret key in a `NEXT_PUBLIC_*` variable, browser code, or Git. Keep `.env.local` uncommitted.
 
@@ -88,6 +90,12 @@ npm run build
 - A logistics map can show only active listings that providers have actually submitted with a location. It does not invent local transporters or storage facilities.
 - The price forecaster and logistics preference ranker are offline training pipelines. They do not return trained ML predictions until there is sufficient source-attributed market history or explicit recommendation feedback and a model passes its evaluation gates.
 - The Python ML pipelines are not required to run the Next.js app. Their separate dependencies live in `ml/market_forecast/requirements.txt` and `ml/logistics_ranker/requirements.txt`.
+
+## Provider credentials
+
+For a one-prompt local and Vercel setup, follow docs/EXTERNAL_INTEGRATIONS.md. The script scripts/sync-provider-secrets.ps1 stores provider keys in the ignored .env.local file and sends them to Vercel as Secret variables. It targets Development and Preview by default; Production is opt-in after verification.
+
+Resend SMTP credentials belong in Supabase Authentication settings, not .env.local or Vercel. Keep Supabase secret keys out of the application environment; the ML exporter reads its temporary key directly from the terminal session.
 
 ## Troubleshooting
 
