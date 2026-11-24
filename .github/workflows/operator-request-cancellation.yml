@@ -1,0 +1,71 @@
+name: Operator accepted request cancellation
+
+on:
+  pull_request:
+    paths:
+      - "src/app/api/operator/requests/route.ts"
+      - "src/features/operators/request-cancellation.ts"
+      - "src/features/operators/request-cancellation.test.ts"
+      - "src/features/operators/operator-request-manager.tsx"
+      - "src/lib/supabase/database.types.ts"
+      - "supabase/migrations/20261124190000_farmess_operator_accepted_request_cancellation.sql"
+      - "docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md"
+      - ".github/workflows/operator-request-cancellation.yml"
+  push:
+    branches:
+      - main
+      - "feat/operator-accepted-request-cancellation"
+    paths:
+      - "src/app/api/operator/requests/route.ts"
+      - "src/features/operators/request-cancellation.ts"
+      - "src/features/operators/request-cancellation.test.ts"
+      - "src/features/operators/operator-request-manager.tsx"
+      - "src/lib/supabase/database.types.ts"
+      - "supabase/migrations/20261124190000_farmess_operator_accepted_request_cancellation.sql"
+      - "docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md"
+      - ".github/workflows/operator-request-cancellation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: operator-request-cancellation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format changed files
+        run: npx prettier --write src/app/api/operator/requests/route.ts src/features/operators/request-cancellation.ts src/features/operators/request-cancellation.test.ts src/features/operators/operator-request-manager.tsx src/lib/supabase/database.types.ts docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md .github/workflows/operator-request-cancellation.yml
+      - name: Commit formatting changes
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- src/app/api/operator/requests/route.ts src/features/operators/request-cancellation.ts src/features/operators/request-cancellation.test.ts src/features/operators/operator-request-manager.tsx src/lib/supabase/database.types.ts docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md .github/workflows/operator-request-cancellation.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "style(operator): format accepted request cancellation"
+            TARGET_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+            git fetch origin "refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+            git rebase "refs/remotes/origin/$TARGET_BRANCH"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+      - name: Verify formatting
+        run: npx prettier --check src/app/api/operator/requests/route.ts src/features/operators/request-cancellation.ts src/features/operators/request-cancellation.test.ts src/features/operators/operator-request-manager.tsx src/lib/supabase/database.types.ts docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md .github/workflows/operator-request-cancellation.yml
+      - name: Focused validation tests
+        run: node --experimental-strip-types --test src/features/operators/request-cancellation.test.ts
+      - name: ESLint
+        run: npm run lint
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Full unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
