@@ -13,7 +13,7 @@ The application branch connects the following flows to authenticated server hand
 - Sign-up, sign-in, email callback, password recovery, password update and sign-out.
 - Farmer-owned produce drafts and inventory reads.
 - Buyer requirements, safe published-lot projection, offer creation/history/withdrawal and farmer offer decisions.
-- Operator service listing management and provider request acceptance/decline.
+- Operator service listing management, provider capacity/availability updates, provider request acceptance/decline and farmer cancellation of pending or accepted requests.
 - Farmer transport/storage discovery and service-request creation.
 - Profile preferences, consent audit events, notifications and sale activity.
 
@@ -52,7 +52,7 @@ Buyer requirement matching is currently deterministic rule-based matching on cro
 - Real-user end-to-end verification of sign-up, email delivery, reset links and role-scoped RLS on the team's Supabase Auth configuration.
 - A verified directory and onboarding process for transport and storage providers; listing availability must be reconfirmed by the provider.
 - Better buyer-lot matching signals and persistent matching/notification campaigns.
-- Provider contact disclosure with explicit farmer consent, dispatch/fulfilment milestones, capacity reservation and cancellation handling.
+- Provider contact disclosure with explicit farmer consent, dispatch/fulfilment milestones and capacity reservation. Farmer cancellation is supported before fulfilment; provider-side cancellation and fulfilment evidence remain outstanding.
 - Sale/payment evidence capture beyond the current agreement/activity record. Farmess does not process payments.
 - Market-data source availability, permitted API access, regular ingestion and enough validated observations to evaluate forecasts.
 - Enough representative logistics feedback and actual service-request outcomes to validate a learning-to-rank model. Explicit preference feedback is not the same as successful service completion.
