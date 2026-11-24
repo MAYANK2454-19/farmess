@@ -327,6 +327,7 @@ export type Database = {
           status?: string;
           training_end?: string | null;
           training_observation_count: number;
+          validated_observation_count?: number | null;
           training_start?: string | null;
           variety?: string | null;
         };
