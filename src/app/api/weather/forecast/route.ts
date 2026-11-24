@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
+import { nextSixHourMaxPrecipitationProbability } from "@/lib/weather/forecast";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -112,17 +113,12 @@ export async function GET(request: NextRequest) {
     }
     const currentTime = current.time;
 
-    const times = Array.isArray(payload.hourly?.time)
-      ? payload.hourly.time.filter((value): value is string => typeof value === "string")
-      : [];
+    const times = Array.isArray(payload.hourly?.time) ? payload.hourly.time : [];
     const probabilities = Array.isArray(payload.hourly?.precipitation_probability)
       ? payload.hourly.precipitation_probability
       : [];
-    const startIndex = Math.max(0, times.findIndex((value) => value >= currentTime));
-    const nextSixHours = probabilities
-      .slice(startIndex, startIndex + 6)
-      .map(finiteNumber)
-      .filter((value): value is number => value !== null);
+    const nextSixHoursMaximumPrecipitationProbabilityPercent =
+      nextSixHourMaxPrecipitationProbability(times, probabilities, currentTime);
     const weatherCode = finiteNumber(current.weather_code);
 
     return NextResponse.json(
@@ -136,8 +132,7 @@ export async function GET(request: NextRequest) {
           weatherCode,
           description: weatherDescription(weatherCode),
         },
-        nextSixHoursMaximumPrecipitationProbabilityPercent:
-          nextSixHours.length > 0 ? Math.max(...nextSixHours) : null,
+        nextSixHoursMaximumPrecipitationProbabilityPercent,
         timezone: typeof payload.timezone === "string" ? payload.timezone : null,
         source: "Open-Meteo",
         attributionUrl: "https://open-meteo.com/",
