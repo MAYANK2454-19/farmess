@@ -9,7 +9,7 @@ Open `/admin/providers` from an authenticated Farmess admin account.
 - Every change requires a 20–500 character review note.
 - The database RPC checks trusted `app_metadata.farmess_role = admin` and the matching `profiles.role = admin`, locks the listing row, rejects no-op decisions, updates the state and inserts an audit event in one transaction.
 - The operator cannot write the verification field. Existing trigger protections remain in place.
-- The audit history is append-only to authenticated clients; only admins can read it. There is no browser-side service-role key or direct table write.
+- The audit history is append-only to authenticated clients; only admins can read it. The listing foreign key uses `ON DELETE RESTRICT`, so a reviewed listing cannot be deleted and erase its audit trail. There is no browser-side service-role key or direct table write.
 
 ## Review standard
 
