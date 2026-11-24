@@ -28,7 +28,7 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install repository dependencies
         run: npm ci
-      - name: Format candidate files for review
-        run: npx prettier --write src/app/globals.css src/features/buyers/buyer-offer-history-filters.ts src/features/buyers/buyer-offer-history.tsx && git diff -- src/app/globals.css src/features/buyers/buyer-offer-history-filters.ts src/features/buyers/buyer-offer-history.tsx
+      - name: Check formatting for feature files
+        run: npx prettier --check README.md docs/APP_INTEGRATION_STATUS.md docs/BUYER_OFFER_HISTORY_FILTERS.md src/app/globals.css src/features/buyers/buyer-offer-history-filters.ts src/features/buyers/buyer-offer-history-filters.test.ts src/features/buyers/buyer-offer-history.tsx .github/workflows/buyer-offer-history-filters.yml
       - name: Run buyer offer history tests
         run: node --experimental-strip-types --test src/features/buyers/buyer-offer-history-filters.test.ts
