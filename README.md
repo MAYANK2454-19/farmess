@@ -12,7 +12,7 @@ The integrated backend branch contains the first connected application and datab
 - [x] Supabase Auth SSR clients, cookie refresh, sign-in/up, callback, password reset and sign-out
 - [x] Supabase schema, role-aware Row Level Security and private farmer lot persistence
 - [x] Farmer inventory selling-window reminders based on entered availability and sell-by dates
-- [x] Buyer requirements, published-lot discovery and guarded offer lifecycle
+- [x] Buyer requirements, published-lot discovery, guarded offer lifecycle and searchable buyer offer history
 - [x] Operator transport/storage listings, provider capacity/availability updates, farmer cancellation and provider cancellation of accepted requests
 - [x] Notification, profile/consent and sale-activity persistence
 - [x] Admin market-data import, forecast review, read-only coverage/freshness diagnostics and provider verification audit
