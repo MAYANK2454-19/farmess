@@ -7,21 +7,45 @@ on:
     branches: [main, feat/m6-produce-quality-inspection, feat/farmess-quality-inspection-rebased, feat/produce-quality-inspection-workflow]
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: produce-quality-inspection-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality-inspection:
-    name: Produce quality inspection domain tests
+    name: Format, lint, typecheck, tests and production build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: Prettier
+      - name: Format changed files
+        shell: bash
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          git fetch origin feat/ui/field-ready-farmess-redesign
+          BASE_SHA="$(git merge-base origin/feat/ui/field-ready-farmess-redesign HEAD)"
+          mapfile -d '' FILES < <(git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.json' '*.css' '*.scss' '*.md' '*.yml' '*.yaml')
+          if (("${#FILES[@]}" > 0)); then
+            npx prettier --write --ignore-unknown "${FILES[@]}"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -- "${FILES[@]}"
+            if ! git diff --cached --quiet; then
+              git commit -m "style(quality): format inspection workflow"
+              git push origin "HEAD:refs/heads/$BRANCH_NAME"
+            fi
+          fi
+      - name: Prettier verification
         run: npm run format:check
         env:
           FORMAT_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
