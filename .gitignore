@@ -13,3 +13,10 @@ coverage/
 npm-debug.log*
 
 *.tsbuildinfo
+
+# Local machine-learning exports, model candidates, and Python caches
+ml/exports/
+ml/artifacts/
+ml/.venv/
+**/__pycache__/
+*.py[cod]

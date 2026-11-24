@@ -7,7 +7,7 @@ export type ProduceLotForMatching = {
   grade?: string | null;
   quantity: number;
   unit: QuantityUnit;
-  locationArea: string;
+  locationArea: string | null;
   availableAt: string;
   sellBy?: string | null;
   status: "draft" | "published" | "sold" | "withdrawn";
@@ -21,7 +21,7 @@ export type BuyerRequirementForMatching = {
   quantity: number;
   unit: QuantityUnit;
   locationArea: string;
-  requiredAt: string;
+  requiredAt: string | null;
 };
 
 export type MatchResult = {
@@ -112,16 +112,20 @@ export function matchProduceLot(
     }
   }
 
-  if (!lot.locationArea.trim() || !requirement.locationArea.trim()) {
-    unknowns.push("Location compatibility cannot be determined.");
+  if (!lot.locationArea?.trim() || !requirement.locationArea.trim()) {
+    unknowns.push(
+      "Locality compatibility is unknown because the farmer has not shared an approximate area.",
+    );
   } else if (normalise(lot.locationArea) !== normalise(requirement.locationArea)) {
     incompatible = true;
-    reasons.push("Pickup area does not match the requested area.");
+    reasons.push("The published approximate area does not match the requested area.");
   } else {
-    reasons.push("Pickup area matches.");
+    reasons.push("Published approximate area matches.");
   }
 
-  if (!isValidDate(lot.availableAt) || !isValidDate(requirement.requiredAt)) {
+  if (requirement.requiredAt === null || requirement.requiredAt.trim() === "") {
+    reasons.push("The buyer has not set a required delivery date.");
+  } else if (!isValidDate(lot.availableAt) || !isValidDate(requirement.requiredAt)) {
     unknowns.push("Availability date compatibility cannot be determined.");
   } else {
     const available = Date.parse(lot.availableAt);

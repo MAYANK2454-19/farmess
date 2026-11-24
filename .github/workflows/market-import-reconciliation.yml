@@ -1,0 +1,35 @@
+name: Market import duplicate reconciliation
+
+on:
+  pull_request:
+    branches:
+      - feat/ui/field-ready-farmess-redesign
+    paths:
+      - "src/lib/market-data/import-batch.ts"
+      - "src/lib/market-data/import-batch.test.ts"
+      - "src/app/api/market-data/refresh/route.ts"
+      - ".github/workflows/market-import-reconciliation.yml"
+  push:
+    branches:
+      - "feat/market-import-duplicate-reconciliation"
+
+permissions:
+  contents: read
+
+jobs:
+  market-import-reconciliation:
+    name: Market import reconciliation tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run focused tests
+        run: node --experimental-strip-types --test src/lib/market-data/import-batch.test.ts

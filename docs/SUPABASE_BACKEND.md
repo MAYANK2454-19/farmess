@@ -1,99 +1,111 @@
 # FARMESS Supabase backend
 
-This document records the live database contract for the dedicated FARMESS Supabase project. It is not a claim that the Next.js UI is already authenticated or fully connected to persistence.
+This document describes the connected Supabase project and its current application integration. It is a snapshot of the implementation and database state, not a claim that production is populated with real marketplace data.
 
 ## Project
 
 - Project reference: `jsfpajiurzabdqbxvype`
+- Project: `farmess-team13`
 - Region: `ap-northeast-1`
 - PostgreSQL: `17.12`
 - Vercel project: `farmess`
-- Vercel configuration: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are configured for Development, Preview and Production.
+- Public configuration: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are configured for Development, Preview and Production.
 
-Never commit a publishable value as a substitute for database security. The publishable key is safe to use in a browser only because grants and RLS restrict every accessible object. Never expose a Supabase secret/service-role key in `NEXT_PUBLIC_*` variables.
+The browser client uses the publishable key and cookie-aware Supabase SSR integration. Never expose a Supabase secret/service-role key in a `NEXT_PUBLIC_*` variable. Server-side authentication verifies the current user and trusted application role; browser state and signup user metadata are not authorization sources.
 
-## Live schema
+## Public schema
 
-The current database has 11 public tables, each with a distinct access boundary:
+The connected project has 16 public application tables:
 
-- **`profiles`:** Account details, role and privacy preferences. Users can read and update their own allowed profile fields; role is not user-writable.
-- **`profile_consent_events`:** Consent grant/revoke audit history. Own events are read-only; a database trigger writes the rows.
-- **`market_observations`:** Source-attributed market data in INR paise per quintal. Public read-only; ingestion is a trusted server task.
-- **`produce_lots`:** Farmer-owned produce lots. Owner-only; matching summaries are intentionally not exposed yet.
-- **`buyer_requirements`:** Buyer requirements for crop, quantity and market area. Buyer-owner-only.
-- **`offers`:** Buyer quotes against a farmer lot. Visible only to buyer and farmer participants.
-- **`service_listings`:** Operator transport/storage listings. Active listings expose only an allowlisted set of non-contact fields.
-- **`service_requests`:** Requests for provider services. Requester/provider participants only.
-- **`notifications`:** In-app event inbox. Recipient-only; created by database event triggers.
-- **`sales`:** Agreed sale terms and status. Buyer/farmer participants only.
-- **`sale_activity`:** Sale event timeline. Explicit participants only.
+- **Identity and privacy:** `profiles`, `profile_consent_events`
+- **Farmer / buyer marketplace:** `produce_lots`, `buyer_requirements`, `offers`, `sales`, `sale_activity`
+- **Logistics:** `service_listings`, `service_requests`, `logistics_recommendation_feedback`
+- **Market data and ML governance:** `market_observations`, `market_data_ingestion_runs`, `market_forecast_runs`, `market_forecast_points`, `market_forecast_review_events`
+- **Notifications:** `notifications`
 
-All 11 tables have Row Level Security enabled. The public Data API has explicit least-privilege grants; public clients cannot write market observations, consent history, notifications, sales, or sale activity.
+All 16 public tables have Row Level Security enabled. The private ML registry is kept in the `private` schema and is not granted to `anon` or `authenticated` roles. PR #93 adds RLS to that table as defence in depth; that migration must be applied before treating the hardening as active on the connected project.
 
-### Trusted roles
+## Trusted roles and application integration
 
-The allowed roles are `farmer`, `buyer`, `operator` and `admin`. New accounts default to `farmer`. Only trusted `raw_app_meta_data` is used when a non-default role is provisioned; never use `raw_user_meta_data`, signup form fields, URL parameters or browser state to authorize a role. The profile role column is not granted to authenticated users for updates.
+The trusted role set is `farmer`, `buyer`, `operator` and `admin`. New self-service signups create farmer accounts. Buyer, operator and admin accounts are provisioned separately by trusted project operations. Authorization reads the trusted `app_metadata.farmess_role` claim and checks it against the protected profile role.
 
-Admin is not a blanket RLS bypass. Any future support access needs a separate, scoped and audited server workflow.
+The Next.js application currently includes:
 
-### Database-enforced workflows
+- SSR sign-in, farmer signup, email confirmation callback and password-reset/update routes.
+- Farmer produce-lot creation, private drafts and publication controls, including approximate-area consent.
+- Buyer requirements, lot matching, published-lot marketplace and offer history.
+- Operator transport/storage listings and provider-side service requests.
+- Participant-scoped notifications, sale activity and profile/privacy management.
+- OGD/AGMARKNET market-price search, source-quality diagnostics, date-aware market history, comparison and approved-only forecast display.
+- Admin-only mandi imports and audited ingestion history under `/admin/market-data`.
+- Admin-only forecast candidate staging and documented approve/reject decisions under `/admin/forecasts`.
+- Optional HeiGIT road-matrix enrichment and farmer-selected locality weather context.
 
-- Profile updates that change a privacy preference generate consent audit events with field, actor and timestamp.
-- Buyer offers are checked against the authenticated buyer, a published lot, future validity and lot quantity. Offer terms are immutable after creation; expired offers cannot be accepted. Lot-level transaction locks and aggregate accepted-quantity checks prevent two buyers' offers from overselling the same stock.
-- Offer acceptance records a sale and an activity item and creates a notification for the buyer. New, declined and withdrawn offers create recipient-scoped notifications.
-- Service requests must target an active listing owned by an operator. Provider/requester status changes create notifications.
-- Notifications are recipient-scoped; the client can only update the read timestamp.
+The API endpoints repeat their own role checks; the admin UI is not the security boundary. Database RLS remains authoritative for row access.
 
-No payment is processed by this schema. An accepted offer records agreed terms; it does not claim that dispatch, delivery or payment has happened.
+## Database-enforced workflows
 
-## Migration ledger
+- Profile preference updates write consent audit events with actor and timestamp.
+- Buyer offers are checked against the authenticated buyer, published lot, expiry and available quantity. Lot-level locking and aggregate accepted-quantity checks prevent accepted offers from exceeding published stock.
+- Offer acceptance records a sale, sale activity and recipient-scoped notifications.
+- Service requests target active provider listings and are visible to requester/provider participants.
+- Market observations retain source identity, observation date and retrieval time; admin imports write an ingestion audit record.
+- Forecast candidates are private until reviewed. A human approval decision is required before end-user forecast reads can return a run.
+- Notifications are recipient-scoped; users can mark their own items as read.
 
-The live Supabase migration ledger currently records:
+The schema does not process payments and does not claim that an accepted offer means delivery or payment has happened.
 
-- `20261122160345_farmess_core_backend`
-- `20261122160439_farmess_core_backend_performance`
-- `20261122161534_farmess_offer_inventory_integrity`
+## Applied migration ledger
 
-The second migration adds foreign-key indexes, combines overlapping update/select policies and uses scalar-subquery wrappers for JWT policy expressions. The third serializes offer acceptances per lot, prevents aggregate accepted quantities from exceeding stock, and prevents farmers from reducing a lot below quantities already agreed.
+The connected project currently records these 15 applied migrations; one validated-count migration is pending in PR #93:
 
-The exact SQL statement arrays were recovered from the live `supabase_migrations.schema_migrations` ledger and checked into this repository under the matching versioned filenames in `supabase/migrations/`. The filenames match the three versions above. No migration was re-applied while recovering the source.
+1. `20261122160345_farmess_core_backend`
+2. `20261122160439_farmess_core_backend_performance`
+3. `20261122161534_farmess_offer_inventory_integrity`
+4. `20261123111751_farmess_logistics_geo_ml_foundation`
+5. `20261123112803_farmess_provider_verification_control`
+6. `20261123112945_farmess_market_ingestion_admin_controls`
+7. `20261123113242_farmess_logistics_radius_matching`
+8. `20261123113649_farmess_logistics_feedback_feature_snapshot`
+9. `20261123114100_farmess_market_forecast_human_approval`
+10. `20261123114338_farmess_buyer_marketplace_safe_view_and_offer_rpc`
+11. `20261123114935_farmess_buyer_marketplace_invoker_privileges`
+12. `20261123115046_farmess_security_policy_performance_tuning`
+13. `20261123115740_farmess_produce_lot_publish_and_area_consent`
+14. `20261123120135_farmess_buyer_offer_rpc_read_only_lot_validation`
+15. `20261123120834_farmess_buyer_lot_owner_privacy`
 
-For a new local checkout, initialise/link the Supabase CLI once, then verify local and remote history before changing schema:
+Pending review/application in PR #93:
 
-```bash
-npx supabase init
-npx supabase link --project-ref jsfpajiurzabdqbxvype
-npx supabase migration list
-npx supabase db diff --linked
-```
+16. `20261124124500_farmess_market_forecast_validated_observation_count`
 
-Review any diff before pushing. Do not reset the live project or edit its schema outside a reviewed migration.
+Before changing schema, link the Supabase CLI to the project, compare local and remote migration history, inspect the diff and apply only reviewed migrations. Do not reset the live project or make untracked DDL edits directly.
 
-## Local environment
+## Live data snapshot — 24 November 2026
 
-Copy `.env.example` to `.env.local` and set the two public Supabase values from the project's Connect dialog or the authorized Vercel project settings.
+The latest row-count check found one profile but zero rows in `produce_lots`, `market_observations`, `service_listings`, `service_requests`, `logistics_recommendation_feedback`, `market_data_ingestion_runs`, `market_forecast_runs` and `market_forecast_points`.
 
-The intended Next.js integration uses the official cookie-aware packages:
+Consequences:
 
-- `@supabase/supabase-js`
-- `@supabase/ssr`
+- The marketplace and provider directory are connected but not yet populated with real lots or listings.
+- Market-price pages show no live data until the owner-created OGD key is supplied and source observations are imported.
+- Neither the mandi forecasting pipeline nor logistics preference model has enough genuine training data to produce a deployable model.
+- No demo observations or provider entries should be invented to make the application look populated.
 
-Use the server-side cookie client and verify the current user with `getClaims()` (or another documented verified-user method), rather than trusting browser session state. Keep the browser client publishable-key-only. Do not add a secret/service-role key unless a specific server task truly requires bypassing RLS.
+## Remaining operational setup
 
-Official guides:
+- Supply the owner-generated `DATA_GOV_IN_API_KEY` for mandi imports and `HEIGIT_API_KEY` for optional road routing.
+- A paid `OPEN_METEO_CUSTOMER_API_KEY` is required for weather on Vercel production; the public no-key endpoint is used only for non-production evaluation.
+- Configure a verified-domain SMTP provider separately in Supabase Auth to deliver confirmation and password-reset emails reliably.
+- Create and test dedicated farmer, buyer, operator and admin accounts; verify access-denial paths and full user journeys against a new Vercel preview.
+- Populate service listings and market observations only from real providers and source-attributed records.
+- Apply the PR #93 migration to enable RLS on `private.ml_model_registry`; keep it inaccessible to browser roles and do not add client grants.
 
-- [Next.js server-side auth client](https://supabase.com/docs/guides/auth/server-side/creating-a-client)
-- [Secure Data and RLS](https://supabase.com/docs/guides/database/secure-data)
-- [Securing the Data API](https://supabase.com/docs/guides/api/securing-your-api)
-- [Custom claims and RBAC](https://supabase.com/docs/guides/api/custom-claims-and-role-based-access-control-rbac)
+The Supabase Free plan does not include leaked-password protection. Basic password length and character-class requirements can be set in Authentication → Sign In / Providers → Email. See the [Supabase password-security guide](https://supabase.com/docs/guides/auth/password-security).
 
-## Verification already performed
+## Useful documents
 
-- The live database reports 11 public tables and RLS enabled on all 11.
-- The Supabase security advisor reported no findings.
-- The performance advisor no longer reports RLS init-plan warnings, missing foreign-key indexes or overlapping permissive policies. It reports unused-index informational entries because the new tables have not been populated or queried by real users yet.
-- A rollback-only integration transaction checked profile creation/default role assignment, role immutability, own-profile/own-lot visibility, buyer isolation from private lots, consent audit logging, offer creation/acceptance, sale/activity creation, service-request notifications, rejection of a second acceptance that would oversell a lot, and rejection of lot quantity reductions below accepted commitments. Test fixtures were rolled back; no test users or business rows were retained.
-
-## Not yet connected in the application
-
-The current pages still include preview-only messaging. This database foundation does not yet mean that users can sign up, sign in, reset passwords, save lots, create buyer requirements, submit offers, manage services or see persistent notifications through the website. Those require the Next.js Supabase SSR client, auth routes/callbacks, server-side authorization, API/data actions and UI integration, followed by CI and a verified Vercel deployment.
+- `docs/ADMIN_DATA_STEWARD.md` — admin import and forecast review process.
+- `docs/EXTERNAL_INTEGRATIONS.md` — API-provider setup and secret configuration.
+- `docs/AUTHORIZATION_CONTRACT.md` and `docs/ROUTE_AUTHORIZATION_CONTRACT.md` — application role boundaries.
+- `docs/APP_INTEGRATION_STATUS.md` — feature and data readiness notes.
