@@ -111,7 +111,7 @@
   justify-items: start;
   gap: 6px;
   padding: 18px;
-  background: #f8faf7;
+  background: var(--surface-muted);
   border: 1px solid var(--line);
   border-radius: 9px;
 }
@@ -160,7 +160,7 @@
 
 .historyTable th {
   color: var(--muted);
-  background: #f8faf7;
+  background: var(--surface-muted);
   font-weight: 700;
 }
 

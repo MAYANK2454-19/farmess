@@ -201,8 +201,8 @@ export default async function FarmerOverviewPage() {
             key={stat.label}
             className={"stat-card" + (stat.tone === "warning" ? " stat-card-warning" : "")}
           >
-            <p className="stat-label">{stat.label}</p>
             <p className="stat-value">{stat.value}</p>
+            <p className="stat-label">{stat.label}</p>
             <p className="stat-hint">{stat.hint}</p>
           </article>
         ))}

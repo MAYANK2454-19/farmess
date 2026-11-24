@@ -241,7 +241,7 @@
 }
 
 .freshnessfresh {
-  color: #286247;
+  color: var(--khet-mid);
   background: #e8f3eb;
 }
 
@@ -267,7 +267,7 @@
   display: grid;
   gap: 4px;
   padding: 12px;
-  background: #f8faf7;
+  background: var(--surface-muted);
   border-radius: 8px;
 }
 
@@ -385,7 +385,7 @@
 
   :global(body) {
     background: #fff !important;
-    color: #17231b !important;
+    color: var(--text) !important;
   }
 
   :global(body) * {
@@ -441,7 +441,7 @@
   }
 
   .sourceLink {
-    color: #17231b !important;
+    color: var(--text) !important;
     overflow-wrap: anywhere;
   }
 

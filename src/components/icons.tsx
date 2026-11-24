@@ -19,7 +19,10 @@ type IconName =
   | "trend"
   | "rupee"
   | "shield"
-  | "logout";
+  | "logout"
+  | "menu"
+  | "close"
+  | "sidebar";
 
 export type { IconName };
 
@@ -125,6 +128,14 @@ const paths: Record<IconName, ReactNode> = {
     <>
       <path d="M14 4.5h4a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-4" />
       <path d="M10 16.5 5.5 12 10 7.5M5.5 12H15" />
+    </>
+  ),
+  menu: <path d="M4 7h16M4 12h16M4 17h10" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
+  sidebar: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+      <path d="M9.5 4.5v15M6 8.5h1M6 11.5h1" />
     </>
   ),
 };

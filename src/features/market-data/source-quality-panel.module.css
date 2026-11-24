@@ -47,7 +47,7 @@
   display: grid;
   gap: 4px;
   padding: 11px 12px;
-  background: #f8faf7;
+  background: var(--surface-muted);
   border-radius: 8px;
 }
 

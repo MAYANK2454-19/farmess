@@ -3,7 +3,7 @@
   display: grid;
   grid-template-columns: 248px minmax(0, 1fr);
   background: #f4f7f3;
-  color: #18352a;
+  color: var(--khet);
 }
 
 .admin-sidebar {
@@ -111,7 +111,7 @@
 
 .admin-page-heading h1 {
   margin: 0.2rem 0 0.45rem;
-  color: #18352a;
+  color: var(--khet);
   font-size: clamp(1.8rem, 3vw, 2.5rem);
   letter-spacing: -0.04em;
 }
@@ -119,7 +119,7 @@
 .admin-page-heading p:last-child {
   max-width: 700px;
   margin: 0;
-  color: #65776a;
+  color: var(--muted);
   line-height: 1.6;
 }
 
@@ -156,12 +156,12 @@
 }
 
 .admin-metric-card span {
-  color: #65776a;
+  color: var(--muted);
   font-size: 0.82rem;
 }
 
 .admin-metric-card strong {
-  color: #18352a;
+  color: var(--khet);
   font-size: 1.8rem;
   font-variant-numeric: tabular-nums;
 }
@@ -200,7 +200,7 @@
 
 .admin-work-card p {
   margin: 0;
-  color: #65776a;
+  color: var(--muted);
   line-height: 1.55;
 }
 
@@ -227,7 +227,7 @@
 .admin-section-heading p,
 .admin-warning-panel p {
   margin: 0;
-  color: #65776a;
+  color: var(--muted);
   font-size: 0.88rem;
   line-height: 1.55;
 }
@@ -242,7 +242,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 0;
-  border-top: 1px solid #edf1eb;
+  border-top: 1px solid var(--brand-tint);
 }
 
 .admin-provider-row > div {
@@ -255,7 +255,7 @@
 }
 
 .admin-provider-row code {
-  color: #718076;
+  color: var(--muted);
   font-size: 0.74rem;
 }
 
@@ -275,12 +275,12 @@
 .admin-pill-ready,
 .admin-status-ready {
   background: #e7f3e8;
-  color: #28613b;
+  color: var(--khet-mid);
 }
 
 .admin-disclaimer,
 .admin-help {
-  color: #738175;
+  color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.5;
 }
@@ -314,7 +314,7 @@
 
 .admin-panel .panel-caption {
   margin: 0;
-  color: #718076;
+  color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -347,7 +347,7 @@
   border: 1px solid #d6e1d4;
   border-radius: 0.65rem;
   background: #fff;
-  color: #18352a;
+  color: var(--khet);
   padding: 0.72rem 0.8rem;
   font: inherit;
   font-size: 0.9rem;
@@ -399,7 +399,7 @@
 }
 
 .admin-success {
-  color: #28613b;
+  color: var(--khet-mid);
   font-size: 0.86rem;
   line-height: 1.5;
 }
@@ -452,13 +452,13 @@
 .admin-panel .produce-table th,
 .admin-panel .produce-table td {
   padding: 0.75rem 0.65rem;
-  border-bottom: 1px solid #edf1eb;
+  border-bottom: 1px solid var(--brand-tint);
   text-align: left;
   vertical-align: top;
 }
 
 .admin-panel .produce-table th {
-  color: #65776a;
+  color: var(--muted);
   font-weight: 700;
 }
 
@@ -492,7 +492,7 @@
 
 .admin-candidate-heading .panel-caption {
   margin: 0;
-  color: #718076;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
