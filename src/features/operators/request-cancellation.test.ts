@@ -5,17 +5,14 @@ import { parseProviderRequestCancellation } from "./request-cancellation.ts";
 const requestId = "a0b1c2d3-e4f5-4678-9012-abcdefabcdef";
 
 test("accepts an exact provider cancellation action", () => {
-  assert.deepEqual(
-    parseProviderRequestCancellation({ id: requestId, action: "cancel" }),
-    { valid: true, id: requestId },
-  );
+  assert.deepEqual(parseProviderRequestCancellation({ id: requestId, action: "cancel" }), {
+    valid: true,
+    id: requestId,
+  });
 });
 
 test("rejects malformed identifiers and unsupported actions", () => {
-  assert.equal(
-    parseProviderRequestCancellation({ id: "bad", action: "cancel" }).valid,
-    false,
-  );
+  assert.equal(parseProviderRequestCancellation({ id: "bad", action: "cancel" }).valid, false);
   assert.equal(
     parseProviderRequestCancellation({ id: requestId, action: "accept" }).valid,
     false,
