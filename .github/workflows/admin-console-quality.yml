@@ -40,7 +40,37 @@ jobs:
           BASE_SHA="$(git merge-base origin/feat/ui/field-ready-farmess-redesign HEAD)"
           mapfile -t FILES < <(
             git diff --name-only --diff-filter=ACMR "$BASE_SHA" HEAD -- |
-              grep -E '\\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$' || true
+              grep -E '\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)
+          )
+          if (("${#FILES[@]}" > 0)); then
+            npx prettier --write --ignore-unknown "${FILES[@]}"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -- "${FILES[@]}"
+            if ! git diff --cached --quiet; then
+              git commit -m "style(admin): format data steward console"
+              git push origin "HEAD:refs/heads/$BRANCH_NAME"
+            fi
+          fi
+
+      - name: Verify formatting
+        run: |
+          git fetch origin feat/ui/field-ready-farmess-redesign:refs/remotes/origin/feat/ui/field-ready-farmess-redesign
+          BASE_SHA="$(git merge-base origin/feat/ui/field-ready-farmess-redesign HEAD)"
+          FORMAT_BASE_SHA="$BASE_SHA" FORMAT_HEAD_SHA="$(git rev-parse HEAD)" npm run format:check
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+ || true
           )
           if (("${#FILES[@]}" > 0)); then
             npx prettier --write --ignore-unknown "${FILES[@]}"
