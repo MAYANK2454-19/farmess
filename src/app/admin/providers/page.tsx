@@ -15,7 +15,6 @@ export default async function AdminProvidersPage() {
       .select(
         "id,operator_id,title,service_type,service_area,destination_area,description,price_paise,rate_basis,capacity_quantity,capacity_unit,available_from,available_until,status,verification_state,created_at,updated_at",
       )
-      .neq("verification_state", "platform_verified")
       .order("created_at", { ascending: false })
       .limit(100),
     supabase
