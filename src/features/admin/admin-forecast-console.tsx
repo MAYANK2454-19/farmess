@@ -15,6 +15,7 @@ export type ForecastCandidate = {
   model_name: string;
   model_version: string;
   training_observation_count: number;
+  validated_observation_count: number | null;
   training_start: string | null;
   training_end: string | null;
   baseline_mae_paise_per_quintal: number | null;
@@ -100,6 +101,7 @@ export function AdminForecastConsole({
             model_name: conversion.payload.model_name,
             model_version: conversion.payload.model_version,
             training_observation_count: conversion.payload.training_observation_count,
+            validated_observation_count: conversion.payload.validated_observation_count,
             training_start: conversion.payload.training_start,
             training_end: conversion.payload.training_end,
             baseline_mae_paise_per_quintal: conversion.payload.baseline_mae_paise_per_quintal,
@@ -263,6 +265,10 @@ export function AdminForecastConsole({
               </div>
               <div className="admin-metrics">
                 <span>
+                  Validated observations{" "}
+                  <strong>{candidate.validated_observation_count ?? "Not recorded"}</strong>
+                </span>
+                <span>
                   Training rows <strong>{candidate.training_observation_count}</strong>
                 </span>
                 <span>
@@ -338,7 +344,7 @@ export function AdminForecastConsole({
                 <button
                   className="button button-primary"
                   type="button"
-                  disabled={busyId === candidate.id || candidate.points.length === 0}
+                  disabled={busyId === candidate.id || candidate.points.length === 0 || (candidate.validated_observation_count ?? 0) < 120 || candidate.training_observation_count < 90}
                   onClick={() => void reviewCandidate(candidate.id, "approved")}
                 >
                   {busyId === candidate.id ? "Saving…" : "Approve for publication"}

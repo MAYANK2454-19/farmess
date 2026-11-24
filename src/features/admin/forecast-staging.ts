@@ -105,7 +105,7 @@ export function buildForecastCandidatePayload(
     horizon > 30 ||
     typeof observationCount !== "number" ||
     !Number.isSafeInteger(observationCount) ||
-    observationCount < 40 ||
+    observationCount < 90 ||
     typeof validatedObservationCount !== "number" ||
     !Number.isSafeInteger(validatedObservationCount) ||
     validatedObservationCount < 120 ||
@@ -113,7 +113,7 @@ export function buildForecastCandidatePayload(
   ) {
     return {
       ok: false,
-      error: "At least 120 unique validated observations and 40 actual training rows are required.",
+      error: "At least 120 unique validated observations and 90 actual training rows are required.",
     };
   }
   if (

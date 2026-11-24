@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
     body.horizon_days > 30 ||
     typeof body.training_observation_count !== "number" ||
     !Number.isSafeInteger(body.training_observation_count) ||
-    body.training_observation_count < 40 ||
+    body.training_observation_count < 90 ||
     typeof body.validated_observation_count !== "number" ||
     !Number.isSafeInteger(body.validated_observation_count) ||
     body.validated_observation_count < 120 ||
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error:
-          "At least 120 unique validated observations and 40 actual training rows are required.",
+          "At least 120 unique validated observations and 90 actual training rows are required.",
       },
       { status: 400 },
     );
@@ -220,6 +220,7 @@ export async function POST(request: NextRequest) {
       model_name: body.model_name.trim(),
       model_version: body.model_version.trim(),
       training_observation_count: body.training_observation_count,
+      validated_observation_count: body.validated_observation_count,
       training_start: body.training_start,
       training_end: body.training_end,
       baseline_mae_paise_per_quintal: baselineMae,

@@ -11,7 +11,7 @@ export default async function AdminForecastPage() {
   const { data: runs, error: runsError } = await supabase
     .from("market_forecast_runs")
     .select(
-      "id,crop,variety,state,district,market_name,horizon_days,model_name,model_version,training_observation_count,training_start,training_end,baseline_mae_paise_per_quintal,model_mae_paise_per_quintal,baseline_smape_percent,model_smape_percent,created_at",
+      "id,crop,variety,state,district,market_name,horizon_days,model_name,model_version,training_observation_count,validated_observation_count,training_start,training_end,baseline_mae_paise_per_quintal,model_mae_paise_per_quintal,baseline_smape_percent,model_smape_percent,created_at",
     )
     .eq("status", "candidate")
     .order("created_at", { ascending: false })
@@ -50,6 +50,7 @@ export default async function AdminForecastPage() {
 
   const candidates: ForecastCandidate[] = (runs ?? []).map((run) => ({
     ...run,
+    validated_observation_count: run.validated_observation_count === null ? null : Number(run.validated_observation_count),
     baseline_mae_paise_per_quintal:
       run.baseline_mae_paise_per_quintal === null
         ? null

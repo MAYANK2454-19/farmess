@@ -104,7 +104,7 @@ test("rejects insufficient validated observations or an invalid training split",
   );
   assert.equal(
     buildForecastCandidatePayload(
-      manifest({ totalValidatedObservations: 120, trainingObservationCount: 39 }),
+      manifest({ totalValidatedObservations: 120, trainingObservationCount: 89 }),
       points,
     ).ok,
     false,
