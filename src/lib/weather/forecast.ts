@@ -1,8 +1,6 @@
 /**
- * Returns the maximum precipitation probability over the next six hourly slots
- * beginning at the first provider timestamp at or after the current observation.
- * Returns null rather than accidentally reporting the day's first hours when no
- * future hourly slot can be matched.
+ * Finds the maximum precipitation probability among the next six hourly
+ * slots at or after `currentTime`. Returns null when no future slot matches.
  */
 export function nextSixHourMaxPrecipitationProbability(
   times: readonly unknown[],
