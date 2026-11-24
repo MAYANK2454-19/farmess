@@ -13,7 +13,7 @@ The application branch connects the following flows to authenticated server hand
 - Sign-up, sign-in, email callback, password recovery, password update and sign-out.
 - Farmer-owned produce drafts and inventory reads.
 - Buyer requirements, safe published-lot projection, offer creation/history/withdrawal and farmer offer decisions.
-- Operator service listing management, provider capacity/availability updates, provider request acceptance/decline and cancellation of accepted requests, plus farmer cancellation of pending or accepted requests.
+- Operator service listing management, provider capacity/availability updates, searchable/status-filtered incoming request queue, provider request acceptance/decline and cancellation of accepted requests, plus farmer cancellation of pending or accepted requests.
 - Farmer transport/storage discovery and service-request creation.
 - Profile preferences, consent audit events, notifications and sale activity.
 

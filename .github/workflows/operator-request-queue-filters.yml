@@ -1,0 +1,56 @@
+name: Operator request queue filters
+
+on:
+  pull_request:
+    paths:
+      - "src/features/operators/request-queue.ts"
+      - "src/features/operators/request-queue.test.ts"
+      - "src/features/operators/operator-request-manager.tsx"
+      - "src/app/globals.css"
+      - "docs/OPERATOR_REQUEST_QUEUE_FILTERS.md"
+      - "docs/APP_INTEGRATION_STATUS.md"
+      - "README.md"
+      - ".github/workflows/operator-request-queue-filters.yml"
+  push:
+    branches:
+      - main
+      - "feat/operator-request-queue-filters"
+    paths:
+      - "src/features/operators/request-queue.ts"
+      - "src/features/operators/request-queue.test.ts"
+      - "src/features/operators/operator-request-manager.tsx"
+      - "src/app/globals.css"
+      - "docs/OPERATOR_REQUEST_QUEUE_FILTERS.md"
+      - "docs/APP_INTEGRATION_STATUS.md"
+      - "README.md"
+      - ".github/workflows/operator-request-queue-filters.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: operator-request-queue-filters-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify formatting
+        run: npx prettier --check src/features/operators/request-queue.ts src/features/operators/request-queue.test.ts src/features/operators/operator-request-manager.tsx src/app/globals.css docs/OPERATOR_REQUEST_QUEUE_FILTERS.md docs/APP_INTEGRATION_STATUS.md README.md .github/workflows/operator-request-queue-filters.yml
+      - name: Focused queue tests
+        run: node --experimental-strip-types --test src/features/operators/request-queue.test.ts
+      - name: ESLint
+        run: npm run lint
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Full unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
