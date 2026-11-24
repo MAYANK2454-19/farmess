@@ -3415,3 +3415,114 @@ h1 {
     justify-content: flex-start;
   }
 }
+
+/* Buyer offer history filters */
+.buyer-offer-tools {
+  display: grid;
+  gap: 13px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.buyer-offer-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.buyer-offer-tab {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  color: var(--text-secondary);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.buyer-offer-tab[aria-pressed="true"] {
+  color: var(--brand-primary);
+  background: var(--brand-tint);
+  border-color: #b8d2ba;
+}
+
+.buyer-offer-tab-count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.buyer-offer-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 210px);
+  gap: 10px;
+}
+
+.buyer-offer-search,
+.buyer-offer-sort {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 11px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.buyer-offer-search-label,
+.buyer-offer-sort-label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.buyer-offer-results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.buyer-offer-clear {
+  padding: 0;
+  color: var(--brand-secondary);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.buyer-offer-clear:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.buyer-offer-empty {
+  min-height: 150px;
+}
+
+.produce-status-expired {
+  color: #745927;
+  background: #fbf6e9;
+  border-color: #eadfc5;
+}
+
+@media (max-width: 560px) {
+  .buyer-offer-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .buyer-offer-tools {
+    padding-inline: 15px;
+  }
+}
