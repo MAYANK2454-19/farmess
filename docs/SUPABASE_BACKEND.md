@@ -23,7 +23,7 @@ The connected project has 16 public application tables:
 - **Market data and ML governance:** `market_observations`, `market_data_ingestion_runs`, `market_forecast_runs`, `market_forecast_points`, `market_forecast_review_events`
 - **Notifications:** `notifications`
 
-All 16 public tables have Row Level Security enabled. The private ML registry is kept in the `private` schema and is not granted to `anon` or `authenticated` roles; RLS should be enabled there before any client access is ever granted.
+All 16 public tables have Row Level Security enabled. The private ML registry is kept in the `private` schema and is not granted to `anon` or `authenticated` roles. PR #93 adds RLS to that table as defence in depth; that migration must be applied before treating the hardening as active on the connected project.
 
 ## Trusted roles and application integration
 
@@ -99,7 +99,7 @@ Consequences:
 - Configure a verified-domain SMTP provider separately in Supabase Auth to deliver confirmation and password-reset emails reliably.
 - Create and test dedicated farmer, buyer, operator and admin accounts; verify access-denial paths and full user journeys against a new Vercel preview.
 - Populate service listings and market observations only from real providers and source-attributed records.
-- Keep `private.ml_model_registry` inaccessible to browser roles; enable RLS before any future grant or API exposure.
+- Apply the PR #93 migration to enable RLS on `private.ml_model_registry`; keep it inaccessible to browser roles and do not add client grants.
 
 The Supabase Free plan does not include leaked-password protection. Basic password length and character-class requirements can be set in Authentication → Sign In / Providers → Email. See the [Supabase password-security guide](https://supabase.com/docs/guides/auth/password-security).
 

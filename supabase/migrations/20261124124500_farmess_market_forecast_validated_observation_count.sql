@@ -74,5 +74,7 @@ begin
 end;
 $$;
 
+alter table private.ml_model_registry enable row level security;
+
 comment on column public.market_forecast_runs.validated_observation_count is
   'Total unique dated observations validated for this series, including the chronological holdout; NULL means the legacy total was not recorded.';
