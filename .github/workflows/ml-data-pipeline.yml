@@ -1,0 +1,26 @@
+name: ML data pipeline checks
+
+on:
+  pull_request:
+    paths:
+      - "ml/**"
+      - ".github/workflows/ml-data-pipeline.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-ml-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile ML utilities
+        run: python -m compileall -q ml
+      - name: Run exporter tests
+        run: python -m unittest discover -s ml/tests -v

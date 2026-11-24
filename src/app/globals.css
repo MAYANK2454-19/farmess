@@ -14,6 +14,7 @@
   --soft-green: #edf4ed;
   --soft-gold: #edf4ed;
   --shadow: none;
+  --font-sans: "Aptos", "Segoe UI", system-ui, sans-serif;
 }
 
 * {
@@ -30,7 +31,7 @@ body {
   margin: 0;
   color: var(--text);
   background: var(--page);
-  font-family: "Aptos", "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -2783,7 +2784,7 @@ h1 {
 .logistics-map-canvas .leaflet-popup-content {
   margin: 11px 13px;
   color: #24352a;
-  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   line-height: 1.5;
 }
