@@ -54,10 +54,10 @@ jobs:
           fi
 
       - name: Verify formatting
-        env:
-          FORMAT_BASE_SHA: ${{ github.event.before }}
-          FORMAT_HEAD_SHA: ${{ github.sha }}
-        run: npm run format:check
+        run: |
+          git fetch origin feat/ui/field-ready-farmess-redesign:refs/remotes/origin/feat/ui/field-ready-farmess-redesign
+          BASE_SHA="$(git merge-base origin/feat/ui/field-ready-farmess-redesign HEAD)"
+          FORMAT_BASE_SHA="$BASE_SHA" FORMAT_HEAD_SHA="$(git rev-parse HEAD)" npm run format:check
 
       - name: ESLint
         run: npm run lint
