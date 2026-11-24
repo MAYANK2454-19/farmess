@@ -39,9 +39,7 @@ test("ignores invalid advanced bounds and unsupported sort values", () => {
 });
 
 test("bounds shared text filters and ignores unknown query parameters", () => {
-  const state = parseMarketSearchState(
-    `?mc=${"A".repeat(140)}&other=secret&sort=oldest`,
-  );
+  const state = parseMarketSearchState(`?mc=${"A".repeat(140)}&other=secret&sort=oldest`);
 
   assert.equal(state.filters.commodity.length, 100);
   assert.equal(state.sortOrder, "oldest");

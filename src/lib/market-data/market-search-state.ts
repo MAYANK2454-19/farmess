@@ -24,12 +24,7 @@ export const EMPTY_MARKET_SEARCH_STATE: MarketSearchState = {
   sortOrder: "newest",
 };
 
-const SORT_ORDERS = new Set<MarketRecordSortOrder>([
-  "newest",
-  "oldest",
-  "modal-high",
-  "modal-low",
-]);
+const SORT_ORDERS = new Set<MarketRecordSortOrder>(["newest", "oldest", "modal-high", "modal-low"]);
 
 function cleanText(value: string | null): string {
   return (value ?? "").trim().slice(0, 100);
@@ -89,4 +84,3 @@ export function serializeMarketSearchState(state: MarketSearchState): string {
 
   return params.toString();
 }
-
