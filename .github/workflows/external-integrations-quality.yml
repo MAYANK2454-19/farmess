@@ -6,7 +6,7 @@ on:
       - feat/farmess-external-integrations
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: external-integrations-quality-${{ github.ref }}
@@ -32,7 +32,45 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check formatting against integration base
+      - name: Apply Prettier to changed integration files
+        run: |
+          git fetch origin feat/ml-data-export-foundation:refs/remotes/origin/feat/ml-data-export-foundation
+          BASE_SHA="$(git merge-base origin/feat/ml-data-export-foundation HEAD)"
+          mapfile -t FILES < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" HEAD | grep -E '\\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate ML utilities
+        run: |
+          python -m compileall -q ml
+          python -m unittest discover -s ml/tests -v
+
+      - name: Production build
+        run: npm run build
+ || true)
+          if [ "${#FILES[@]}" -gt 0 ]; then
+            npx prettier --write --ignore-unknown "${FILES[@]}"
+          fi
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -- "${FILES[@]}"
+            git commit -m "style: apply Prettier to integration branch"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Verify formatting
         run: |
           git fetch origin feat/ml-data-export-foundation:refs/remotes/origin/feat/ml-data-export-foundation
           BASE_SHA="$(git merge-base origin/feat/ml-data-export-foundation HEAD)"
