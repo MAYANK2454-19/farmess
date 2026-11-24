@@ -1,0 +1,78 @@
+name: External integrations quality
+
+on:
+  push:
+    branches:
+      - feat/farmess-integrations-rebased
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: external-integrations-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: formatting, Python validation and CI dispatch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format and verify all changed text files
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          git fetch origin feat/ui/field-ready-farmess-redesign:refs/remotes/origin/feat/ui/field-ready-farmess-redesign
+          BASE_SHA="$(git merge-base origin/feat/ui/field-ready-farmess-redesign HEAD)"
+          mapfile -t FILES < <(
+            git diff --name-only --diff-filter=ACMR "$BASE_SHA" HEAD |
+              grep -E '\\.(cjs|css|html|js|jsx|json|md|mdx|mjs|scss|ts|tsx|yaml|yml)$' || true
+          )
+          if (("${#FILES[@]}" > 0)); then
+            npx prettier --write --ignore-unknown "${FILES[@]}"
+            npx prettier --check --ignore-unknown "${FILES[@]}"
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if (("${#FILES[@]}" > 0)); then
+            git add -- "${FILES[@]}"
+            if ! git diff --cached --quiet; then
+              git commit -m "style: format rebased integrations branch"
+              git push origin "HEAD:refs/heads/$BRANCH_NAME"
+            fi
+          fi
+
+      - name: Validate Python ML utilities
+        run: |
+          python -m compileall -q ml
+          python -m unittest discover -s ml/tests -v
+
+      - name: Dispatch full repository CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPOSITORY/actions/workflows/ci.yml/dispatches" \
+            -d "{\"ref\":\"$BRANCH_NAME\"}"

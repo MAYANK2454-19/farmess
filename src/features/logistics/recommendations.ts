@@ -60,6 +60,7 @@ export type LogisticsRecommendation = {
   rankingVersion: "rules-v1";
   method: "explainable-heuristic";
   bookingStatus: "not_booked";
+  roadRoute?: { distanceMeters: number; durationSeconds: number } | null;
 };
 
 const KNOWN_UNITS = ["kg", "quintal", "tonne"] as const;
