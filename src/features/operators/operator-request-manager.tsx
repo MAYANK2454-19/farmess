@@ -253,7 +253,7 @@ export function OperatorRequestManager() {
                       </button>
                       <button
                         type="button"
-                        className="button button-danger"
+                        className="button button-secondary"
                         onClick={() => void cancelAccepted(request.id)}
                         disabled={pendingId === request.id}
                       >
