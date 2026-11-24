@@ -10,7 +10,7 @@ type AuthMode = "sign-in" | "sign-up" | "reset";
 function workspaceForRole(role: unknown): string {
   if (role === "buyer") return "/buyer";
   if (role === "operator") return "/operator";
-  if (role === "admin") return "/workspace-unavailable";
+  if (role === "admin") return "/admin";
   return "/farmer";
 }
 
@@ -114,7 +114,7 @@ export function AuthForm() {
         {isReset
           ? "Enter the email address associated with your Farmess account."
           : isSignUp
-            ? "Create a farmer account to keep your produce records in one place. Buyer and service-provider accounts are provisioned separately."
+            ? "Create a farmer account to keep your produce records in one place. Buyer, service-provider and data-steward accounts are provisioned separately."
             : "Sign in to manage your produce and selling decisions."}
       </p>
 
