@@ -15,10 +15,11 @@ The integrated backend branch contains the first connected application and datab
 - [x] Buyer requirements, published-lot discovery and guarded offer lifecycle
 - [x] Operator transport/storage listings and farmer service-request workflows
 - [x] Notification, profile/consent and sale-activity persistence
+- [x] Admin market-data import, forecast review and read-only coverage/freshness diagnostics
 - [x] Source-attributed market-price adapter and admin-only ingestion endpoint
 - [x] PostGIS locality discovery and explainable logistics recommendation ranking
 - [x] Offline candidate pipelines for mandi-price forecasting and logistics preference ranking
-- [ ] Trusted buyer/operator onboarding and admin/data-steward workspace
+- [ ] Trusted buyer/operator onboarding, service-listing verification and admin account management
 - [ ] Verified real provider directory and sufficient local service listings
 - [ ] Market observations and feedback data at the minimum scale required to train/evaluate ML
 - [ ] Production-grade email delivery, complete RLS-denial/E2E test evidence and production deployment

@@ -575,3 +575,53 @@
     width: 100%;
   }
 }
+
+
+.admin-health-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.admin-health-quality-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.admin-health-quality-grid > div {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid #e5ece3;
+  border-radius: 0.75rem;
+  background: #fbfcfa;
+}
+
+.admin-health-quality-grid strong {
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-health-quality-grid span {
+  color: #65776a;
+  font-size: 0.76rem;
+}
+
+@media (max-width: 900px) {
+  .admin-health-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-health-quality-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-health-grid,
+  .admin-health-quality-grid {
+    grid-template-columns: 1fr;
+  }
+}
