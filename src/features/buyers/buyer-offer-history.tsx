@@ -6,7 +6,6 @@ import {
   countBuyerOfferStatuses,
   effectiveBuyerOfferStatus,
   filterBuyerOfferHistory,
-  type BuyerOfferHistoryItem,
   type BuyerOfferHistorySort,
   type BuyerOfferHistoryStatus,
 } from "./buyer-offer-history-filters";
