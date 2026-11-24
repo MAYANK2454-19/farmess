@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { buildForecastCandidatePayload } from "./forecast-staging";
 
@@ -54,7 +54,6 @@ export function AdminForecastConsole({
 }) {
   const router = useRouter();
   const [candidates, setCandidates] = useState(initialCandidates);
-  useEffect(() => setCandidates(initialCandidates), [initialCandidates]);
   const [manifestText, setManifestText] = useState("");
   const [pointsText, setPointsText] = useState("");
   const [stagePending, setStagePending] = useState(false);
@@ -82,12 +81,39 @@ export function AdminForecastConsole({
         body: JSON.stringify(conversion.payload),
       });
       const payload = (await response.json()) as {
-        candidate?: { id?: string };
+        candidate?: { id?: string; created_at?: string };
         message?: string;
         error?: string;
       };
       if (!response.ok) throw new Error(payload.error ?? "The candidate could not be staged.");
 
+      if (payload.candidate?.id) {
+        setCandidates((current) => [
+          {
+            id: payload.candidate!.id!,
+            crop: conversion.payload.crop,
+            variety: conversion.payload.variety,
+            state: conversion.payload.state,
+            district: conversion.payload.district,
+            market_name: conversion.payload.market_name,
+            horizon_days: conversion.payload.horizon_days,
+            model_name: conversion.payload.model_name,
+            model_version: conversion.payload.model_version,
+            training_observation_count: conversion.payload.training_observation_count,
+            training_start: conversion.payload.training_start,
+            training_end: conversion.payload.training_end,
+            baseline_mae_paise_per_quintal: conversion.payload.baseline_mae_paise_per_quintal,
+            model_mae_paise_per_quintal: conversion.payload.model_mae_paise_per_quintal,
+            baseline_smape_percent: conversion.payload.baseline_smape_percent,
+            model_smape_percent: conversion.payload.model_smape_percent,
+            created_at: payload.candidate.created_at ?? new Date().toISOString(),
+            points: conversion.payload.points.map((point) => ({
+              ...point,
+            })),
+          },
+          ...current.filter((candidate) => candidate.id !== payload.candidate!.id),
+        ]);
+      }
       setManifestText("");
       setPointsText("");
       setStageMessage(payload.message ?? "Candidate staged privately for human review.");
