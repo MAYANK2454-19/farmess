@@ -1,6 +1,6 @@
 create table public.service_listing_verification_events (
   id uuid primary key default gen_random_uuid(),
-  listing_id uuid not null references public.service_listings(id) on delete cascade,
+  listing_id uuid not null references public.service_listings(id) on delete restrict,
   reviewed_by_user_id uuid not null references public.profiles(id) on delete restrict,
   previous_state varchar(24) not null
     check (previous_state in ('unverified','contact_verified','document_verified','platform_verified','suspended')),
