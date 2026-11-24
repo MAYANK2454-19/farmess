@@ -141,10 +141,8 @@ test("starts at the requested historical offset and advances across later pages"
 
 test("rejects source offsets outside the supported range", async () => {
   await assert.rejects(
-    fetchOgdRecordsPaginated(
-      new URL("https://example.test/resource?offset=100001"),
-      10,
-      async () => jsonResponse([]),
+    fetchOgdRecordsPaginated(new URL("https://example.test/resource?offset=100001"), 10, async () =>
+      jsonResponse([]),
     ),
     /offset must be a whole number from 0 to 100000/,
   );
