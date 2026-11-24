@@ -41,7 +41,7 @@ function searchableText(request: OperatorRequestQueueItem): string {
     request.message,
   ]
     .filter(
-      (value): value is string | number => typeof value === "string" || typeof value === "number",
+      (value): value is string => typeof value === "string" || typeof value === "number",
     )
     .join(" ")
     .normalize("NFKD")
