@@ -2,10 +2,22 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
+import { MarketSummaryPanel } from "@/features/market-data/market-summary-panel";
+import { MarketComparisonPanel } from "@/features/market-data/market-comparison-panel";
 import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
 import { marketPriceRecordsToCsv } from "@/lib/market-data/csv";
 import { getMarketRecordFreshnessLabel } from "@/lib/market-data/record-freshness";
+import {
+  EMPTY_MARKET_RECORD_FILTERS,
+  filterMarketPriceRecords,
+  type MarketRecordFilters,
+} from "@/lib/market-data/filter-records";
 import { sortMarketPriceRecords, type MarketRecordSortOrder } from "@/lib/market-data/sort-records";
+import {
+  parseMarketSearchState,
+  serializeMarketSearchState,
+  type MarketSearchState,
+} from "@/lib/market-data/market-search-state";
 import type { MarketDataResult } from "@/lib/market-data/types";
 import { MarketHistoryChart } from "./market-history-chart";
 import styles from "./markets.module.css";
@@ -40,10 +52,19 @@ function formatTimestamp(value: string): string {
 
 export default function MarketsPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<MarketDataResult | null>(null);
   const [sortOrder, setSortOrder] = useState<MarketRecordSortOrder>("newest");
+  const [draftRecordFilters, setDraftRecordFilters] = useState<MarketRecordFilters>(
+    EMPTY_MARKET_RECORD_FILTERS,
+  );
+  const [appliedRecordFilters, setAppliedRecordFilters] = useState<MarketRecordFilters>(
+    EMPTY_MARKET_RECORD_FILTERS,
+  );
+  const [recordFilterError, setRecordFilterError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareStatus, setShareStatus] = useState("");
 
   const loadPrices = useCallback(async (nextFilters: Filters) => {
     setLoading(true);
@@ -73,22 +94,91 @@ export default function MarketsPage() {
     }
   }, []);
 
+  function updateSearchUrl(state: MarketSearchState, replace = false) {
+    const url = new URL(window.location.href);
+    for (const key of ["mc", "ms", "md", "mm", "from", "to", "min", "max", "sort"]) {
+      url.searchParams.delete(key);
+    }
+    const query = serializeMarketSearchState(state);
+    new URLSearchParams(query).forEach((value, key) => url.searchParams.set(key, value));
+    const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+    if (replace) window.history.replaceState(null, "", nextUrl);
+    else window.history.pushState(null, "", nextUrl);
+  }
+
   useEffect(() => {
-    void Promise.resolve().then(() => loadPrices(EMPTY_FILTERS));
+    function restoreSearchState() {
+      const restored = parseMarketSearchState(window.location.search);
+      setFilters(restored.filters);
+      setAppliedFilters(restored.filters);
+      setDraftRecordFilters(restored.recordFilters);
+      setAppliedRecordFilters(restored.recordFilters);
+      setSortOrder(restored.sortOrder);
+      setRecordFilterError("");
+      void loadPrices(restored.filters);
+    }
+
+    restoreSearchState();
+    window.addEventListener("popstate", restoreSearchState);
+    return () => window.removeEventListener("popstate", restoreSearchState);
   }, [loadPrices]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setAppliedFilters(filters);
+    updateSearchUrl({ filters, recordFilters: appliedRecordFilters, sortOrder });
     void loadPrices(filters);
   }
 
   function handleReset() {
     setFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+    updateSearchUrl({
+      filters: EMPTY_FILTERS,
+      recordFilters: appliedRecordFilters,
+      sortOrder,
+    });
     void loadPrices(EMPTY_FILTERS);
   }
 
+  function handleRecordFilterSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      filterMarketPriceRecords(records, draftRecordFilters);
+      setAppliedRecordFilters(draftRecordFilters);
+      updateSearchUrl({ filters: appliedFilters, recordFilters: draftRecordFilters, sortOrder });
+      setRecordFilterError("");
+    } catch (filterError) {
+      setRecordFilterError(
+        filterError instanceof Error ? filterError.message : "Check the advanced filter values.",
+      );
+    }
+  }
+
+  function handleRecordFilterReset() {
+    setDraftRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
+    setAppliedRecordFilters(EMPTY_MARKET_RECORD_FILTERS);
+    updateSearchUrl({
+      filters: appliedFilters,
+      recordFilters: EMPTY_MARKET_RECORD_FILTERS,
+      sortOrder,
+    });
+    setRecordFilterError("");
+  }
+
   const records = result?.records ?? [];
-  const sortedRecords = sortMarketPriceRecords(records, sortOrder);
+  const filteredRecords = filterMarketPriceRecords(records, appliedRecordFilters);
+  const sortedRecords = sortMarketPriceRecords(filteredRecords, sortOrder);
+
+  async function handleCopyShareLink() {
+    setShareStatus("Copying share link…");
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareStatus("Link copied. Share it with anyone who needs these filters.");
+    } catch {
+      setShareStatus("Could not copy automatically. Copy the URL from your browser address bar.");
+    }
+  }
 
   function handleExport() {
     if (sortedRecords.length === 0) return;
@@ -118,22 +208,38 @@ export default function MarketsPage() {
           </p>
         </div>
         <div className={styles.headingActions}>
+          <button className="button button-secondary" type="button" onClick={handleCopyShareLink}>
+            Copy share link
+          </button>
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={() => window.print()}
+            disabled={loading || filteredRecords.length === 0}
+          >
+            Print / Save PDF
+          </button>
           <button
             className="button button-secondary"
             type="button"
             onClick={handleExport}
-            disabled={loading || records.length === 0}
+            disabled={loading || filteredRecords.length === 0}
           >
             Export CSV
           </button>
           <button
             className="button button-secondary"
             type="button"
-            onClick={() => void loadPrices(filters)}
+            onClick={() => void loadPrices(appliedFilters)}
             disabled={loading}
           >
             {loading ? "Refreshing…" : "Refresh data"}
           </button>
+          {shareStatus && (
+            <p className={styles.shareStatus} role="status" aria-live="polite">
+              {shareStatus}
+            </p>
+          )}
         </div>
       </div>
 
@@ -211,6 +317,84 @@ export default function MarketsPage() {
             </button>
           </div>
         </form>
+        <form className={styles.advancedFilters} onSubmit={handleRecordFilterSubmit}>
+          <div className={styles.advancedFiltersHeading}>
+            <div>
+              <h3>Advanced filters</h3>
+              <p>Refine the returned observations by date and modal price (₹/quintal).</p>
+            </div>
+          </div>
+          <label className="form-field">
+            <span className="form-label">From date</span>
+            <input
+              className="form-control"
+              type="date"
+              value={draftRecordFilters.fromDate}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, fromDate: event.target.value })
+              }
+            />
+          </label>
+          <label className="form-field">
+            <span className="form-label">To date</span>
+            <input
+              className="form-control"
+              type="date"
+              value={draftRecordFilters.toDate}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, toDate: event.target.value })
+              }
+            />
+          </label>
+          <label className="form-field">
+            <span className="form-label">Minimum modal price (₹)</span>
+            <input
+              className="form-control"
+              type="number"
+              min="0"
+              step="any"
+              inputMode="decimal"
+              value={draftRecordFilters.minModalPrice}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, minModalPrice: event.target.value })
+              }
+              placeholder="No minimum"
+            />
+          </label>
+          <label className="form-field">
+            <span className="form-label">Maximum modal price (₹)</span>
+            <input
+              className="form-control"
+              type="number"
+              min="0"
+              step="any"
+              inputMode="decimal"
+              value={draftRecordFilters.maxModalPrice}
+              onChange={(event) =>
+                setDraftRecordFilters({ ...draftRecordFilters, maxModalPrice: event.target.value })
+              }
+              placeholder="No maximum"
+            />
+          </label>
+          <div className={styles.advancedFilterActions}>
+            <button className="button button-primary" type="submit" disabled={loading}>
+              Apply advanced filters
+            </button>
+            <button
+              className="button button-secondary"
+              type="button"
+              onClick={handleRecordFilterReset}
+              disabled={loading}
+            >
+              Clear advanced filters
+            </button>
+          </div>
+          {recordFilterError && (
+            <p className={styles.filterError} role="alert">
+              {recordFilterError}
+            </p>
+          )}
+        </form>
       </section>
 
       <section
@@ -224,7 +408,7 @@ export default function MarketsPage() {
             <p>
               {loading
                 ? "Checking the selected data source…"
-                : `${records.length} reported record${records.length === 1 ? "" : "s"} returned`}
+                : `${filteredRecords.length} of ${records.length} reported record${records.length === 1 ? "" : "s"} shown`}
             </p>
           </div>
           {result && <span className={styles.sourceTag}>{result.sourceName}</span>}
@@ -245,7 +429,7 @@ export default function MarketsPage() {
             <button
               className="button button-secondary"
               type="button"
-              onClick={() => void loadPrices(filters)}
+              onClick={() => void loadPrices(appliedFilters)}
             >
               Try again
             </button>
@@ -283,11 +467,29 @@ export default function MarketsPage() {
           <SourceQualityPanel quality={result.sourceQuality} />
         )}
 
-        {!loading && records.length > 0 && <MarketHistoryChart records={records} />}
+        {!loading && filteredRecords.length > 0 && <MarketSummaryPanel records={filteredRecords} />}
 
-        {!loading && <MarketForecastPanel crop={filters.commodity} market={filters.market} />}
+        {!loading && filteredRecords.length > 0 && (
+          <MarketComparisonPanel records={filteredRecords} />
+        )}
 
-        {!loading && records.length > 0 && (
+        {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
+
+        {!loading && (
+          <MarketForecastPanel crop={appliedFilters.commodity} market={appliedFilters.market} />
+        )}
+
+        {!loading && records.length > 0 && filteredRecords.length === 0 && (
+          <div className={`panel ${styles.statePanel}`} role="status">
+            <strong>No observations match these advanced filters</strong>
+            <p>
+              Widen the date or modal-price range, or clear the advanced filters to see all returned
+              records.
+            </p>
+          </div>
+        )}
+
+        {!loading && filteredRecords.length > 0 && (
           <>
             <div className={styles.listToolbar}>
               <p>Choose how market observations are ordered.</p>
@@ -296,7 +498,15 @@ export default function MarketsPage() {
                 <select
                   className="form-control"
                   value={sortOrder}
-                  onChange={(event) => setSortOrder(event.target.value as MarketRecordSortOrder)}
+                  onChange={(event) => {
+                    const nextSort = event.target.value as MarketRecordSortOrder;
+                    setSortOrder(nextSort);
+                    updateSearchUrl({
+                      filters: appliedFilters,
+                      recordFilters: appliedRecordFilters,
+                      sortOrder: nextSort,
+                    });
+                  }}
                   aria-label="Sort market observations"
                 >
                   <option value="newest">Newest observation</option>
