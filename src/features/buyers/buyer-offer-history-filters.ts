@@ -1,10 +1,5 @@
 export type BuyerOfferHistoryStatus =
-  | "all"
-  | "pending"
-  | "accepted"
-  | "declined"
-  | "withdrawn"
-  | "expired";
+  "all" | "pending" | "accepted" | "declined" | "withdrawn" | "expired";
 
 export type BuyerOfferHistorySort = "newest" | "oldest";
 
@@ -58,11 +53,7 @@ export function filterBuyerOfferHistory(
     sort: BuyerOfferHistorySort;
   },
 ): BuyerOfferHistoryItem[] {
-  const terms = options.query
-    .toLocaleLowerCase("en-IN")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  const terms = options.query.toLocaleLowerCase("en-IN").trim().split(/\s+/).filter(Boolean);
 
   return offers
     .filter((offer) => {
