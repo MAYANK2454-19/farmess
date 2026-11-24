@@ -40,7 +40,9 @@ function searchableText(request: OperatorRequestQueueItem): string {
     request.unit,
     request.message,
   ]
-    .filter((value): value is string | number => typeof value === "string" || typeof value === "number")
+    .filter(
+      (value): value is string | number => typeof value === "string" || typeof value === "number",
+    )
     .join(" ")
     .normalize("NFKD")
     .toLocaleLowerCase("en-IN");

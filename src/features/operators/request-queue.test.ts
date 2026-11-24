@@ -50,8 +50,14 @@ test("counts all, pending, accepted and closed requests", () => {
 });
 
 test("filters by each lifecycle group without losing the all view", () => {
-  assert.deepEqual(filterOperatorRequests(requests, { ...newest, status: "pending" }).map((item) => item.status), ["pending"]);
-  assert.deepEqual(filterOperatorRequests(requests, { ...newest, status: "accepted" }).map((item) => item.status), ["accepted"]);
+  assert.deepEqual(
+    filterOperatorRequests(requests, { ...newest, status: "pending" }).map((item) => item.status),
+    ["pending"],
+  );
+  assert.deepEqual(
+    filterOperatorRequests(requests, { ...newest, status: "accepted" }).map((item) => item.status),
+    ["accepted"],
+  );
   assert.deepEqual(
     filterOperatorRequests(requests, { ...newest, status: "closed" }).map((item) => item.status),
     ["cancelled", "completed", "declined"],
@@ -61,7 +67,9 @@ test("filters by each lifecycle group without losing the all view", () => {
 
 test("searches across route, listing, quantity and message with all terms", () => {
   assert.deepEqual(
-    filterOperatorRequests(requests, { ...newest, query: "truck apples" }).map((item) => item.status),
+    filterOperatorRequests(requests, { ...newest, query: "truck apples" }).map(
+      (item) => item.status,
+    ),
     ["accepted"],
   );
   assert.deepEqual(
@@ -82,7 +90,9 @@ test("sorts newest and oldest while keeping invalid dates last", () => {
     ["new", "old", "bad"],
   );
   assert.deepEqual(
-    filterOperatorRequests(withInvalid, { ...newest, status: "pending", sort: "oldest" }).map((item) => item.id),
+    filterOperatorRequests(withInvalid, { ...newest, status: "pending", sort: "oldest" }).map(
+      (item) => item.id,
+    ),
     ["old", "new", "bad"],
   );
 });
@@ -93,6 +103,9 @@ test("does not mutate the original request array and preserves stable ties", () 
     request("second", "pending", "2026-11-24T00:00:00.000Z"),
   ];
   const original = [...tied];
-  assert.deepEqual(filterOperatorRequests(tied, newest).map((item) => item.id), ["first", "second"]);
+  assert.deepEqual(
+    filterOperatorRequests(tied, newest).map((item) => item.id),
+    ["first", "second"],
+  );
   assert.deepEqual(tied, original);
 });

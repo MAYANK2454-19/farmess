@@ -182,7 +182,9 @@ export function OperatorRequestManager() {
             Incoming requests
           </h2>
           <p className="panel-caption">
-            {loading ? "Loading…" : `${queueCounts.pending} pending · ${queueCounts.accepted} accepted · ${queueCounts.closed} closed`}
+            {loading
+              ? "Loading…"
+              : `${queueCounts.pending} pending · ${queueCounts.accepted} accepted · ${queueCounts.closed} closed`}
           </p>
         </div>
       </div>
@@ -233,7 +235,11 @@ export function OperatorRequestManager() {
                 </select>
               </label>
             </div>
-            <div className="operator-request-filters" role="group" aria-label="Filter requests by status">
+            <div
+              className="operator-request-filters"
+              role="group"
+              aria-label="Filter requests by status"
+            >
               {queueFilters.map((filter) => (
                 <button
                   key={filter.value}
@@ -275,91 +281,91 @@ export function OperatorRequestManager() {
           ) : (
             <ul className="operator-request-list">
               {visibleRequests.map((request) => (
-            <li className="operator-request-row" key={request.id}>
-              <div className="operator-request-main">
-                <div className="operator-request-heading">
-                  <strong>{request.listing?.title ?? "Service request"}</strong>
-                  <span className={"produce-status produce-status-" + request.status}>
-                    {request.status}
-                  </span>
-                </div>
-                <p className="operator-request-route">
-                  {request.origin_area ?? "Origin not specified"}
-                  {request.destination_area ? ` → ${request.destination_area}` : ""}
-                </p>
-                <p className="operator-request-detail">
-                  {request.requested_quantity !== null
-                    ? `${request.requested_quantity} ${request.unit ?? ""}`
-                    : "Quantity not specified"}
-                  {" · "}
-                  {dateLabel(request.requested_date)}
-                  {" · "}
-                  {request.listing?.service_type ?? "Service"}
-                </p>
-                {request.message ? (
-                  <p className="operator-request-message">{request.message}</p>
-                ) : null}
-                <time dateTime={request.created_at}>
-                  Received {dateTimeLabel(request.created_at)}
-                </time>
-              </div>
-              {request.status === "pending" ? (
-                <div className="operator-request-actions">
-                  <button
-                    type="button"
-                    className="button button-secondary"
-                    onClick={() => void decide(request.id, "declined")}
-                    disabled={pendingId === request.id}
-                  >
-                    {pendingId === request.id ? "Saving…" : "Decline"}
-                  </button>
-                  <button
-                    type="button"
-                    className="button button-primary"
-                    onClick={() => void decide(request.id, "accepted")}
-                    disabled={pendingId === request.id}
-                  >
-                    Accept request
-                  </button>
-                </div>
-              ) : request.status === "accepted" ? (
-                <div className="operator-request-actions">
-                  {cancelConfirmId === request.id ? (
-                    <>
-                      <p className="form-warning" role="alert">
-                        Cancel this accepted request? The farmer will be notified. Contact them
-                        directly if arrangements were already made.
-                      </p>
+                <li className="operator-request-row" key={request.id}>
+                  <div className="operator-request-main">
+                    <div className="operator-request-heading">
+                      <strong>{request.listing?.title ?? "Service request"}</strong>
+                      <span className={"produce-status produce-status-" + request.status}>
+                        {request.status}
+                      </span>
+                    </div>
+                    <p className="operator-request-route">
+                      {request.origin_area ?? "Origin not specified"}
+                      {request.destination_area ? ` → ${request.destination_area}` : ""}
+                    </p>
+                    <p className="operator-request-detail">
+                      {request.requested_quantity !== null
+                        ? `${request.requested_quantity} ${request.unit ?? ""}`
+                        : "Quantity not specified"}
+                      {" · "}
+                      {dateLabel(request.requested_date)}
+                      {" · "}
+                      {request.listing?.service_type ?? "Service"}
+                    </p>
+                    {request.message ? (
+                      <p className="operator-request-message">{request.message}</p>
+                    ) : null}
+                    <time dateTime={request.created_at}>
+                      Received {dateTimeLabel(request.created_at)}
+                    </time>
+                  </div>
+                  {request.status === "pending" ? (
+                    <div className="operator-request-actions">
                       <button
                         type="button"
                         className="button button-secondary"
-                        onClick={() => setCancelConfirmId(null)}
+                        onClick={() => void decide(request.id, "declined")}
                         disabled={pendingId === request.id}
                       >
-                        Keep request
+                        {pendingId === request.id ? "Saving…" : "Decline"}
                       </button>
                       <button
                         type="button"
-                        className="button button-secondary"
-                        onClick={() => void cancelAccepted(request.id)}
+                        className="button button-primary"
+                        onClick={() => void decide(request.id, "accepted")}
                         disabled={pendingId === request.id}
                       >
-                        {pendingId === request.id ? "Cancelling…" : "Confirm cancellation"}
+                        Accept request
                       </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      className="button button-secondary"
-                      onClick={() => setCancelConfirmId(request.id)}
-                      disabled={pendingId === request.id}
-                    >
-                      Cancel accepted request
-                    </button>
-                  )}
-                </div>
-              ) : null}
-            </li>
+                    </div>
+                  ) : request.status === "accepted" ? (
+                    <div className="operator-request-actions">
+                      {cancelConfirmId === request.id ? (
+                        <>
+                          <p className="form-warning" role="alert">
+                            Cancel this accepted request? The farmer will be notified. Contact them
+                            directly if arrangements were already made.
+                          </p>
+                          <button
+                            type="button"
+                            className="button button-secondary"
+                            onClick={() => setCancelConfirmId(null)}
+                            disabled={pendingId === request.id}
+                          >
+                            Keep request
+                          </button>
+                          <button
+                            type="button"
+                            className="button button-secondary"
+                            onClick={() => void cancelAccepted(request.id)}
+                            disabled={pendingId === request.id}
+                          >
+                            {pendingId === request.id ? "Cancelling…" : "Confirm cancellation"}
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className="button button-secondary"
+                          onClick={() => setCancelConfirmId(request.id)}
+                          disabled={pendingId === request.id}
+                        >
+                          Cancel accepted request
+                        </button>
+                      )}
+                    </div>
+                  ) : null}
+                </li>
               ))}
             </ul>
           )}
