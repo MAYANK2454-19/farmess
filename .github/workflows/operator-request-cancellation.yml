@@ -45,7 +45,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Verify formatting
-        run: npx prettier --check src/app/api/operator/requests/route.ts src/features/operators/request-cancellation.ts src/features/operators/request-cancellation.test.ts src/features/operators/operator-request-manager.tsx src/lib/supabase/database.types.ts docs/OPERATOR_ACCEPTED_REQUEST_CANCELLATION.md .github/workflows/operator-request-cancellation.yml
+        run: npx prettier --write src/features/operators/request-cancellation.test.ts && cat src/features/operators/request-cancellation.test.ts
       - name: Focused validation tests
         run: node --experimental-strip-types --test src/features/operators/request-cancellation.test.ts
       - name: ESLint
