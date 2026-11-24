@@ -6,8 +6,7 @@ export type OperatorListingUpdate = {
 };
 
 export type OperatorListingUpdateResult =
-  | { valid: true; value: OperatorListingUpdate }
-  | { valid: false; error: string };
+  { valid: true; value: OperatorListingUpdate } | { valid: false; error: string };
 
 function isCalendarDate(value: unknown): value is string {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -21,20 +20,12 @@ export function parseOperatorListingUpdate(input: unknown): OperatorListingUpdat
   }
 
   const body = input as Record<string, unknown>;
-  const allowed = [
-    "id",
-    "capacity_quantity",
-    "capacity_unit",
-    "available_from",
-    "available_until",
-  ];
+  const allowed = ["id", "capacity_quantity", "capacity_unit", "available_from", "available_until"];
   if (
     Object.keys(body).length !== allowed.length ||
     Object.keys(body).some((key) => !allowed.includes(key)) ||
     typeof body.id !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      body.id,
-    )
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id)
   ) {
     return { valid: false, error: "Choose a valid listing and only editable fields." };
   }
