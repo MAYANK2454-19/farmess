@@ -6,7 +6,7 @@ import {
   effectiveOfferInboxStatus,
   filterOfferInbox,
   type OfferInboxItem,
-} from "./offer-inbox.ts";
+} from "./offer-inbox-filters.ts";
 
 function offer(overrides: Partial<OfferInboxItem> = {}): OfferInboxItem {
   return {

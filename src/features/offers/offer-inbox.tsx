@@ -9,7 +9,7 @@ import {
   type OfferInboxItem,
   type OfferInboxSort,
   type OfferInboxStatus,
-} from "./offer-inbox";
+} from "./offer-inbox-filters";
 
 type Offer = OfferInboxItem & {
   lot: Pick<Database["public"]["Tables"]["produce_lots"]["Row"], "id" | "crop" | "variety"> | null;
