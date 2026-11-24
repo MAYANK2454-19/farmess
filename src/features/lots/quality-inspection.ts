@@ -18,10 +18,7 @@ export type QualityInspectionDraft = {
   observations?: string;
 };
 
-export type QualityInspectionStatus =
-  | "incomplete"
-  | "needs_attention"
-  | "checks_complete";
+export type QualityInspectionStatus = "incomplete" | "needs_attention" | "checks_complete";
 
 export type QualityInspectionResult = {
   valid: boolean;
@@ -44,8 +41,7 @@ const CHECK_SET: readonly string[] = QUALITY_CHECKS;
 const RESULT_SET: readonly string[] = ["acceptable", "issue_found", "not_assessed"];
 
 function isRealIsoDateTime(value: string): boolean {
-  const pattern =
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/;
+  const pattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/;
   if (!pattern.test(value) || !Number.isFinite(Date.parse(value))) return false;
 
   const [year, month, day] = value.slice(0, 10).split("-").map(Number);
@@ -61,17 +57,12 @@ function isRealIsoDateTime(value: string): boolean {
  * Summarise a human-entered produce inspection without assigning a grade,
  * certifying food safety, or changing the lot's publication status.
  */
-export function assessProduceQuality(
-  draft: QualityInspectionDraft,
-): QualityInspectionResult {
+export function assessProduceQuality(draft: QualityInspectionDraft): QualityInspectionResult {
   const errors: string[] = [];
   const lotId = typeof draft.lotId === "string" ? draft.lotId.trim() : "";
-  const assessorId =
-    typeof draft.assessorId === "string" ? draft.assessorId.trim() : "";
-  const inspectedAt =
-    typeof draft.inspectedAt === "string" ? draft.inspectedAt.trim() : "";
-  const observations =
-    typeof draft.observations === "string" ? draft.observations.trim() : "";
+  const assessorId = typeof draft.assessorId === "string" ? draft.assessorId.trim() : "";
+  const inspectedAt = typeof draft.inspectedAt === "string" ? draft.inspectedAt.trim() : "";
+  const observations = typeof draft.observations === "string" ? draft.observations.trim() : "";
 
   if (!lotId) errors.push("A lot ID is required.");
   if (!assessorId) errors.push("An assessor ID is required.");
@@ -82,8 +73,7 @@ export function assessProduceQuality(
     errors.push("Observations must be 1,000 characters or fewer.");
   }
 
-  const sourceChecks =
-    draft.checks && typeof draft.checks === "object" ? draft.checks : {};
+  const sourceChecks = draft.checks && typeof draft.checks === "object" ? draft.checks : {};
   const checks: Partial<Record<QualityCheck, QualityCheckResult>> = {};
   for (const [key, value] of Object.entries(sourceChecks)) {
     if (!CHECK_SET.includes(key)) {
