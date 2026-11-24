@@ -53,6 +53,7 @@ export function OperatorRequestManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -111,6 +112,40 @@ export function OperatorRequestManager() {
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "This request could not be updated.",
+      );
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  async function cancelAccepted(id: string) {
+    setPendingId(id);
+    setError("");
+
+    try {
+      const response = await fetch("/api/operator/requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ id, action: "cancel" }),
+      });
+      const result = (await response.json()) as {
+        request?: { id: string; status: string; updated_at: string };
+        error?: string;
+      };
+
+      if (!response.ok || !result.request) {
+        throw new Error(result.error ?? "The accepted request could not be cancelled.");
+      }
+
+      setRequests((current) =>
+        current.map((item) => (item.id === id ? { ...item, status: "cancelled" } : item)),
+      );
+      setCancelConfirmId(null);
+    } catch (cancelError) {
+      setError(
+        cancelError instanceof Error
+          ? cancelError.message
+          : "The accepted request could not be cancelled.",
       );
     } finally {
       setPendingId(null);
@@ -199,6 +234,42 @@ export function OperatorRequestManager() {
                   >
                     Accept request
                   </button>
+                </div>
+              ) : request.status === "accepted" ? (
+                <div className="operator-request-actions">
+                  {cancelConfirmId === request.id ? (
+                    <>
+                      <p className="form-warning" role="alert">
+                        Cancel this accepted request? The farmer will be notified. Contact them
+                        directly if arrangements were already made.
+                      </p>
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        onClick={() => setCancelConfirmId(null)}
+                        disabled={pendingId === request.id}
+                      >
+                        Keep request
+                      </button>
+                      <button
+                        type="button"
+                        className="button button-danger"
+                        onClick={() => void cancelAccepted(request.id)}
+                        disabled={pendingId === request.id}
+                      >
+                        {pendingId === request.id ? "Cancelling…" : "Confirm cancellation"}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() => setCancelConfirmId(request.id)}
+                      disabled={pendingId === request.id}
+                    >
+                      Cancel accepted request
+                    </button>
+                  )}
                 </div>
               ) : null}
             </li>
