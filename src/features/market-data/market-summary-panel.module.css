@@ -1,0 +1,100 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.heading h2 {
+  margin: 0 0 4px;
+  color: var(--brand-primary);
+  font-size: 15px;
+}
+
+.heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.unit {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  color: var(--brand-secondary);
+  background: var(--soft-green);
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.metric {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  padding: 14px;
+  background: #f8faf7;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.metric dt {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.metric dd {
+  overflow-wrap: anywhere;
+  margin: 0;
+  color: var(--brand-primary);
+  font-size: 19px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .panel {
+    padding: 15px;
+  }
+
+  .heading {
+    flex-direction: column;
+  }
+
+  .metrics {
+    gap: 7px;
+  }
+
+  .metric {
+    padding: 11px;
+  }
+
+  .metric dd {
+    font-size: 16px;
+  }
+}

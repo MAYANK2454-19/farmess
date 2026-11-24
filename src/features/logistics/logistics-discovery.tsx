@@ -2,7 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
-import type { LogisticsRecommendation } from "@/features/logistics/recommendations";
+import type {
+  LogisticsRecommendation,
+  NearbyServiceCandidate,
+} from "@/features/logistics/recommendations";
 import { LogisticsMap } from "@/features/logistics/logistics-map";
 import { LogisticsFeedbackForm } from "@/features/logistics/logistics-feedback-form";
 

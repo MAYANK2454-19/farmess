@@ -2,7 +2,12 @@ import "server-only";
 
 import { assessMarketSourceDateIntegrity } from "./source-integrity";
 import { fetchOgdRecordsPaginated } from "./ogd-pagination";
-import { normalizeOgdResponse, OGD_API_URL, SOURCE_NAME } from "./normalize";
+import {
+  emptyMarketSourceQuality,
+  normalizeOgdResponseWithDiagnostics,
+  OGD_API_URL,
+  SOURCE_NAME,
+} from "./normalize";
 import type { MarketDataResult, MarketSearchFilters } from "./types";
 
 const SOURCE_URL =
@@ -24,6 +29,7 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
       retrievedAt,
       sourceName: SOURCE_NAME,
       message: "OGD India API key is not configured. No market prices have been loaded.",
+      sourceQuality: emptyMarketSourceQuality(),
     };
   }
 
@@ -37,7 +43,8 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
 
   try {
     const rawRecords = await fetchOgdRecordsPaginated(url, safeLimit(filters.limit));
-    const records = normalizeOgdResponse({ records: rawRecords }, retrievedAt);
+    const normalized = normalizeOgdResponseWithDiagnostics({ records: rawRecords }, retrievedAt);
+    const { records, quality: sourceQuality } = normalized;
     const dateIntegrity = assessMarketSourceDateIntegrity(
       records.map((record) => record.observationDate),
       retrievedAt,
@@ -55,11 +62,18 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
         retrievedAt,
         sourceName: SOURCE_NAME,
         message,
+        sourceQuality,
       };
     }
 
     if (records.length === 0) {
-      return { status: "no-data", records: [], retrievedAt, sourceName: SOURCE_NAME };
+      return {
+        status: "no-data",
+        records: [],
+        retrievedAt,
+        sourceName: SOURCE_NAME,
+        sourceQuality,
+      };
     }
 
     const latestDate = records.reduce(
@@ -74,9 +88,10 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
         retrievedAt,
         sourceName: SOURCE_NAME,
         message: `Latest returned observation is dated ${latestDate}; this daily dataset is not real-time.`,
+        sourceQuality,
       };
     }
-    return { status: "available", records, retrievedAt, sourceName: SOURCE_NAME };
+    return { status: "available", records, retrievedAt, sourceName: SOURCE_NAME, sourceQuality };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown source error";
     return {
@@ -85,6 +100,7 @@ export async function searchOgdPrices(filters: MarketSearchFilters): Promise<Mar
       retrievedAt,
       sourceName: SOURCE_NAME,
       message: `Could not retrieve or validate OGD India data: ${message}`,
+      sourceQuality: emptyMarketSourceQuality(),
     };
   }
 }
