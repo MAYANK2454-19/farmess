@@ -32,7 +32,7 @@ The console does not train models in Vercel. Run training offline with Python 3.
 
 - `DATA_GOV_IN_API_KEY`: required for OGD market imports.
 - `HEIGIT_API_KEY`: optional; enables road-distance and travel-time enrichment. Straight-line ranking remains available when the key or route response is missing.
-- `OPEN_METEO_CUSTOMER_API_KEY`: required for weather on Vercel production. The no-key endpoint is restricted in application code to non-production evaluation.
+- `OPEN_METEO_CUSTOMER_API_KEY` (paid) or `OPEN_METEO_NON_COMMERCIAL_USE=true` (owner declaration that the deployment is non-commercial): one is required for weather on Vercel production. Without either, production returns 503.
 
 Add credentials through Vercel Environment Variables or the approved local secret helper. Never paste a key into this console, issue tracker or a browser form.
 

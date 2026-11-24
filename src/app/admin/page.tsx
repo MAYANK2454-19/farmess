@@ -34,8 +34,10 @@ export default async function AdminOverviewPage() {
     },
     {
       name: "Open-Meteo production",
-      env: "OPEN_METEO_CUSTOMER_API_KEY",
-      configured: Boolean(process.env.OPEN_METEO_CUSTOMER_API_KEY?.trim()),
+      env: "OPEN_METEO_CUSTOMER_API_KEY or OPEN_METEO_NON_COMMERCIAL_USE",
+      configured:
+        Boolean(process.env.OPEN_METEO_CUSTOMER_API_KEY?.trim()) ||
+        process.env.OPEN_METEO_NON_COMMERCIAL_USE?.trim() === "true",
     },
   ];
 
