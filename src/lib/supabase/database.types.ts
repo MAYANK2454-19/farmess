@@ -1153,6 +1153,16 @@ export type Database = {
           verification_state: string;
         }[];
       };
+      cancel_accepted_service_request: {
+        Args: {
+          p_request_id: string;
+        };
+        Returns: {
+          id: string;
+          status: string;
+          updated_at: string;
+        }[];
+      };
       review_service_listing_verification: {
         Args: {
           p_listing_id: string;
