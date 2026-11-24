@@ -7,7 +7,10 @@ on:
       - "src/features/logistics/request-cancellation.test.ts"
       - "src/features/logistics/service-request-board.tsx"
       - "src/app/api/service-requests/route.ts"
+      - "src/app/globals.css"
       - "docs/FARMER_SERVICE_REQUEST_CANCELLATION.md"
+      - "docs/APP_INTEGRATION_STATUS.md"
+      - "README.md"
       - ".github/workflows/farmer-service-request-cancellation.yml"
 
 permissions:
@@ -23,9 +26,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Prettier
+        run: npx prettier --check src/features/logistics/request-cancellation.ts src/features/logistics/request-cancellation.test.ts src/features/logistics/service-request-board.tsx src/app/api/service-requests/route.ts src/app/globals.css docs/FARMER_SERVICE_REQUEST_CANCELLATION.md docs/APP_INTEGRATION_STATUS.md README.md .github/workflows/farmer-service-request-cancellation.yml
       - name: Focused cancellation tests
         run: node --experimental-strip-types --test src/features/logistics/request-cancellation.test.ts
       - name: ESLint
         run: npm run lint
       - name: TypeScript
         run: npm run typecheck
+      - name: Full unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
