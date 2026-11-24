@@ -21,16 +21,10 @@ type WeatherPayload = {
   timezone?: unknown;
 };
 
-function parseCoordinate(
-  value: string | null,
-  minimum: number,
-  maximum: number,
-): number | null {
+function parseCoordinate(value: string | null, minimum: number, maximum: number): number | null {
   if (value === null || value.trim() === "") return null;
   const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed >= minimum && parsed <= maximum
-    ? parsed
-    : null;
+  return Number.isFinite(parsed) && parsed >= minimum && parsed <= maximum ? parsed : null;
 }
 
 function finiteNumber(value: unknown): number | null {
@@ -68,16 +62,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const latitude = parseCoordinate(
-    request.nextUrl.searchParams.get("lat"),
-    -90,
-    90,
-  );
-  const longitude = parseCoordinate(
-    request.nextUrl.searchParams.get("lng"),
-    -180,
-    180,
-  );
+  const latitude = parseCoordinate(request.nextUrl.searchParams.get("lat"), -90, 90);
+  const longitude = parseCoordinate(request.nextUrl.searchParams.get("lng"), -180, 180);
   if (latitude === null || longitude === null) {
     return NextResponse.json(
       { error: "Provide valid coordinates for the selected locality." },
@@ -93,8 +79,7 @@ export async function GET(request: NextRequest) {
   if (isVercelProduction && !customerKey) {
     return NextResponse.json(
       {
-        error:
-          "Weather forecasts are not enabled for this production deployment.",
+        error: "Weather forecasts are not enabled for this production deployment.",
       },
       { status: 503 },
     );
@@ -142,12 +127,8 @@ export async function GET(request: NextRequest) {
     }
     const currentTime = current.time;
 
-    const times = Array.isArray(payload.hourly?.time)
-      ? payload.hourly.time
-      : [];
-    const probabilities = Array.isArray(
-      payload.hourly?.precipitation_probability,
-    )
+    const times = Array.isArray(payload.hourly?.time) ? payload.hourly.time : [];
+    const probabilities = Array.isArray(payload.hourly?.precipitation_probability)
       ? payload.hourly.precipitation_probability
       : [];
     const nextSixHoursMaximumPrecipitationProbabilityPercent =
@@ -169,8 +150,7 @@ export async function GET(request: NextRequest) {
         timezone: typeof payload.timezone === "string" ? payload.timezone : null,
         source: "Open-Meteo",
         attributionUrl: "https://open-meteo.com/",
-        forecastUse:
-          "Context only; not a guarantee of local weather or storage suitability.",
+        forecastUse: "Context only; not a guarantee of local weather or storage suitability.",
       },
       { headers: { "Cache-Control": "private, max-age=900" } },
     );
