@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -16,7 +17,7 @@ function isUuid(value: unknown): value is string {
   );
 }
 
-export async function GET() {
+async function handleGET() {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json({ error: "Sign in to browse produce lots." }, { status: 401 });
@@ -61,7 +62,7 @@ export async function GET() {
   );
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -172,3 +173,6 @@ export async function POST(request: NextRequest) {
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/marketplace", "GET", handleGET);
+export const POST = withApiLogging("/api/marketplace", "POST", handlePOST);

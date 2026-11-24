@@ -1,8 +1,9 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET() {
+async function handleGET() {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json({ error: "Sign in to view sale activity." }, { status: 401 });
@@ -25,3 +26,5 @@ export async function GET() {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/activity", "GET", handleGET);

@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -33,7 +34,7 @@ function parseCalendarDate(value: string | null): string | null | undefined {
     : undefined;
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json(
@@ -186,3 +187,5 @@ export async function GET(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/logistics/discover", "GET", handleGET);

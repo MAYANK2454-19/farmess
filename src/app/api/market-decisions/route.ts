@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -74,7 +75,7 @@ async function getMarketObservations(
     .limit(200);
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json({ error: "Sign in to compare market net returns." }, { status: 401 });
@@ -175,7 +176,7 @@ export async function GET(request: NextRequest) {
   );
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -340,3 +341,6 @@ export async function POST(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/market-decisions", "GET", handleGET);
+export const POST = withApiLogging("/api/market-decisions", "POST", handlePOST);

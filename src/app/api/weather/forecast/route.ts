@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import {
@@ -50,7 +51,7 @@ function weatherDescription(code: number | null): string {
   return "Variable conditions";
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json(
@@ -163,3 +164,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withApiLogging("/api/weather/forecast", "GET", handleGET);

@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { parseAccessReview } from "@/features/access/access-request";
 import { getFarmessSession } from "@/lib/auth/session";
@@ -27,7 +28,7 @@ async function requireAdmin() {
 }
 
 /** All access requests, newest first. Admin only (also enforced by RLS). */
-export async function GET() {
+async function handleGET() {
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
@@ -49,7 +50,7 @@ export async function GET() {
 }
 
 /** Approve or reject a request through the audited admin-only database function. */
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -94,3 +95,6 @@ export async function PATCH(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/admin/access-requests", "GET", handleGET);
+export const PATCH = withApiLogging("/api/admin/access-requests", "PATCH", handlePATCH);

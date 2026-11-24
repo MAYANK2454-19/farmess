@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -71,7 +72,7 @@ function parsePoints(value: unknown): ForecastPointInput[] | null {
   return points;
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -263,7 +264,7 @@ export async function POST(request: NextRequest) {
   );
 }
 
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
   }
@@ -341,3 +342,6 @@ export async function PATCH(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const POST = withApiLogging("/api/admin/market-forecasts", "POST", handlePOST);
+export const PATCH = withApiLogging("/api/admin/market-forecasts", "PATCH", handlePATCH);

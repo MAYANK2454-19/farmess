@@ -1,3 +1,4 @@
+import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -6,7 +7,7 @@ import { parseLotDraftRequest } from "@/features/lots/lot-request";
 const LOT_SELECT =
   "id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,status,created_at,published_at";
 
-export async function GET() {
+async function handleGET() {
   const session = await getFarmessSession();
   if (!session) {
     return NextResponse.json({ error: "Sign in to view your produce lots." }, { status: 401 });
@@ -35,7 +36,7 @@ export async function GET() {
   );
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (!origin || origin !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
@@ -104,7 +105,7 @@ export async function POST(request: NextRequest) {
   );
 }
 
-export async function PATCH(request: NextRequest) {
+async function handlePATCH(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (!origin || origin !== request.nextUrl.origin) {
     return NextResponse.json({ error: "This request could not be verified." }, { status: 403 });
@@ -187,3 +188,7 @@ export async function PATCH(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+
+export const GET = withApiLogging("/api/produce-lots", "GET", handleGET);
+export const POST = withApiLogging("/api/produce-lots", "POST", handlePOST);
+export const PATCH = withApiLogging("/api/produce-lots", "PATCH", handlePATCH);
