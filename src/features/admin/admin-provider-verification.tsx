@@ -137,18 +137,18 @@ export function AdminProviderVerificationConsole({
       <section className="admin-candidate-list">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title">Listings awaiting platform review</h2>
+            <h2 className="panel-title">Provider listings requiring review or action</h2>
             <p className="panel-caption">
               Verify contact or documents only after checking evidence outside this form. Platform
               verification is a trust decision, not a guarantee of service quality or availability.
             </p>
           </div>
-          <span className="admin-status">{listings.length} to review</span>
+          <span className="admin-status">{listings.length} listings loaded</span>
         </div>
         {listings.length === 0 ? (
           <div className="panel admin-empty">
-            <strong>No provider listings are waiting for review.</strong>
-            <p>New operator listings appear here as unverified. No provider status is inferred.</p>
+            <strong>No provider listings are available to review.</strong>
+            <p>New operator listings begin as unverified. Verified listings remain available here for later review or suspension.</p>
           </div>
         ) : (
           listings.map((listing) => (
