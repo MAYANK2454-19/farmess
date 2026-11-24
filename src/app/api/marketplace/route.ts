@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
     p_unit: body.unit,
     p_price_paise_per_quintal: price,
     p_valid_until: new Date(body.valid_until).toISOString(),
-    p_terms: terms,
+    p_terms: terms ?? undefined,
   });
 
   const createdOffer = Array.isArray(data) ? data[0] : null;

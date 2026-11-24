@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       source_name: source.sourceName,
       status: source.status,
       request_filters: filters,
-      records_received: 0,
+      records_received: source.sourceQuality.received,
       records_upserted: 0,
       error_message: ("message" in source ? source.message : null)?.slice(0, 500) ?? null,
     });
@@ -105,9 +105,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         status: source.status,
-        recordsReceived: 0,
+        recordsReceived: source.sourceQuality.received,
+        recordsAccepted: source.sourceQuality.accepted,
+        recordsRejected: source.sourceQuality.rejected,
+        sourceQuality: source.sourceQuality,
         recordsUpserted: 0,
-        message: source.message ?? "The source returned no usable observations.",
+        message:
+          "message" in source ? source.message : "The source returned no usable observations.",
       },
       { status: source.status === "unavailable" ? 503 : 200 },
     );
@@ -151,14 +155,17 @@ export async function POST(request: NextRequest) {
       source_name: source.sourceName,
       status: "partial",
       request_filters: filters,
-      records_received: source.records.length,
+      records_received: source.sourceQuality.received,
       records_upserted: 0,
       error_message: `Import withheld because ${batch.conflictCount} natural observation key(s) contained conflicting prices or provenance.`,
     });
 
     if (auditError) {
       return NextResponse.json(
-        { error: "Conflicting source rows were detected, but the audit record could not be written." },
+        {
+          error:
+            "Conflicting source rows were detected, but the audit record could not be written.",
+        },
         { status: 500 },
       );
     }
@@ -166,9 +173,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         status: "conflict",
-        recordsReceived: source.records.length,
+        recordsReceived: source.sourceQuality.received,
+        recordsAccepted: source.sourceQuality.accepted,
+        recordsRejected: source.sourceQuality.rejected,
+        sourceQuality: source.sourceQuality,
         recordsUpserted: 0,
-        message: "The source response repeated an observation key with different values. No observations were imported.",
+        message:
+          "The source response repeated an observation key with different values. No observations were imported.",
       },
       { status: 422 },
     );
@@ -187,11 +198,13 @@ export async function POST(request: NextRequest) {
     source_name: source.sourceName,
     status: auditStatus,
     request_filters: filters,
-    records_received: source.records.length,
+    records_received: source.sourceQuality.received,
     records_upserted: upsertError ? 0 : observations.length,
     error_message: upsertError
       ? "Validated observations were not saved. Review the database import error."
-      : (source.message?.slice(0, 500) ?? null),
+      : "message" in source
+        ? source.message.slice(0, 500)
+        : null,
   });
 
   if (upsertError || auditError) {
@@ -207,7 +220,10 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       status: source.status,
-      recordsReceived: source.records.length,
+      recordsReceived: source.sourceQuality.received,
+      recordsAccepted: source.sourceQuality.accepted,
+      recordsRejected: source.sourceQuality.rejected,
+      sourceQuality: source.sourceQuality,
       recordsUpserted: observations.length,
       duplicatesRemoved: batch.duplicatesRemoved,
       retrievedAt: source.retrievedAt,
