@@ -31,13 +31,17 @@ export async function fetchOgdRecordsPaginated(
   }
 
   const records: unknown[] = [];
+  const initialOffset = Number(endpoint.searchParams.get("offset") ?? "0");
+  if (!Number.isSafeInteger(initialOffset) || initialOffset < 0 || initialOffset > 100_000) {
+    throw new RangeError("OGD offset must be a whole number from 0 to 100000.");
+  }
   const signal = AbortSignal.timeout(OGD_TOTAL_TIMEOUT_MS);
 
   while (records.length < requestedLimit) {
     const pageLimit = Math.min(OGD_PAGE_SIZE, requestedLimit - records.length);
     const pageUrl = new URL(endpoint);
     pageUrl.searchParams.set("limit", String(pageLimit));
-    pageUrl.searchParams.set("offset", String(records.length));
+    pageUrl.searchParams.set("offset", String(initialOffset + records.length));
 
     const response = await fetchPage(pageUrl, {
       headers: { Accept: "application/json" },

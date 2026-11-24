@@ -18,6 +18,15 @@ function parseLimit(value: string | null): number {
   return Math.min(parsed, MAX_LIMIT);
 }
 
+function parseOffset(value: string | null): number {
+  const trimmed = value?.trim();
+  if (!trimmed || !/^\d+$/.test(trimmed)) return 0;
+
+  const parsed = Number(trimmed);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) return 0;
+  return Math.min(parsed, 100_000);
+}
+
 export function parseMarketSearchFilters(params: URLSearchParams): MarketSearchFilters {
   const commodity = optionalFilter(params.get("commodity"));
   const state = optionalFilter(params.get("state"));
@@ -30,5 +39,6 @@ export function parseMarketSearchFilters(params: URLSearchParams): MarketSearchF
     ...(district ? { district } : {}),
     ...(market ? { market } : {}),
     limit: parseLimit(params.get("limit")),
+    offset: parseOffset(params.get("offset")),
   };
 }

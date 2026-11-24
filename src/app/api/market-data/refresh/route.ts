@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Send optional market filters as JSON." }, { status: 400 });
   }
 
-  const allowed = ["commodity", "state", "district", "market", "limit"] as const;
+  const allowed = ["commodity", "state", "district", "market", "limit", "offset"] as const;
   if (
     typeof body !== "object" ||
     body === null ||
@@ -78,6 +78,22 @@ export async function POST(request: NextRequest) {
       );
     }
     params.set("limit", String(limit));
+  }
+
+  const offset = (body as Record<string, unknown>).offset;
+  if (offset !== undefined) {
+    if (
+      typeof offset !== "number" ||
+      !Number.isSafeInteger(offset) ||
+      offset < 0 ||
+      offset > 100_000
+    ) {
+      return NextResponse.json(
+        { error: "Import offset must be a whole number from 0 to 100000." },
+        { status: 400 },
+      );
+    }
+    params.set("offset", String(offset));
   }
 
   const filters = parseMarketSearchFilters(params);
