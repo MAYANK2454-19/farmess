@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import {
+  countOperatorRequests,
+  filterOperatorRequests,
+  type OperatorRequestQueueSort,
+  type OperatorRequestQueueStatus,
+} from "@/features/operators/request-queue";
 
 type RequestRow = Pick<
   Database["public"]["Tables"]["service_requests"]["Row"],
@@ -54,6 +60,9 @@ export function OperatorRequestManager() {
   const [error, setError] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<OperatorRequestQueueStatus>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<OperatorRequestQueueSort>("newest");
 
   useEffect(() => {
     let active = true;
@@ -152,6 +161,19 @@ export function OperatorRequestManager() {
     }
   }
 
+  const queueCounts = countOperatorRequests(requests);
+  const visibleRequests = filterOperatorRequests(requests, {
+    status: statusFilter,
+    query: searchQuery,
+    sort: sortOrder,
+  });
+  const queueFilters = [
+    { value: "all", label: "All", count: queueCounts.all },
+    { value: "pending", label: "Pending", count: queueCounts.pending },
+    { value: "accepted", label: "Accepted", count: queueCounts.accepted },
+    { value: "closed", label: "Closed", count: queueCounts.closed },
+  ] as const;
+
   return (
     <section className="panel" aria-labelledby="incoming-requests-heading">
       <div className="panel-header">
@@ -160,7 +182,7 @@ export function OperatorRequestManager() {
             Incoming requests
           </h2>
           <p className="panel-caption">
-            {loading ? "Loading…" : `${requests.length} request(s) for your services`}
+            {loading ? "Loading…" : `${queueCounts.pending} pending · ${queueCounts.accepted} accepted · ${queueCounts.closed} closed`}
           </p>
         </div>
       </div>
@@ -186,8 +208,73 @@ export function OperatorRequestManager() {
           </p>
         </div>
       ) : (
-        <ul className="operator-request-list">
-          {requests.map((request) => (
+        <>
+          <div className="operator-request-queue">
+            <div className="operator-request-queue-controls">
+              <label className="operator-request-search">
+                <span className="sr-only">Search incoming requests</span>
+                <input
+                  type="search"
+                  className="form-control"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search service, route, quantity or message"
+                />
+              </label>
+              <label className="operator-request-sort">
+                <span className="sr-only">Sort incoming requests</span>
+                <select
+                  className="form-control"
+                  value={sortOrder}
+                  onChange={(event) => setSortOrder(event.target.value as OperatorRequestQueueSort)}
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </label>
+            </div>
+            <div className="operator-request-filters" role="group" aria-label="Filter requests by status">
+              {queueFilters.map((filter) => (
+                <button
+                  key={filter.value}
+                  type="button"
+                  className={
+                    statusFilter === filter.value
+                      ? "operator-request-filter is-active"
+                      : "operator-request-filter"
+                  }
+                  aria-pressed={statusFilter === filter.value}
+                  onClick={() => setStatusFilter(filter.value)}
+                >
+                  {filter.label} <span>{filter.count}</span>
+                </button>
+              ))}
+            </div>
+            <p className="operator-request-result-count" aria-live="polite">
+              Showing {visibleRequests.length} of {requests.length} requests
+            </p>
+          </div>
+          {visibleRequests.length === 0 ? (
+            <div className="empty-state operator-request-filter-empty">
+              <h3 className="empty-title">No matching requests</h3>
+              <p className="empty-copy">
+                Try another status or a shorter search. Your request records have not changed.
+              </p>
+              <button
+                type="button"
+                className="text-link"
+                onClick={() => {
+                  setStatusFilter("all");
+                  setSearchQuery("");
+                  setSortOrder("newest");
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <ul className="operator-request-list">
+              {visibleRequests.map((request) => (
             <li className="operator-request-row" key={request.id}>
               <div className="operator-request-main">
                 <div className="operator-request-heading">
@@ -273,8 +360,10 @@ export function OperatorRequestManager() {
                 </div>
               ) : null}
             </li>
-          ))}
-        </ul>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </section>
   );
