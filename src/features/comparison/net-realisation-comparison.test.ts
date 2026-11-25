@@ -8,6 +8,14 @@ import {
   type NetReturnComparisonInput,
 } from "./net-realisation-comparison.ts";
 
+// Fixtures are dated around 22 November 2026; pin the clock so buyer-offer
+// expiry does not depend on the day the tests run.
+const FIXTURE_NOW = new Date("2026-11-22T12:00:00.000Z");
+
+function compareAt(input: NetReturnComparisonInput, now: Date = FIXTURE_NOW) {
+  return compareNetRealisationOptions(input, now);
+}
+
 function completeDeductions(
   overrides: Partial<Record<DeductionField, string>> = {},
 ): Record<DeductionField, string> {
@@ -63,7 +71,7 @@ function comparison(overrides: Partial<NetReturnComparisonInput> = {}): NetRetur
 }
 
 test("ranks complete feasible options by net INR per quintal", () => {
-  const result = compareNetRealisationOptions(comparison());
+  const result = compareAt(comparison());
 
   assert.equal(result.status, "comparable");
   assert.equal(result.rankedOptionCount, 2);
@@ -98,7 +106,7 @@ test("normalizes price units before ranking kg, quintal and tonne offers", () =>
     ],
   });
 
-  const result = compareNetRealisationOptions(input);
+  const result = compareAt(input);
 
   assert.equal(result.status, "comparable");
   assert.deepEqual(
@@ -112,7 +120,7 @@ test("normalizes price units before ranking kg, quintal and tonne offers", () =>
 });
 
 test("uses competition ranking for exact ties", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "a", pricePerUnit: "2000" }),
@@ -133,7 +141,7 @@ test("uses competition ranking for exact ties", () => {
 });
 
 test("keeps an option visible but does not rank it when a material cost is missing", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "complete-a" }),
@@ -155,7 +163,7 @@ test("keeps an option visible but does not rank it when a material cost is missi
 });
 
 test("does not rank infeasible or unverified options", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "feasible" }),
@@ -181,7 +189,7 @@ test("does not rank infeasible or unverified options", () => {
 });
 
 test("rejects options that refer to a different produce lot", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [option({ id: "same-lot" }), option({ id: "other-lot", lotId: "lot-2" })],
     }),
@@ -193,7 +201,7 @@ test("rejects options that refer to a different produce lot", () => {
 });
 
 test("marks duplicate option IDs invalid instead of producing ambiguous ranks", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [option({ id: "duplicate" }), option({ id: "duplicate" })],
     }),
@@ -207,7 +215,7 @@ test("marks duplicate option IDs invalid instead of producing ambiguous ranks", 
 });
 
 test("requires source-backed provenance for mandi observations", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "missing-source-date", observationDate: null }),
@@ -229,7 +237,7 @@ test("requires source-backed provenance for mandi observations", () => {
 });
 
 test("keeps entered scenarios explicitly labelled", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({
@@ -261,7 +269,7 @@ test("keeps entered scenarios explicitly labelled", () => {
 });
 
 test("handles costs greater than gross value without suppressing a negative net", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({
@@ -283,7 +291,7 @@ test("handles costs greater than gross value without suppressing a negative net"
 });
 
 test("returns equal comparison ranks when all options are equivalent", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [option({ id: "a" }), option({ id: "b" })],
     }),
@@ -295,13 +303,13 @@ test("returns equal comparison ranks when all options are equivalent", () => {
 
 test("rejects a zero, missing or over-precision lot quantity", () => {
   for (const quantity of ["0", "", "1.2345"]) {
-    const result = compareNetRealisationOptions(comparison({ quantity }));
+    const result = compareAt(comparison({ quantity }));
     assert.equal(result.status, "invalid_lot");
   }
 });
 
 test("never treats missing quality-loss cost as zero", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({
@@ -322,7 +330,7 @@ test("never treats missing quality-loss cost as zero", () => {
 
 test("does not rank buyer offers that have just expired", () => {
   const now = new Date("2026-11-22T12:00:00.000Z");
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "market-option" }),
@@ -348,7 +356,7 @@ test("does not rank buyer offers that have just expired", () => {
 
 test("keeps a buyer offer rankable while its expiry is still in the future", () => {
   const now = new Date("2026-11-22T12:00:00.000Z");
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "market-option" }),
@@ -371,7 +379,7 @@ test("keeps a buyer offer rankable while its expiry is still in the future", () 
 });
 
 test("requires an HTTP or HTTPS URL for a reported market observation", () => {
-  const result = compareNetRealisationOptions(
+  const result = compareAt(
     comparison({
       options: [
         option({ id: "invalid-source", sourceUrl: "javascript:alert(1)" }),

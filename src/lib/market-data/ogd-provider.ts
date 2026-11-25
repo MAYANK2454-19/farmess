@@ -3,6 +3,13 @@ import "server-only";
 import { assessMarketSourceDateIntegrity } from "./source-integrity";
 import { fetchOgdRecordsPaginated } from "./ogd-pagination";
 import {
+  RATE_LIMIT_TTL_MS,
+  SUCCESS_TTL_MS,
+  TtlCache,
+  cacheKeyForFilters,
+  isRateLimitMessage,
+} from "./ogd-cache";
+import {
   emptyMarketSourceQuality,
   normalizeOgdResponseWithDiagnostics,
   OGD_API_URL,
@@ -18,7 +25,30 @@ function safeLimit(limit: number | undefined): number {
   return Math.min(500, Math.max(1, Math.floor(limit)));
 }
 
+const searchCache = new TtlCache<MarketDataResult>();
+
+/**
+ * Search OGD India mandi prices, reusing a recent identical search when one is
+ * cached (see ogd-cache.ts). This keeps Farmess within data.gov.in rate limits;
+ * cached results keep their original retrievedAt.
+ */
 export async function searchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataResult> {
+  if (!process.env.DATA_GOV_IN_API_KEY) return fetchOgdPrices(filters);
+
+  const key = cacheKeyForFilters(filters);
+  const cached = searchCache.get(key);
+  if (cached) return cached;
+
+  const result = await fetchOgdPrices(filters);
+  if (result.status !== "unavailable") {
+    searchCache.set(key, result, SUCCESS_TTL_MS);
+  } else if (isRateLimitMessage(result.message)) {
+    searchCache.set(key, result, RATE_LIMIT_TTL_MS);
+  }
+  return result;
+}
+
+async function fetchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataResult> {
   const retrievedAt = new Date().toISOString();
   const apiKey = process.env.DATA_GOV_IN_API_KEY;
 
