@@ -20,8 +20,9 @@ describe("buildNotificationDedupeKey", () => {
       relatedEntityId: "offer-9",
     };
 
-    expect(buildNotificationDedupeKey({ ...base, recipientUserId: "user-1" }))
-      .not.toBe(buildNotificationDedupeKey({ ...base, recipientUserId: "user-2" }));
+    expect(buildNotificationDedupeKey({ ...base, recipientUserId: "user-1" })).not.toBe(
+      buildNotificationDedupeKey({ ...base, recipientUserId: "user-2" }),
+    );
   });
 
   it("keeps distinct events and related records separate", () => {
@@ -31,11 +32,13 @@ describe("buildNotificationDedupeKey", () => {
       relatedEntityId: "offer-9",
     };
 
-    expect(buildNotificationDedupeKey({ ...base, eventType: "offer.created" }))
-      .not.toBe(buildNotificationDedupeKey({ ...base, eventType: "offer.accepted" }));
+    expect(buildNotificationDedupeKey({ ...base, eventType: "offer.created" })).not.toBe(
+      buildNotificationDedupeKey({ ...base, eventType: "offer.accepted" }),
+    );
 
-    expect(buildNotificationDedupeKey({ ...base, relatedEntityId: "offer-10" }))
-      .not.toBe(buildNotificationDedupeKey({ ...base, relatedEntityId: "offer-9" }));
+    expect(buildNotificationDedupeKey({ ...base, relatedEntityId: "offer-10" })).not.toBe(
+      buildNotificationDedupeKey({ ...base, relatedEntityId: "offer-9" }),
+    );
   });
 
   it("does not collide when identifiers contain separators", () => {
