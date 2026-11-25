@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import {
+  EMPTY_LOCATION,
+  LocationPicker,
+  describeLocation,
+  type LocationValue,
+} from "@/features/location/location-picker";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
   LogisticsRecommendation,
@@ -324,9 +330,9 @@ function RecommendationCard({
 
 export function LogisticsDiscovery() {
   const [origin, setOrigin] = useState<Origin | null>(null);
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-  const [locationMessage, setLocationMessage] = useState("");
+  const [location, setLocation] = useState<LocationValue>(EMPTY_LOCATION);
+  const [locationReady, setLocationReady] = useState(false);
+  const [usingSaved, setUsingSaved] = useState(false);
   const [serviceType, setServiceType] = useState("");
   const [radiusKm, setRadiusKm] = useState("25");
   const [crop, setCrop] = useState("");
@@ -340,60 +346,62 @@ export function LogisticsDiscovery() {
   const [error, setError] = useState("");
   const [requestMessage, setRequestMessage] = useState("");
 
-  function useCurrentLocation() {
-    setError("");
-    setLocationMessage("Requesting your location permission…");
-
-    if (!navigator.geolocation) {
-      setLocationMessage(
-        "This browser does not support location sharing. Enter coordinates manually.",
-      );
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const next = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        setOrigin(next);
-        setLatitude(next.latitude.toFixed(6));
-        setLongitude(next.longitude.toFixed(6));
-        setLocationMessage(
-          "Location received. It will be used for this search and is not saved to your profile.",
-        );
-      },
-      (positionError) => {
-        setLocationMessage(
-          positionError.code === positionError.PERMISSION_DENIED
-            ? "Location permission was not granted. You can enter service-search coordinates manually."
-            : "Could not read your location. Try again or enter coordinates manually.",
-        );
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
-    );
-  }
+  // Start from the location saved in the user's profile, when there is one.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/profile", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then(
+        (
+          result: {
+            profile?: {
+              state: string | null;
+              district: string | null;
+              pincode: string | null;
+              location_latitude: number | string | null;
+              location_longitude: number | string | null;
+              location_source: LocationValue["source"];
+            };
+          } | null,
+        ) => {
+          const profile = result?.profile;
+          if (!active || !profile) return;
+          if (profile.location_latitude !== null && profile.location_longitude !== null) {
+            setLocation({
+              state: profile.state,
+              district: profile.district,
+              pincode: profile.pincode,
+              latitude: Number(profile.location_latitude),
+              longitude: Number(profile.location_longitude),
+              source: profile.location_source,
+            });
+            setUsingSaved(true);
+          }
+        },
+      )
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) setLocationReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setRequestMessage("");
 
-    const lat = Number(latitude);
-    const lng = Number(longitude);
+    const lat = location.latitude;
+    const lng = location.longitude;
     const radius = Number(radiusKm);
     const requiredQuantity = quantity.trim() ? Number(quantity) : null;
 
-    if (
-      !Number.isFinite(lat) ||
-      lat < -90 ||
-      lat > 90 ||
-      !Number.isFinite(lng) ||
-      lng < -180 ||
-      lng > 180
-    ) {
-      setError("Enter valid latitude and longitude, or use your current location.");
+    if (lat === null || lng === null) {
+      setError(
+        "Choose where to search from: tap “Use my current location” or enter your PIN code.",
+      );
       return;
     }
     if (!Number.isFinite(radius) || radius < 0.5 || radius > 100) {
@@ -468,45 +476,31 @@ export function LogisticsDiscovery() {
       <form className="panel logistics-search-form" onSubmit={search}>
         <div className="logistics-location-control">
           <div>
-            <strong>Search origin</strong>
+            <strong>Search from</strong>
             <p>
-              Your coordinates are sent to Farmess for this search only. They are not written to
-              your profile or shown to providers.
+              {usingSaved && describeLocation(location)
+                ? `Your saved location: ${describeLocation(location)}. Change it below for this search only.`
+                : "Choose your area. It is used for this search only and is never shown to providers. Save it in your profile to skip this next time."}
             </p>
           </div>
-          <button type="button" className="button button-secondary" onClick={useCurrentLocation}>
-            Use my current location
-          </button>
         </div>
-        {locationMessage ? (
+        {locationReady ? (
+          <LocationPicker
+            key={usingSaved ? "saved" : "empty"}
+            idPrefix="logistics-location"
+            value={location}
+            onChange={(next) => {
+              setLocation(next);
+              setUsingSaved(false);
+            }}
+          />
+        ) : (
           <p className="form-help" role="status">
-            {locationMessage}
+            Loading your saved location…
           </p>
-        ) : null}
+        )}
 
         <div className="form-grid">
-          <label className="form-field">
-            <span className="form-label">Latitude</span>
-            <input
-              className="form-control"
-              value={latitude}
-              onChange={(event) => setLatitude(event.target.value)}
-              inputMode="decimal"
-              placeholder="e.g. 32.7266"
-              required
-            />
-          </label>
-          <label className="form-field">
-            <span className="form-label">Longitude</span>
-            <input
-              className="form-control"
-              value={longitude}
-              onChange={(event) => setLongitude(event.target.value)}
-              inputMode="decimal"
-              placeholder="e.g. 74.8570"
-              required
-            />
-          </label>
           <label className="form-field">
             <span className="form-label">Search radius</span>
             <select

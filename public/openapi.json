@@ -1128,7 +1128,7 @@
       },
       "patch": {
         "tags": ["Account"],
-        "summary": "Update profile, consent and role-specific details (farmer: own transport, vehicle, farm size, crops; buyer: organisation, buyer type; operator: organisation, services, fleet, cold chain)",
+        "summary": "Update profile, consent, location (state, district, PIN, ~1 km point) and role-specific details",
         "requestBody": {
           "required": true,
           "content": {
@@ -1570,6 +1570,82 @@
           },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/api/location/pincode": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "PIN code to state, district, post offices and approximate (~1 km) coordinates (India Post + OpenStreetMap)",
+        "parameters": [
+          {
+            "name": "pin",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{5}$"
+            },
+            "example": "180001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Place found"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "India Post has no post office for this PIN"
+          },
+          "502": {
+            "description": "PIN directory unreachable"
+          }
+        }
+      }
+    },
+    "/api/location/reverse": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Device location to state, district and PIN; coordinates are rounded to ~1 km before lookup and not stored",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Place found"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Outside India or no matching state"
+          },
+          "502": {
+            "description": "Location service unreachable"
           }
         }
       }

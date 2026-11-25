@@ -26,8 +26,8 @@
         "quantity": 12.5,
         "unit": "quintal",
         "location": "Narwal mandi area, Jammu",
-        "availableAt": "2026-11-24",
-        "sellBy": "2026-11-29"
+        "availableAt": "2026-11-25",
+        "sellBy": "2026-11-30"
       }
     },
     {
@@ -256,7 +256,7 @@
         "quantity": 5,
         "unit": "quintal",
         "price_paise_per_quintal": 180000,
-        "valid_until": "2026-11-27"
+        "valid_until": "2026-11-28"
       }
     },
     {
@@ -362,7 +362,7 @@
       "expect_documented": [200, 401]
     },
     {
-      "name": "Update profile, consent and role-specific details (farmer: own transport, vehicle, farm size, crops; buyer: organisation, buyer type; operator: organisation, services, fleet, cold chain)",
+      "name": "Update profile, consent, location (state, district, PIN, ~1 km point) and role-specific details",
       "tag": "Account",
       "method": "PATCH",
       "path": "/api/profile",
@@ -508,6 +508,31 @@
         "id": "00000000-0000-4000-8000-000000000000",
         "decision": "rejected",
         "review_note": "Automated API collection check"
+      }
+    },
+    {
+      "name": "PIN code to state, district, post offices and approximate (~1 km) coordinates (India Post + OpenStreetMap)",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/location/pincode",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 404, 502],
+      "query": {
+        "pin": "180001"
+      }
+    },
+    {
+      "name": "Device location to state, district and PIN; coordinates are rounded to ~1 km before lookup and not stored",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/location/reverse",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 404, 502],
+      "query": {
+        "lat": "32.7266",
+        "lng": "74.857"
       }
     }
   ]

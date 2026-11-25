@@ -715,6 +715,13 @@ export type Database = {
           primary_crops: string[] | null;
           transport_capacity_quintal: number | null;
           transport_vehicle_type: string | null;
+          district: string | null;
+          location_latitude: number | null;
+          location_longitude: number | null;
+          location_source: string | null;
+          location_updated_at: string | null;
+          pincode: string | null;
+          state: string | null;
         };
         Insert: {
           approximate_location_sharing?: boolean;
@@ -738,6 +745,13 @@ export type Database = {
           primary_crops?: string[] | null;
           transport_capacity_quintal?: number | null;
           transport_vehicle_type?: string | null;
+          district?: string | null;
+          location_latitude?: number | null;
+          location_longitude?: number | null;
+          location_source?: string | null;
+          location_updated_at?: string | null;
+          pincode?: string | null;
+          state?: string | null;
         };
         Update: {
           approximate_location_sharing?: boolean;
@@ -761,6 +775,13 @@ export type Database = {
           primary_crops?: string[] | null;
           transport_capacity_quintal?: number | null;
           transport_vehicle_type?: string | null;
+          district?: string | null;
+          location_latitude?: number | null;
+          location_longitude?: number | null;
+          location_source?: string | null;
+          location_updated_at?: string | null;
+          pincode?: string | null;
+          state?: string | null;
         };
         Relationships: [];
       };

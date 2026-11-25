@@ -15,6 +15,8 @@ const QUERY = {
   "GET /api/market-decisions": { lotId: SAMPLE_ID },
   "GET /api/logistics/discover": { lat: "32.7266", lng: "74.857", radiusKm: "25" },
   "GET /api/weather/forecast": { lat: "32.7266", lng: "74.857" },
+  "GET /api/location/pincode": { pin: "180001" },
+  "GET /api/location/reverse": { lat: "32.7266", lng: "74.857" },
 };
 
 const BODY = {

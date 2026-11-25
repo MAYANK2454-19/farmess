@@ -10,6 +10,7 @@ import {
   VEHICLE_TYPES,
 } from "@/features/profile/role-details";
 import { AccessRequestCard } from "@/features/access/access-request-card";
+import { LocationPicker, type LocationValue } from "@/features/location/location-picker";
 
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
@@ -32,6 +33,12 @@ type Profile = Pick<
   | "operator_service_types"
   | "operator_fleet_size"
   | "operator_cold_chain"
+  | "state"
+  | "district"
+  | "pincode"
+  | "location_latitude"
+  | "location_longitude"
+  | "location_source"
 > & { role: FarmessRole };
 
 const BASE_FIELDS = [
@@ -63,7 +70,24 @@ const initialProfile: Profile = {
   operator_service_types: null,
   operator_fleet_size: null,
   operator_cold_chain: null,
+  state: null,
+  district: null,
+  pincode: null,
+  location_latitude: null,
+  location_longitude: null,
+  location_source: null,
 };
+
+function toLocationValue(profile: Profile): LocationValue {
+  return {
+    state: profile.state,
+    district: profile.district,
+    pincode: profile.pincode,
+    latitude: profile.location_latitude === null ? null : Number(profile.location_latitude),
+    longitude: profile.location_longitude === null ? null : Number(profile.location_longitude),
+    source: (profile.location_source as LocationValue["source"]) ?? null,
+  };
+}
 
 const LABELS: Record<string, string> = {
   two_wheeler: "Two-wheeler",
@@ -113,6 +137,14 @@ function buildPayload(profile: Profile) {
   for (const field of ROLE_DETAIL_FIELDS[profile.role]) {
     payload[field] = profile[field as keyof Profile];
   }
+  payload.state = profile.state;
+  payload.district = profile.district;
+  payload.pincode = profile.pincode;
+  payload.location_latitude =
+    profile.location_latitude === null ? null : Number(profile.location_latitude);
+  payload.location_longitude =
+    profile.location_longitude === null ? null : Number(profile.location_longitude);
+  payload.location_source = profile.location_source;
   return payload;
 }
 
@@ -270,6 +302,31 @@ export function ProfileForm() {
                 />
               </label>
             </div>
+
+            <fieldset className="profile-role-section">
+              <legend>
+                <span className="profile-role-title">Location</span>
+                <span className="profile-role-caption">
+                  Used to find nearby markets, transport and cold storage. Saved to about 1 km and
+                  visible only to you.
+                </span>
+              </legend>
+              <LocationPicker
+                idPrefix="profile-location"
+                value={toLocationValue(profile)}
+                onChange={(next) =>
+                  setProfile((current) => ({
+                    ...current,
+                    state: next.state,
+                    district: next.district,
+                    pincode: next.pincode,
+                    location_latitude: next.latitude,
+                    location_longitude: next.longitude,
+                    location_source: next.source,
+                  }))
+                }
+              />
+            </fieldset>
 
             {section ? (
               <fieldset className="profile-role-section">
