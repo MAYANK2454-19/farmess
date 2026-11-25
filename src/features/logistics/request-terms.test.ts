@@ -37,7 +37,7 @@ test("rejects identical areas", () => {
 
 test("rejects invalid and non-future timing", () => {
   const result = validateLogisticsRequestTerms(
-    { ...validTerms, requestedAt: "not-a-date", neededBy: "2026-11-22T08:00:00Z" },
+    { ...validTerms, requestedAt: "2026-11-22T07:00:00Z", neededBy: "2026-11-22T08:00:00Z" },
     new Date("2026-11-22T09:00:00Z"),
   );
   assert.equal(result.valid, false);
