@@ -36,9 +36,11 @@ export function filterNotificationInbox<T extends NotificationInboxRecord>(
   });
 }
 
-export function countNotificationFilterResults(
-  records: readonly NotificationInboxRecord[],
-): { all: number; unread: number; read: number } {
+export function countNotificationFilterResults(records: readonly NotificationInboxRecord[]): {
+  all: number;
+  unread: number;
+  read: number;
+} {
   return {
     all: records.length,
     unread: records.filter((record) => record.readAt === null).length,
