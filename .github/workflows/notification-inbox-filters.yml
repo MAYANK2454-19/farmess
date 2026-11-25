@@ -1,0 +1,21 @@
+name: Notification inbox filters
+
+on:
+  pull_request:
+    paths:
+      - "src/features/notifications/inbox-filters.ts"
+      - "src/features/notifications/inbox-filters.test.ts"
+      - "docs/NOTIFICATION_INBOX_FILTERS.md"
+      - ".github/workflows/notification-inbox-filters.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --experimental-strip-types --test src/features/notifications/inbox-filters.test.ts
