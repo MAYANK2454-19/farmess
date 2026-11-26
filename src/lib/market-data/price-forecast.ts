@@ -1,9 +1,10 @@
 /**
  * Short-term mandi price forecast from saved, dated AGMARKNET reports.
  *
- * Model: Holt's damped-trend exponential smoothing on log prices, one step per
- * market report. Smoothing parameters are chosen on the older part of the
- * series only; the most recent reports are kept back for a walk-forward test
+ * Model: a small family of forecasters on log prices, one step per market
+ * report (Holt damped-trend smoothing, simple exponential smoothing and short
+ * moving averages). The one with the lowest 7-report error on a validation
+ * window is chosen, then tested walk-forward on later, untouched reports
  * against the "price stays the same" (persistence) baseline. A forecast is
  * returned only when the model beats that baseline on the held-back reports;
  * otherwise only the observed trend is reported. Nothing here invents prices:
@@ -53,11 +54,23 @@ const MAX_BACKTEST_ORIGINS = 30;
 const STALE_AFTER_DAYS = 14;
 const MS_PER_DAY = 86_400_000;
 
-const ALPHAS = [0.2, 0.35, 0.5, 0.7, 0.9];
-const BETAS = [0.02, 0.08, 0.2];
+const ALPHAS = [0.1, 0.2, 0.35, 0.5, 0.7, 0.9];
+const BETAS = [0, 0.02, 0.08, 0.2];
 const PHIS = [0.8, 0.9, 0.98];
+const AVERAGE_WINDOWS = [3, 5, 7, 10];
 
 type Params = { alpha: number; beta: number; phi: number };
+type Candidate = ({ kind: "holt" } & Params) | { kind: "average"; k: number };
+
+/** Holt variants (beta 0 = simple smoothing) and short moving averages. */
+const CANDIDATES: Candidate[] = [
+  ...ALPHAS.flatMap((alpha) =>
+    BETAS.flatMap((beta) =>
+      (beta === 0 ? [0.9] : PHIS).map((phi) => ({ kind: "holt" as const, alpha, beta, phi })),
+    ),
+  ),
+  ...AVERAGE_WINDOWS.map((k) => ({ kind: "average" as const, k })),
+];
 
 function dayNumber(date: string): number {
   return Math.round(new Date(`${date}T00:00:00.000Z`).getTime() / MS_PER_DAY);
@@ -102,43 +115,73 @@ export function dailySeries(points: readonly PricePoint[]): PricePoint[] {
 function holtState(values: number[], params: Params) {
   let level = values[0];
   let trend = values.length > 1 ? values[1] - values[0] : 0;
-  let oneStepSse = 0;
   for (let i = 1; i < values.length; i += 1) {
     const predicted = level + params.phi * trend;
-    const error = values[i] - predicted;
-    oneStepSse += error * error;
     const nextLevel = params.alpha * values[i] + (1 - params.alpha) * predicted;
     trend = params.beta * (nextLevel - level) + (1 - params.beta) * params.phi * trend;
     level = nextLevel;
   }
-  return { level, trend, oneStepSse };
+  return { level, trend };
 }
 
-function holtForecast(state: { level: number; trend: number }, phi: number, horizon: number) {
+/** Log-price forecasts for the next `horizon` reports using reports 0..origin only. */
+function forecastFrom(candidate: Candidate, logs: number[], origin: number, horizon: number) {
+  const history = logs.slice(0, origin + 1);
+  if (candidate.kind === "average") {
+    return Array<number>(horizon).fill(mean(history.slice(-candidate.k)));
+  }
+  const state = holtState(history, candidate);
   const out: number[] = [];
   let damp = 0;
   for (let h = 1; h <= horizon; h += 1) {
-    damp += phi ** h;
+    damp += candidate.phi ** h;
     out.push(state.level + damp * state.trend);
   }
   return out;
 }
 
-function chooseParams(values: number[]): Params {
-  let best: Params = { alpha: 0.5, beta: 0.08, phi: 0.9 };
-  let bestSse = Number.POSITIVE_INFINITY;
-  for (const alpha of ALPHAS) {
-    for (const beta of BETAS) {
-      for (const phi of PHIS) {
-        const { oneStepSse } = holtState(values, { alpha, beta, phi });
-        if (oneStepSse < bestSse) {
-          bestSse = oneStepSse;
-          best = { alpha, beta, phi };
-        }
-      }
+/** Average absolute error in rupees over all steps from origins [from, to). */
+function windowMae(
+  candidate: Candidate,
+  logs: number[],
+  prices: number[],
+  from: number,
+  to: number,
+  horizon: number,
+) {
+  const errors: number[] = [];
+  for (let origin = from; origin < to; origin += 1) {
+    const predicted = forecastFrom(candidate, logs, origin, horizon);
+    for (let h = 1; h <= horizon; h += 1) {
+      errors.push(Math.abs(Math.exp(predicted[h - 1]) - prices[origin + h]));
+    }
+  }
+  return mean(errors);
+}
+
+/** Pick the candidate with the lowest multi-step error on origins [from, to). */
+function selectCandidate(
+  logs: number[],
+  prices: number[],
+  from: number,
+  to: number,
+  horizon: number,
+) {
+  let best = CANDIDATES[0];
+  let bestMae = Number.POSITIVE_INFINITY;
+  for (const candidate of CANDIDATES) {
+    const mae = windowMae(candidate, logs, prices, from, to, horizon);
+    if (mae < bestMae) {
+      bestMae = mae;
+      best = candidate;
     }
   }
   return best;
+}
+
+function describe(candidate: Candidate): string {
+  if (candidate.kind === "average") return `Average of the last ${candidate.k} reports`;
+  return candidate.beta === 0 ? "Exponential smoothing" : "Holt damped-trend smoothing";
 }
 
 function buildTrend(series: PricePoint[]): PriceTrend {
@@ -177,24 +220,27 @@ export function forecastPrices(
   }
 
   const trend = buildTrend(series);
-  const logs = series.map((point) => Math.log(point.price));
+  const prices = series.map((point) => point.price);
+  const logs = prices.map((price) => Math.log(price));
   const n = logs.length;
   const horizon = FORECAST_HORIZON;
-  const origins = Math.min(MAX_BACKTEST_ORIGINS, n - horizon - 20);
+  const origins = Math.min(MAX_BACKTEST_ORIGINS, Math.floor((n - horizon - 10) / 2));
 
-  // Parameters are fitted only on reports before the held-back test window.
+  // Time order: choose the model on a validation window, then test it on the
+  // later, untouched test window. Every forecast uses only earlier reports.
   const testStart = n - horizon - origins;
-  const params = chooseParams(logs.slice(0, testStart + 1));
+  const validationEnd = testStart - horizon;
+  const validationStart = Math.max(1, validationEnd - origins);
+  const tested = selectCandidate(logs, prices, validationStart, validationEnd, horizon);
 
   const modelErrors: number[][] = Array.from({ length: horizon }, () => []);
   const baselineErrors: number[] = [];
   for (let origin = testStart; origin < testStart + origins; origin += 1) {
-    const state = holtState(logs.slice(0, origin + 1), params);
-    const predicted = holtForecast(state, params.phi, horizon);
+    const predicted = forecastFrom(tested, logs, origin, horizon);
     for (let h = 1; h <= horizon; h += 1) {
-      const actual = series[origin + h].price;
+      const actual = prices[origin + h];
       modelErrors[h - 1].push(Math.abs(Math.exp(predicted[h - 1]) - actual));
-      baselineErrors.push(Math.abs(series[origin].price - actual));
+      baselineErrors.push(Math.abs(prices[origin] - actual));
     }
   }
   const backtest: Backtest = {
@@ -215,15 +261,23 @@ export function forecastPrices(
   // Report dates are irregular (holidays, closures); step by the typical gap.
   const gaps = series.slice(1).map((point, i) => dayNumber(point.date) - dayNumber(series[i].date));
   const step = Math.max(1, Math.round(median(gaps.slice(-30))));
-  const finalParams = chooseParams(logs);
-  const finalForecast = holtForecast(holtState(logs, finalParams), finalParams.phi, horizon);
+  // The published forecast re-selects on the most recent window, then uses all reports.
+  const finalEnd = n - 1 - horizon;
+  const finalModel = selectCandidate(
+    logs,
+    prices,
+    Math.max(1, finalEnd - origins),
+    finalEnd,
+    horizon,
+  );
+  const finalForecast = forecastFrom(finalModel, logs, n - 1, horizon);
   const lastDay = dayNumber(trend.latestDate);
 
   return {
     status: "forecast",
     trend,
     backtest,
-    model: "Holt damped trend (log price), walk-forward tested",
+    model: `${describe(finalModel)} on log prices, chosen on a validation window and walk-forward tested`,
     points: finalForecast.map((logPrice, i) => {
       const price = Math.exp(logPrice);
       const band = quantile(modelErrors[i], 0.9);
