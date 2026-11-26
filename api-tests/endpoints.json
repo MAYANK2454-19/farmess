@@ -82,7 +82,7 @@
       }
     },
     {
-      "name": "Price trend and tested short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
+      "name": "Price trend plus statistical and machine-learning forecasts for a crop at a mandi, from saved AGMARKNET reports",
       "tag": "Market data",
       "method": "GET",
       "path": "/api/market-forecasts",
@@ -115,6 +115,15 @@
         "id": "00000000-0000-4000-8000-000000000000",
         "action": "decline"
       }
+    },
+    {
+      "name": "Active buyer requirements that fully or partly fit each of the farmer's lots (seller-side matching with fits and gaps)",
+      "tag": "Marketplace",
+      "method": "GET",
+      "path": "/api/farmer/buyer-demand",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 503]
     },
     {
       "name": "Rank nearby transport/storage services with an explainable rules-v1 score",
@@ -323,7 +332,7 @@
       "expect_documented": [200, 401, 403]
     },
     {
-      "name": "Accept or decline a pending request, or cancel an accepted one (action: cancel)",
+      "name": "Accept or decline a pending request, or cancel an accepted one (action: cancel) — also action=complete to mark an accepted request completed, action=cancel to cancel an accepted one",
       "tag": "Operator",
       "method": "PATCH",
       "path": "/api/operator/requests",
@@ -527,6 +536,19 @@
       "query": {
         "lat": "32.7266",
         "lng": "74.857"
+      }
+    },
+    {
+      "name": "Approximate centre of a district (OpenStreetMap), so state + district alone works for nearby search",
+      "tag": "Location",
+      "method": "GET",
+      "path": "/api/location/district",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 404, 502],
+      "query": {
+        "state": "Jammu and Kashmir",
+        "district": "Jammu"
       }
     }
   ]

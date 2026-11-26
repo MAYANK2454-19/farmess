@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
 
 type Lot = Pick<
   Database["public"]["Tables"]["produce_lots"]["Row"],
@@ -14,7 +15,7 @@ type Lot = Pick<
   | "approximate_area"
   | "available_from"
   | "sell_by"
->;
+> & { farmer_contact?: CounterpartyContact | null };
 
 type Offer = Pick<
   Database["public"]["Tables"]["offers"]["Row"],
@@ -27,7 +28,7 @@ type Offer = Pick<
   | "status"
   | "terms"
   | "created_at"
-> & { is_expired: boolean };
+> & { is_expired: boolean; contact?: CounterpartyContact | null };
 
 function formatDate(value: string | null) {
   if (!value) return "Not specified";
@@ -302,6 +303,9 @@ export function MarketplaceBoard() {
                     Available from {formatDate(lot.available_from)} · Sell by{" "}
                     {formatDate(lot.sell_by)}
                   </p>
+                  {lot.farmer_contact ? (
+                    <ContactCard title="Farmer" contact={lot.farmer_contact} hiddenHint="" />
+                  ) : null}
                   {activeOffer ? (
                     <p className="marketplace-existing-offer">
                       Your offer is awaiting a farmer decision. It expires{" "}
@@ -340,6 +344,15 @@ export function MarketplaceBoard() {
                     {offer.quantity} {offer.unit} · expires {formatDateTime(offer.valid_until)}
                   </span>
                   <time dateTime={offer.created_at}>Sent {formatDateTime(offer.created_at)}</time>
+                  <ContactCard
+                    title="Farmer"
+                    contact={offer.contact}
+                    hiddenHint={
+                      offer.status === "pending"
+                        ? "Phone and email are shared once the farmer accepts your offer."
+                        : "Contact details are shared only for accepted offers."
+                    }
+                  />
                 </div>
                 <span
                   className={

@@ -18,6 +18,7 @@ const QUERY = {
   "GET /api/weather/forecast": { lat: "32.7266", lng: "74.857" },
   "GET /api/location/pincode": { pin: "180001" },
   "GET /api/location/reverse": { lat: "32.7266", lng: "74.857" },
+  "GET /api/location/district": { state: "Jammu and Kashmir", district: "Jammu" },
 };
 
 const BODY = {

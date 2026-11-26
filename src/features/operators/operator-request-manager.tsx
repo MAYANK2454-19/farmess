@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
 
 type RequestRow = Pick<
   Database["public"]["Tables"]["service_requests"]["Row"],
@@ -20,6 +21,7 @@ type RequestRow = Pick<
     Database["public"]["Tables"]["service_listings"]["Row"],
     "id" | "title" | "service_type"
   > | null;
+  contact?: CounterpartyContact | null;
 };
 
 function dateLabel(value: string | null) {
@@ -109,9 +111,44 @@ export function OperatorRequestManager() {
       setRequests((current) =>
         current.map((item) => (item.id === id ? { ...item, status: decision } : item)),
       );
+      if (decision === "accepted") await reload();
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "This request could not be updated.",
+      );
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  /** Reload the list so contact details shared on acceptance appear. */
+  async function reload() {
+    const response = await fetch("/api/operator/requests", { cache: "no-store" });
+    const result = (await response.json()) as { requests?: RequestRow[] };
+    if (response.ok && result.requests) setRequests(result.requests);
+  }
+
+  async function complete(id: string) {
+    setPendingId(id);
+    setError("");
+    try {
+      const response = await fetch("/api/operator/requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ id, action: "complete" }),
+      });
+      const result = (await response.json()) as { request?: { id: string }; error?: string };
+      if (!response.ok || !result.request) {
+        throw new Error(result.error ?? "The request could not be marked completed.");
+      }
+      setRequests((current) =>
+        current.map((item) => (item.id === id ? { ...item, status: "completed" } : item)),
+      );
+    } catch (completeError) {
+      setError(
+        completeError instanceof Error
+          ? completeError.message
+          : "The request could not be marked completed.",
       );
     } finally {
       setPendingId(null);
@@ -215,6 +252,15 @@ export function OperatorRequestManager() {
                 <time dateTime={request.created_at}>
                   Received {dateTimeLabel(request.created_at)}
                 </time>
+                <ContactCard
+                  title="Requested by"
+                  contact={request.contact}
+                  hiddenHint={
+                    request.status === "pending"
+                      ? "Accept the request to exchange phone and email with this farmer."
+                      : "Contact details are shared only for accepted requests."
+                  }
+                />
               </div>
               {request.status === "pending" ? (
                 <div className="operator-request-actions">
@@ -261,14 +307,24 @@ export function OperatorRequestManager() {
                       </button>
                     </>
                   ) : (
-                    <button
-                      type="button"
-                      className="button button-secondary"
-                      onClick={() => setCancelConfirmId(request.id)}
-                      disabled={pendingId === request.id}
-                    >
-                      Cancel accepted request
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        className="button button-primary"
+                        onClick={() => void complete(request.id)}
+                        disabled={pendingId === request.id}
+                      >
+                        {pendingId === request.id ? "Saving…" : "Mark completed"}
+                      </button>
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        onClick={() => setCancelConfirmId(request.id)}
+                        disabled={pendingId === request.id}
+                      >
+                        Cancel accepted request
+                      </button>
+                    </>
                   )}
                 </div>
               ) : null}

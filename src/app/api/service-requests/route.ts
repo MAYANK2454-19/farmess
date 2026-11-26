@@ -2,6 +2,7 @@ import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { contactsById } from "@/lib/contacts";
 import { parseServiceRequestCancellation } from "@/features/logistics/request-cancellation";
 
 const LISTING_SELECT =
@@ -81,10 +82,17 @@ async function handleGET() {
     );
   }
 
+  // Provider name always; phone/email once accepted or if the provider opted in.
+  const { data: contactRows } = await supabase.rpc("service_request_contacts");
+  const contacts = contactsById(contactRows, (row) => row.request_id);
+
   return NextResponse.json(
     {
       listings: listingsResult.data ?? [],
-      requests: requestsResult.data ?? [],
+      requests: (requestsResult.data ?? []).map((request) => ({
+        ...request,
+        contact: contacts.get(request.id) ?? null,
+      })),
     },
     { headers: { "Cache-Control": "private, no-store" } },
   );

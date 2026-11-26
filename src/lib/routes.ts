@@ -3,6 +3,7 @@ export const FARMER_NAVIGATION = [
   { label: "My Produce", href: "/farmer/produce", icon: "produce", hindi: "मेरी उपज" },
   { label: "Market Prices", href: "/farmer/markets", icon: "markets", hindi: "मंडी भाव" },
   { label: "Compare Markets", href: "/farmer/compare", icon: "compare", hindi: "शुद्ध आय तुलना" },
+  { label: "Buyer Demand", href: "/farmer/demand", icon: "compare", hindi: "खरीदार मांग" },
   { label: "Buyer Offers", href: "/farmer/offers", icon: "offers", hindi: "खरीदार प्रस्ताव" },
   {
     label: "Transport & Storage",
@@ -65,6 +66,7 @@ export const APP_ROUTE_FILES = [
   { href: "/farmer/produce/new", file: "src/app/(workspace)/farmer/produce/new/page.tsx" },
   { href: "/farmer/markets", file: "src/app/(workspace)/farmer/markets/page.tsx" },
   { href: "/farmer/compare", file: "src/app/(workspace)/farmer/compare/page.tsx" },
+  { href: "/farmer/demand", file: "src/app/(workspace)/farmer/demand/page.tsx" },
   { href: "/farmer/offers", file: "src/app/(workspace)/farmer/offers/page.tsx" },
   { href: "/farmer/logistics", file: "src/app/(workspace)/farmer/logistics/page.tsx" },
   { href: "/farmer/activity", file: "src/app/(workspace)/farmer/activity/page.tsx" },

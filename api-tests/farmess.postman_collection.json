@@ -618,7 +618,7 @@
               ],
               "variable": []
             },
-            "description": "Price trend and tested short-term forecast for a crop at a mandi, from saved AGMARKNET reports\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
+            "description": "Price trend plus statistical and machine-learning forecasts for a crop at a mandi, from saved AGMARKNET reports\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
           },
           "event": [
             {
@@ -628,6 +628,57 @@
                 "exec": [
                   "const signedOut = [200, 503];",
                   "const documented = [200, 400, 503];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Marketplace",
+      "item": [
+        {
+          "name": "GET /api/farmer/buyer-demand",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/farmer/buyer-demand",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "farmer", "buyer-demand"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Active buyer requirements that fully or partly fit each of the farmer's lots (seller-side matching with fits and gaps)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 401, 403, 503]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 401, 403, 503];",
                   "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
                   "pm.test('status is expected (' + pm.response.code + ')', function () {",
                   "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
@@ -1604,7 +1655,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Accept or decline a pending request, or cancel an accepted one (action: cancel)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
+            "description": "Accept or decline a pending request, or cancel an accepted one (action: cancel) \u2014 also action=complete to mark an accepted request completed, action=cancel to cancel an accepted one\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"action\": \"accept\"\n}",
@@ -2382,6 +2433,66 @@
                 "exec": [
                   "const signedOut = [401];",
                   "const documented = [200, 400, 401, 403, 409];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Location",
+      "item": [
+        {
+          "name": "GET /api/location/district",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/location/district?state=Jammu and Kashmir&district=Jammu",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "location", "district"],
+              "query": [
+                {
+                  "key": "state",
+                  "value": "Jammu and Kashmir"
+                },
+                {
+                  "key": "district",
+                  "value": "Jammu"
+                }
+              ],
+              "variable": []
+            },
+            "description": "Approximate centre of a district (OpenStreetMap), so state + district alone works for nearby search\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 404, 502]."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 404, 502];",
                   "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
                   "pm.test('status is expected (' + pm.response.code + ')', function () {",
                   "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",

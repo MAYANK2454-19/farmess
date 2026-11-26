@@ -590,9 +590,15 @@ export function ProfileForm() {
 
         <label className="privacy-row">
           <span>
-            <strong>Allow my phone number to be shared with a buyer</strong>
+            <strong>
+              {profile.role === "buyer"
+                ? "Share my phone and email with farmers"
+                : "Share my phone and email with buyers"}
+            </strong>
             <p>
-              Your number stays private unless you enable this and a buyer contact workflow applies.
+              {profile.role === "buyer"
+                ? "Farmers see them on your requirements and offers. Without this, they are shared only after a farmer accepts your offer."
+                : "Buyers see them on your published lots and offers. Without this, they are shared only after you accept an offer."}
             </p>
           </span>
           <input
@@ -606,9 +612,14 @@ export function ProfileForm() {
 
         <label className="privacy-row">
           <span>
-            <strong>Allow my phone number to be shared with a service provider</strong>
+            <strong>
+              {profile.role === "operator"
+                ? "Share my phone and email with farmers who request my services"
+                : "Share my phone and email with transport and storage providers"}
+            </strong>
             <p>
-              Used only when you request a transport or storage service that needs provider contact.
+              Shown on your service requests. Without this, they are shared only after the request
+              is accepted.
             </p>
           </span>
           <input

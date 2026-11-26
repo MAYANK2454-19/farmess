@@ -539,6 +539,27 @@
         }
       }
     },
+    "/api/farmer/buyer-demand": {
+      "get": {
+        "tags": ["Marketplace"],
+        "summary": "Active buyer requirements that fully or partly fit each of the farmer's lots (seller-side matching with fits and gaps)",
+        "description": "Only the crop must match; other differences are listed as gaps. Buyer contact is included only when the buyer opted in.",
+        "responses": {
+          "200": {
+            "description": "lots[] each with matches[] (status match|partial, score, fits, gaps, buyer)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
     "/api/logistics/discover": {
       "get": {
         "tags": ["Logistics"],
@@ -1084,7 +1105,7 @@
       },
       "patch": {
         "tags": ["Operator"],
-        "summary": "Accept or decline a pending request, or cancel an accepted one (action: cancel)",
+        "summary": "Accept or decline a pending request, or cancel an accepted one (action: cancel) — also action=complete to mark an accepted request completed, action=cancel to cancel an accepted one",
         "requestBody": {
           "required": true,
           "content": {
@@ -1686,6 +1707,49 @@
           },
           "502": {
             "description": "Location service unreachable"
+          }
+        }
+      }
+    },
+    "/api/location/district": {
+      "get": {
+        "tags": ["Location"],
+        "summary": "Approximate centre of a district (OpenStreetMap), so state + district alone works for nearby search",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Jammu and Kashmir"
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Jammu"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "place with state, district, latitude, longitude (~1 km)"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "District could not be placed on the map"
+          },
+          "502": {
+            "description": "Map service unreachable"
           }
         }
       }

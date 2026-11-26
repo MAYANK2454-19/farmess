@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
 
 type Listing = Pick<
   Database["public"]["Tables"]["service_listings"]["Row"],
@@ -35,7 +36,7 @@ type ServiceRequest = Pick<
   | "status"
   | "message"
   | "created_at"
->;
+> & { contact?: CounterpartyContact | null };
 
 function formatDate(value: string | null) {
   if (!value) return "Not specified";
@@ -405,6 +406,15 @@ export function ServiceRequestBoard() {
                 <span className={"produce-status produce-status-" + request.status}>
                   {request.status}
                 </span>
+                <ContactCard
+                  title="Provider"
+                  contact={request.contact}
+                  hiddenHint={
+                    request.status === "pending"
+                      ? "Phone and email are shared once the provider accepts."
+                      : "Contact details are shared only for accepted requests."
+                  }
+                />
                 {request.status === "pending" || request.status === "accepted" ? (
                   <div className="service-request-cancel">
                     {cancelConfirmId === request.id ? (

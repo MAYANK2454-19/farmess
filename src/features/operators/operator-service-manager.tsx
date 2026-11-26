@@ -2,6 +2,11 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import {
+  EMPTY_LOCATION,
+  LocationPicker,
+  type LocationValue,
+} from "@/features/location/location-picker";
 
 type Listing = Pick<
   Database["public"]["Tables"]["service_listings"]["Row"],
@@ -62,11 +67,9 @@ export function OperatorServiceManager() {
   const [cropSuitability, setCropSuitability] = useState("");
   const [coldChainAvailable, setColdChainAvailable] = useState(false);
   const [serviceRadiusKm, setServiceRadiusKm] = useState("25");
-  const [publishLocation, setPublishLocation] = useState(false);
-  const [serviceLatitude, setServiceLatitude] = useState("");
-  const [serviceLongitude, setServiceLongitude] = useState("");
-  const [destinationLatitude, setDestinationLatitude] = useState("");
-  const [destinationLongitude, setDestinationLongitude] = useState("");
+  const [publishLocation, setPublishLocation] = useState(true);
+  const [base, setBase] = useState<LocationValue>(EMPTY_LOCATION);
+  const [destinationPlace, setDestinationPlace] = useState<LocationValue>(EMPTY_LOCATION);
 
   useEffect(() => {
     let active = true;
@@ -101,6 +104,26 @@ export function OperatorServiceManager() {
     setError("");
     setMessage("");
 
+    if (!base.state || !base.district) {
+      setError("Choose the state and district where this service is based.");
+      setSaving(false);
+      return;
+    }
+    if (publishLocation && (base.latitude === null || base.longitude === null)) {
+      setError(
+        "The service base could not be placed on the map yet. Wait a moment, add a PIN code or use your current location.",
+      );
+      setSaving(false);
+      return;
+    }
+    const baseArea = [serviceArea.trim(), base.district, base.state].filter(Boolean).join(", ");
+    const destinationArea =
+      destinationPlace.state && destinationPlace.district
+        ? [destination.trim(), destinationPlace.district, destinationPlace.state]
+            .filter(Boolean)
+            .join(", ")
+        : destination.trim() || null;
+
     const priceValue = price.trim() ? Number(price) : null;
     const capacityValue = capacity.trim() ? Number(capacity) : null;
 
@@ -120,8 +143,8 @@ export function OperatorServiceManager() {
         body: JSON.stringify({
           title,
           service_type: serviceType,
-          service_area: serviceArea,
-          destination_area: destination.trim() || null,
+          service_area: baseArea,
+          destination_area: destinationArea,
           description: description.trim() || null,
           price_paise: priceValue === null ? null : Math.round(priceValue * 100),
           rate_basis: priceValue === null ? "quote_required" : rateBasis,
@@ -136,10 +159,10 @@ export function OperatorServiceManager() {
           cold_chain_available: coldChainAvailable,
           service_radius_km: serviceRadiusKm.trim() ? Number(serviceRadiusKm) : null,
           publish_location: publishLocation,
-          service_latitude: serviceLatitude.trim() ? Number(serviceLatitude) : null,
-          service_longitude: serviceLongitude.trim() ? Number(serviceLongitude) : null,
-          destination_latitude: destinationLatitude.trim() ? Number(destinationLatitude) : null,
-          destination_longitude: destinationLongitude.trim() ? Number(destinationLongitude) : null,
+          service_latitude: publishLocation ? base.latitude : null,
+          service_longitude: publishLocation ? base.longitude : null,
+          destination_latitude: destinationPlace.latitude,
+          destination_longitude: destinationPlace.longitude,
         }),
       });
 
@@ -159,13 +182,13 @@ export function OperatorServiceManager() {
       setAvailableUntil("");
       setCropSuitability("");
       setColdChainAvailable(false);
-      setPublishLocation(false);
-      setServiceLatitude("");
-      setServiceLongitude("");
-      setDestinationLatitude("");
-      setDestinationLongitude("");
+      setPublishLocation(true);
+      setBase(EMPTY_LOCATION);
+      setDestinationPlace(EMPTY_LOCATION);
       setMessage(
-        "Your service is now active. Its map pin is shown only when you chose to publish one.",
+        publishLocation
+          ? "Your service is now active and farmers nearby can find it."
+          : "Your service is now active. It is not in nearby search because you chose not to show its location.",
       );
     } catch (publishError) {
       setError(
@@ -303,27 +326,55 @@ export function OperatorServiceManager() {
               <option value="storage">Storage</option>
             </select>
           </label>
-          <label className="form-field">
-            <span className="form-label">Service area</span>
-            <input
-              className="form-control"
-              value={serviceArea}
-              onChange={(event) => setServiceArea(event.target.value)}
-              maxLength={160}
-              required
-              placeholder="District or service zone"
+          <fieldset className="operator-location-fields">
+            <legend>Where is this service based?</legend>
+            <LocationPicker value={base} onChange={setBase} idPrefix="service-base" />
+            <label className="form-field">
+              <span className="form-label">Locality or yard (optional)</span>
+              <input
+                className="form-control"
+                value={serviceArea}
+                onChange={(event) => setServiceArea(event.target.value)}
+                maxLength={80}
+                placeholder="e.g. Narwal mandi yard"
+              />
+            </label>
+            <label className="service-checkbox-row">
+              <input
+                type="checkbox"
+                checked={publishLocation}
+                onChange={(event) => setPublishLocation(event.target.checked)}
+              />
+              <span>
+                Show this service in farmers&apos; nearby search and on the map (approximate point,
+                about 1 km)
+              </span>
+            </label>
+            {!publishLocation ? (
+              <p className="form-warning">
+                Without this, farmers searching nearby will not find this service.
+              </p>
+            ) : null}
+          </fieldset>
+          <fieldset className="operator-location-fields">
+            <legend>Destination (optional)</legend>
+            <p className="form-help">For transport: where you usually deliver to.</p>
+            <LocationPicker
+              value={destinationPlace}
+              onChange={setDestinationPlace}
+              idPrefix="service-destination"
             />
-          </label>
-          <label className="form-field">
-            <span className="form-label">Destination (optional)</span>
-            <input
-              className="form-control"
-              value={destination}
-              onChange={(event) => setDestination(event.target.value)}
-              maxLength={160}
-              placeholder="Destination area"
-            />
-          </label>
+            <label className="form-field">
+              <span className="form-label">Destination mandi or locality (optional)</span>
+              <input
+                className="form-control"
+                value={destination}
+                onChange={(event) => setDestination(event.target.value)}
+                maxLength={80}
+                placeholder="e.g. Azadpur mandi"
+              />
+            </label>
+          </fieldset>
           <label className="form-field">
             <span className="form-label">Price in ₹ (optional)</span>
             <input
@@ -428,70 +479,6 @@ export function OperatorServiceManager() {
               <span>My service can maintain an appropriate cold chain</span>
             </span>
           </label>
-          <fieldset className="operator-location-fields">
-            <legend>Show this service on the locality map</legend>
-            <p className="form-help">
-              Add your service base coordinates and explicitly opt in to publishing that provider
-              location. These are not farmer coordinates. Listings without a map pin remain
-              available by area but will not appear in radius searches.
-            </p>
-            <label className="service-checkbox-row">
-              <input
-                type="checkbox"
-                checked={publishLocation}
-                onChange={(event) => setPublishLocation(event.target.checked)}
-              />
-              <span>I agree to publish this service location on the Farmess map</span>
-            </label>
-            {publishLocation ? (
-              <div className="operator-coordinate-grid">
-                <label className="form-field">
-                  <span className="form-label">Service latitude</span>
-                  <input
-                    className="form-control"
-                    inputMode="decimal"
-                    value={serviceLatitude}
-                    onChange={(event) => setServiceLatitude(event.target.value)}
-                    placeholder="e.g. 32.7266"
-                    required
-                  />
-                </label>
-                <label className="form-field">
-                  <span className="form-label">Service longitude</span>
-                  <input
-                    className="form-control"
-                    inputMode="decimal"
-                    value={serviceLongitude}
-                    onChange={(event) => setServiceLongitude(event.target.value)}
-                    placeholder="e.g. 74.8570"
-                    required
-                  />
-                </label>
-              </div>
-            ) : null}
-            <div className="operator-coordinate-grid">
-              <label className="form-field">
-                <span className="form-label">Destination latitude (optional)</span>
-                <input
-                  className="form-control"
-                  inputMode="decimal"
-                  value={destinationLatitude}
-                  onChange={(event) => setDestinationLatitude(event.target.value)}
-                  placeholder="Optional"
-                />
-              </label>
-              <label className="form-field">
-                <span className="form-label">Destination longitude (optional)</span>
-                <input
-                  className="form-control"
-                  inputMode="decimal"
-                  value={destinationLongitude}
-                  onChange={(event) => setDestinationLongitude(event.target.value)}
-                  placeholder="Optional"
-                />
-              </label>
-            </div>
-          </fieldset>
           <label className="form-field operator-description">
             <span className="form-label">Service details</span>
             <textarea

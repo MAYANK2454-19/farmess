@@ -2,6 +2,7 @@ import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { contactsById } from "@/lib/contacts";
 
 async function handleGET() {
   const session = await getFarmessSession();
@@ -40,11 +41,15 @@ async function handleGET() {
   }
 
   const lotById = new Map((lots ?? []).map((lot) => [lot.id, lot]));
+  // Buyer name always; phone/email once accepted or if the buyer opted in.
+  const { data: contactRows } = await supabase.rpc("offer_contacts");
+  const contacts = contactsById(contactRows, (row) => row.offer_id);
   const now = Date.now();
   const result = (offers ?? []).map((offer) => ({
     ...offer,
     is_expired: new Date(offer.valid_until).getTime() <= now,
     lot: lotById.get(offer.lot_id) ?? null,
+    contact: contacts.get(offer.id) ?? null,
   }));
 
   return NextResponse.json(

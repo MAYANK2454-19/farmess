@@ -2,6 +2,7 @@ import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { contactsById } from "@/lib/contacts";
 
 const OFFER_SELECT =
   "id,lot_id,quantity,unit,price_paise_per_quintal,valid_until,status,terms,created_at";
@@ -50,12 +51,41 @@ async function handleGET() {
     return NextResponse.json({ error: "Unable to load the marketplace." }, { status: 500 });
   }
 
+  const lots = lotsResult.data ?? [];
+  const [lotContactsResult, offerContactsResult] = await Promise.all([
+    lots.length
+      ? supabase.rpc("marketplace_lot_contacts", { p_lot_ids: lots.map((lot) => lot.id!) })
+      : Promise.resolve({
+          data: [] as {
+            lot_id: string;
+            farmer_name: string | null;
+            farmer_phone: string | null;
+            farmer_email: string | null;
+          }[],
+        }),
+    supabase.rpc("offer_contacts"),
+  ]);
+  const lotContacts = new Map(
+    (lotContactsResult.data ?? []).map((row) => [
+      row.lot_id,
+      {
+        name: row.farmer_name,
+        organisation: null,
+        phone: row.farmer_phone,
+        email: row.farmer_email,
+        sharedBecause: "consent",
+      },
+    ]),
+  );
+  const offerContacts = contactsById(offerContactsResult.data, (row) => row.offer_id);
+
   return NextResponse.json(
     {
-      lots: lotsResult.data ?? [],
+      lots: lots.map((lot) => ({ ...lot, farmer_contact: lotContacts.get(lot.id!) ?? null })),
       offers: (offersResult.data ?? []).map((offer) => ({
         ...offer,
         is_expired: new Date(offer.valid_until).getTime() <= Date.now(),
+        contact: offerContacts.get(offer.id) ?? null,
       })),
     },
     { headers: { "Cache-Control": "private, no-store" } },

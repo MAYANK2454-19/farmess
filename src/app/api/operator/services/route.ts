@@ -315,7 +315,10 @@ async function handlePOST(request: NextRequest) {
   }
   if (publishLocation && (serviceLatitude === null || serviceLongitude === null)) {
     return NextResponse.json(
-      { error: "Enter both service latitude and longitude before publishing a map pin." },
+      {
+        error:
+          "Choose where the service is based (state and district) before showing it in nearby search.",
+      },
       { status: 400 },
     );
   }

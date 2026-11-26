@@ -1235,6 +1235,63 @@ export type Database = {
           verification_state: string;
         }[];
       };
+      farmer_buyer_demand: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          crop: string;
+          variety: string | null;
+          grade: string | null;
+          min_quantity: number;
+          max_quantity: number | null;
+          unit: string;
+          market_area: string | null;
+          delivery_by: string | null;
+          target_price_paise_per_quintal: number | null;
+          created_at: string;
+          buyer_label: string;
+          buyer_type: string | null;
+          buyer_phone: string | null;
+          buyer_email: string | null;
+        }[];
+      };
+      marketplace_lot_contacts: {
+        Args: { p_lot_ids: string[] };
+        Returns: {
+          lot_id: string;
+          farmer_name: string | null;
+          farmer_phone: string | null;
+          farmer_email: string | null;
+        }[];
+      };
+      offer_contacts: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          offer_id: string;
+          counterparty_role: string;
+          counterparty_name: string | null;
+          organisation_name: string | null;
+          phone: string | null;
+          email: string | null;
+          shared_because: string | null;
+        }[];
+      };
+      service_request_contacts: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          request_id: string;
+          counterparty_role: string;
+          counterparty_name: string | null;
+          organisation_name: string | null;
+          phone: string | null;
+          email: string | null;
+          shared_because: string | null;
+        }[];
+      };
+      complete_service_request: {
+        Args: { p_request_id: string };
+        Returns: { id: string; status: string; updated_at: string }[];
+      };
       cancel_accepted_service_request: {
         Args: {
           p_request_id: string;

@@ -2019,3 +2019,44 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Contact card & buyer demand ---------- */
+
+.contact-card {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  font-size: 0.88rem;
+}
+
+.contact-card > strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.contact-card-lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.contact-card-lines a {
+  color: var(--khet);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.buyer-match-gaps li {
+  color: var(--mitti);
+}
+
+.module-stack {
+  display: grid;
+  gap: 16px;
+}

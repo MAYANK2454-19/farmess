@@ -2,6 +2,7 @@ import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { contactsById } from "@/lib/contacts";
 import { parseProviderRequestCancellation } from "@/features/operators/request-cancellation";
 
 const REQUEST_SELECT =
@@ -55,11 +56,15 @@ async function handleGET() {
   }
 
   const listingById = new Map((listings ?? []).map((listing) => [listing.id, listing]));
+  // Requester name always; phone/email once accepted or if the requester opted in.
+  const { data: contactRows } = await supabase.rpc("service_request_contacts");
+  const contacts = contactsById(contactRows, (row) => row.request_id);
   return NextResponse.json(
     {
       requests: (requests ?? []).map((request) => ({
         ...request,
         listing: listingById.get(request.listing_id) ?? null,
+        contact: contacts.get(request.id) ?? null,
       })),
     },
     { headers: { "Cache-Control": "private, no-store" } },
@@ -93,6 +98,31 @@ async function handlePATCH(request: NextRequest) {
     return NextResponse.json(
       { error: "Choose a valid request and accept/decline decision." },
       { status: 400 },
+    );
+  }
+
+  if (body.action === "complete") {
+    if (
+      Object.keys(body).some((key) => key !== "id" && key !== "action") ||
+      typeof body.id !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.id)
+    ) {
+      return NextResponse.json({ error: "Choose a valid accepted request." }, { status: 400 });
+    }
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("complete_service_request", {
+      p_request_id: body.id,
+    });
+    const completed = data?.[0];
+    if (error || !completed) {
+      return NextResponse.json(
+        { error: "Only an accepted request for your service can be marked completed." },
+        { status: 409 },
+      );
+    }
+    return NextResponse.json(
+      { request: completed },
+      { headers: { "Cache-Control": "private, no-store" } },
     );
   }
 

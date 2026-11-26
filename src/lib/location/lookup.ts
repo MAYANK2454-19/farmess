@@ -100,3 +100,42 @@ export async function reverseGeocode(
   reverseCache.set(key, result, DAY_MS);
   return result;
 }
+
+const districtCache = new TtlCache<{ latitude: number; longitude: number } | null>(500);
+
+/**
+ * Approximate centre of a district (OpenStreetMap), so choosing only state and
+ * district is enough for nearby search. Rounded to ~1 km; cached for a day.
+ */
+export async function lookupDistrictCentre(
+  state: string,
+  district: string,
+): Promise<{ latitude: number; longitude: number } | null> {
+  const key = `${state.toLowerCase()}|${district.toLowerCase()}`;
+  const cached = districtCache.get(key);
+  if (cached !== undefined) return cached;
+
+  const query = encodeURIComponent(`${district} district, ${state}, India`);
+  let coordinates = parseNominatimSearch(
+    await getJson(
+      `https://nominatim.openstreetmap.org/search?q=${query}&countrycodes=in&format=json&limit=1`,
+    ),
+  );
+  if (!coordinates) {
+    // Some districts are indexed by their headquarters town rather than "<name> district".
+    const fallback = encodeURIComponent(`${district}, ${state}, India`);
+    coordinates = parseNominatimSearch(
+      await getJson(
+        `https://nominatim.openstreetmap.org/search?q=${fallback}&countrycodes=in&format=json&limit=1`,
+      ),
+    );
+  }
+  const result = coordinates
+    ? {
+        latitude: approximateCoordinate(coordinates.latitude),
+        longitude: approximateCoordinate(coordinates.longitude),
+      }
+    : null;
+  districtCache.set(key, result, DAY_MS);
+  return result;
+}

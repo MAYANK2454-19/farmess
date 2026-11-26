@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
+import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
 
 type Offer = Pick<
   Database["public"]["Tables"]["offers"]["Row"],
@@ -17,6 +18,7 @@ type Offer = Pick<
 > & {
   lot: Pick<Database["public"]["Tables"]["produce_lots"]["Row"], "id" | "crop" | "variety"> | null;
   is_expired: boolean;
+  contact?: CounterpartyContact | null;
 };
 
 type OfferDecision = "accepted" | "declined";
@@ -95,9 +97,15 @@ export function OfferInbox() {
       );
       setMessage(
         decision === "accepted"
-          ? "Offer accepted. The agreed sale has been recorded."
+          ? "Offer accepted. The agreed sale has been recorded and you can now see the buyer's contact details."
           : "Offer declined.",
       );
+      if (decision === "accepted") {
+        // Reload so the buyer's contact details (shared on acceptance) appear.
+        const refreshed = await fetch("/api/offers", { cache: "no-store" });
+        const payload = (await refreshed.json()) as { offers?: Offer[] };
+        if (refreshed.ok && payload.offers) setOffers(payload.offers);
+      }
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "The offer could not be updated.",
@@ -171,6 +179,15 @@ export function OfferInbox() {
                     Received {formatDate(offer.created_at)} · Valid until{" "}
                     {formatDate(offer.valid_until)}
                   </p>
+                  <ContactCard
+                    title="Buyer"
+                    contact={offer.contact}
+                    hiddenHint={
+                      offer.status === "pending"
+                        ? "Accept the offer to exchange phone and email with this buyer."
+                        : "Contact details are shared only for accepted offers."
+                    }
+                  />
                 </div>
                 {offer.status === "pending" ? (
                   <div className="offer-actions">

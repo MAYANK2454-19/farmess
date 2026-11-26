@@ -13,7 +13,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function getFarmerLot(lotId: string, ownerId: string) {
+async function getFarmerLot(lotId: string) {
   const supabase = await createClient();
   return (
     supabase
@@ -38,7 +38,7 @@ async function handleGET(_request: NextRequest, context: RouteContext) {
   const { lotId } = await context.params;
   if (!UUID_PATTERN.test(lotId))
     return NextResponse.json({ error: "Invalid produce lot." }, { status: 400 });
-  const lotResult = await getFarmerLot(lotId, session.userId);
+  const lotResult = await getFarmerLot(lotId);
   if (lotResult.error || !lotResult.data)
     return NextResponse.json({ error: "Produce lot not found." }, { status: 404 });
 
@@ -90,7 +90,7 @@ async function handlePOST(request: NextRequest, context: RouteContext) {
     );
   }
 
-  const lotResult = await getFarmerLot(lotId, session.userId);
+  const lotResult = await getFarmerLot(lotId);
   if (lotResult.error || !lotResult.data)
     return NextResponse.json({ error: "Produce lot not found." }, { status: 404 });
   const assessment = assessProduceQuality({

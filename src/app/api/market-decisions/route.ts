@@ -47,11 +47,7 @@ function isStale(observationDate: string, now: Date): boolean {
   return ageMs < -24 * 60 * 60 * 1000 || ageMs > FRESH_OBSERVATION_DAYS * 24 * 60 * 60 * 1000;
 }
 
-async function getOwnLot(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  lotId: string,
-  ownerId: string,
-) {
+async function getOwnLot(supabase: Awaited<ReturnType<typeof createClient>>, lotId: string) {
   return (
     supabase
       .from("produce_lots")
@@ -99,7 +95,7 @@ async function handleGET(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { data: lot, error: lotError } = await getOwnLot(supabase, lotId, session.userId);
+  const { data: lot, error: lotError } = await getOwnLot(supabase, lotId);
   if (lotError || !lot) {
     return NextResponse.json(
       { error: "The selected produce lot could not be found in your account." },
@@ -260,7 +256,7 @@ async function handlePOST(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { data: lot, error: lotError } = await getOwnLot(supabase, body.lotId, session.userId);
+  const { data: lot, error: lotError } = await getOwnLot(supabase, body.lotId);
   if (lotError || !lot) {
     return NextResponse.json(
       { error: "The selected produce lot could not be found." },

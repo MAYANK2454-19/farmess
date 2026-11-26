@@ -97,6 +97,42 @@ export function LocationPicker({
     }
   }
 
+  /** State + district only: use the district's approximate centre. */
+  async function placeDistrict(next: LocationValue) {
+    if (!next.state || !next.district) return;
+    setBusy("pin");
+    setError("");
+    try {
+      const response = await fetch(
+        `/api/location/district?state=${encodeURIComponent(next.state)}&district=${encodeURIComponent(next.district)}`,
+      );
+      const result = (await response.json()) as {
+        place?: { latitude: number; longitude: number };
+        error?: string;
+      };
+      if (!response.ok || !result.place) {
+        throw new Error(result.error ?? "This district could not be placed on the map.");
+      }
+      setNote(
+        `Using the centre of ${next.district} district. Add a PIN code or your current location for a closer point.`,
+      );
+      onChange({
+        ...next,
+        latitude: result.place.latitude,
+        longitude: result.place.longitude,
+        source: "manual",
+      });
+    } catch (lookupError) {
+      setError(
+        lookupError instanceof Error
+          ? lookupError.message
+          : "This district could not be placed on the map.",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }
+
   function useDeviceLocation() {
     if (!("geolocation" in navigator)) {
       setError("This browser cannot share location. Choose state, district and PIN instead.");
@@ -201,14 +237,21 @@ export function LocationPicker({
             className="form-control"
             value={value.district ?? ""}
             disabled={!value.state}
-            onChange={(event) =>
-              onChange({
+            onChange={(event) => {
+              const next: LocationValue = {
                 ...value,
                 district: event.target.value || null,
-                latitude: value.source === "manual" ? null : value.latitude,
-                longitude: value.source === "manual" ? null : value.longitude,
-              })
-            }
+                pincode: null,
+                latitude: null,
+                longitude: null,
+                source: "manual",
+              };
+              setPinInput("");
+              setPostOffices([]);
+              setNote("");
+              onChange(next);
+              if (next.district) void placeDistrict(next);
+            }}
           >
             <option value="">{value.state ? "Select district" : "Choose a state first"}</option>
             {districts.map((district) => (
@@ -264,8 +307,12 @@ export function LocationPicker({
       {value.latitude !== null && value.longitude !== null ? (
         <p className="form-help location-coordinates">
           Approximate point {value.latitude.toFixed(2)}, {value.longitude.toFixed(2)} (
-          {value.source === "gps" ? "device" : "PIN code"}). PIN directory: India Post · Map data ©
-          OpenStreetMap contributors.
+          {value.source === "gps"
+            ? "device"
+            : value.source === "pincode"
+              ? "PIN code"
+              : "district centre"}
+          ). PIN directory: India Post · Map data © OpenStreetMap contributors.
         </p>
       ) : value.state ? (
         <p className="form-help">
