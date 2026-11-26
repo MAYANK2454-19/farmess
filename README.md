@@ -34,7 +34,7 @@ Farmess is a farmer-first decision-support application for comparing feasible se
 - [x] Admin console: access requests, past and current mandi price imports, data health, provider verification
 - [x] Source-attributed OGD India / AGMARKNET adapter with validation and stale-data labelling
 - [x] PostGIS locality discovery, explainable logistics ranking, optional road routing and Open-Meteo weather
-- [x] Price trend and back-tested short-term forecast from real mandi history (shown only when it beats the baseline)
+- [x] Price trend with a statistical and a pooled machine-learning (gradient-boosted trees) forecast, each shown only when it beats the baseline on unseen reports
 - [x] Offline ML research pipelines (gradient-boosted forecaster, logistics preference ranker)
 - [x] OpenAPI reference, structured logging and production deployment on Vercel
 - [ ] Real mandi observations imported (requires the owner's `DATA_GOV_IN_API_KEY`)
@@ -77,7 +77,7 @@ The Next.js app and its API handlers run on localhost. The default development g
 
 ## ML and data truthfulness
 
-The live price forecast (`src/lib/market-data/price-forecast.ts`) is Holt's damped-trend smoothing on log modal prices, one step per market report. It needs at least 40 report days for a crop at a mandi, picks its smoothing settings on older reports only, and is tested walk-forward on up to the last 30 reports against the "today's price stays the same" (persistence) baseline. A forecast is shown only if it beats that baseline; otherwise farmers see the real trend and the reason. Reports older than 14 days are never forecast.
+The live price forecast (`src/lib/market-data/price-forecast.ts`) is Holt's damped-trend smoothing on log modal prices, one step per market report. It needs at least 40 report days for a crop at a mandi, picks its smoothing settings on older reports only, and is tested walk-forward on up to the last 30 reports against the "today's price stays the same" (persistence) baseline. A forecast is shown only if it beats that baseline; otherwise farmers see the real trend and the reason. Reports older than 14 days are never forecast. A second, machine-learning forecast (`src/lib/market-data/ml-forecast.ts`) uses gradient-boosted regression trees trained on every saved crop and mandi in the state (pooled), predicting the change in log price over the next 1-7 reports from recent changes, volatility, season and reporting gaps. Its depth and number of rounds are chosen on a validation period, and it is tested on the target mandi's latest reports against the same baseline; it is shown only if it beats it. Renamed AGMARKNET listings of one mandi are joined before modelling (`mandi-key.ts`).
 
 The two Python pipelines are offline research trainers, not live services. The gradient-boosted forecaster needs at least 120 unique dated observations per market series; the logistics ranker needs at least 300 clear feedback labels from 30 users and 20 provider listings. Neither is used by the live app until real data meets these thresholds.
 

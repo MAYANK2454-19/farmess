@@ -6,6 +6,7 @@ import type {
   PriceForecastResult,
   PricePoint,
 } from "@/lib/market-data/price-forecast";
+import type { MlForecastResult } from "@/lib/market-data/ml-forecast";
 import styles from "./market-forecast-panel.module.css";
 
 type ForecastResponse = {
@@ -18,6 +19,7 @@ type ForecastResponse = {
   minimumReports?: number;
   message?: string;
   result?: PriceForecastResult;
+  ml?: MlForecastResult | { status: "unavailable" };
   error?: string;
 };
 
@@ -37,7 +39,21 @@ function shortDate(value: string) {
       );
 }
 
-function TrendChart({ history, forecast }: { history: PricePoint[]; forecast: ForecastPoint[] }) {
+type ChartForecast = { points: ForecastPoint[]; color: string };
+
+const STATS_COLOR = "var(--haldi-deep)";
+const ML_COLOR = "var(--mitti)";
+
+function TrendChart({
+  history,
+  forecasts,
+  band: bandPoints,
+}: {
+  history: PricePoint[];
+  forecasts: ChartForecast[];
+  band: ForecastPoint[];
+}) {
+  const forecast = forecasts.flatMap((item) => item.points);
   const width = 720;
   const height = 240;
   const pad = { left: 56, right: 16, top: 14, bottom: 28 };
@@ -60,11 +76,11 @@ function TrendChart({ history, forecast }: { history: PricePoint[]; forecast: Fo
       .join(" ");
   const last = history[history.length - 1];
   const ticks = [0, 0.5, 1].map((t) => minY + t * (maxY - minY));
-  const band = forecast.length
+  const band = bandPoints.length
     ? `M${x(last.date)},${y(last.price)} ` +
-      forecast.map((p) => `L${x(p.date)},${y(p.high)}`).join(" ") +
+      bandPoints.map((p) => `L${x(p.date)},${y(p.high)}`).join(" ") +
       " " +
-      [...forecast]
+      [...bandPoints]
         .reverse()
         .map((p) => `L${x(p.date)},${y(p.low)}`)
         .join(" ") +
@@ -106,15 +122,16 @@ function TrendChart({ history, forecast }: { history: PricePoint[]; forecast: Fo
       </text>
       {band ? <path d={band} fill="var(--haldi-soft)" stroke="none" /> : null}
       <path d={line(history)} fill="none" stroke="var(--khet-mid)" strokeWidth="2" />
-      {forecast.length ? (
+      {forecasts.map((item) => (
         <path
-          d={line([last, ...forecast])}
+          key={item.color}
+          d={line([last, ...item.points])}
           fill="none"
-          stroke="var(--haldi-deep)"
-          strokeWidth="2"
+          stroke={item.color}
+          strokeWidth="2.5"
           strokeDasharray="6 4"
         />
-      ) : null}
+      ))}
       <circle cx={x(last.date)} cy={y(last.price)} r="4" fill="var(--khet)" />
     </svg>
   );
@@ -170,6 +187,30 @@ export function MarketForecastPanel({
   const current = response?.key === key ? response : null;
   const data = current?.data;
   const result = data?.result;
+  const ml = data?.ml && data.ml.status !== "unavailable" ? data.ml : null;
+
+  const statsPassed = result?.status === "forecast" ? result : null;
+  const mlPassed = ml?.status === "forecast" ? ml : null;
+  const candidates = [
+    statsPassed && {
+      label: "Statistical model",
+      mae: statsPassed.backtest.modelMae,
+      points: statsPassed.points,
+    },
+    mlPassed && {
+      label: "Machine learning",
+      mae: mlPassed.backtest.modelMae,
+      points: mlPassed.points,
+    },
+  ].filter((item): item is { label: string; mae: number; points: ForecastPoint[] } =>
+    Boolean(item),
+  );
+  const best = candidates.sort((a, b) => a.mae - b.mae)[0] ?? null;
+  const bestLast = best ? best.points[best.points.length - 1] : null;
+  const baselineMae =
+    result && result.status !== "insufficient_history" && result.backtest
+      ? result.backtest.baselineMae
+      : null;
 
   return (
     <section className="panel" aria-labelledby="market-forecast-heading">
@@ -251,10 +292,12 @@ export function MarketForecastPanel({
                   : `${result.trend.change30dPercent > 0 ? "+" : ""}${result.trend.change30dPercent}%`}
               </strong>
             </div>
-            {result.status === "forecast" ? (
+            {best && bestLast ? (
               <div className={styles.stat}>
-                <span>Expected by {shortDate(result.points[result.points.length - 1].date)}</span>
-                <strong>{rupees(result.points[result.points.length - 1].price)}/q</strong>
+                <span>
+                  Expected by {shortDate(bestLast.date)} ({best.label.toLowerCase()})
+                </span>
+                <strong>{rupees(bestLast.price)}/q</strong>
               </div>
             ) : null}
             <div className={styles.stat}>
@@ -265,47 +308,102 @@ export function MarketForecastPanel({
 
           <TrendChart
             history={result.trend.history}
-            forecast={result.status === "forecast" ? result.points : []}
+            forecasts={[
+              ...(statsPassed ? [{ points: statsPassed.points, color: STATS_COLOR }] : []),
+              ...(mlPassed ? [{ points: mlPassed.points, color: ML_COLOR }] : []),
+            ]}
+            band={best ? best.points : []}
           />
           <div className={styles.legend}>
             <span>
               <i className={styles.swatch} style={{ background: "var(--khet-mid)" }} />
               Reported modal price
             </span>
-            {result.status === "forecast" ? (
-              <>
-                <span>
-                  <i className={styles.swatch} style={{ background: "var(--haldi-deep)" }} />
-                  Forecast (next 7 reports)
-                </span>
-                <span>
-                  <i
-                    className={styles.swatch}
-                    style={{ background: "var(--haldi-soft)", height: 10 }}
-                  />
-                  Likely range (90% of past errors)
-                </span>
-              </>
+            {statsPassed ? (
+              <span>
+                <i className={styles.swatch} style={{ background: STATS_COLOR }} />
+                Statistical forecast
+              </span>
+            ) : null}
+            {mlPassed ? (
+              <span>
+                <i className={styles.swatch} style={{ background: ML_COLOR }} />
+                ML forecast (gradient-boosted trees)
+              </span>
+            ) : null}
+            {best ? (
+              <span>
+                <i
+                  className={styles.swatch}
+                  style={{ background: "var(--haldi-soft)", height: 10 }}
+                />
+                Likely range of the more accurate forecast
+              </span>
             ) : null}
           </div>
 
-          {result.status === "forecast" ? (
-            <p className={styles.note}>
-              Expected around{" "}
-              <strong>{rupees(result.points[result.points.length - 1].price)}</strong> per quintal
-              (range {rupees(result.points[result.points.length - 1].low)}–
-              {rupees(result.points[result.points.length - 1].high)}). Tested on the last{" "}
-              {result.backtest.testedReports} reports: average error{" "}
-              {rupees(result.backtest.modelMae)} vs {rupees(result.backtest.baselineMae)} if you
-              assume today’s price holds. This is an estimate, not a guaranteed price.
-            </p>
-          ) : (
-            <p className={styles.note}>
-              {result.reason === "stale"
+          <div className="table-wrap">
+            <table className="produce-table">
+              <caption className={styles.caption}>
+                Which forecast to trust: average error over the next 7 reports, tested on recent
+                reports the models never saw
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Method</th>
+                  <th scope="col">Average error</th>
+                  <th scope="col">Shown?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&ldquo;Today&rsquo;s price stays the same&rdquo; (baseline)</td>
+                  <td>{baselineMae === null ? "—" : rupees(baselineMae)}</td>
+                  <td>Reference</td>
+                </tr>
+                <tr>
+                  <td>Statistical model (smoothing / moving average)</td>
+                  <td>{result.backtest ? rupees(result.backtest.modelMae) : "—"}</td>
+                  <td>
+                    {statsPassed
+                      ? "Yes, beat the baseline"
+                      : result.status === "trend_only" && result.reason === "stale"
+                        ? "No, prices are out of date"
+                        : "No, not better than the baseline"}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Machine learning (gradient-boosted trees
+                    {ml && ml.status !== "insufficient_data"
+                      ? `, ${ml.seriesUsed} mandi series`
+                      : ""}
+                    )
+                  </td>
+                  <td>
+                    {ml && ml.status !== "insufficient_data" ? rupees(ml.backtest.modelMae) : "—"}
+                  </td>
+                  <td>
+                    {!ml
+                      ? "Not available"
+                      : ml.status === "insufficient_data"
+                        ? `No, needs ${ml.minimumSamples} training examples (has ${ml.trainingSamples})`
+                        : mlPassed
+                          ? "Yes, beat the baseline"
+                          : "No, not better than the baseline"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className={styles.note}>
+            {best && bestLast
+              ? `Expected around ${rupees(bestLast.price)} per quintal by ${shortDate(bestLast.date)} (likely range ${rupees(bestLast.low)}–${rupees(bestLast.high)}), from the ${best.label.toLowerCase()}, which had the lowest error. This is an estimate, not a guaranteed price.`
+              : result.status === "trend_only" && result.reason === "stale"
                 ? `The latest saved report is from ${shortDate(result.trend.latestDate)}, so no forecast is shown. Import recent prices to refresh it.`
-                : `No forecast shown: on the last ${result.backtest?.testedReports ?? 0} reports our model (average error ${rupees(result.backtest?.modelMae ?? 0)}) was not more accurate than assuming today’s price holds (${rupees(result.backtest?.baselineMae ?? 0)}). The trend above is still real reported data.`}
-            </p>
-          )}
+                : "No forecast is shown because neither model was more accurate than assuming today’s price holds. The trend above is still real reported data."}
+          </p>
         </>
       ) : null}
     </section>

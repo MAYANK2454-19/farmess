@@ -100,3 +100,11 @@
   color: var(--text);
   margin-bottom: 4px;
 }
+
+.caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 6px 0 8px;
+}

@@ -433,7 +433,7 @@
     "/api/market-forecasts": {
       "get": {
         "tags": ["Market data"],
-        "summary": "Price trend and tested short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
+        "summary": "Price trend plus statistical and machine-learning forecasts for a crop at a mandi, from saved AGMARKNET reports",
         "security": [],
         "responses": {
           "200": {
@@ -446,7 +446,7 @@
             "$ref": "#/components/responses/Unavailable"
           }
         },
-        "description": "Uses saved market_observations. Forecast (Holt damped trend on log prices) is returned only when it beats the persistence baseline in a walk-forward test on recent reports; otherwise trend_only. Without enough history returns insufficient_history. When market is omitted, the mandi with the most saved reports is used.",
+        "description": "Uses saved market_observations; renamed listings of one mandi are joined. Returns result (statistical model on this mandi: forecast, trend_only or insufficient_history) and ml (gradient-boosted trees pooled across all saved crops and mandis in the state: forecast, no_skill or insufficient_data). Each forecast is returned only when it beats the persistence baseline on recent reports it never saw. When market is omitted, the mandi with the most saved report days is used.",
         "parameters": [
           {
             "name": "crop",
