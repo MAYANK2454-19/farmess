@@ -82,7 +82,7 @@
       }
     },
     {
-      "name": "Price trend and short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
+      "name": "Price trend and tested short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
       "tag": "Market data",
       "method": "GET",
       "path": "/api/market-forecasts",
@@ -411,30 +411,6 @@
         "commodity": "Tomato",
         "state": "Maharashtra",
         "days": 30
-      }
-    },
-    {
-      "name": "Stage an offline forecast candidate (never published automatically)",
-      "tag": "Admin",
-      "method": "POST",
-      "path": "/api/admin/market-forecasts",
-      "auth": "signed-in",
-      "expect_signed_out": [401],
-      "expect_documented": [201, 400, 401, 403, 409, 422],
-      "body": {}
-    },
-    {
-      "name": "Approve or reject a staged candidate with a review note",
-      "tag": "Admin",
-      "method": "PATCH",
-      "path": "/api/admin/market-forecasts",
-      "auth": "signed-in",
-      "expect_signed_out": [401],
-      "expect_documented": [200, 400, 401, 403, 409],
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000000",
-        "decision": "rejected",
-        "review_notes": "API check"
       }
     },
     {

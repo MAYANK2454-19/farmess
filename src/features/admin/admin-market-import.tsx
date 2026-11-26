@@ -111,8 +111,8 @@ export function AdminMarketImport({
           <div>
             <h2 className="panel-title">Import today&apos;s prices</h2>
             <p className="panel-caption">
-              Request source records from OGD/AGMARKNET. Every import is validated, deduplicated and
-              recorded in the ingestion audit.
+              Saves the prices mandis reported most recently (usually today or yesterday) from
+              data.gov.in. Use it for a quick check; use Import past prices above for trends.
             </p>
           </div>
           <span className={apiKeyConfigured ? "admin-status admin-status-ready" : "admin-status"}>
@@ -157,7 +157,7 @@ export function AdminMarketImport({
               />
             </label>
             <label>
-              Records per page
+              How many rows
               <input
                 type="number"
                 min={1}
@@ -169,7 +169,7 @@ export function AdminMarketImport({
               />
             </label>
             <label>
-              Source offset
+              Skip first rows (advanced)
               <input
                 type="number"
                 min={0}
@@ -182,8 +182,7 @@ export function AdminMarketImport({
             </label>
           </div>
           <p className="admin-help">
-            Use offset 0 for the newest source page. Increase it in later requests to import
-            historical pages without restarting from the first page.
+            Leave &ldquo;Skip first rows&rdquo; at 0 to get the newest prices.
           </p>
           {error ? (
             <p className="admin-error" role="alert">
@@ -214,7 +213,7 @@ export function AdminMarketImport({
             </div>
           ) : null}
           <button className="button button-primary" type="submit" disabled={pending}>
-            {pending ? "Importing source records…" : "Run market-data import"}
+            {pending ? "Importing…" : "Import today’s prices"}
           </button>
         </form>
       </section>
@@ -222,8 +221,10 @@ export function AdminMarketImport({
       <section className="panel admin-panel">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title">Recent ingestion history</h2>
-            <p className="panel-caption">Latest attempts and the source rows saved by each run.</p>
+            <h2 className="panel-title">Import log</h2>
+            <p className="panel-caption">
+              Every import, what it asked for, and how many rows were saved.
+            </p>
           </div>
         </div>
         {runs.length === 0 ? (

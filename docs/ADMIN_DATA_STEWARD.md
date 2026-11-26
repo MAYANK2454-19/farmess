@@ -18,9 +18,13 @@ The endpoint validates source rows, keeps observation dates and provenance, dedu
 
 The provider key is the server-only `DATA_GOV_IN_API_KEY`. The UI shows only whether the key is configured; it never reads or displays the value.
 
-## Price trends
+## Past prices and price trends
 
-Farmers see price history and a simple trend for each crop and market from saved mandi prices. There is no separate admin forecast-approval page: the more real prices you import, the better the trend.
+On `/admin/market-data`, use **Import past prices** to bring in the government AGMARKNET archive for a crop, state and (ideally) district over the last 30 days to 12 months. **Import 5 common vegetables** runs tomato, onion, potato, green chilli and cauliflower one after another. If data.gov.in stops an import early, press the button again: it continues further back from where it stopped, and days already saved are not duplicated.
+
+Farmers then see the price trend and, when it passes a back-test against "today's price stays the same", a short forecast on the Market prices page. There is no forecast-approval step: the rule is automatic and the panel explains it.
+
+The public data.gov.in sample key returns only 10 rows per request and is rate-limited; use your personal key from data.gov.in → My Account.
 
 ## Provider keys
 

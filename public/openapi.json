@@ -433,7 +433,7 @@
     "/api/market-forecasts": {
       "get": {
         "tags": ["Market data"],
-        "summary": "Price trend and short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
+        "summary": "Price trend and tested short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
         "security": [],
         "responses": {
           "200": {
@@ -1305,73 +1305,6 @@
           },
           "503": {
             "$ref": "#/components/responses/Unavailable"
-          }
-        }
-      }
-    },
-    "/api/admin/market-forecasts": {
-      "post": {
-        "tags": ["Admin"],
-        "summary": "Stage an offline forecast candidate (never published automatically)",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GenericBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Staged"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          },
-          "422": {
-            "description": "Candidate fails evaluation rules"
-          }
-        }
-      },
-      "patch": {
-        "tags": ["Admin"],
-        "summary": "Approve or reject a staged candidate with a review note",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GenericBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Reviewed"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
           }
         }
       }

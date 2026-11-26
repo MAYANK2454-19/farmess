@@ -31,10 +31,11 @@ Farmess is a farmer-first decision-support application for comparing feasible se
 - [x] Buyer requirements, published-lot discovery and guarded offer lifecycle
 - [x] Operator transport/storage listings, capacity/availability, request handling and cancellation
 - [x] Notifications, profile/consent audit and sale-activity persistence
-- [x] Admin console: access requests, market-data import, data health, provider verification, forecast review
+- [x] Admin console: access requests, past and current mandi price imports, data health, provider verification
 - [x] Source-attributed OGD India / AGMARKNET adapter with validation and stale-data labelling
 - [x] PostGIS locality discovery, explainable logistics ranking, optional road routing and Open-Meteo weather
-- [x] Offline ML pipelines (mandi-price forecasting, logistics preference ranking) with human approval
+- [x] Price trend and back-tested short-term forecast from real mandi history (shown only when it beats the baseline)
+- [x] Offline ML research pipelines (gradient-boosted forecaster, logistics preference ranker)
 - [x] OpenAPI reference, structured logging and production deployment on Vercel
 - [ ] Real mandi observations imported (requires the owner's `DATA_GOV_IN_API_KEY`)
 - [ ] Verified real provider directory and buyer participants
@@ -76,7 +77,9 @@ The Next.js app and its API handlers run on localhost. The default development g
 
 ## ML and data truthfulness
 
-The two Python pipelines are offline candidate trainers, not always-on AI services. The market forecaster needs at least 120 unique dated observations per market series (90 kept for training) and must beat a last-observation persistence baseline on MAE and sMAPE at **every** forecast horizon in a walk-forward evaluation; stale series are rejected. The logistics ranker needs at least 300 clear feedback labels from 30 users and 20 provider listings. Candidates require human review; no forecast or learned ranking is approved until real data meets these thresholds.
+The live price forecast (`src/lib/market-data/price-forecast.ts`) is Holt's damped-trend smoothing on log modal prices, one step per market report. It needs at least 40 report days for a crop at a mandi, picks its smoothing settings on older reports only, and is tested walk-forward on up to the last 30 reports against the "today's price stays the same" (persistence) baseline. A forecast is shown only if it beats that baseline; otherwise farmers see the real trend and the reason. Reports older than 14 days are never forecast.
+
+The two Python pipelines are offline research trainers, not live services. The gradient-boosted forecaster needs at least 120 unique dated observations per market series; the logistics ranker needs at least 300 clear feedback labels from 30 users and 20 provider listings. Neither is used by the live app until real data meets these thresholds.
 
 The live logistics ranking is explainable rules-based scoring over distance, capacity, crop, date, cold-chain, verification and pricing information. The buyer-lot matcher is deterministic. Neither live workflow is presented as ML. Market prices are never seeded or invented.
 

@@ -64,12 +64,6 @@ const BODY = {
   "PATCH /api/profile": { display_name: "API check" },
   "POST /api/market-data/refresh": { commodity: "Tomato", limit: 10 },
   "POST /api/admin/market-history": { commodity: "Tomato", state: "Maharashtra", days: 30 },
-  "POST /api/admin/market-forecasts": {},
-  "PATCH /api/admin/market-forecasts": {
-    id: SAMPLE_ID,
-    decision: "rejected",
-    review_notes: "API check",
-  },
   "POST /api/produce-lots/{lotId}/quality-inspections": {
     checks: { appearance: "acceptable" },
     observations: "API check",

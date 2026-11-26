@@ -65,7 +65,7 @@ export default async function AdminOverviewPage() {
       href: "/admin/market-data",
       tag: "Prices",
       title: "Import mandi prices",
-      body: "Pull today's government (AGMARKNET) prices for a crop, state and district into Farmess. This fills the price history and trend charts.",
+      body: "Bring in real government (AGMARKNET) prices for a crop, state and district, up to 12 months back. This fills the price trend and forecast farmers see.",
       cta: "Open market imports",
     },
     {

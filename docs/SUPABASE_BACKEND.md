@@ -20,7 +20,7 @@ The connected project has 16 public application tables:
 - **Identity and privacy:** `profiles`, `profile_consent_events`
 - **Farmer / buyer marketplace:** `produce_lots`, `buyer_requirements`, `offers`, `sales`, `sale_activity`
 - **Logistics:** `service_listings`, `service_requests`, `logistics_recommendation_feedback`
-- **Market data and ML governance:** `market_observations`, `market_data_ingestion_runs`, `market_forecast_runs`, `market_forecast_points`, `market_forecast_review_events`
+- **Market data and ML governance:** `market_observations`, `market_data_ingestion_runs`, `market_forecast_runs`, `market_forecast_points`, `market_forecast_review_events` (forecast tables kept for the offline research pipeline; the live forecast is computed from `market_observations`)
 - **Notifications:** `notifications`
 
 All 16 public tables have Row Level Security enabled. The private ML registry is kept in the `private` schema and is not granted to `anon` or `authenticated` roles. PR #93 adds RLS to that table as defence in depth; that migration must be applied before treating the hardening as active on the connected project.

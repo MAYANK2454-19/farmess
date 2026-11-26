@@ -618,7 +618,7 @@
               ],
               "variable": []
             },
-            "description": "Price trend and short-term forecast for a crop at a mandi, from saved AGMARKNET reports\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
+            "description": "Price trend and tested short-term forecast for a crop at a mandi, from saved AGMARKNET reports\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
           },
           "event": [
             {
@@ -2218,124 +2218,6 @@
                 "exec": [
                   "const signedOut = [401];",
                   "const documented = [200, 400, 401, 403, 500, 503];",
-                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
-                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
-                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
-                  "});",
-                  "pm.test('status is documented in the API reference', function () {",
-                  "  pm.expect(documented).to.include(pm.response.code);",
-                  "});",
-                  "pm.test('responds within 5 seconds', function () {",
-                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "POST /api/admin/market-forecasts",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/admin/market-forecasts",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "admin", "market-forecasts"],
-              "query": [],
-              "variable": []
-            },
-            "description": "Stage an offline forecast candidate (never published automatically)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 409, 422].",
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const signedOut = [401];",
-                  "const documented = [201, 400, 401, 403, 409, 422];",
-                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
-                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
-                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
-                  "});",
-                  "pm.test('status is documented in the API reference', function () {",
-                  "  pm.expect(documented).to.include(pm.response.code);",
-                  "});",
-                  "pm.test('responds within 5 seconds', function () {",
-                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "PATCH /api/admin/market-forecasts",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/admin/market-forecasts",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "admin", "market-forecasts"],
-              "query": [],
-              "variable": []
-            },
-            "description": "Approve or reject a staged candidate with a review note\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 409].",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": \"00000000-0000-4000-8000-000000000000\",\n  \"decision\": \"rejected\",\n  \"review_notes\": \"API check\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const signedOut = [401];",
-                  "const documented = [200, 400, 401, 403, 409];",
                   "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
                   "pm.test('status is expected (' + pm.response.code + ')', function () {",
                   "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",

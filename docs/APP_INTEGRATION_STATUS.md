@@ -25,10 +25,12 @@ The private `private.ml_model_registry` table is currently in a schema that has 
 
 - `GET /api/market-prices` uses the server-side market-data adapter and preserves source status/provenance in the response.
 - `POST /api/market-data/refresh` is admin-only. It validates normalized source observations, converts INR to paise, upserts dated records and records an ingestion audit entry. Each request is bounded to 500 records; a validated offset parameter supports incremental historical pages.
-- `GET /api/market-forecasts` returns only approved forecast runs. Without an approved run, the API reports insufficient data rather than inventing a forecast.
-- `ml/market_forecast/train.py` is an offline HistGradientBoosting candidate pipeline. It groups dated observations by crop/variety/geography/market, requires at least 120 unique observations in a series, uses a chronological holdout and must beat a last-observation baseline on both MAE and sMAPE. Candidate forecasts require a separate human review before publication.
+- `POST /api/admin/market-history` is admin-only. It imports past prices for a crop and state (optionally district/mandi) for the last 30, 90, 180 or 365 days from data.gov.in's "Variety-wise Daily Market Prices" archive, paced for rate limits; re-runs continue further back. Each run is audited.
+- `GET /api/market-forecasts` returns the price trend and, when it passes the back-test, a 7-report forecast for one crop at one mandi, computed from saved observations.
+- The live price forecast (`src/lib/market-data/price-forecast.ts`) is Holt's damped-trend smoothing on log modal prices, one step per market report. It needs at least 40 report days for a crop at a mandi, picks its smoothing settings on older reports only, and is tested walk-forward on up to the last 30 reports against the "today's price stays the same" (persistence) baseline. A forecast is shown only if it beats that baseline; otherwise farmers see the real trend and the reason. Reports older than 14 days are never forecast.
+- `ml/market_forecast/train.py` remains an offline research pipeline (HistGradientBoosting, needs 120 observations per series). It is not used by the live app.
 
-**There is no trained market-forecast model or approved forecast at this time.** The database had no market observations when inspected. A market-data steward/admin account and a permitted, functioning data source are needed before this pipeline can be trained.
+Forecasts appear only after an admin imports past prices for that crop and area.
 
 ## Locality-aware logistics support
 
