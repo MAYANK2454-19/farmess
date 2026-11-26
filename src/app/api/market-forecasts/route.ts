@@ -137,7 +137,13 @@ async function handleGET(request: NextRequest) {
     }
     groups.set(key, group);
   }
-  const ranked = [...groups.values()].sort((a, b) => b.dates.size - a.dates.size);
+  // Mandis still reporting (within 14 days) come first, then by number of report days.
+  const freshCutoff = new Date(Date.now() - 14 * 86_400_000).toISOString().slice(0, 10);
+  const ranked = [...groups.values()].sort(
+    (a, b) =>
+      Number(b.latest >= freshCutoff) - Number(a.latest >= freshCutoff) ||
+      b.dates.size - a.dates.size,
+  );
   const markets = ranked.slice(0, 12).map((g) => ({ name: g.name, reports: g.dates.size }));
 
   const wanted = market.value?.toLowerCase();
@@ -174,7 +180,9 @@ async function handleGET(request: NextRequest) {
 
   // Pooled machine-learning forecast (cached; retrained when new prices arrive).
   let ml: MlForecastResult | { status: "unavailable" } = { status: "unavailable" };
-  if (result.status !== "insufficient_history") {
+  // Same rule as the statistical model: never forecast from out-of-date prices.
+  const stale = result.status === "trend_only" && result.reason === "stale";
+  if (result.status !== "insufficient_history" && !stale) {
     const grouped = new Map<string, { date: string; price: number }[]>();
     for (const row of stateRows) {
       const key = seriesKey(row);

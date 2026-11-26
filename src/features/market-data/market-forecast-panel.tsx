@@ -385,7 +385,9 @@ export function MarketForecastPanel({
                   </td>
                   <td>
                     {!ml
-                      ? "Not available"
+                      ? result.status === "trend_only" && result.reason === "stale"
+                        ? "No, prices are out of date"
+                        : "Not available"
                       : ml.status === "insufficient_data"
                         ? `No, needs ${ml.minimumSamples} training examples (has ${ml.trainingSamples})`
                         : mlPassed
