@@ -1,0 +1,102 @@
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 4px 0 16px;
+}
+
+.stat {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  padding: 10px 12px;
+  display: grid;
+  gap: 2px;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.stat strong {
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.up {
+  color: var(--khet-mid) !important;
+}
+
+.down {
+  color: var(--mitti) !important;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 4px 0 8px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.note {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+
+.markets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.marketButton {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.marketButton[aria-pressed="true"] {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+}
+
+.message {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+}
+
+.message strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 4px;
+}

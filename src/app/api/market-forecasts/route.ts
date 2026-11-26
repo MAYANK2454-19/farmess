@@ -1,88 +1,130 @@
 import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { canonicalState, ogdStateName } from "@/lib/location/india";
+import { forecastPrices, MINIMUM_REPORTS } from "@/lib/market-data/price-forecast";
 
 export const dynamic = "force-dynamic";
 
+const LOOKBACK_DAYS = 400;
+
+type Row = {
+  observation_date: string;
+  modal_price_paise_per_quintal: number | null;
+  market_name: string;
+  district: string;
+  state: string;
+};
+
+function limitedText(params: URLSearchParams, key: string, max: number) {
+  const value = params.get(key)?.trim() || null;
+  return value && value.length > max
+    ? { error: `${key} must be ${max} characters or fewer.` }
+    : { value };
+}
+
+/**
+ * Price trend and short-term forecast for one crop at one mandi, computed from
+ * saved AGMARKNET reports (see price-forecast.ts). When no mandi is given, the
+ * mandi with the most saved reports for the crop (within the state/district
+ * filters) is used and named in the response.
+ */
 async function handleGET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
-  const crop = params.get("crop")?.trim() || null;
-  const market = params.get("market")?.trim() || null;
-
-  if (crop && crop.length > 120) {
-    return NextResponse.json(
-      { error: "Crop filter must be 120 characters or fewer." },
-      { status: 400 },
-    );
+  const crop = limitedText(params, "crop", 120);
+  const market = limitedText(params, "market", 160);
+  const state = limitedText(params, "state", 120);
+  const district = limitedText(params, "district", 120);
+  for (const field of [crop, market, state, district]) {
+    if ("error" in field) return NextResponse.json({ error: field.error }, { status: 400 });
   }
-  if (market && market.length > 160) {
-    return NextResponse.json(
-      { error: "Market filter must be 160 characters or fewer." },
-      { status: 400 },
-    );
-  }
-
-  const supabase = await createClient();
-  let forecastQuery = supabase
-    .from("market_forecast_runs")
-    .select(
-      "id,crop,variety,state,district,market_name,horizon_days,model_name,model_version,training_observation_count,training_start,training_end,baseline_mae_paise_per_quintal,model_mae_paise_per_quintal,baseline_smape_percent,model_smape_percent,generated_at,approved_at",
-    )
-    .eq("status", "approved")
-    .order("generated_at", { ascending: false })
-    .limit(1);
-
-  if (crop) forecastQuery = forecastQuery.ilike("crop", crop);
-  if (market) forecastQuery = forecastQuery.ilike("market_name", market);
-
-  const { data: runs, error: runError } = await forecastQuery;
-  if (runError) {
-    return NextResponse.json({ error: "Approved forecasts could not be loaded." }, { status: 503 });
-  }
-
-  const run = runs?.[0];
-  if (!run) {
-    let observationsQuery = supabase
-      .from("market_observations")
-      .select("id", { count: "exact", head: true });
-    if (crop) observationsQuery = observationsQuery.ilike("crop", crop);
-    if (market) observationsQuery = observationsQuery.ilike("market_name", market);
-
-    const { count, error: observationsError } = await observationsQuery;
+  if (!crop.value) {
     return NextResponse.json(
       {
-        status: "insufficient_data",
-        forecast: null,
-        matchingObservationCount: observationsError ? null : (count ?? 0),
-        message:
-          "No approved price forecast is available for these filters. Farmess will not invent a future price; a model must be trained and pass a time-ordered back-test against a naive baseline first.",
+        status: "choose_crop",
+        message: "Choose a crop to see its price trend.",
+        minimumReports: MINIMUM_REPORTS,
       },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   }
 
-  const { data: points, error: pointError } = await supabase
-    .from("market_forecast_points")
-    .select(
-      "target_date,predicted_modal_price_paise_per_quintal,lower_bound_paise_per_quintal,upper_bound_paise_per_quintal",
-    )
-    .eq("forecast_run_id", run.id)
-    .order("target_date", { ascending: true });
+  const stateName = state.value ? ogdStateName(canonicalState(state.value) ?? state.value) : null;
+  const since = new Date(Date.now() - LOOKBACK_DAYS * 86_400_000).toISOString().slice(0, 10);
+  const supabase = await createClient();
 
-  if (pointError) {
-    return NextResponse.json({ error: "Forecast dates could not be loaded." }, { status: 503 });
+  const baseQuery = () => {
+    let query = supabase
+      .from("market_observations")
+      .select("observation_date,modal_price_paise_per_quintal,market_name,district,state")
+      .ilike("crop", crop.value!)
+      .gte("observation_date", since)
+      .not("modal_price_paise_per_quintal", "is", null)
+      .order("observation_date", { ascending: false })
+      .limit(1000);
+    if (stateName) query = query.ilike("state", stateName);
+    if (district.value) query = query.ilike("district", district.value);
+    return query;
+  };
+
+  // Rank mandis by how many reports are saved, so the busiest one is used by default.
+  const { data: recent, error: recentError } = await baseQuery();
+  if (recentError) {
+    return NextResponse.json({ error: "Saved prices could not be loaded." }, { status: 503 });
   }
+  const counts = new Map<string, number>();
+  for (const row of (recent ?? []) as Row[]) {
+    counts.set(row.market_name, (counts.get(row.market_name) ?? 0) + 1);
+  }
+  const markets = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([name, reports]) => ({ name, reports }));
+
+  const chosenMarket =
+    (market.value &&
+      ([...counts.keys()].find((name) => name.toLowerCase() === market.value!.toLowerCase()) ??
+        market.value)) ||
+    markets[0]?.name ||
+    null;
+
+  if (!chosenMarket) {
+    return NextResponse.json(
+      {
+        status: "no_saved_prices",
+        crop: crop.value,
+        markets,
+        minimumReports: MINIMUM_REPORTS,
+        message:
+          "No saved mandi prices for this crop and area yet. An admin can import past prices from data.gov.in.",
+      },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
+
+  const { data: rows, error } = await baseQuery().ilike("market_name", chosenMarket);
+  if (error) {
+    return NextResponse.json({ error: "Saved prices could not be loaded." }, { status: 503 });
+  }
+  const seriesRows = (rows ?? []) as Row[];
+  const result = forecastPrices(
+    seriesRows.map((row) => ({
+      date: row.observation_date,
+      price: (row.modal_price_paise_per_quintal ?? 0) / 100,
+    })),
+  );
 
   return NextResponse.json(
     {
-      status: "approved",
-      forecast: {
-        run,
-        points: points ?? [],
-        priceUnit: "INR/quintal",
-        confidenceMeaning:
-          "Lower and upper bounds are model intervals, not guaranteed market prices.",
-      },
+      status: result.status,
+      crop: crop.value,
+      market: chosenMarket,
+      district: seriesRows[0]?.district ?? null,
+      state: seriesRows[0]?.state ?? null,
+      markets,
+      priceUnit: "INR/quintal (modal price)",
+      minimumReports: MINIMUM_REPORTS,
+      result,
     },
     { headers: { "Cache-Control": "private, no-store" } },
   );

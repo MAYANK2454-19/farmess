@@ -1,3 +1,4 @@
+import { AdminHistoryImport } from "@/features/admin/admin-history-import";
 import { AdminMarketImport } from "@/features/admin/admin-market-import";
 import { createClient } from "@/lib/supabase/server";
 
@@ -17,10 +18,11 @@ export default async function AdminMarketDataPage() {
     <main className="admin-content">
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">Source pipeline</p>
-          <h1>Market-data imports</h1>
+          <p className="admin-eyebrow">Prices</p>
+          <h1>Mandi price imports</h1>
           <p>
-            Run verified source imports and inspect exactly what was received, excluded and saved.
+            Bring real government mandi prices into Farmess: past prices for trends and forecasts,
+            or today&apos;s prices for a quick check. Every import is listed at the bottom.
           </p>
         </div>
       </div>
@@ -29,6 +31,7 @@ export default async function AdminMarketDataPage() {
           Import history could not be loaded. Check the admin RLS policy.
         </p>
       ) : null}
+      <AdminHistoryImport />
       <AdminMarketImport
         runs={data ?? []}
         apiKeyConfigured={Boolean(process.env.DATA_GOV_IN_API_KEY?.trim())}

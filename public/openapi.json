@@ -433,11 +433,11 @@
     "/api/market-forecasts": {
       "get": {
         "tags": ["Market data"],
-        "summary": "Human-approved price forecasts only (with model and baseline metrics)",
+        "summary": "Price trend and short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
         "security": [],
         "responses": {
           "200": {
-            "description": "Approved forecast runs; empty when none are approved"
+            "description": "status is choose_crop, no_saved_prices, insufficient_history, trend_only or forecast"
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
@@ -445,7 +445,47 @@
           "503": {
             "$ref": "#/components/responses/Unavailable"
           }
-        }
+        },
+        "description": "Uses saved market_observations. Forecast (Holt damped trend on log prices) is returned only when it beats the persistence baseline in a walk-forward test on recent reports; otherwise trend_only. Without enough history returns insufficient_history. When market is omitted, the mandi with the most saved reports is used.",
+        "parameters": [
+          {
+            "name": "crop",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "example": "Tomato"
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          }
+        ]
       }
     },
     "/api/offers": {
@@ -1198,6 +1238,73 @@
           },
           "422": {
             "description": "Provider response failed validation"
+          }
+        }
+      }
+    },
+    "/api/admin/market-history": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Admin-only import of past mandi prices (AGMARKNET history on data.gov.in) for a crop and state",
+        "description": "Walks the Variety-wise Daily Market Prices resource newest-first back 30, 90, 180 or 365 days, paced for data.gov.in rate limits (≤240 s). Saves validated rows to market_observations and writes an ingestion audit.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["commodity", "state"],
+                "additionalProperties": false,
+                "properties": {
+                  "commodity": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "state": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "district": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "market": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "days": {
+                    "type": "integer",
+                    "enum": [30, 90, 180, 365]
+                  }
+                }
+              },
+              "example": {
+                "commodity": "Tomato",
+                "state": "Maharashtra",
+                "district": "Pune",
+                "days": 90
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import summary with saved row count and date coverage"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
           }
         }
       }

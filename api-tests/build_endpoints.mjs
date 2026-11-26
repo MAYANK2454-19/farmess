@@ -12,6 +12,7 @@ const day = (offset) => {
 
 const QUERY = {
   "GET /api/market-prices": { commodity: "Tomato", state: "Jammu and Kashmir", limit: "5" },
+  "GET /api/market-forecasts": { crop: "Tomato", state: "Maharashtra" },
   "GET /api/market-decisions": { lotId: SAMPLE_ID },
   "GET /api/logistics/discover": { lat: "32.7266", lng: "74.857", radiusKm: "25" },
   "GET /api/weather/forecast": { lat: "32.7266", lng: "74.857" },
@@ -62,6 +63,7 @@ const BODY = {
   "PATCH /api/notifications": { all: true },
   "PATCH /api/profile": { display_name: "API check" },
   "POST /api/market-data/refresh": { commodity: "Tomato", limit: 10 },
+  "POST /api/admin/market-history": { commodity: "Tomato", state: "Maharashtra", days: 30 },
   "POST /api/admin/market-forecasts": {},
   "PATCH /api/admin/market-forecasts": {
     id: SAMPLE_ID,

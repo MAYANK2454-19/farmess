@@ -468,7 +468,12 @@ export default function MarketsPage() {
         {!loading && filteredRecords.length > 0 && <MarketHistoryChart records={filteredRecords} />}
 
         {!loading && (
-          <MarketForecastPanel crop={appliedFilters.commodity} market={appliedFilters.market} />
+          <MarketForecastPanel
+            crop={appliedFilters.commodity}
+            market={appliedFilters.market}
+            state={appliedFilters.state}
+            district={appliedFilters.district}
+          />
         )}
 
         {!loading && records.length > 0 && filteredRecords.length === 0 && (

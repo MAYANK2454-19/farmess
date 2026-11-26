@@ -87,3 +87,40 @@ export function reconcileMarketObservationBatch(
     duplicatesRemoved,
   };
 }
+
+/**
+ * History imports span many days and grades, so one natural key (which has no
+ * grade) can legitimately carry two different prices. Rather than withholding
+ * the whole batch, drop only the keys whose rows disagree and report how many.
+ */
+export function reconcileMarketObservationHistory(rows: readonly MarketObservationImportRow[]): {
+  rows: MarketObservationImportRow[];
+  duplicatesRemoved: number;
+  conflictingKeysWithheld: number;
+} {
+  const firstByKey = new Map<string, MarketObservationImportRow>();
+  const payloadByKey = new Map<string, string>();
+  const conflicts = new Set<string>();
+  let duplicatesRemoved = 0;
+
+  for (const row of rows) {
+    const key = naturalKey(row);
+    const payload = comparablePayload(row);
+    const existingPayload = payloadByKey.get(key);
+    if (existingPayload === undefined) {
+      firstByKey.set(key, row);
+      payloadByKey.set(key, payload);
+    } else if (existingPayload !== payload) {
+      conflicts.add(key);
+    } else {
+      duplicatesRemoved += 1;
+    }
+  }
+
+  for (const key of conflicts) firstByKey.delete(key);
+  return {
+    rows: [...firstByKey.values()],
+    duplicatesRemoved,
+    conflictingKeysWithheld: conflicts.size,
+  };
+}

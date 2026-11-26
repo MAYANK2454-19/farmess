@@ -109,7 +109,7 @@ export function AdminMarketImport({
       <section className="panel admin-panel">
         <div className="panel-header">
           <div>
-            <h2 className="panel-title">Import mandi observations</h2>
+            <h2 className="panel-title">Import today&apos;s prices</h2>
             <p className="panel-caption">
               Request source records from OGD/AGMARKNET. Every import is validated, deduplicated and
               recorded in the ingestion audit.

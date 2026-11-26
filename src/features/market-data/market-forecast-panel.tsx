@@ -1,212 +1,311 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type {
+  ForecastPoint,
+  PriceForecastResult,
+  PricePoint,
+} from "@/lib/market-data/price-forecast";
+import styles from "./market-forecast-panel.module.css";
 
-type ForecastRun = {
-  id: string;
-  crop: string;
-  variety: string | null;
-  market_name: string;
-  horizon_days: number;
-  model_name: string;
-  model_version: string;
-  training_observation_count: number;
-  training_start: string;
-  training_end: string;
-  baseline_mae_paise_per_quintal: number;
-  model_mae_paise_per_quintal: number;
-  baseline_smape_percent: number | null;
-  model_smape_percent: number | null;
-  generated_at: string;
-};
-
-type ForecastPoint = {
-  target_date: string;
-  predicted_modal_price_paise_per_quintal: number;
-  lower_bound_paise_per_quintal: number | null;
-  upper_bound_paise_per_quintal: number | null;
-};
-
-type ForecastResponse =
-  | {
-      status: "approved";
-      forecast: {
-        run: ForecastRun;
-        points: ForecastPoint[];
-        priceUnit: string;
-        confidenceMeaning: string;
-      };
-    }
-  | {
-      status: "insufficient_data";
-      forecast: null;
-      matchingObservationCount: number | null;
-      message: string;
-    };
-
-function money(paise: number | null) {
-  if (paise === null) return "—";
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 2,
-  }).format(paise / 100);
-}
-
-function dateLabel(value: string) {
-  const date = new Date(`${value}T00:00:00.000Z`);
-  return Number.isNaN(date.getTime())
-    ? value
-    : new Intl.DateTimeFormat("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(date);
-}
-
-type ForecastRequestState = {
-  key: string;
-  result?: ForecastResponse;
+type ForecastResponse = {
+  status: string;
+  crop?: string;
+  market?: string | null;
+  district?: string | null;
+  state?: string | null;
+  markets?: { name: string; reports: number }[];
+  minimumReports?: number;
+  message?: string;
+  result?: PriceForecastResult;
   error?: string;
 };
 
-export function MarketForecastPanel({ crop, market }: { crop: string; market: string }) {
-  const requestKey = `${crop.trim()}\u001f${market.trim()}`;
-  const [requestState, setRequestState] = useState<ForecastRequestState | null>(null);
-  const currentRequest = requestState?.key === requestKey ? requestState : null;
-  const loading = currentRequest === null;
-  const error = currentRequest?.error ?? "";
-  const result = currentRequest?.result ?? null;
+const rupees = (value: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
+
+function shortDate(value: string) {
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", timeZone: "UTC" }).format(
+        date,
+      );
+}
+
+function TrendChart({ history, forecast }: { history: PricePoint[]; forecast: ForecastPoint[] }) {
+  const width = 720;
+  const height = 240;
+  const pad = { left: 56, right: 16, top: 14, bottom: 28 };
+  const all = [
+    ...history.map((p) => ({ date: p.date, low: p.price, high: p.price })),
+    ...forecast.map((p) => ({ date: p.date, low: p.low, high: p.high })),
+  ];
+  const day = (date: string) => new Date(`${date}T00:00:00.000Z`).getTime() / 86_400_000;
+  const minX = day(all[0].date);
+  const maxX = Math.max(day(all[all.length - 1].date), minX + 1);
+  const minY = Math.min(...all.map((p) => p.low)) * 0.95;
+  const maxY = Math.max(...all.map((p) => p.high)) * 1.05;
+  const x = (date: string) =>
+    pad.left + ((day(date) - minX) / (maxX - minX)) * (width - pad.left - pad.right);
+  const y = (value: number) =>
+    pad.top + (1 - (value - minY) / Math.max(1, maxY - minY)) * (height - pad.top - pad.bottom);
+  const line = (points: { date: string; price: number }[]) =>
+    points
+      .map((p, i) => `${i ? "L" : "M"}${x(p.date).toFixed(1)},${y(p.price).toFixed(1)}`)
+      .join(" ");
+  const last = history[history.length - 1];
+  const ticks = [0, 0.5, 1].map((t) => minY + t * (maxY - minY));
+  const band = forecast.length
+    ? `M${x(last.date)},${y(last.price)} ` +
+      forecast.map((p) => `L${x(p.date)},${y(p.high)}`).join(" ") +
+      " " +
+      [...forecast]
+        .reverse()
+        .map((p) => `L${x(p.date)},${y(p.low)}`)
+        .join(" ") +
+      " Z"
+    : "";
+
+  return (
+    <svg
+      className={styles.chart}
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label={`Modal price history${forecast.length ? " and 7-report forecast" : ""}`}
+    >
+      {ticks.map((value) => (
+        <g key={value}>
+          <line
+            x1={pad.left}
+            x2={width - pad.right}
+            y1={y(value)}
+            y2={y(value)}
+            stroke="var(--line)"
+          />
+          <text
+            x={pad.left - 8}
+            y={y(value) + 4}
+            textAnchor="end"
+            fontSize="11"
+            fill="var(--muted)"
+          >
+            {rupees(value)}
+          </text>
+        </g>
+      ))}
+      <text x={pad.left} y={height - 8} fontSize="11" fill="var(--muted)">
+        {shortDate(history[0].date)}
+      </text>
+      <text x={x(last.date)} y={height - 8} fontSize="11" fill="var(--muted)" textAnchor="middle">
+        {shortDate(last.date)}
+      </text>
+      {band ? <path d={band} fill="var(--haldi-soft)" stroke="none" /> : null}
+      <path d={line(history)} fill="none" stroke="var(--khet-mid)" strokeWidth="2" />
+      {forecast.length ? (
+        <path
+          d={line([last, ...forecast])}
+          fill="none"
+          stroke="var(--haldi-deep)"
+          strokeWidth="2"
+          strokeDasharray="6 4"
+        />
+      ) : null}
+      <circle cx={x(last.date)} cy={y(last.price)} r="4" fill="var(--khet)" />
+    </svg>
+  );
+}
+
+export function MarketForecastPanel({
+  crop,
+  market,
+  state,
+  district,
+}: {
+  crop: string;
+  market: string;
+  state?: string;
+  district?: string;
+}) {
+  const [picked, setPicked] = useState("");
+  const query = new URLSearchParams();
+  if (crop.trim()) query.set("crop", crop.trim());
+  const chosen = picked || market.trim();
+  if (chosen) query.set("market", chosen);
+  if (state?.trim()) query.set("state", state.trim());
+  if (district?.trim()) query.set("district", district.trim());
+  const key = query.toString();
+
+  const [response, setResponse] = useState<{
+    key: string;
+    data?: ForecastResponse;
+    error?: string;
+  } | null>(null);
 
   useEffect(() => {
     let active = true;
-
-    const params = new URLSearchParams();
-    if (crop.trim()) params.set("crop", crop.trim());
-    if (market.trim()) params.set("market", market.trim());
-
-    void fetch(`/api/market-forecasts?${params.toString()}`, { cache: "no-store" })
-      .then(async (response) => {
-        const payload = (await response.json()) as ForecastResponse | { error?: string };
-        if (!response.ok) {
-          throw new Error(
-            "error" in payload
-              ? (payload.error ?? "Forecast could not be loaded.")
-              : "Forecast could not be loaded.",
-          );
-        }
-        if (active) setRequestState({ key: requestKey, result: payload as ForecastResponse });
+    fetch(`/api/market-forecasts?${key}`, { cache: "no-store" })
+      .then(async (res) => {
+        const data = (await res.json()) as ForecastResponse;
+        if (!res.ok) throw new Error(data.error ?? "Price trend could not be loaded.");
+        if (active) setResponse({ key, data });
       })
-      .catch((requestError: unknown) => {
+      .catch((error: unknown) => {
         if (active) {
-          setRequestState({
-            key: requestKey,
-            error:
-              requestError instanceof Error
-                ? requestError.message
-                : "Forecast could not be loaded.",
+          setResponse({
+            key,
+            error: error instanceof Error ? error.message : "Price trend could not be loaded.",
           });
         }
       });
-
     return () => {
       active = false;
     };
-  }, [crop, market, requestKey]);
+  }, [key]);
+
+  const current = response?.key === key ? response : null;
+  const data = current?.data;
+  const result = data?.result;
 
   return (
-    <section className="panel market-forecast-panel" aria-labelledby="market-forecast-heading">
+    <section className="panel" aria-labelledby="market-forecast-heading">
       <div className="panel-header">
         <div>
-          <p className="eyebrow">Decision support</p>
+          <p className="eyebrow">Price trend</p>
           <h2 className="panel-title" id="market-forecast-heading">
-            Price trend forecast
+            {data?.crop && data.market
+              ? `${data.crop} at ${data.market}`
+              : "Price trend and forecast"}
           </h2>
           <p className="panel-caption">
-            Only forecasts that passed a time-ordered evaluation are shown here.
+            From real government (AGMARKNET) mandi reports saved in Farmess. A forecast is shown
+            only if it was more accurate than “today’s price stays the same” on recent reports.
           </p>
         </div>
       </div>
 
-      {loading ? (
-        <div className="empty-state">
-          <p className="empty-copy" role="status">
-            Checking for an approved forecast…
-          </p>
+      {data?.markets && data.markets.length > 1 ? (
+        <div className={styles.markets} aria-label="Choose a mandi">
+          {data.markets.map((item) => (
+            <button
+              type="button"
+              key={item.name}
+              className={styles.marketButton}
+              aria-pressed={item.name === data.market}
+              onClick={() => setPicked(item.name)}
+            >
+              {item.name} · {item.reports}
+            </button>
+          ))}
         </div>
-      ) : error ? (
-        <div className="empty-state">
-          <p className="empty-copy" role="alert">
-            {error}
-          </p>
+      ) : null}
+
+      {!current ? (
+        <p className="empty-copy" role="status">
+          Loading saved prices…
+        </p>
+      ) : current.error ? (
+        <p className="empty-copy" role="alert">
+          {current.error}
+        </p>
+      ) : data?.status === "choose_crop" ? (
+        <div className={styles.message}>
+          <strong>Choose a crop</strong>
+          Search for a crop above to see how its mandi price has moved and where it may go next.
         </div>
-      ) : result?.status === "insufficient_data" ? (
-        <div className="market-forecast-empty">
-          <p className="module-status">Forecast not enabled for this search</p>
-          <h3>No validated forecast is available.</h3>
-          <p>{result.message}</p>
-          <p className="form-help">
-            {result.matchingObservationCount === null
-              ? "The observation count could not be checked."
-              : `${result.matchingObservationCount} matching stored observation(s) are currently available.`}
-          </p>
+      ) : data?.status === "no_saved_prices" ? (
+        <div className={styles.message}>
+          <strong>No saved prices for {data.crop} here yet</strong>
+          {data.message}
         </div>
-      ) : result?.forecast ? (
+      ) : result?.status === "insufficient_history" ? (
+        <div className={styles.message}>
+          <strong>Not enough history yet</strong>
+          Farmess has {result.reportCount} report day(s) for this mandi. A trend needs at least{" "}
+          {result.minimumReports}. An admin can import past prices from data.gov.in.
+        </div>
+      ) : result ? (
         <>
-          <div className="market-forecast-summary">
-            <div>
-              <span>Model</span>
-              <strong>
-                {result.forecast.run.model_name} · {result.forecast.run.model_version}
+          <div className={styles.summary}>
+            <div className={styles.stat}>
+              <span>Latest modal price ({shortDate(result.trend.latestDate)})</span>
+              <strong>{rupees(result.trend.latestPrice)}/q</strong>
+            </div>
+            <div className={styles.stat}>
+              <span>Change over ~30 days</span>
+              <strong
+                className={
+                  result.trend.change30dPercent === null
+                    ? undefined
+                    : result.trend.change30dPercent >= 0
+                      ? styles.up
+                      : styles.down
+                }
+              >
+                {result.trend.change30dPercent === null
+                  ? "—"
+                  : `${result.trend.change30dPercent > 0 ? "+" : ""}${result.trend.change30dPercent}%`}
               </strong>
             </div>
-            <div>
-              <span>Training observations</span>
-              <strong>{result.forecast.run.training_observation_count}</strong>
-            </div>
-            <div>
-              <span>Back-test MAE</span>
-              <strong>{money(result.forecast.run.model_mae_paise_per_quintal)}</strong>
-            </div>
-            <div>
-              <span>Naive baseline MAE</span>
-              <strong>{money(result.forecast.run.baseline_mae_paise_per_quintal)}</strong>
+            {result.status === "forecast" ? (
+              <div className={styles.stat}>
+                <span>Expected by {shortDate(result.points[result.points.length - 1].date)}</span>
+                <strong>{rupees(result.points[result.points.length - 1].price)}/q</strong>
+              </div>
+            ) : null}
+            <div className={styles.stat}>
+              <span>Report days used</span>
+              <strong>{result.trend.reportCount}</strong>
             </div>
           </div>
-          {result.forecast.points.length ? (
-            <div className="table-wrap">
-              <table className="produce-table market-forecast-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Predicted modal price</th>
-                    <th scope="col">Lower bound</th>
-                    <th scope="col">Upper bound</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.forecast.points.map((point) => (
-                    <tr key={point.target_date}>
-                      <td>{dateLabel(point.target_date)}</td>
-                      <td>
-                        <strong>{money(point.predicted_modal_price_paise_per_quintal)}</strong>
-                      </td>
-                      <td>{money(point.lower_bound_paise_per_quintal)}</td>
-                      <td>{money(point.upper_bound_paise_per_quintal)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+
+          <TrendChart
+            history={result.trend.history}
+            forecast={result.status === "forecast" ? result.points : []}
+          />
+          <div className={styles.legend}>
+            <span>
+              <i className={styles.swatch} style={{ background: "var(--khet-mid)" }} />
+              Reported modal price
+            </span>
+            {result.status === "forecast" ? (
+              <>
+                <span>
+                  <i className={styles.swatch} style={{ background: "var(--haldi-deep)" }} />
+                  Forecast (next 7 reports)
+                </span>
+                <span>
+                  <i
+                    className={styles.swatch}
+                    style={{ background: "var(--haldi-soft)", height: 10 }}
+                  />
+                  Likely range (90% of past errors)
+                </span>
+              </>
+            ) : null}
+          </div>
+
+          {result.status === "forecast" ? (
+            <p className={styles.note}>
+              Expected around{" "}
+              <strong>{rupees(result.points[result.points.length - 1].price)}</strong> per quintal
+              (range {rupees(result.points[result.points.length - 1].low)}–
+              {rupees(result.points[result.points.length - 1].high)}). Tested on the last{" "}
+              {result.backtest.testedReports} reports: average error{" "}
+              {rupees(result.backtest.modelMae)} vs {rupees(result.backtest.baselineMae)} if you
+              assume today’s price holds. This is an estimate, not a guaranteed price.
+            </p>
           ) : (
-            <p className="empty-copy">The approved model run has no forecast points attached.</p>
+            <p className={styles.note}>
+              {result.reason === "stale"
+                ? `The latest saved report is from ${shortDate(result.trend.latestDate)}, so no forecast is shown. Import recent prices to refresh it.`
+                : `No forecast shown: on the last ${result.backtest?.testedReports ?? 0} reports our model (average error ${rupees(result.backtest?.modelMae ?? 0)}) was not more accurate than assuming today’s price holds (${rupees(result.backtest?.baselineMae ?? 0)}). The trend above is still real reported data.`}
+            </p>
           )}
-          <p className="market-forecast-footnote">{result.forecast.confidenceMeaning}</p>
-          <p className="market-forecast-footnote">
-            Generated {dateLabel(result.forecast.run.generated_at.slice(0, 10))}. A forecast is an
-            estimate, not a guaranteed price or a recommendation to delay a sale.
-          </p>
         </>
       ) : null}
     </section>

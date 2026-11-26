@@ -26,8 +26,8 @@
         "quantity": 12.5,
         "unit": "quintal",
         "location": "Narwal mandi area, Jammu",
-        "availableAt": "2026-11-25",
-        "sellBy": "2026-11-30"
+        "availableAt": "2026-11-26",
+        "sellBy": "2026-12-01"
       }
     },
     {
@@ -82,13 +82,17 @@
       }
     },
     {
-      "name": "Human-approved price forecasts only (with model and baseline metrics)",
+      "name": "Price trend and short-term forecast for a crop at a mandi, from saved AGMARKNET reports",
       "tag": "Market data",
       "method": "GET",
       "path": "/api/market-forecasts",
       "auth": "public",
       "expect_signed_out": [200, 503],
-      "expect_documented": [200, 400, 503]
+      "expect_documented": [200, 400, 503],
+      "query": {
+        "crop": "Tomato",
+        "state": "Maharashtra"
+      }
     },
     {
       "name": "Buyer offers on the farmer's lots",
@@ -256,7 +260,7 @@
         "quantity": 5,
         "unit": "quintal",
         "price_paise_per_quintal": 180000,
-        "valid_until": "2026-11-28"
+        "valid_until": "2026-11-29"
       }
     },
     {
@@ -393,6 +397,20 @@
       "body": {
         "commodity": "Tomato",
         "limit": 10
+      }
+    },
+    {
+      "name": "Admin-only import of past mandi prices (AGMARKNET history on data.gov.in) for a crop and state",
+      "tag": "Admin",
+      "method": "POST",
+      "path": "/api/admin/market-history",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 500, 503],
+      "body": {
+        "commodity": "Tomato",
+        "state": "Maharashtra",
+        "days": 30
       }
     },
     {

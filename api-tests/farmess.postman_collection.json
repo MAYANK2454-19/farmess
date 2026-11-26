@@ -104,7 +104,7 @@
             "description": "Create a private draft produce lot\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 500].",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"crop\": \"Tomato\",\n  \"variety\": \"Hybrid\",\n  \"grade\": \"A\",\n  \"quantity\": 12.5,\n  \"unit\": \"quintal\",\n  \"location\": \"Narwal mandi area, Jammu\",\n  \"availableAt\": \"2026-11-25\",\n  \"sellBy\": \"2026-11-30\"\n}",
+              "raw": "{\n  \"crop\": \"Tomato\",\n  \"variety\": \"Hybrid\",\n  \"grade\": \"A\",\n  \"quantity\": 12.5,\n  \"unit\": \"quintal\",\n  \"location\": \"Narwal mandi area, Jammu\",\n  \"availableAt\": \"2026-11-26\",\n  \"sellBy\": \"2026-12-01\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -603,13 +603,22 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/market-forecasts",
+              "raw": "{{baseUrl}}/api/market-forecasts?crop=Tomato&state=Maharashtra",
               "host": ["{{baseUrl}}"],
               "path": ["api", "market-forecasts"],
-              "query": [],
+              "query": [
+                {
+                  "key": "crop",
+                  "value": "Tomato"
+                },
+                {
+                  "key": "state",
+                  "value": "Maharashtra"
+                }
+              ],
               "variable": []
             },
-            "description": "Human-approved price forecasts only (with model and baseline metrics)\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
+            "description": "Price trend and short-term forecast for a crop at a mandi, from saved AGMARKNET reports\n\nAuth: public. Signed-out expectation: [200, 503]. Documented responses: [200, 400, 503]."
           },
           "event": [
             {
@@ -1265,7 +1274,7 @@
             "description": "Submit an offer on a published lot (validated by a narrow database RPC)\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [201, 400, 401, 403, 409].",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"lot_id\": \"00000000-0000-4000-8000-000000000000\",\n  \"quantity\": 5,\n  \"unit\": \"quintal\",\n  \"price_paise_per_quintal\": 180000,\n  \"valid_until\": \"2026-11-28\"\n}",
+              "raw": "{\n  \"lot_id\": \"00000000-0000-4000-8000-000000000000\",\n  \"quantity\": 5,\n  \"unit\": \"quintal\",\n  \"price_paise_per_quintal\": 180000,\n  \"valid_until\": \"2026-11-29\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2150,6 +2159,65 @@
                 "exec": [
                   "const signedOut = [401];",
                   "const documented = [200, 400, 401, 403, 422];",
+                  "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
+                  "pm.test('status is expected (' + pm.response.code + ')', function () {",
+                  "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status is documented in the API reference', function () {",
+                  "  pm.expect(documented).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('responds within 5 seconds', function () {",
+                  "  pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/admin/market-history",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/market-history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "market-history"],
+              "query": [],
+              "variable": []
+            },
+            "description": "Admin-only import of past mandi prices (AGMARKNET history on data.gov.in) for a crop and state\n\nAuth: signed-in. Signed-out expectation: [401]. Documented responses: [200, 400, 401, 403, 500, 503].",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commodity\": \"Tomato\",\n  \"state\": \"Maharashtra\",\n  \"days\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const signedOut = [401];",
+                  "const documented = [200, 400, 401, 403, 500, 503];",
                   "const signedIn = Boolean(pm.collectionVariables.get('cookie'));",
                   "pm.test('status is expected (' + pm.response.code + ')', function () {",
                   "  pm.expect(signedIn ? documented : signedOut).to.include(pm.response.code);",
