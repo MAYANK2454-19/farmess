@@ -49,3 +49,20 @@ test("coordinates are rounded to about one kilometre", () => {
   assert.equal(approximateCoordinate(32.726612), 32.73);
   assert.equal(approximateCoordinate(74.857049), 74.86);
 });
+
+test("OGD state spellings are used for filters", async () => {
+  const { ogdStateName } = await import("./india.ts");
+  assert.equal(ogdStateName("Kerala"), "Keralam");
+  assert.equal(ogdStateName("Jammu and Kashmir"), "Jammu and Kashmir");
+});
+
+test("place names match across small spelling differences", async () => {
+  const { placeNamesMatch } = await import("./india.ts");
+  assert.equal(placeNamesMatch("Mayurbhanj", "Mayurbhanja"), true);
+  assert.equal(placeNamesMatch("Davanagere", "Davangere"), true);
+  assert.equal(placeNamesMatch("Sri Sathya Sai", "Sri Sathya Sai district"), true);
+  assert.equal(placeNamesMatch("Jammu", "JAMMU"), true);
+  assert.equal(placeNamesMatch("Jammu", "Samba"), false);
+  assert.equal(placeNamesMatch("Pune", "Puri"), false);
+  assert.equal(placeNamesMatch("", "Jammu"), false);
+});

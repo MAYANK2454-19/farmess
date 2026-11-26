@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { StateDistrictSelect } from "@/features/location/state-district-select";
 
 type IngestionRun = {
   id: string;
@@ -137,24 +138,15 @@ export function AdminMarketImport({
                 maxLength={120}
               />
             </label>
-            <label>
-              State
-              <input
-                value={state}
-                onChange={(event) => setState(event.target.value)}
-                placeholder="e.g. Maharashtra"
-                maxLength={120}
-              />
-            </label>
-            <label>
-              District
-              <input
-                value={district}
-                onChange={(event) => setDistrict(event.target.value)}
-                placeholder="Optional district"
-                maxLength={120}
-              />
-            </label>
+            <StateDistrictSelect
+              idPrefix="admin-import"
+              state={state}
+              district={district}
+              onChange={(next) => {
+                setState(next.state);
+                setDistrict(next.district);
+              }}
+            />
             <label>
               Mandi
               <input

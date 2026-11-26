@@ -5,10 +5,13 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminOverviewPage() {
   const supabase = await createClient();
-  const [observations, imports, forecasts, services] = await Promise.all([
+  const [observations, imports, pendingRequests, services] = await Promise.all([
     supabase.from("market_observations").select("id", { count: "exact", head: true }),
     supabase.from("market_data_ingestion_runs").select("id", { count: "exact", head: true }),
-    supabase.from("market_forecast_runs").select("id", { count: "exact", head: true }),
+    supabase
+      .from("role_access_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending"),
     supabase
       .from("service_listings")
       .select("id", { count: "exact", head: true })
@@ -16,28 +19,68 @@ export default async function AdminOverviewPage() {
   ]);
 
   const metrics = [
-    { label: "Stored market observations", value: observations.count, error: observations.error },
-    { label: "Import attempts", value: imports.count, error: imports.error },
-    { label: "Forecast runs", value: forecasts.count, error: forecasts.error },
-    { label: "Active provider listings", value: services.count, error: services.error },
+    { label: "Mandi prices saved", value: observations.count, error: observations.error },
+    { label: "Imports run", value: imports.count, error: imports.error },
+    {
+      label: "Access requests waiting",
+      value: pendingRequests.count,
+      error: pendingRequests.error,
+    },
+    { label: "Active transport & storage", value: services.count, error: services.error },
   ];
-  const providers = [
+
+  const services_ = [
     {
-      name: "OGD / AGMARKNET",
-      env: "DATA_GOV_IN_API_KEY",
+      name: "Mandi prices (data.gov.in)",
+      purpose: "Needed for price search and imports.",
       configured: Boolean(process.env.DATA_GOV_IN_API_KEY?.trim()),
+      optional: false,
     },
     {
-      name: "HeiGIT road routing",
-      env: "HEIGIT_API_KEY",
-      configured: Boolean(process.env.HEIGIT_API_KEY?.trim()),
-    },
-    {
-      name: "Open-Meteo production",
-      env: "OPEN_METEO_CUSTOMER_API_KEY or OPEN_METEO_NON_COMMERCIAL_USE",
+      name: "Weather (Open-Meteo)",
+      purpose: "Rain and temperature on the transport & storage page.",
       configured:
         Boolean(process.env.OPEN_METEO_CUSTOMER_API_KEY?.trim()) ||
         process.env.OPEN_METEO_NON_COMMERCIAL_USE?.trim() === "true",
+      optional: false,
+    },
+    {
+      name: "Road distances (HeiGIT)",
+      purpose:
+        "Optional. Adds real road distance and drive time; without it Farmess shows straight-line distance.",
+      configured: Boolean(process.env.HEIGIT_API_KEY?.trim()),
+      optional: true,
+    },
+  ];
+
+  const tasks = [
+    {
+      href: "/admin/access-requests",
+      tag: "People",
+      title: "Approve buyers and transporters",
+      body: "Farmers who want buyer or transport & storage access ask here. Check who they are, then approve or reject with a short note.",
+      cta: "Open access requests",
+    },
+    {
+      href: "/admin/market-data",
+      tag: "Prices",
+      title: "Import mandi prices",
+      body: "Pull today's government (AGMARKNET) prices for a crop, state and district into Farmess. This fills the price history and trend charts.",
+      cta: "Open market imports",
+    },
+    {
+      href: "/admin/market-health",
+      tag: "Prices",
+      title: "Check price data",
+      body: "See which crops and markets have prices saved and how recent they are, so you know what to import next.",
+      cta: "Open data health",
+    },
+    {
+      href: "/admin/providers",
+      tag: "Trust",
+      title: "Verify transport & storage",
+      body: "Mark transport and cold-storage listings as checked (for example after a phone call), so farmers know which ones are verified.",
+      cta: "Open provider review",
     },
   ];
 
@@ -45,16 +88,16 @@ export default async function AdminOverviewPage() {
     <main className="admin-content">
       <div className="admin-page-heading">
         <div>
-          <p className="admin-eyebrow">Data stewardship</p>
-          <h1>Operations overview</h1>
+          <p className="admin-eyebrow">Admin</p>
+          <h1>Admin overview</h1>
           <p>
-            Manage source imports and model review. These tools are available only to authorised
-            data stewards.
+            Keep Farmess trustworthy: approve who can buy or transport, bring in real government
+            prices, and verify service providers.
           </p>
         </div>
       </div>
 
-      <section className="admin-metric-grid" aria-label="Farmess data metrics">
+      <section className="admin-metric-grid" aria-label="Farmess at a glance">
         {metrics.map((metric) => (
           <article className="admin-metric-card" key={metric.label}>
             <span>{metric.label}</span>
@@ -65,75 +108,40 @@ export default async function AdminOverviewPage() {
       </section>
 
       <div className="admin-work-grid">
-        <Link href="/admin/market-data" className="admin-work-card">
-          <span className="admin-eyebrow">Source pipeline</span>
-          <h2>Import mandi observations</h2>
-          <p>
-            Run a bounded OGD import, move through historical pages and inspect each ingestion
-            audit.
-          </p>
-          <strong>Open market imports →</strong>
-        </Link>
-        <Link href="/admin/providers" className="admin-work-card">
-          <span className="admin-eyebrow">Marketplace trust</span>
-          <h2>Verify provider listings</h2>
-          <p>
-            Review transport and storage listings, record verification decisions and retain an
-            auditable reason for each change.
-          </p>
-          <strong>Open provider review →</strong>
-        </Link>
-        <Link href="/admin/forecasts" className="admin-work-card">
-          <span className="admin-eyebrow">Model governance</span>
-          <h2>Review forecast candidates</h2>
-          <p>
-            Stage offline trainer output, examine baseline metrics and make a documented approval
-            decision.
-          </p>
-          <strong>Open forecast review →</strong>
-        </Link>
+        {tasks.map((task) => (
+          <Link href={task.href} className="admin-work-card" key={task.href}>
+            <span className="admin-eyebrow">{task.tag}</span>
+            <h2>{task.title}</h2>
+            <p>{task.body}</p>
+            <strong>{task.cta} →</strong>
+          </Link>
+        ))}
       </div>
 
       <section className="admin-panel">
         <div className="admin-section-heading">
           <div>
-            <h2>Provider configuration</h2>
-            <p>
-              Only configuration presence is shown. Secret values are never returned to the browser.
-            </p>
+            <h2>Connected services</h2>
+            <p>Shows only whether each key is set. Key values are never shown here.</p>
           </div>
         </div>
         <div className="admin-provider-list">
-          {providers.map((provider) => (
-            <div className="admin-provider-row" key={provider.env}>
+          {services_.map((service) => (
+            <div className="admin-provider-row" key={service.name}>
               <div>
-                <strong>{provider.name}</strong>
-                <code>{provider.env}</code>
+                <strong>{service.name}</strong>
+                <span>{service.purpose}</span>
               </div>
-              <span className={provider.configured ? "admin-pill admin-pill-ready" : "admin-pill"}>
-                {provider.configured ? "Configured" : "Missing"}
+              <span className={service.configured ? "admin-pill admin-pill-ready" : "admin-pill"}>
+                {service.configured
+                  ? "Connected"
+                  : service.optional
+                    ? "Optional — not set"
+                    : "Missing"}
               </span>
             </div>
           ))}
         </div>
-        <p className="admin-disclaimer">
-          Open-Meteo&apos;s paid customer key is required for production use. Do not paste API keys
-          into this page or any browser-visible form; add them through the approved secret manager.
-        </p>
-      </section>
-
-      <section className="admin-panel admin-warning-panel">
-        <h2>Data readiness</h2>
-        <p>
-          Forecasts remain unavailable until enough genuine, dated market observations exist for
-          each crop/market series. Provider recommendations also depend on real operators publishing
-          verified services and keeping capacity, area and rates current.
-        </p>
-        <p>
-          Current database counts should be treated as live operational state, not a demo dataset.
-          Never seed invented market prices or provider listings to make the dashboard look
-          populated.
-        </p>
       </section>
     </main>
   );

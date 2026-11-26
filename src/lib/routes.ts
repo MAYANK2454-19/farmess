@@ -33,7 +33,6 @@ export const ADMIN_NAVIGATION = [
   { label: "Market imports", href: "/admin/market-data", icon: "markets", hindi: "मंडी डेटा आयात" },
   { label: "Data health", href: "/admin/market-health", icon: "activity", hindi: "डेटा गुणवत्ता" },
   { label: "Provider review", href: "/admin/providers", icon: "shield", hindi: "सेवा सत्यापन" },
-  { label: "Forecast review", href: "/admin/forecasts", icon: "trend", hindi: "पूर्वानुमान समीक्षा" },
 ] as const;
 
 export const ACCOUNT_NAVIGATION = [
@@ -81,7 +80,6 @@ export const APP_ROUTE_FILES = [
   { href: "/profile", file: "src/app/(workspace)/profile/page.tsx" },
   { href: "/admin", file: "src/app/admin/page.tsx" },
   { href: "/admin/market-data", file: "src/app/admin/market-data/page.tsx" },
-  { href: "/admin/forecasts", file: "src/app/admin/forecasts/page.tsx" },
   { href: "/admin/access-requests", file: "src/app/admin/access-requests/page.tsx" },
   { href: "/admin/market-health", file: "src/app/admin/market-health/page.tsx" },
   { href: "/admin/providers", file: "src/app/admin/providers/page.tsx" },

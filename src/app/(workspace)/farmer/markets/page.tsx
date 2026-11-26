@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { MarketForecastPanel } from "@/features/market-data/market-forecast-panel";
+import { StateDistrictSelect } from "@/features/location/state-district-select";
 import { MarketSummaryPanel } from "@/features/market-data/market-summary-panel";
 import { MarketComparisonPanel } from "@/features/market-data/market-comparison-panel";
 import { SourceQualityPanel } from "@/features/market-data/source-quality-panel";
@@ -273,26 +274,17 @@ export default function MarketsPage() {
               maxLength={100}
             />
           </label>
-          <label className="form-field">
-            <span className="form-label">State</span>
-            <input
-              className="form-control"
-              value={filters.state}
-              onChange={(event) => setFilters({ ...filters, state: event.target.value })}
-              placeholder="e.g. Rajasthan"
-              maxLength={100}
-            />
-          </label>
-          <label className="form-field">
-            <span className="form-label">District</span>
-            <input
-              className="form-control"
-              value={filters.district}
-              onChange={(event) => setFilters({ ...filters, district: event.target.value })}
-              placeholder="District name"
-              maxLength={100}
-            />
-          </label>
+          <StateDistrictSelect
+            idPrefix="market-filter"
+            state={filters.state}
+            district={filters.district}
+            onChange={(next) =>
+              setFilters({ ...filters, state: next.state, district: next.district })
+            }
+            labelClassName="form-field"
+            labelTextClassName="form-label"
+            selectClassName="form-control"
+          />
           <label className="form-field">
             <span className="form-label">Mandi / market</span>
             <input

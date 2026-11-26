@@ -899,3 +899,54 @@ export function isValidPincode(value: string): boolean {
 export function approximateCoordinate(value: number): number {
   return Math.round(value * 100) / 100;
 }
+
+/*
+ * Matching against OGD India / AGMARKNET mandi records. The government data
+ * sometimes spells places differently from the administrative lists above
+ * (e.g. "Keralam", "Mayurbhanja"), so filters must tolerate small differences.
+ */
+
+/** State names as written in the OGD mandi dataset, where they differ. */
+const OGD_STATE_NAMES: Record<string, string> = {
+  Kerala: "Keralam",
+};
+
+export function ogdStateName(state: string): string {
+  return OGD_STATE_NAMES[state] ?? state;
+}
+
+function editDistance(a: string, b: string): number {
+  const previous = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i += 1) {
+    let diagonal = previous[0];
+    previous[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const above = previous[j];
+      previous[j] = Math.min(
+        previous[j] + 1,
+        previous[j - 1] + 1,
+        diagonal + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+      diagonal = above;
+    }
+  }
+  return previous[b.length];
+}
+
+/**
+ * True when two place names refer to the same place despite spelling
+ * differences: same normalised name, one a prefix of the other, or at most two
+ * character edits apart (for names of five or more letters).
+ */
+export function placeNamesMatch(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): boolean {
+  if (!a || !b) return false;
+  const x = normalise(a).replace(/ /g, "");
+  const y = normalise(b).replace(/ /g, "");
+  if (!x || !y) return false;
+  if (x === y) return true;
+  if (Math.min(x.length, y.length) >= 4 && (x.startsWith(y) || y.startsWith(x))) return true;
+  return Math.min(x.length, y.length) >= 5 && editDistance(x, y) <= 2;
+}

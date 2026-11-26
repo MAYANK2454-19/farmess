@@ -340,6 +340,7 @@
 }
 
 .admin-form input,
+.admin-form select,
 .admin-form textarea,
 .admin-full-field textarea {
   width: 100%;
@@ -363,6 +364,7 @@
 }
 
 .admin-form input:focus-visible,
+.admin-form select:focus-visible,
 .admin-form textarea:focus-visible,
 .admin-full-field textarea:focus-visible {
   outline: 2px solid #6d9f79;

@@ -38,7 +38,6 @@ The Next.js application currently includes:
 - Participant-scoped notifications, sale activity and profile/privacy management.
 - OGD/AGMARKNET market-price search, source-quality diagnostics, date-aware market history, comparison and approved-only forecast display.
 - Admin-only mandi imports and audited ingestion history under `/admin/market-data`.
-- Admin-only forecast candidate staging and documented approve/reject decisions under `/admin/forecasts`.
 - Optional HeiGIT road-matrix enrichment and farmer-selected locality weather context.
 
 The API endpoints repeat their own role checks; the admin UI is not the security boundary. Database RLS remains authoritative for row access.

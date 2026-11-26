@@ -2,6 +2,10 @@ import "server-only";
 
 import { assessMarketSourceDateIntegrity } from "./source-integrity";
 import { fetchOgdRecordsPaginated } from "./ogd-pagination";
+import { canonicalState, ogdStateName, placeNamesMatch } from "@/lib/location/india";
+
+/** Records fetched for a state when an exact district filter finds nothing. */
+const DISTRICT_FALLBACK_LIMIT = 300;
 import {
   RATE_LIMIT_TTL_MS,
   SUCCESS_TTL_MS,
@@ -63,17 +67,44 @@ async function fetchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataR
     };
   }
 
-  const url = new URL(OGD_API_URL);
-  url.searchParams.set("api-key", apiKey);
-  url.searchParams.set("format", "json");
-  url.searchParams.set("offset", String(filters.offset ?? 0));
-  if (filters.commodity) url.searchParams.set("filters[commodity]", filters.commodity);
-  if (filters.state) url.searchParams.set("filters[state]", filters.state);
-  if (filters.district) url.searchParams.set("filters[district]", filters.district);
-  if (filters.market) url.searchParams.set("filters[market]", filters.market);
+  // OGD spells some states differently from the administrative list (e.g. Keralam).
+  const stateFilter = filters.state
+    ? ogdStateName(canonicalState(filters.state) ?? filters.state)
+    : undefined;
+
+  function buildUrl(includeDistrict: boolean): URL {
+    const url = new URL(OGD_API_URL);
+    url.searchParams.set("api-key", apiKey as string);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("offset", String(filters.offset ?? 0));
+    if (filters.commodity) url.searchParams.set("filters[commodity]", filters.commodity);
+    if (stateFilter) url.searchParams.set("filters[state]", stateFilter);
+    if (includeDistrict && filters.district) {
+      url.searchParams.set("filters[district]", filters.district);
+    }
+    if (filters.market) url.searchParams.set("filters[market]", filters.market);
+    return url;
+  }
 
   try {
-    const rawRecords = await fetchOgdRecordsPaginated(url, safeLimit(filters.limit));
+    const limit = safeLimit(filters.limit);
+    let rawRecords = await fetchOgdRecordsPaginated(buildUrl(true), limit);
+
+    // The district filter is an exact match on OGD's spelling. When it finds
+    // nothing, retry for the state and keep districts whose names match
+    // despite spelling differences (e.g. Mayurbhanj vs Mayurbhanja).
+    if (rawRecords.length === 0 && filters.district && stateFilter) {
+      const broad = await fetchOgdRecordsPaginated(buildUrl(false), DISTRICT_FALLBACK_LIMIT);
+      rawRecords = broad
+        .filter((record) => {
+          const district =
+            typeof record === "object" && record !== null
+              ? (record as { district?: unknown }).district
+              : undefined;
+          return typeof district === "string" && placeNamesMatch(district, filters.district);
+        })
+        .slice(0, limit);
+    }
     const normalized = normalizeOgdResponseWithDiagnostics({ records: rawRecords }, retrievedAt);
     const { records, quality: sourceQuality } = normalized;
     const dateIntegrity = assessMarketSourceDateIntegrity(
