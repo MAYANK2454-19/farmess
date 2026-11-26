@@ -6,9 +6,11 @@ import type { NearbyServiceCandidate } from "@/features/logistics/recommendation
 export function LogisticsFeedbackForm({
   listing,
   rankPosition,
+  roadRoute,
 }: {
   listing: NearbyServiceCandidate;
   rankPosition: number;
+  roadRoute?: { distanceMeters: number; durationSeconds: number } | null;
 }) {
   const [rating, setRating] = useState("");
   const [note, setNote] = useState("");
@@ -39,6 +41,8 @@ export function LogisticsFeedbackForm({
           date_match: listing.date_match,
           cold_chain_match: listing.cold_chain_match,
           service_radius_match: listing.service_radius_match,
+          road_distance_meters: roadRoute?.distanceMeters ?? null,
+          drive_duration_seconds: roadRoute?.durationSeconds ?? null,
           user_feedback: Number(rating),
           feedback_note: note.trim() || null,
         }),

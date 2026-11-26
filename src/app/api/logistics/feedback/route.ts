@@ -42,6 +42,8 @@ async function handlePOST(request: NextRequest) {
     "date_match",
     "cold_chain_match",
     "service_radius_match",
+    "road_distance_meters",
+    "drive_duration_seconds",
     "user_feedback",
     "feedback_note",
   ] as const;
@@ -85,6 +87,29 @@ async function handlePOST(request: NextRequest) {
   ) {
     return NextResponse.json({ error: "Recommendation distance is invalid." }, { status: 400 });
   }
+
+  // Optional HeiGIT road route the farmer saw (feature for the offline ranker).
+  for (const [key, max] of [
+    ["road_distance_meters", 1_000_000],
+    ["drive_duration_seconds", 86_400],
+  ] as const) {
+    const value = record[key];
+    if (
+      value !== undefined &&
+      value !== null &&
+      (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > max)
+    ) {
+      return NextResponse.json({ error: "Road route values are invalid." }, { status: 400 });
+    }
+  }
+  const roadDistance =
+    typeof record.road_distance_meters === "number"
+      ? Math.round(record.road_distance_meters)
+      : null;
+  const driveDuration =
+    typeof record.drive_duration_seconds === "number"
+      ? Math.round(record.drive_duration_seconds)
+      : null;
 
   for (const key of ["capacity_match", "crop_match", "date_match", "cold_chain_match"] as const) {
     if (!isOptionalBoolean(record[key] ?? null)) {
@@ -139,7 +164,7 @@ async function handlePOST(request: NextRequest) {
     .insert({
       user_id: session.userId,
       service_listing_id: listing.id,
-      recommendation_version: "rules-v1",
+      recommendation_version: "rules-v2",
       rank_position: record.rank_position,
       distance_meters: record.distance_meters,
       capacity_match: record.capacity_match as boolean | null,
@@ -152,6 +177,8 @@ async function handlePOST(request: NextRequest) {
       rate_basis: listing.rate_basis,
       price_paise: listing.price_paise,
       service_radius_km: listing.service_radius_km,
+      road_distance_meters: roadDistance,
+      drive_duration_seconds: driveDuration,
       user_feedback: record.user_feedback,
       feedback_note: feedbackNote,
     })

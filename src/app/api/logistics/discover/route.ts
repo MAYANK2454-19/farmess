@@ -137,27 +137,29 @@ async function handleGET(request: NextRequest) {
   }
 
   const candidates = (data ?? []) as unknown as NearbyServiceCandidate[];
-  const recommendations = rankLogisticsCandidates(candidates, {
-    crop,
-    requiredQuantity: quantity,
-    unit,
-    requiredDate,
-    requiresColdChain: coldChain,
-    preferredServiceType: serviceType,
-    maximumRadiusMeters: Math.round(radiusKm * 1000),
-  });
+  // Road distances first (nearest listings), so the ranking can use them.
+  const nearestFirst = [...candidates].sort((a, b) => a.distance_meters - b.distance_meters);
   const routing = await getRoadRoutes(
     { latitude, longitude },
-    recommendations.map((recommendation) => ({
-      id: recommendation.listing.id,
-      latitude: recommendation.listing.latitude,
-      longitude: recommendation.listing.longitude,
+    nearestFirst.map((candidate) => ({
+      id: candidate.id,
+      latitude: candidate.latitude,
+      longitude: candidate.longitude,
     })),
   );
-  const recommendationsWithRoadRoutes = recommendations.map((recommendation) => ({
-    ...recommendation,
-    roadRoute: routing.routes[recommendation.listing.id] ?? null,
-  }));
+  const recommendationsWithRoadRoutes = rankLogisticsCandidates(
+    candidates,
+    {
+      crop,
+      requiredQuantity: quantity,
+      unit,
+      requiredDate,
+      requiresColdChain: coldChain,
+      preferredServiceType: serviceType,
+      maximumRadiusMeters: Math.round(radiusKm * 1000),
+    },
+    routing.routes,
+  );
 
   return NextResponse.json(
     {
@@ -173,12 +175,12 @@ async function handleGET(request: NextRequest) {
         locationUsedForThisSearchOnly: true,
       },
       metadata: {
-        rankingVersion: "rules-v1",
+        rankingVersion: "rules-v2",
         method: "explainable-heuristic",
         roadRoutingStatus: routing.status,
         roadRoutingProvider: "HeiGIT openrouteservice matrix",
         distanceMeaning:
-          "The ranking distance is straight-line. Road distance and travel time are shown separately when HeiGIT routing is configured and returns a route.",
+          "Proximity is scored on real road distance (HeiGIT openrouteservice) when a route is returned, otherwise on straight-line distance; each result states which was used. Per-km transport listings include an estimated one-way trip cost.",
         bookingMeaning: "A discovery result is not a booking. Provider confirmation is required.",
         verificationMeaning:
           "Provider verification reflects the evidence state stored in Farmess; it does not guarantee live availability.",

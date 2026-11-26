@@ -18,6 +18,7 @@ export type RoutableLocation = {
 
 const MATRIX_ENDPOINT = "https://api.heigit.org/openrouteservice/v2/matrix/driving-car";
 const MAX_DESTINATIONS_PER_REQUEST = 15;
+const MAX_REQUESTS = 3;
 
 function isFiniteCoordinate(value: number, minimum: number, maximum: number): boolean {
   return Number.isFinite(value) && value >= minimum && value <= maximum;
@@ -80,10 +81,27 @@ export async function getRoadRoutes(
         isFiniteCoordinate(candidate.latitude, -90, 90) &&
         isFiniteCoordinate(candidate.longitude, -180, 180),
     )
-    .slice(0, MAX_DESTINATIONS_PER_REQUEST);
+    .slice(0, MAX_DESTINATIONS_PER_REQUEST * MAX_REQUESTS);
 
   if (destinations.length === 0) return { status: "not-needed", routes: {} };
 
+  const chunks: RoutableLocation[][] = [];
+  for (let i = 0; i < destinations.length; i += MAX_DESTINATIONS_PER_REQUEST) {
+    chunks.push(destinations.slice(i, i + MAX_DESTINATIONS_PER_REQUEST));
+  }
+  const results = await Promise.all(chunks.map((chunk) => routeChunk(apiKey, origin, chunk)));
+  const routes = Object.assign({}, ...results) as Record<string, RoadRouteMetric>;
+  return {
+    status: Object.keys(routes).length > 0 ? "available" : "unavailable",
+    routes,
+  };
+}
+
+async function routeChunk(
+  apiKey: string,
+  origin: { latitude: number; longitude: number },
+  destinations: readonly RoutableLocation[],
+): Promise<Record<string, RoadRouteMetric>> {
   const destinationIds = destinations.map((candidate) => candidate.id);
   const locations = [
     [origin.longitude, origin.latitude],
@@ -110,14 +128,9 @@ export async function getRoadRoutes(
       signal: AbortSignal.timeout(10_000),
     });
 
-    if (!response.ok) return { status: "unavailable", routes: {} };
-
-    const routes = mapRoadMatrixResponse(await response.json(), destinationIds);
-    return {
-      status: Object.keys(routes).length > 0 ? "available" : "unavailable",
-      routes,
-    };
+    if (!response.ok) return {};
+    return mapRoadMatrixResponse(await response.json(), destinationIds);
   } catch {
-    return { status: "unavailable", routes: {} };
+    return {};
   }
 }

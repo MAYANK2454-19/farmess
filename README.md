@@ -33,7 +33,7 @@ Farmess is a farmer-first decision-support application for comparing feasible se
 - [x] Notifications, profile/consent audit and sale-activity persistence
 - [x] Admin console: access requests, past and current mandi price imports, data health, provider verification
 - [x] Source-attributed OGD India / AGMARKNET adapter with validation and stale-data labelling
-- [x] PostGIS locality discovery, explainable logistics ranking, optional road routing and Open-Meteo weather
+- [x] PostGIS locality discovery, explainable logistics ranking on real road distance (HeiGIT; straight-line fallback), per-km trip-cost estimates and Open-Meteo weather
 - [x] Price trend with a statistical and a pooled machine-learning (gradient-boosted trees) forecast, each shown only when it beats the baseline on unseen reports
 - [x] Offline ML research pipelines (gradient-boosted forecaster, logistics preference ranker)
 - [x] OpenAPI reference, structured logging and production deployment on Vercel

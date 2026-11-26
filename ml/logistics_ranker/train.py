@@ -33,7 +33,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 MODEL_NAME = "hist_gradient_boosting_logistics_preference"
 MODEL_VERSION = "farmess-logistics-preference-1.0.0"
-FEATURE_SCHEMA_VERSION = "logistics-feedback-v1"
+FEATURE_SCHEMA_VERSION = "logistics-feedback-v2"
 MINIMUM_LABELS = 300
 MINIMUM_TRAINING_LABELS = 200
 MINIMUM_EVALUATION_LABELS = 60
@@ -41,6 +41,10 @@ MINIMUM_UNIQUE_USERS = 30
 MINIMUM_UNIQUE_LISTINGS = 20
 
 NUMERIC_FEATURES = ["distance_meters", "price_paise", "service_radius_km"]
+# HeiGIT road route shown to the farmer (v2). Optional: older exports lack these
+# columns, and ratings without a road route leave them empty (imputed).
+OPTIONAL_NUMERIC_FEATURES = ["road_distance_meters", "drive_duration_seconds"]
+MODEL_NUMERIC_FEATURES = NUMERIC_FEATURES + OPTIONAL_NUMERIC_FEATURES
 CATEGORICAL_FEATURES = [
     "service_type",
     "rate_basis",
@@ -106,7 +110,7 @@ def load_rows(path: Path) -> list[dict[str, Any]]:
                     "service_listing_id": source["service_listing_id"].strip(),
                     "label": label,
                 }
-                for column in NUMERIC_FEATURES:
+                for column in NUMERIC_FEATURES + OPTIONAL_NUMERIC_FEATURES:
                     row[column] = parse_optional_number(source.get(column))
                 for column in CATEGORICAL_FEATURES:
                     value = (source.get(column) or "").strip()
@@ -131,9 +135,9 @@ def build_pipeline() -> Pipeline:
             ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
         ]
     )
-    numeric_indices = list(range(len(NUMERIC_FEATURES)))
+    numeric_indices = list(range(len(MODEL_NUMERIC_FEATURES)))
     categorical_indices = list(
-        range(len(NUMERIC_FEATURES), len(NUMERIC_FEATURES) + len(CATEGORICAL_FEATURES))
+        range(len(MODEL_NUMERIC_FEATURES), len(MODEL_NUMERIC_FEATURES) + len(CATEGORICAL_FEATURES))
     )
     features = ColumnTransformer(
         transformers=[
@@ -183,7 +187,7 @@ def main() -> int:
         "modelName": MODEL_NAME,
         "modelVersion": MODEL_VERSION,
         "featureSchemaVersion": FEATURE_SCHEMA_VERSION,
-        "featureColumns": NUMERIC_FEATURES + CATEGORICAL_FEATURES,
+        "featureColumns": MODEL_NUMERIC_FEATURES + CATEGORICAL_FEATURES,
         "identifiersExcludedFromFeatures": ["user_id", "service_listing_id"],
         "totalUsableLabels": len(rows),
         "uniqueUsers": len({row["user_id"] for row in rows}),
@@ -218,7 +222,7 @@ def main() -> int:
         ):
             manifest["reason"] = "Chronological split does not contain enough examples of both rating classes."
         else:
-            feature_columns = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+            feature_columns = MODEL_NUMERIC_FEATURES + CATEGORICAL_FEATURES
             x_train = np.asarray(
                 [[row[column] for column in feature_columns] for row in train_rows],
                 dtype=object,

@@ -4,7 +4,7 @@ This offline pipeline trains a **candidate ranking model** from explicit farmer 
 
 ## Input
 
-Export `public.logistics_recommendation_feedback` to CSV with the fields used by `train.py`: user_id, service_listing_id, created_at, user_feedback, distance_meters, price_paise, service_radius_km, service_type, rate_basis, provider_verification_state, and the capacity/crop/date/cold-chain/service-radius match fields.
+Export `public.logistics_recommendation_feedback` to CSV with the fields used by `train.py`: user_id, service_listing_id, created_at, user_feedback, distance_meters, price_paise, service_radius_km, road_distance_meters and drive_duration_seconds (optional HeiGIT road route shown to the farmer; feature schema v2), service_type, rate_basis, provider_verification_state, and the capacity/crop/date/cold-chain/service-radius match fields.
 
 Ratings 1–2 are treated as negative preference labels and 4–5 as positive preference labels. Neutral rating 3 is excluded. User IDs and provider listing IDs are used only for minimum diversity checks and are excluded from model features.
 

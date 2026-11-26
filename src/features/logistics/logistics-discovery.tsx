@@ -280,8 +280,19 @@ function RecommendationCard({
         <div className="logistics-result-road-route">
           <span>Road distance: {formatRoadDistance(recommendation.roadRoute.distanceMeters)}</span>
           <span>Estimated drive: {formatTravelTime(recommendation.roadRoute.durationSeconds)}</span>
+          {recommendation.estimatedTripCostPaise != null ? (
+            <span>
+              Est. one-way trip cost: ₹
+              {Math.round(recommendation.estimatedTripCostPaise / 100).toLocaleString("en-IN")}
+            </span>
+          ) : null}
         </div>
-      ) : null}
+      ) : (
+        <div className="logistics-result-road-route">
+          <span>Straight-line distance: {formatRoadDistance(listing.distance_meters)}</span>
+          <span>Road route not available for this listing</span>
+        </div>
+      )}
 
       {recommendation.reasons.length ? (
         <div className="logistics-explanation">
@@ -319,7 +330,11 @@ function RecommendationCard({
       {recommendation.status !== "excluded" ? (
         <ProviderRequestForm listing={listing} onSent={onRequestSent} />
       ) : null}
-      <LogisticsFeedbackForm listing={listing} rankPosition={rankPosition} />
+      <LogisticsFeedbackForm
+        listing={listing}
+        rankPosition={rankPosition}
+        roadRoute={recommendation.roadRoute}
+      />
       <p className="logistics-result-disclaimer">
         Straight-line distance only. Price bases differ and are not directly comparable unless their
         units match. A request is not a confirmed booking.

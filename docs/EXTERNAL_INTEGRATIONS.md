@@ -39,7 +39,7 @@ Account: https://account.heigit.org/
 Farmess uses the current matrix endpoint:
 https://api.heigit.org/openrouteservice/v2/matrix/driving-car
 
-The logistics discovery API sends one origin and up to 15 provider destinations in one request. Road distance and estimated driving duration are displayed separately from the existing PostGIS straight-line distance. Routing failure or a missing key never blocks provider discovery; straight-line distance remains the fallback.
+The logistics discovery API routes the nearest 45 listings (three parallel matrix requests of 15) before ranking. When a route is returned, the proximity score uses road distance (radius scaled by 1.4 for detours), each result says which distance it used, per-km transport listings get an estimated one-way trip cost, and the road distance and drive time are saved with farmer ratings as features for the offline logistics ranker. Routing failure or a missing key never blocks provider discovery; straight-line distance remains the fallback.
 
 The older api.openrouteservice.org hostname was retired in November 2026. Do not configure the old endpoint.
 

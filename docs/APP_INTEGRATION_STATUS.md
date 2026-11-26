@@ -36,7 +36,7 @@ Forecasts appear only after an admin imports past prices for that crop and area.
 
 - `GET /api/logistics/discover` requires a signed-in farmer and explicit latitude/longitude supplied after the user chooses to share their location.
 - The database function `find_nearby_service_listings` uses PostGIS distance filtering and supports a configurable search radius, transport/storage type, crop, quantity/unit, required date and cold-chain requirement.
-- When HEIGIT_API_KEY is configured, Farmess requests one-to-many road distance and driving duration from HeiGIT. If the key is missing or routing fails, discovery remains available and shows the existing straight-line distance only.
+- When HEIGIT_API_KEY is configured (it is, in production), Farmess requests one-to-many road distance and driving duration from HeiGIT before ranking, scores proximity on road distance, estimates per-km trip costs and records the route with farmer ratings for the ML ranker. If the key is missing or routing fails, discovery remains available and uses straight-line distance.
 - After a farmer chooses a search location, the logistics page can show an Open-Meteo weather snapshot. The public endpoint is for non-commercial evaluation and requires attribution; a paid customer key can be configured for commercial use.
 - `src/features/logistics/recommendations.ts` currently uses an explainable `rules-v1` heuristic. It scores proximity, capacity, crop suitability, date, cold chain, provider verification, pricing transparency and service coverage. Each recommendation reports reasons and unknowns; a recommendation is not a confirmed booking.
 - `logistics_recommendation_feedback` records a point-in-time feature snapshot and explicit feedback.

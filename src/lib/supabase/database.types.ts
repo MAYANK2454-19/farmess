@@ -79,6 +79,8 @@ export type Database = {
           id: string;
           price_paise: number | null;
           provider_verification_state: string | null;
+          road_distance_meters: number | null;
+          drive_duration_seconds: number | null;
           rank_position: number;
           rate_basis: string | null;
           recommendation_version: string;
@@ -100,6 +102,8 @@ export type Database = {
           id?: string;
           price_paise?: number | null;
           provider_verification_state?: string | null;
+          road_distance_meters?: number | null;
+          drive_duration_seconds?: number | null;
           rank_position: number;
           rate_basis?: string | null;
           recommendation_version: string;
@@ -121,6 +125,8 @@ export type Database = {
           id?: string;
           price_paise?: number | null;
           provider_verification_state?: string | null;
+          road_distance_meters?: number | null;
+          drive_duration_seconds?: number | null;
           rank_position?: number;
           rate_basis?: string | null;
           recommendation_version?: string;

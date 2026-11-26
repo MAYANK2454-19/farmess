@@ -30,6 +30,11 @@ export type NearbyServiceCandidate = {
   cold_chain_match: LogisticsMatch;
 };
 
+export type RoadRouteMetric = { distanceMeters: number; durationSeconds: number };
+
+/** Road distance is usually longer than straight-line; scale the radius when scoring by road. */
+export const ROAD_DETOUR_ALLOWANCE = 1.4;
+
 export type LogisticsRequirements = {
   crop?: string | null;
   requiredQuantity?: number | null;
@@ -57,10 +62,14 @@ export type LogisticsRecommendation = {
     pricingTransparency: number;
     serviceCoverage: number;
   };
-  rankingVersion: "rules-v1";
+  rankingVersion: "rules-v2";
   method: "explainable-heuristic";
   bookingStatus: "not_booked";
-  roadRoute?: { distanceMeters: number; durationSeconds: number } | null;
+  /** Which distance the proximity score used. */
+  distanceBasis: "road" | "straight_line";
+  roadRoute?: RoadRouteMetric | null;
+  /** price x road km, only for per-km transport listings with a road route. */
+  estimatedTripCostPaise?: number | null;
 };
 
 const KNOWN_UNITS = ["kg", "quintal", "tonne"] as const;
@@ -102,9 +111,19 @@ function hasComparableRate(candidate: NearbyServiceCandidate): boolean {
   );
 }
 
+function kilometres(meters: number): string {
+  return (meters / 1000).toFixed(meters < 10_000 ? 1 : 0);
+}
+
+/**
+ * Rank nearby listings with explainable rules. When a road route is known for a
+ * listing (HeiGIT), proximity is scored on road distance (radius scaled by
+ * ROAD_DETOUR_ALLOWANCE); otherwise on straight-line distance.
+ */
 export function rankLogisticsCandidates(
   candidates: readonly NearbyServiceCandidate[],
   requirements: LogisticsRequirements,
+  roadRoutes: Readonly<Record<string, RoadRouteMetric>> = {},
 ): LogisticsRecommendation[] {
   const radius = requirements.maximumRadiusMeters;
   if (!Number.isFinite(radius) || radius < 500 || radius > 100_000) {
@@ -224,7 +243,33 @@ export function rankLogisticsCandidates(
       }
     }
 
-    const proximity = proximityScore(candidate.distance_meters, radius);
+    const road = roadRoutes[candidate.id] ?? null;
+    const proximity = road
+      ? proximityScore(road.distanceMeters, radius * ROAD_DETOUR_ALLOWANCE)
+      : proximityScore(candidate.distance_meters, radius);
+    if (road) {
+      reasons.push(
+        `About ${kilometres(road.distanceMeters)} km by road, roughly ${Math.max(1, Math.round(road.durationSeconds / 60))} min drive.`,
+      );
+    } else if (Number.isFinite(candidate.distance_meters) && candidate.distance_meters >= 0) {
+      reasons.push(
+        `About ${kilometres(candidate.distance_meters)} km away in a straight line (road route unavailable).`,
+      );
+    }
+    const estimatedTripCostPaise =
+      road &&
+      candidate.service_type === "transport" &&
+      candidate.rate_basis === "per_km" &&
+      candidate.price_paise !== null &&
+      Number.isSafeInteger(candidate.price_paise) &&
+      candidate.price_paise >= 0
+        ? Math.round((candidate.price_paise * road.distanceMeters) / 1000)
+        : null;
+    if (estimatedTripCostPaise !== null) {
+      reasons.push(
+        `Estimated one-way trip cost about ₹${Math.round(estimatedTripCostPaise / 100).toLocaleString("en-IN")} at the listed per-km rate (confirm with the provider).`,
+      );
+    }
     const verification = verificationScore(candidate.verification_state);
     if (candidate.verification_state === "platform_verified") {
       reasons.push("Provider identity and listing have platform verification.");
@@ -294,9 +339,12 @@ export function rankLogisticsCandidates(
         pricingTransparency,
         serviceCoverage: serviceCoverageScore,
       },
-      rankingVersion: "rules-v1",
+      rankingVersion: "rules-v2",
       method: "explainable-heuristic",
       bookingStatus: "not_booked",
+      distanceBasis: road ? "road" : "straight_line",
+      roadRoute: road,
+      estimatedTripCostPaise,
     };
   });
 
@@ -312,7 +360,8 @@ export function rankLogisticsCandidates(
     return (
       statusRank(a.status) - statusRank(b.status) ||
       b.score - a.score ||
-      a.listing.distance_meters - b.listing.distance_meters
+      (a.roadRoute?.distanceMeters ?? a.listing.distance_meters) -
+        (b.roadRoute?.distanceMeters ?? b.listing.distance_meters)
     );
   });
 }

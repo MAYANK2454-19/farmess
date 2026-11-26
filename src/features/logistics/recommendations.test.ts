@@ -46,7 +46,8 @@ test("ranks a fully compatible and platform-verified provider as recommended", (
   assert.equal(result.status, "recommended");
   assert.equal(result.bookingStatus, "not_booked");
   assert.equal(result.method, "explainable-heuristic");
-  assert.equal(result.rankingVersion, "rules-v1");
+  assert.equal(result.rankingVersion, "rules-v2");
+  assert.equal(result.distanceBasis, "straight_line");
   assert.ok(result.score >= 70);
   assert.ok(result.reasons.some((reason) => reason.includes("cold-chain")));
 });
@@ -142,4 +143,37 @@ test("provider search radius match contributes to explanation and score", () => 
       reason.includes("within the provider's stated service radius"),
     ),
   );
+});
+
+test("road distance, when known, decides proximity instead of straight-line distance", () => {
+  // A is nearer as the crow flies but needs a long detour by road.
+  const a = base({ id: "a", distance_meters: 4_000 });
+  const b = base({ id: "b", distance_meters: 9_000 });
+  const routes = {
+    a: { distanceMeters: 30_000, durationSeconds: 3_000 },
+    b: { distanceMeters: 11_000, durationSeconds: 900 },
+  };
+  const ranked = rankLogisticsCandidates([a, b], requirements, routes);
+  assert.deepEqual(
+    ranked.map((r) => r.listing.id),
+    ["b", "a"],
+  );
+  assert.equal(ranked[0].distanceBasis, "road");
+  assert.ok(ranked[0].reasons.some((reason) => reason.includes("11 km by road")));
+  assert.deepEqual(ranked[0].roadRoute, routes.b);
+});
+
+test("per-km transport gets an estimated trip cost from the road distance", () => {
+  const [result] = rankLogisticsCandidates(
+    [base({ rate_basis: "per_km", price_paise: 3_500 })],
+    requirements,
+    { "listing-1": { distanceMeters: 12_400, durationSeconds: 1_200 } },
+  );
+  assert.equal(result.estimatedTripCostPaise, 43_400);
+  const [withoutRoute] = rankLogisticsCandidates(
+    [base({ rate_basis: "per_km", price_paise: 3_500 })],
+    requirements,
+  );
+  assert.equal(withoutRoute.estimatedTripCostPaise, null);
+  assert.equal(withoutRoute.distanceBasis, "straight_line");
 });
