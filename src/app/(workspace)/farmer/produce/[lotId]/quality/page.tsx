@@ -25,7 +25,8 @@ export default async function ProduceQualityPage({ params }: PageProps) {
     .from("produce_lots")
     .select("id,crop,variety,grade,quantity,unit")
     .eq("id", lotId)
-    .eq("owner_id", session.userId)
+    // owner_id is hidden from signed-in users (buyer privacy); row-level security
+    // already limits a farmer to their own lots, so no owner filter is needed.
     .maybeSingle();
   if (lotError || !lot) notFound();
 

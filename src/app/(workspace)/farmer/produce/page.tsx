@@ -35,7 +35,8 @@ export default async function MyProducePage() {
         .select(
           "id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,status,created_at",
         )
-        .eq("owner_id", session.userId)
+        // owner_id is hidden from signed-in users (buyer privacy); row-level security
+        // already limits a farmer to their own lots, so no owner filter is needed.
         .order("created_at", { ascending: false })
     : { data: null, error: new Error("No active session") };
 

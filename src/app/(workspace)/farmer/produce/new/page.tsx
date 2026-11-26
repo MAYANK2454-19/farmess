@@ -14,7 +14,7 @@ export default function CreateProduceLotPage() {
       </div>
       <LotForm />
       <p className="preview-footnote">
-        Saved lots are private drafts. They are not published or visible to buyers from this form.
+        Saved lots are private drafts. Publish one from My produce when you want buyers to see it.
       </p>
     </main>
   );

@@ -142,8 +142,8 @@ export function LotForm() {
           </div>
         </div>
         <div className={styles.reviewNote} role="note">
-          Your exact address and GPS coordinates are not required here. A saved draft remains
-          private to your account until a separate publish step is available.
+          Your exact address and GPS coordinates are not required here. A saved lot stays a private
+          draft until you press Publish on My produce.
         </div>
         {saveError ? (
           <div className={styles.formAlert} role="alert">

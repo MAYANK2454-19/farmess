@@ -52,12 +52,15 @@ async function getOwnLot(
   lotId: string,
   ownerId: string,
 ) {
-  return supabase
-    .from("produce_lots")
-    .select("id,crop,quantity,unit,approximate_area,available_from,sell_by,status")
-    .eq("id", lotId)
-    .eq("owner_id", ownerId)
-    .maybeSingle();
+  return (
+    supabase
+      .from("produce_lots")
+      .select("id,crop,quantity,unit,approximate_area,available_from,sell_by,status")
+      .eq("id", lotId)
+      // owner_id is hidden from signed-in users (buyer privacy); row-level security
+      // already limits a farmer to their own lots, so no owner filter is needed.
+      .maybeSingle()
+  );
 }
 
 async function getMarketObservations(

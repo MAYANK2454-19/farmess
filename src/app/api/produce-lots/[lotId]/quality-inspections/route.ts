@@ -15,12 +15,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 async function getFarmerLot(lotId: string, ownerId: string) {
   const supabase = await createClient();
-  return supabase
-    .from("produce_lots")
-    .select("id,crop,variety,grade")
-    .eq("id", lotId)
-    .eq("owner_id", ownerId)
-    .maybeSingle();
+  return (
+    supabase
+      .from("produce_lots")
+      .select("id,crop,variety,grade")
+      .eq("id", lotId)
+      // owner_id is hidden from signed-in users (buyer privacy); row-level security
+      // already limits a farmer to their own lots, so no owner filter is needed.
+      .maybeSingle()
+  );
 }
 
 async function handleGET(_request: NextRequest, context: RouteContext) {

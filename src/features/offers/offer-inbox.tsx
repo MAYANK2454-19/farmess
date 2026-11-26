@@ -141,8 +141,8 @@ export function OfferInbox() {
         <div className="empty-state">
           <h3 className="empty-title">No offers received</h3>
           <p className="empty-copy">
-            Offers linked to your produce will appear here. Draft lots are private and cannot
-            receive buyer offers until a separate publish workflow is available.
+            Offers linked to your produce will appear here. Draft lots are private; publish a lot
+            from My produce so buyers can see it and make offers.
           </p>
         </div>
       ) : (
