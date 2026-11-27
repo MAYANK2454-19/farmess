@@ -23,10 +23,7 @@ so "tomatoes", "bhindi" or "PADDY" become `Tomato`, `Bhindi(Ladies Finger)` and
 
 1. **Today's reports** from the current-day resource ("Current daily price of various
    commodities"), saved under that resource's link. The live search also keeps the reports it
-   just showed. _Pending:_ saving these needs a small database update (the save function must
-   accept which resource a row came from). Until it is applied, today's reports are shown in
-   the search results as before but are not stored; they reach the trend a day later through
-   the history resource.
+   just showed.
 2. **History** from the "Variety-wise daily market prices" resource, newest first: 12 months
    for a district, 4 months when only a state is known. A later run first tops up the days newer
    than what is saved, then continues further back from where the earlier run stopped.
@@ -69,8 +66,8 @@ rest is fetched automatically next time.
 - `src/lib/market-data/auto-import-server.ts` — claims, background job, today's prices.
 - `src/lib/market-data/history-import.ts` — shared with the admin import.
 - `src/app/api/market-history/ensure/route.ts` — status and trigger.
-- `supabase/migrations/20261127023511_farmess_auto_import_weather_ratings_sessions.sql` — database
-  functions.
+- `supabase/migrations/20261127023511_farmess_auto_import_weather_ratings_sessions.sql` and
+  `20261127050021_farmess_offer_fix_and_current_price_ingest.sql` — database functions.
 
 ## Note on speed
 

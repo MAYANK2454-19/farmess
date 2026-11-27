@@ -56,7 +56,7 @@ The schema does not process payments and does not claim that an accepted offer m
 
 ## Applied migration ledger
 
-The connected project records these 26 applied migrations (verified 27 November 2026; file versions match the remote ledger):
+The connected project records these 27 applied migrations (verified 27 November 2026; file versions match the remote ledger):
 
 1. `20261122160345_farmess_core_backend`
 2. `20261122160439_farmess_core_backend_performance`
@@ -90,6 +90,10 @@ The connected project records these 26 applied migrations (verified 27 November 
     hash in `private.server_tokens`), `weather_daily`, `ratings` with `submit_rating` and the
     aggregate-only rating functions, sale steps (`advance_sale`, `my_sales`), and the signed-in
     devices functions (`my_sessions`, `revoke_my_session`)
+27. `20261127050021_farmess_offer_fix_and_current_price_ingest` — `create_buyer_offer` returned
+    `offers.terms` without a cast, which made every buyer offer fail (fixed with `::text`);
+    `ingest_market_observations` takes `p_source` (`history` or `current`) so today's reports keep
+    the link of the current-day resource
 
 Before changing schema, link the Supabase CLI to the project, compare local and remote migration history, inspect the diff and apply only reviewed migrations. Do not reset the live project or make untracked DDL edits directly.
 
