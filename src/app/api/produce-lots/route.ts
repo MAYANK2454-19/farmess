@@ -3,6 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { parseLotDraftRequest } from "@/features/lots/lot-request";
+import { scheduleMarketHistory } from "@/lib/market-data/auto-import-server";
+
+// A background price fetch for the new lot's crop may outlive the response.
+export const maxDuration = 300;
 
 const LOT_SELECT =
   "id,crop,variety,grade,quantity,unit,approximate_area,available_from,sell_by,status,created_at,published_at";
@@ -96,6 +100,20 @@ async function handlePOST(request: NextRequest) {
     return NextResponse.json(
       { error: "Your lot could not be saved. Please try again." },
       { status: 500 },
+    );
+  }
+
+  // So the farmer finds a price trend ready for this crop: fetch its mandi
+  // prices for their own district in the background.
+  const { data: place } = await supabase
+    .from("profiles")
+    .select("state,district")
+    .eq("id", session.userId)
+    .maybeSingle();
+  if (place?.state) {
+    await scheduleMarketHistory(
+      { crop: parsed.data.crop, state: place.state, district: place.district },
+      "lot",
     );
   }
 

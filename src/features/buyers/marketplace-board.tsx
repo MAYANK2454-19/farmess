@@ -3,6 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
+import { RatingBadge } from "@/features/ratings/rating-badge";
+import type { RatingSummary } from "@/features/ratings/rating";
 
 type Lot = Pick<
   Database["public"]["Tables"]["produce_lots"]["Row"],
@@ -15,7 +17,7 @@ type Lot = Pick<
   | "approximate_area"
   | "available_from"
   | "sell_by"
-> & { farmer_contact?: CounterpartyContact | null };
+> & { farmer_contact?: CounterpartyContact | null; farmer_rating?: RatingSummary | null };
 
 type Offer = Pick<
   Database["public"]["Tables"]["offers"]["Row"],
@@ -302,6 +304,9 @@ export function MarketplaceBoard() {
                   <p className="marketplace-lot-dates">
                     Available from {formatDate(lot.available_from)} · Sell by{" "}
                     {formatDate(lot.sell_by)}
+                  </p>
+                  <p className="marketplace-lot-dates">
+                    Farmer: <RatingBadge summary={lot.farmer_rating} label="This farmer's rating" />
                   </p>
                   {lot.farmer_contact ? (
                     <ContactCard title="Farmer" contact={lot.farmer_contact} hiddenHint="" />

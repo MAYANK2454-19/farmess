@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getRoadRoutes } from "@/lib/logistics/road-routing";
+import { ratingsByListing } from "@/lib/ratings";
 import {
   rankLogisticsCandidates,
   type NearbyServiceCandidate,
@@ -139,14 +140,20 @@ async function handleGET(request: NextRequest) {
   const candidates = (data ?? []) as unknown as NearbyServiceCandidate[];
   // Road distances first (nearest listings), so the ranking can use them.
   const nearestFirst = [...candidates].sort((a, b) => a.distance_meters - b.distance_meters);
-  const routing = await getRoadRoutes(
-    { latitude, longitude },
-    nearestFirst.map((candidate) => ({
-      id: candidate.id,
-      latitude: candidate.latitude,
-      longitude: candidate.longitude,
-    })),
-  );
+  const [routing, providerRatings] = await Promise.all([
+    getRoadRoutes(
+      { latitude, longitude },
+      nearestFirst.map((candidate) => ({
+        id: candidate.id,
+        latitude: candidate.latitude,
+        longitude: candidate.longitude,
+      })),
+    ),
+    ratingsByListing(
+      supabase,
+      candidates.map((candidate) => candidate.id),
+    ),
+  ]);
   const recommendationsWithRoadRoutes = rankLogisticsCandidates(
     candidates,
     {
@@ -159,6 +166,7 @@ async function handleGET(request: NextRequest) {
       maximumRadiusMeters: Math.round(radiusKm * 1000),
     },
     routing.routes,
+    Object.fromEntries(providerRatings),
   );
 
   return NextResponse.json(
@@ -175,12 +183,14 @@ async function handleGET(request: NextRequest) {
         locationUsedForThisSearchOnly: true,
       },
       metadata: {
-        rankingVersion: "rules-v2",
+        rankingVersion: "rules-v3",
         method: "explainable-heuristic",
         roadRoutingStatus: routing.status,
         roadRoutingProvider: "HeiGIT openrouteservice matrix",
         distanceMeaning:
           "Proximity is scored on real road distance (HeiGIT openrouteservice) when a route is returned, otherwise on straight-line distance; each result states which was used. Per-km transport listings include an estimated one-way trip cost.",
+        reputationMeaning:
+          "Ratings come only from farmers whose completed request the provider served on Farmess. They move a score by at most 5 points either way; fewer than 3 ratings count partly, and a provider with no ratings is not penalised.",
         bookingMeaning: "A discovery result is not a booking. Provider confirmation is required.",
         verificationMeaning:
           "Provider verification reflects the evidence state stored in Farmess; it does not guarantee live availability.",

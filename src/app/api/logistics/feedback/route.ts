@@ -2,6 +2,7 @@ import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { ratingsByListing } from "@/lib/ratings";
 
 function isOptionalBoolean(value: unknown): value is boolean | null {
   return value === null || typeof value === "boolean";
@@ -159,12 +160,18 @@ async function handlePOST(request: NextRequest) {
     );
   }
 
+  // What the provider's reputation was when this recommendation was judged
+  // (an input for the offline ranker).
+  const reputation = (await ratingsByListing(supabase, [listing.id])).get(listing.id) ?? null;
+
   const { data, error } = await supabase
     .from("logistics_recommendation_feedback")
     .insert({
       user_id: session.userId,
       service_listing_id: listing.id,
-      recommendation_version: "rules-v2",
+      recommendation_version: "rules-v3",
+      provider_rating_average: reputation?.average ?? null,
+      provider_rating_count: reputation?.count ?? 0,
       rank_position: record.rank_position,
       distance_meters: record.distance_meters,
       capacity_match: record.capacity_match as boolean | null,

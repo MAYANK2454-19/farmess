@@ -4,6 +4,16 @@ import type { ReactNode } from "react";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import "./design-system.css";
+import { I18nStarter } from "@/i18n/language-switcher";
+import { LANGUAGE_COOKIE, LANGUAGE_STORAGE_KEY } from "@/i18n/languages";
+
+/**
+ * Runs before the page is shown. If a language other than English was chosen
+ * on an earlier visit, the page is kept hidden for a moment so English text
+ * does not flash before the translation is applied (at most 2.5 seconds, in
+ * case the dictionary cannot be loaded).
+ */
+const LANGUAGE_BOOT = `(function(){try{var l=null;try{l=localStorage.getItem("${LANGUAGE_STORAGE_KEY}")}catch(e){}if(!l){var m=document.cookie.match(/(?:^|; )${LANGUAGE_COOKIE}=([a-z]{2,3})/);l=m&&m[1]}if(l&&l!=="en"){var d=document.documentElement;d.setAttribute("data-i18n","pending");d.setAttribute("data-i18n-pending","");setTimeout(function(){d.removeAttribute("data-i18n-pending")},2500)}}catch(e){}})();`;
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -40,8 +50,18 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${hindi.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="en"
+      className={`${display.variable} ${body.variable} ${hindi.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: LANGUAGE_BOOT }} />
+      </head>
+      <body>
+        <I18nStarter />
+        {children}
+      </body>
     </html>
   );
 }

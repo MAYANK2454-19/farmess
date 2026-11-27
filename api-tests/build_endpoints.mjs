@@ -64,6 +64,14 @@ const BODY = {
   "PATCH /api/notifications": { all: true },
   "PATCH /api/profile": { display_name: "API check" },
   "POST /api/market-data/refresh": { commodity: "Tomato", limit: 10 },
+  "POST /api/market-history/ensure": {
+    crop: "Tomato",
+    state: "Jammu and Kashmir",
+    district: "Jammu",
+  },
+  "PATCH /api/sales": { id: SAMPLE_ID, action: "dispatch" },
+  "POST /api/ratings": { contextType: "sale", contextId: SAMPLE_ID, stars: 5 },
+  "DELETE /api/session/devices": { id: SAMPLE_ID },
   "POST /api/admin/market-history": { commodity: "Tomato", state: "Maharashtra", days: 30 },
   "POST /api/produce-lots/{lotId}/quality-inspections": {
     checks: { appearance: "acceptable" },

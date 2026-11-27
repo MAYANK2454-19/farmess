@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { contactsById } from "@/lib/contacts";
+import { exchangedStars, ratingOrNone, ratingsByListing } from "@/lib/ratings";
 import { parseServiceRequestCancellation } from "@/features/logistics/request-cancellation";
 
 const LISTING_SELECT =
@@ -85,13 +86,32 @@ async function handleGET() {
   // Provider name always; phone/email once accepted or if the provider opted in.
   const { data: contactRows } = await supabase.rpc("service_request_contacts");
   const contacts = contactsById(contactRows, (row) => row.request_id);
+  const requests = requestsResult.data ?? [];
+  const [providerRatings, stars] = await Promise.all([
+    ratingsByListing(supabase, [
+      ...(listingsResult.data ?? []).map((listing) => listing.id),
+      ...requests.map((request) => request.listing_id),
+    ]),
+    exchangedStars(
+      supabase,
+      session.userId,
+      "service_request",
+      requests.filter((request) => request.status === "completed").map((request) => request.id),
+    ),
+  ]);
 
   return NextResponse.json(
     {
-      listings: listingsResult.data ?? [],
-      requests: (requestsResult.data ?? []).map((request) => ({
+      listings: (listingsResult.data ?? []).map((listing) => ({
+        ...listing,
+        provider_rating: ratingOrNone(providerRatings, listing.id),
+      })),
+      requests: requests.map((request) => ({
         ...request,
         contact: contacts.get(request.id) ?? null,
+        provider_rating: ratingOrNone(providerRatings, request.listing_id),
+        my_stars: stars.get(request.id)?.mine ?? null,
+        their_stars: stars.get(request.id)?.theirs ?? null,
       })),
     },
     { headers: { "Cache-Control": "private, no-store" } },

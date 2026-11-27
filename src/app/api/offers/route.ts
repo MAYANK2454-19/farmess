@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { contactsById } from "@/lib/contacts";
+import { ratingOrNone, ratingsByUser } from "@/lib/ratings";
 
 async function handleGET() {
   const session = await getFarmessSession();
@@ -19,7 +20,9 @@ async function handleGET() {
   const supabase = await createClient();
   const { data: offers, error } = await supabase
     .from("offers")
-    .select("id,lot_id,quantity,unit,price_paise_per_quintal,valid_until,status,terms,created_at")
+    .select(
+      "id,lot_id,buyer_id,quantity,unit,price_paise_per_quintal,valid_until,status,terms,created_at",
+    )
     .eq("farmer_id", session.userId)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -44,12 +47,18 @@ async function handleGET() {
   // Buyer name always; phone/email once accepted or if the buyer opted in.
   const { data: contactRows } = await supabase.rpc("offer_contacts");
   const contacts = contactsById(contactRows, (row) => row.offer_id);
+  const buyerRatings = await ratingsByUser(
+    supabase,
+    (offers ?? []).map((offer) => offer.buyer_id),
+  );
   const now = Date.now();
-  const result = (offers ?? []).map((offer) => ({
+  // The buyer's account id is used only to look up their reputation; it is not returned.
+  const result = (offers ?? []).map(({ buyer_id, ...offer }) => ({
     ...offer,
     is_expired: new Date(offer.valid_until).getTime() <= now,
     lot: lotById.get(offer.lot_id) ?? null,
     contact: contacts.get(offer.id) ?? null,
+    buyer_rating: ratingOrNone(buyerRatings, buyer_id),
   }));
 
   return NextResponse.json(

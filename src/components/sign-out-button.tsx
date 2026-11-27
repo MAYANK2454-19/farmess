@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 
-export function SignOutButton() {
+export function SignOutButton({ role }: { role?: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -15,7 +15,8 @@ export function SignOutButton() {
     setError("");
 
     const supabase = createClient();
-    const { error: signOutError } = await supabase.auth.signOut();
+    // This device only. Other devices are signed out from "Sign-in and security".
+    const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
 
     if (signOutError) {
       setError("Could not sign out. Please try again.");
@@ -23,7 +24,8 @@ export function SignOutButton() {
       return;
     }
 
-    router.replace("/login");
+    // Admins return to the public home page, which has no admin sign-in on it.
+    router.replace(role === "admin" ? "/" : "/login?reason=signed_out");
     router.refresh();
   }
 

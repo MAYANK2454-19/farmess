@@ -123,6 +123,8 @@ export async function lookupDistrictCentre(
   );
   if (!coordinates) {
     // Some districts are indexed by their headquarters town rather than "<name> district".
+    // OpenStreetMap asks for at most one request a second.
+    await new Promise<void>((resolve) => setTimeout(resolve, 1_100));
     const fallback = encodeURIComponent(`${district}, ${state}, India`);
     coordinates = parseNominatimSearch(
       await getJson(

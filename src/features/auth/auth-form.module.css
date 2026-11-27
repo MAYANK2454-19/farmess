@@ -105,6 +105,12 @@
   border-left: 3px solid var(--brand-secondary);
 }
 
+/* Why the person was sent to this page (signed out for inactivity, for example). */
+.notice {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
 .switches {
   display: flex;
   flex-wrap: wrap;

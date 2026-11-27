@@ -108,3 +108,175 @@
   font-size: 0.85rem;
   padding: 6px 0 8px;
 }
+
+.fetchNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--info-tint);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.fetchDot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--khet-mid);
+  animation: fetchPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes fetchPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fetchDot {
+    animation: none;
+  }
+}
+
+.weather {
+  margin: 16px 0 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--megh-soft);
+  border-left: 4px solid var(--megh);
+  border-radius: var(--radius-sm);
+  background: #f6fafc;
+}
+
+.weather h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.weatherLead {
+  margin: 0 0 10px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.weatherDays {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 8px;
+}
+
+.weatherDays li {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--megh-soft);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.weatherDays strong {
+  color: var(--megh);
+  font-size: 0.95rem;
+}
+
+.scenarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.scenarios div {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--megh-soft);
+}
+
+.scenarios span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.scenarios strong {
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+/* Inside a grid the panel must be allowed to be narrower than its widest content. */
+.root {
+  min-width: 0;
+}
+
+/* Method names are sentences: let them wrap instead of widening the page. */
+.models td,
+.models th {
+  white-space: normal;
+}
+
+.models td:first-child {
+  min-width: 190px;
+}
+
+/* Keep the panel's content off its edges, in line with the panel heading. */
+.summary,
+.legend,
+.note,
+.weather,
+.markets,
+.message,
+.fetchNotice,
+.chart {
+  margin-inline: 20px;
+}
+
+.chart {
+  width: calc(100% - 40px);
+}
+
+.root :global(.table-wrap) {
+  margin-inline: 20px;
+}
+
+.root > :last-child {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .summary,
+  .legend,
+  .note,
+  .weather,
+  .markets,
+  .message,
+  .fetchNotice,
+  .chart {
+    margin-inline: 14px;
+  }
+
+  .chart {
+    width: calc(100% - 28px);
+  }
+
+  .root :global(.table-wrap) {
+    margin-inline: 14px;
+  }
+}

@@ -3,13 +3,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { canonicalDistrict, canonicalState, ogdStateName } from "@/lib/location/india";
+import { canonicalCommodity } from "@/lib/market-data/commodities";
+import { fetchHistoryContinuing, historyRecordsToRows } from "@/lib/market-data/history-import";
 import { reconcileMarketObservationHistory } from "@/lib/market-data/import-batch";
-import { normalizeOgdResponseWithDiagnostics, SOURCE_NAME } from "@/lib/market-data/normalize";
-import {
-  fetchOgdHistory,
-  historyDateToIso,
-  OGD_HISTORY_RESOURCE_URL,
-} from "@/lib/market-data/ogd-history";
+import { SOURCE_NAME } from "@/lib/market-data/normalize";
+import { OGD_HISTORY_RESOURCE_URL } from "@/lib/market-data/ogd-history";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,12 +17,6 @@ const ALLOWED_DAYS = [30, 90, 180, 365] as const;
 const MAX_RECORDS = 20_000;
 const TIME_BUDGET_MS = 240_000;
 const UPSERT_CHUNK = 500;
-
-function rupeesToPaise(value: string | null): number | null | undefined {
-  if (value === null) return null;
-  const paise = Math.round(Number(value) * 100);
-  return Number.isSafeInteger(paise) && paise >= 0 ? paise : undefined;
-}
 
 function text(body: Record<string, unknown>, key: string, required: boolean) {
   const value = body[key];
@@ -93,6 +85,8 @@ async function handlePOST(request: NextRequest) {
     );
   }
 
+  // The source matches commodity names exactly, so "tomato" becomes "Tomato".
+  const sourceCommodity = canonicalCommodity(commodity.value!).name;
   const canonical = canonicalState(state.value!) ?? state.value!;
   const sourceState = ogdStateName(canonical);
   const sourceDistrict = district.value
@@ -102,7 +96,7 @@ async function handlePOST(request: NextRequest) {
   const fromDate = new Date(startedAt - days * 86_400_000).toISOString().slice(0, 10);
   const filters = {
     kind: "history",
-    commodity: commodity.value,
+    commodity: sourceCommodity,
     state: sourceState,
     district: sourceDistrict ?? null,
     market: market.value ?? null,
@@ -117,7 +111,7 @@ async function handlePOST(request: NextRequest) {
   let savedQuery = supabase
     .from("market_observations")
     .select("observation_date", { count: "exact" })
-    .ilike("crop", commodity.value!)
+    .ilike("crop", sourceCommodity)
     .ilike("state", sourceState)
     .eq("source_url", OGD_HISTORY_RESOURCE_URL)
     .gte("observation_date", fromDate);
@@ -129,71 +123,23 @@ async function handlePOST(request: NextRequest) {
   const newestSaved = (newestRows?.[0] as { observation_date?: string } | undefined)
     ?.observation_date;
 
-  const base = {
-    apiKey,
-    commodity: commodity.value!,
-    state: sourceState,
-    district: sourceDistrict,
-    market: market.value,
-    maxRecords: MAX_RECORDS,
-    deadline: startedAt + TIME_BUDGET_MS,
-  };
-  let history = await fetchOgdHistory({ ...base, fromDate: newestSaved ?? fromDate });
-  if (
-    newestSaved &&
-    (savedBefore ?? 0) > 0 &&
-    (history.stopReason === "reached_start_date" || history.stopReason === "no_more_records")
-  ) {
-    const fresh = history.records.filter(
-      (record) => (historyDateToIso(record.arrival_date) ?? "") > newestSaved,
-    ).length;
-    const older = await fetchOgdHistory({
-      ...base,
-      fromDate,
-      startOffset: (savedBefore ?? 0) + fresh,
-      maxRecords: Math.max(1, MAX_RECORDS - history.records.length),
-    });
-    const dates = [history.oldestDate, older.oldestDate, history.newestDate, older.newestDate]
-      .filter((value): value is string => Boolean(value))
-      .sort();
-    history = {
-      records: [...history.records, ...older.records],
-      requests: history.requests + older.requests,
-      pageSize: history.pageSize ?? older.pageSize,
-      oldestDate: dates[0] ?? null,
-      newestDate: dates[dates.length - 1] ?? null,
-      stopReason: older.stopReason,
-      ...(older.errorMessage ? { errorMessage: older.errorMessage } : {}),
-    };
-  }
+  const history = await fetchHistoryContinuing(
+    {
+      apiKey,
+      commodity: sourceCommodity,
+      state: sourceState,
+      district: sourceDistrict,
+      market: market.value,
+      maxRecords: MAX_RECORDS,
+      deadline: startedAt + TIME_BUDGET_MS,
+    },
+    fromDate,
+    { savedCount: savedBefore ?? 0, newestDate: newestSaved ?? null },
+  );
 
   const retrievedAt = new Date().toISOString();
-  const normalized = normalizeOgdResponseWithDiagnostics({ records: history.records }, retrievedAt);
-  const today = retrievedAt.slice(0, 10);
-  const rows = normalized.records
-    .filter((record) => record.observationDate <= today)
-    .flatMap((record) => {
-      const min = rupeesToPaise(record.minPrice);
-      const max = rupeesToPaise(record.maxPrice);
-      const modal = rupeesToPaise(record.modalPrice);
-      if (min === undefined || max === undefined || modal === undefined) return [];
-      return [
-        {
-          crop: record.commodity,
-          variety: record.variety,
-          district: record.district,
-          state: record.state,
-          market_name: record.market,
-          min_price_paise_per_quintal: min,
-          max_price_paise_per_quintal: max,
-          modal_price_paise_per_quintal: modal,
-          observation_date: record.observationDate,
-          retrieved_at: retrievedAt,
-          source_name: SOURCE_NAME,
-          source_url: OGD_HISTORY_RESOURCE_URL,
-        },
-      ];
-    });
+  const normalized = historyRecordsToRows(history.records, retrievedAt);
+  const rows = normalized.rows;
   const batch = reconcileMarketObservationHistory(rows);
 
   let saved = 0;

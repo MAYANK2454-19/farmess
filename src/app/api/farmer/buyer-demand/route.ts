@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { QuantityUnit } from "@/features/marketplace/domain";
+import { toRatingSummary } from "@/features/ratings/rating";
 import {
   matchLotToRequirement,
   type DemandRequirement,
@@ -68,6 +69,7 @@ async function handleGET() {
               type: row.buyer_type,
               phone: row.buyer_phone,
               email: row.buyer_email,
+              rating: toRatingSummary(row.buyer_rating_average, row.buyer_rating_count),
             },
             targetPricePaisePerQuintal: row.target_price_paise_per_quintal,
           },

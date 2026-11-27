@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       : role === "operator"
         ? "/operator"
         : role === "admin"
-          ? "/workspace-unavailable"
+          ? "/admin"
           : "/farmer";
   const destination = request.nextUrl.searchParams.has("next") ? nextPath : roleHome;
 

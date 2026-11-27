@@ -40,3 +40,18 @@ export function resolveOpenMeteoEndpoint(options: {
   if (options.isVercelProduction && !options.nonCommercialUseDeclared) return null;
   return OPEN_METEO_PUBLIC_ENDPOINT;
 }
+
+export const OPEN_METEO_PUBLIC_ARCHIVE_ENDPOINT = "https://archive-api.open-meteo.com/v1/archive";
+export const OPEN_METEO_CUSTOMER_ARCHIVE_ENDPOINT =
+  "https://customer-archive-api.open-meteo.com/v1/archive";
+
+/** Same rules as resolveOpenMeteoEndpoint, for the archive of past weather. */
+export function resolveOpenMeteoArchiveEndpoint(options: {
+  customerKey: string | undefined;
+  isVercelProduction: boolean;
+  nonCommercialUseDeclared: boolean;
+}): string | null {
+  if (options.customerKey) return OPEN_METEO_CUSTOMER_ARCHIVE_ENDPOINT;
+  if (options.isVercelProduction && !options.nonCommercialUseDeclared) return null;
+  return OPEN_METEO_PUBLIC_ARCHIVE_ENDPOINT;
+}

@@ -6,6 +6,8 @@ import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode 
 import { BrandLogo, BrandMark } from "@/components/brand-logo";
 import { Icon, type IconName } from "@/components/icons";
 import { SignOutButton } from "@/components/sign-out-button";
+import { SessionGuard } from "@/features/auth/session-guard";
+import { LanguageSwitcher } from "@/i18n/language-switcher";
 import {
   ACCOUNT_NAVIGATION,
   NAVIGATION_BY_ROLE,
@@ -162,6 +164,7 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
       data-sidebar={collapsed ? "collapsed" : "expanded"}
       data-drawer={drawerOpen ? "open" : "closed"}
     >
+      <SessionGuard role={user.role} />
       <aside className="sidebar" id="workspace-sidebar" aria-label="Primary navigation">
         <div className="sidebar-head">
           <Link href={home} className="brand" aria-label="Farmess home">
@@ -204,8 +207,13 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
           collapsed={collapsed}
         />
 
-        <p className="nav-section-label">Account</p>
-        <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} collapsed={collapsed} />
+        {/* Notifications and the profile belong to the farmer, buyer and provider workspaces. */}
+        {user.role !== "admin" ? (
+          <>
+            <p className="nav-section-label">Account</p>
+            <NavigationLinks items={ACCOUNT_NAVIGATION} pathname={pathname} collapsed={collapsed} />
+          </>
+        ) : null}
 
         <div className="sidebar-bottom">
           <div className="sidebar-trust">
@@ -250,19 +258,37 @@ export function WorkspaceLayout({ children, user }: { children: ReactNode; user:
             </span>
           </div>
           <div className="topbar-right">
-            <Link
-              href="/notifications"
-              className={
-                "topbar-icon-button" + (isActiveRoute(pathname, "/notifications") ? " active" : "")
-              }
-              aria-label="Notifications"
-            >
-              <Icon name="bell" size={18} />
-            </Link>
-            <Link href="/profile" className="topbar-icon-button" aria-label="Profile and privacy">
-              <Icon name="user" size={18} />
-            </Link>
-            <SignOutButton />
+            <LanguageSwitcher />
+            {user.role === "admin" ? (
+              <Link
+                href="/admin/security"
+                className="topbar-icon-button"
+                aria-label="Sign-in and security"
+              >
+                <Icon name="user" size={18} />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/notifications"
+                  className={
+                    "topbar-icon-button" +
+                    (isActiveRoute(pathname, "/notifications") ? " active" : "")
+                  }
+                  aria-label="Notifications"
+                >
+                  <Icon name="bell" size={18} />
+                </Link>
+                <Link
+                  href="/profile"
+                  className="topbar-icon-button"
+                  aria-label="Profile and privacy"
+                >
+                  <Icon name="user" size={18} />
+                </Link>
+              </>
+            )}
+            <SignOutButton role={user.role} />
           </div>
         </header>
         {children}

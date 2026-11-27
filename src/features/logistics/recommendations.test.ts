@@ -46,7 +46,9 @@ test("ranks a fully compatible and platform-verified provider as recommended", (
   assert.equal(result.status, "recommended");
   assert.equal(result.bookingStatus, "not_booked");
   assert.equal(result.method, "explainable-heuristic");
-  assert.equal(result.rankingVersion, "rules-v2");
+  assert.equal(result.rankingVersion, "rules-v3");
+  assert.equal(result.scoreBreakdown.reputation, 0);
+  assert.equal(result.providerRating, null);
   assert.equal(result.distanceBasis, "straight_line");
   assert.ok(result.score >= 70);
   assert.ok(result.reasons.some((reason) => reason.includes("cold-chain")));
@@ -176,4 +178,40 @@ test("per-km transport gets an estimated trip cost from the road distance", () =
   );
   assert.equal(withoutRoute.estimatedTripCostPaise, null);
   assert.equal(withoutRoute.distanceBasis, "straight_line");
+});
+
+test("a provider's ratings move the score by at most five points and are explained", () => {
+  const id = base().id;
+  const plain = rankLogisticsCandidates([base()], requirements)[0];
+  const liked = rankLogisticsCandidates(
+    [base()],
+    requirements,
+    {},
+    {
+      [id]: { average: 4.8, count: 6 },
+    },
+  )[0];
+  const disliked = rankLogisticsCandidates(
+    [base()],
+    requirements,
+    {},
+    {
+      [id]: { average: 1.5, count: 6 },
+    },
+  )[0];
+  assert.ok(liked.scoreBreakdown.reputation > 0 && liked.scoreBreakdown.reputation <= 5);
+  assert.ok(disliked.scoreBreakdown.reputation < 0 && disliked.scoreBreakdown.reputation >= -5);
+  assert.ok(liked.score >= plain.score && plain.score > disliked.score);
+  assert.ok(liked.reasons.some((reason) => reason.includes("Rated 4.8 out of 5 (6 ratings)")));
+  assert.deepEqual(liked.providerRating, { average: 4.8, count: 6 });
+});
+
+test("ratings can decide between two otherwise equal providers", () => {
+  const ranked = rankLogisticsCandidates(
+    [base({ id: "a" }), base({ id: "b" })],
+    requirements,
+    {},
+    { b: { average: 5, count: 4 } },
+  );
+  assert.equal(ranked[0].listing.id, "b");
 });

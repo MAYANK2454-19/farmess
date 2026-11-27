@@ -1,7 +1,11 @@
 import { withApiLogging } from "@/lib/observability/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
+import { scheduleMarketHistory } from "@/lib/market-data/auto-import-server";
 import { createClient } from "@/lib/supabase/server";
+
+// A background price fetch for the requested crop may outlive the response.
+export const maxDuration = 300;
 
 const REQUIREMENT_SELECT =
   "id,crop,variety,grade,market_area,min_quantity,max_quantity,unit,target_price_paise_per_quintal,delivery_by,status,created_at";
@@ -203,6 +207,19 @@ async function handlePOST(request: NextRequest) {
 
   if (error) {
     return NextResponse.json({ error: "Your requirement could not be saved." }, { status: 409 });
+  }
+
+  // Fetch this crop's mandi prices for the buyer's own area in the background.
+  const { data: place } = await supabase
+    .from("profiles")
+    .select("state,district")
+    .eq("id", session.userId)
+    .maybeSingle();
+  if (place?.state) {
+    await scheduleMarketHistory(
+      { crop: body.crop.trim(), state: place.state, district: place.district },
+      "requirement",
+    );
   }
 
   return NextResponse.json(

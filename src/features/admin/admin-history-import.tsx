@@ -109,11 +109,12 @@ export function AdminHistoryImport() {
     <section className="panel admin-panel">
       <div className="panel-header">
         <div>
-          <h2 className="panel-title">Import past prices (history)</h2>
+          <h2 className="panel-title">Load past prices in advance (optional)</h2>
           <p className="panel-caption">
-            Pulls every day&apos;s reported mandi prices for the chosen period from the government
-            AGMARKNET archive on data.gov.in. These fill the price trend and forecast that farmers
-            see. Run it again any time; already-saved days are not duplicated.
+            Prices are fetched automatically when someone looks up a crop, so this is optional. Use
+            it to load a crop for a whole state ahead of a demo or a busy season. It pulls every
+            day&apos;s reported mandi prices for the chosen period from the government AGMARKNET
+            archive on data.gov.in; already-saved days are not duplicated.
           </p>
         </div>
       </div>

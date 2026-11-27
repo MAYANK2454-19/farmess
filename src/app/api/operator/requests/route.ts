@@ -3,10 +3,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { contactsById } from "@/lib/contacts";
+import { exchangedStars, ratingOrNone, ratingsByUser } from "@/lib/ratings";
 import { parseProviderRequestCancellation } from "@/features/operators/request-cancellation";
 
 const REQUEST_SELECT =
-  "id,listing_id,origin_area,destination_area,requested_date,requested_quantity,unit,status,message,created_at";
+  "id,listing_id,requester_id,origin_area,destination_area,requested_date,requested_quantity,unit,status,message,created_at";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -59,12 +60,30 @@ async function handleGET() {
   // Requester name always; phone/email once accepted or if the requester opted in.
   const { data: contactRows } = await supabase.rpc("service_request_contacts");
   const contacts = contactsById(contactRows, (row) => row.request_id);
+  const [requesterRatings, stars] = await Promise.all([
+    ratingsByUser(
+      supabase,
+      (requests ?? []).map((request) => request.requester_id),
+    ),
+    exchangedStars(
+      supabase,
+      session.userId,
+      "service_request",
+      (requests ?? [])
+        .filter((request) => request.status === "completed")
+        .map((request) => request.id),
+    ),
+  ]);
   return NextResponse.json(
     {
-      requests: (requests ?? []).map((request) => ({
+      // The requester's account id is used only to look up their reputation; it is not returned.
+      requests: (requests ?? []).map(({ requester_id, ...request }) => ({
         ...request,
         listing: listingById.get(request.listing_id) ?? null,
         contact: contacts.get(request.id) ?? null,
+        requester_rating: ratingOrNone(requesterRatings, requester_id),
+        my_stars: stars.get(request.id)?.mine ?? null,
+        their_stars: stars.get(request.id)?.theirs ?? null,
       })),
     },
     { headers: { "Cache-Control": "private, no-store" } },

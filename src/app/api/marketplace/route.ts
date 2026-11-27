@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getFarmessSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { contactsById } from "@/lib/contacts";
+import { ratingOrNone, ratingsByLot } from "@/lib/ratings";
 
 const OFFER_SELECT =
   "id,lot_id,quantity,unit,price_paise_per_quintal,valid_until,status,terms,created_at";
@@ -78,10 +79,18 @@ async function handleGET() {
     ]),
   );
   const offerContacts = contactsById(offerContactsResult.data, (row) => row.offer_id);
+  const farmerRatings = await ratingsByLot(
+    supabase,
+    lots.map((lot) => lot.id),
+  );
 
   return NextResponse.json(
     {
-      lots: lots.map((lot) => ({ ...lot, farmer_contact: lotContacts.get(lot.id!) ?? null })),
+      lots: lots.map((lot) => ({
+        ...lot,
+        farmer_contact: lotContacts.get(lot.id!) ?? null,
+        farmer_rating: ratingOrNone(farmerRatings, lot.id),
+      })),
       offers: (offersResult.data ?? []).map((offer) => ({
         ...offer,
         is_expired: new Date(offer.valid_until).getTime() <= Date.now(),

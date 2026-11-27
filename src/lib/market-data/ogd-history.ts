@@ -35,6 +35,11 @@ export type OgdHistoryRequest = {
   deadline: number;
   /** Source row to start from (to continue past rows already saved). */
   startOffset?: number;
+  /**
+   * Called with each page's kept records as soon as it arrives, so a long
+   * import can save its progress instead of holding everything until the end.
+   */
+  onRecords?: (records: Record<string, unknown>[]) => Promise<void> | void;
 };
 
 export type OgdHistoryStopReason =
@@ -50,6 +55,10 @@ export type OgdHistoryResult = {
   records: Record<string, unknown>[];
   requests: number;
   pageSize: number | null;
+  /** Rows the source reports for these filters across all dates (null if not reported). */
+  sourceTotal: number | null;
+  /** Source rows read past the start offset, including rows older than fromDate. */
+  rowsRead: number;
   oldestDate: string | null;
   newestDate: string | null;
   stopReason: OgdHistoryStopReason;
@@ -111,6 +120,8 @@ export async function fetchOgdHistory(
   const records: Record<string, unknown>[] = [];
   let requests = 0;
   let pageSize: number | null = null;
+  let sourceTotal: number | null = null;
+  let rowsRead = 0;
   let oldestDate: string | null = null;
   let newestDate: string | null = null;
   let offset = request.startOffset ?? 0;
@@ -119,6 +130,8 @@ export async function fetchOgdHistory(
     records,
     requests,
     pageSize,
+    sourceTotal,
+    rowsRead,
     oldestDate,
     newestDate,
     stopReason,
@@ -177,9 +190,14 @@ export async function fetchOgdHistory(
       pageSize =
         Number.isSafeInteger(reportedLimit) && reportedLimit > 0 ? reportedLimit : page.length;
     }
+    const reportedTotal = Number((payload as { total?: unknown }).total);
+    if (sourceTotal === null && Number.isSafeInteger(reportedTotal) && reportedTotal >= 0) {
+      sourceTotal = reportedTotal;
+    }
     if (page.length === 0) return finish("no_more_records");
 
     let crossedStart = false;
+    const kept: Record<string, unknown>[] = [];
     for (const raw of page) {
       const record = lowerCaseHistoryRecord(raw);
       if (!record) continue;
@@ -190,11 +208,15 @@ export async function fetchOgdHistory(
       }
       if (records.length >= request.maxRecords) break;
       records.push(record);
+      kept.push(record);
       if (date) {
         if (!newestDate || date > newestDate) newestDate = date;
         if (!oldestDate || date < oldestDate) oldestDate = date;
       }
     }
+
+    rowsRead += page.length;
+    if (kept.length > 0 && request.onRecords) await request.onRecords(kept);
 
     if (crossedStart) return finish("reached_start_date");
     if (page.length < (pageSize ?? page.length)) return finish("no_more_records");

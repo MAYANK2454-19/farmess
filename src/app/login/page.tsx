@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { Icon, type IconName } from "@/components/icons";
 import { AuthForm } from "@/features/auth/auth-form";
+import { LanguageSwitcher } from "@/i18n/language-switcher";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -26,7 +27,12 @@ const VALUE_POINTS: { icon: IconName; title: string; copy: string }[] = [
   },
 ];
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ reason?: string | string[] }>;
+}) {
+  const { reason } = await searchParams;
   return (
     <main className="auth-page">
       <section className="auth-aside field-ground">
@@ -59,7 +65,10 @@ export default function LoginPage() {
         </p>
       </section>
       <section className="auth-main">
-        <AuthForm />
+        <div className="auth-language">
+          <LanguageSwitcher />
+        </div>
+        <AuthForm reason={typeof reason === "string" ? reason : undefined} />
       </section>
     </main>
   );

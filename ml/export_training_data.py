@@ -49,6 +49,8 @@ FEEDBACK_COLUMNS = (
     "service_radius_km",
     "road_distance_meters",
     "drive_duration_seconds",
+    "provider_rating_average",
+    "provider_rating_count",
     "service_type",
     "rate_basis",
     "provider_verification_state",

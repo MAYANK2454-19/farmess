@@ -8,6 +8,27 @@ import { createClient } from "@/lib/supabase/client";
 type AuthMode = "sign-in" | "sign-up" | "reset";
 type Portal = "farmer" | "buyer" | "operator" | "admin";
 
+/**
+ * What a failed sign-in says. The same words are used when an account exists
+ * but belongs behind the other sign-in page, so the public form never confirms
+ * that an email is an admin account.
+ */
+const SIGN_IN_FAILED = "Invalid login credentials";
+
+const NOTICES: Record<string, string> = {
+  idle: "You were signed out because there was no activity for a while. Sign in again to continue.",
+  expired: "Your session reached its time limit. Sign in again to continue.",
+  signed_out: "You have been signed out.",
+};
+
+const ADMIN_PORTAL = {
+  id: "admin" as const,
+  label: "Admin",
+  hindi: "प्रशासन",
+  signInCopy: "Sign in to the data-steward console for reviews and access.",
+};
+
+/** Account types offered on the public sign-in page. Admin sign-in is not public. */
 const PORTALS: { id: Portal; label: string; hindi: string; signInCopy: string }[] = [
   {
     id: "farmer",
@@ -26,12 +47,6 @@ const PORTALS: { id: Portal; label: string; hindi: string; signInCopy: string }[
     label: "Transport & storage",
     hindi: "परिवहन",
     signInCopy: "Sign in to manage your service listings and farmer requests.",
-  },
-  {
-    id: "admin",
-    label: "Admin",
-    hindi: "प्रशासन",
-    signInCopy: "Sign in to the data-steward console for imports, reviews and access.",
   },
 ];
 
@@ -53,9 +68,18 @@ function isPortal(value: unknown): value is Portal {
   return value === "farmer" || value === "buyer" || value === "operator" || value === "admin";
 }
 
-export function AuthForm() {
+export function AuthForm({
+  variant = "public",
+  reason,
+}: {
+  /** "admin" is used only by the private admin sign-in page. */
+  variant?: "public" | "admin";
+  /** Why the person was sent here (from ?reason=), shown as a notice. */
+  reason?: string;
+}) {
   const router = useRouter();
-  const [portal, setPortal] = useState<Portal>("farmer");
+  const adminOnly = variant === "admin";
+  const [portal, setPortal] = useState<Portal>(adminOnly ? "admin" : "farmer");
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -96,8 +120,15 @@ export function AuthForm() {
         // A mismatch with the chosen portal signs the user out again; server-side
         // session and route guards still verify the role on every workspace request.
         const accountRole = data.user.app_metadata?.farmess_role;
+        // Admin accounts sign in only through their private page, and that page
+        // accepts nothing else. Either way the answer looks like a wrong password.
+        if ((accountRole === "admin") !== adminOnly) {
+          await supabase.auth.signOut({ scope: "local" });
+          setError(SIGN_IN_FAILED);
+          return;
+        }
         if (isPortal(accountRole) && accountRole !== portal) {
-          await supabase.auth.signOut();
+          await supabase.auth.signOut({ scope: "local" });
           setError(
             `This is a ${PORTAL_LABEL[accountRole]} account, not a ${PORTAL_LABEL[portal]} account. ` +
               `Choose the ${PORTAL_LABEL[accountRole]} tab to sign in.`,
@@ -158,7 +189,10 @@ export function AuthForm() {
 
   const isReset = mode === "reset";
   const isSignUp = mode === "sign-up";
-  const activePortal = PORTALS.find((item) => item.id === portal) ?? PORTALS[0];
+  const activePortal = adminOnly
+    ? ADMIN_PORTAL
+    : (PORTALS.find((item) => item.id === portal) ?? PORTALS[0]);
+  const notice = reason ? NOTICES[reason] : undefined;
 
   const signUpCopy =
     portal === "farmer"
@@ -169,7 +203,12 @@ export function AuthForm() {
 
   return (
     <div className={styles.formWrap}>
-      {!isReset ? (
+      {notice && !error && !message ? (
+        <p className={`${styles.message} ${styles.notice}`} role="status">
+          {notice}
+        </p>
+      ) : null}
+      {!isReset && !adminOnly ? (
         <div className={styles.portals} role="tablist" aria-label="Choose your account type">
           {PORTALS.map((item) => (
             <button
@@ -273,7 +312,7 @@ export function AuthForm() {
       <div className={styles.switches}>
         {mode === "sign-in" ? (
           <>
-            {portal !== "admin" ? (
+            {!adminOnly ? (
               <button
                 type="button"
                 onClick={() => {

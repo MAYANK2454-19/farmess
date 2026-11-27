@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
+import { RatingBadge } from "@/features/ratings/rating-badge";
+import type { RatingSummary } from "@/features/ratings/rating";
 
 type Offer = Pick<
   Database["public"]["Tables"]["offers"]["Row"],
@@ -19,6 +21,7 @@ type Offer = Pick<
   lot: Pick<Database["public"]["Tables"]["produce_lots"]["Row"], "id" | "crop" | "variety"> | null;
   is_expired: boolean;
   contact?: CounterpartyContact | null;
+  buyer_rating?: RatingSummary | null;
 };
 
 type OfferDecision = "accepted" | "declined";
@@ -178,6 +181,9 @@ export function OfferInbox() {
                   <p className="offer-dates">
                     Received {formatDate(offer.created_at)} · Valid until{" "}
                     {formatDate(offer.valid_until)}
+                  </p>
+                  <p className="offer-dates">
+                    Buyer: <RatingBadge summary={offer.buyer_rating} label="This buyer's rating" />
                   </p>
                   <ContactCard
                     title="Buyer"

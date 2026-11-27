@@ -30,7 +30,7 @@ export default function UpdatePasswordPage() {
       if (updateError) throw updateError;
 
       setMessage("Password updated. Opening your workspace…");
-      router.replace("/farmer");
+      router.replace("/");
       router.refresh();
     } catch (requestError) {
       setError(

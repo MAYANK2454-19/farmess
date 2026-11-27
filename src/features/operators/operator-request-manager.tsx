@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
+import { RateForm } from "@/features/ratings/rate-form";
+import { RatingBadge } from "@/features/ratings/rating-badge";
+import type { RatingSummary } from "@/features/ratings/rating";
 
 type RequestRow = Pick<
   Database["public"]["Tables"]["service_requests"]["Row"],
@@ -22,6 +25,9 @@ type RequestRow = Pick<
     "id" | "title" | "service_type"
   > | null;
   contact?: CounterpartyContact | null;
+  requester_rating?: RatingSummary | null;
+  my_stars?: number | null;
+  their_stars?: number | null;
 };
 
 function dateLabel(value: string | null) {
@@ -252,6 +258,7 @@ export function OperatorRequestManager() {
                 <time dateTime={request.created_at}>
                   Received {dateTimeLabel(request.created_at)}
                 </time>
+                <RatingBadge summary={request.requester_rating} label="This farmer's rating" />
                 <ContactCard
                   title="Requested by"
                   contact={request.contact}
@@ -326,6 +333,30 @@ export function OperatorRequestManager() {
                       </button>
                     </>
                   )}
+                </div>
+              ) : request.status === "completed" ? (
+                <div className="operator-request-rating">
+                  {request.my_stars == null ? (
+                    <RateForm
+                      contextType="service_request"
+                      contextId={request.id}
+                      who="this farmer"
+                      onRated={(stars) =>
+                        setRequests((current) =>
+                          current.map((item) =>
+                            item.id === request.id ? { ...item, my_stars: stars } : item,
+                          ),
+                        )
+                      }
+                    />
+                  ) : (
+                    <p className="form-help">You rated this farmer {request.my_stars} out of 5.</p>
+                  )}
+                  {request.their_stars != null ? (
+                    <p className="form-help">
+                      The farmer rated you {request.their_stars} out of 5.
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
             </li>

@@ -56,7 +56,7 @@ The schema does not process payments and does not claim that an accepted offer m
 
 ## Applied migration ledger
 
-The connected project records these 23 applied migrations (verified 24 November 2026; file versions match the remote ledger):
+The connected project records these 26 applied migrations (verified 27 November 2026; file versions match the remote ledger):
 
 1. `20261122160345_farmess_core_backend`
 2. `20261122160439_farmess_core_backend_performance`
@@ -82,6 +82,14 @@ The connected project records these 23 applied migrations (verified 24 November 
 21. `20261124150051_farmess_policy_performance_follow_up`
 22. `20261124181458_farmess_role_profiles_and_access_requests`
 23. `20261126023347_farmess_profile_location`
+
+24. `20261126044346_farmess_logistics_feedback_road_route`
+25. `20261126105309_farmess_contacts_demand_transport_completion`
+26. `20261127023511_farmess_auto_import_weather_ratings_sessions` — server-only price and weather
+    ingestion (`claim_market_import`, `ingest_market_observations`, `ingest_weather_daily`, token
+    hash in `private.server_tokens`), `weather_daily`, `ratings` with `submit_rating` and the
+    aggregate-only rating functions, sale steps (`advance_sale`, `my_sales`), and the signed-in
+    devices functions (`my_sessions`, `revoke_my_session`)
 
 Before changing schema, link the Supabase CLI to the project, compare local and remote migration history, inspect the diff and apply only reviewed migrations. Do not reset the live project or make untracked DDL edits directly.
 

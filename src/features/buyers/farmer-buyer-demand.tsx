@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ContactCard } from "@/features/contacts/contact-card";
+import { RatingBadge } from "@/features/ratings/rating-badge";
+import type { RatingSummary } from "@/features/ratings/rating";
 
 type DemandMatch = {
   requirementId: string;
@@ -21,7 +23,13 @@ type DemandMatch = {
     marketArea: string | null;
     deliveryBy: string | null;
   };
-  buyer: { label: string; type: string | null; phone: string | null; email: string | null };
+  buyer: {
+    label: string;
+    type: string | null;
+    phone: string | null;
+    email: string | null;
+    rating?: RatingSummary | null;
+  };
   targetPricePaisePerQuintal: number | null;
 };
 
@@ -155,6 +163,7 @@ export function FarmerBuyerDemand() {
                           {m.buyer.label}
                           {m.buyer.type ? ` · ${m.buyer.type.replaceAll("_", " ")}` : ""}
                         </strong>
+                        <RatingBadge summary={m.buyer.rating} label="This buyer's rating" />
                         <span className={"produce-status produce-status-" + m.status}>
                           {m.status === "match" ? "Full match" : "Partial match"}
                         </span>

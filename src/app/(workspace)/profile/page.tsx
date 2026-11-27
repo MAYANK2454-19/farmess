@@ -1,4 +1,7 @@
+import { SignedInDevices } from "@/features/auth/signed-in-devices";
 import { ProfileForm } from "@/features/profile/profile-form";
+import { MyRatingPanel } from "@/features/ratings/my-rating-panel";
+import { DEFAULT_SESSION_POLICY } from "@/lib/auth/session-policy";
 
 export default function ProfilePage() {
   return (
@@ -14,6 +17,11 @@ export default function ProfilePage() {
         </div>
       </div>
       <ProfileForm />
+      <MyRatingPanel />
+      <SignedInDevices
+        idleMinutes={DEFAULT_SESSION_POLICY.idleSeconds / 60}
+        absoluteHours={DEFAULT_SESSION_POLICY.absoluteSeconds / 3600}
+      />
     </main>
   );
 }

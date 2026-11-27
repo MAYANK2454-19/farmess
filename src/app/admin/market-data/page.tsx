@@ -21,8 +21,11 @@ export default async function AdminMarketDataPage() {
           <p className="admin-eyebrow">Prices</p>
           <h1>Mandi price imports</h1>
           <p>
-            Bring real government mandi prices into Farmess: past prices for trends and forecasts,
-            or today&apos;s prices for a quick check. Every import is listed at the bottom.
+            Farmess now fetches mandi prices by itself: when a farmer or buyer looks up a crop for
+            their area, today&apos;s reports and the past year of prices are pulled from data.gov.in
+            in the background. You do not need to import anything. The tools below are only for
+            loading a whole state in advance; every import, automatic or manual, is listed at the
+            bottom.
           </p>
         </div>
       </div>

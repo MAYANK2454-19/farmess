@@ -11,7 +11,7 @@ export const FARMER_NAVIGATION = [
     icon: "logistics",
     hindi: "परिवहन व भंडारण",
   },
-  { label: "Sale Activity", href: "/farmer/activity", icon: "activity", hindi: "बिक्री" },
+  { label: "Sales", href: "/farmer/activity", icon: "activity", hindi: "बिक्री" },
 ] as const;
 
 export const BUYER_NAVIGATION = [
@@ -20,6 +20,8 @@ export const BUYER_NAVIGATION = [
   { label: "Matches", href: "/buyer/matches", icon: "compare", hindi: "मिलान" },
   { label: "Marketplace", href: "/buyer/marketplace", icon: "markets", hindi: "बाज़ार" },
   { label: "My Offers", href: "/buyer/offers", icon: "offers", hindi: "मेरे प्रस्ताव" },
+  { label: "My Purchases", href: "/buyer/sales", icon: "activity", hindi: "मेरी खरीद" },
+  { label: "Market Prices", href: "/buyer/markets", icon: "markets", hindi: "मंडी भाव" },
 ] as const;
 
 export const OPERATOR_NAVIGATION = [
@@ -34,6 +36,7 @@ export const ADMIN_NAVIGATION = [
   { label: "Market imports", href: "/admin/market-data", icon: "markets", hindi: "मंडी डेटा आयात" },
   { label: "Data health", href: "/admin/market-health", icon: "activity", hindi: "डेटा गुणवत्ता" },
   { label: "Provider review", href: "/admin/providers", icon: "shield", hindi: "सेवा सत्यापन" },
+  { label: "Sign-in & security", href: "/admin/security", icon: "user", hindi: "सुरक्षा" },
 ] as const;
 
 export const ACCOUNT_NAVIGATION = [
@@ -75,6 +78,8 @@ export const APP_ROUTE_FILES = [
   { href: "/buyer/matches", file: "src/app/(workspace)/buyer/matches/page.tsx" },
   { href: "/buyer/marketplace", file: "src/app/(workspace)/buyer/marketplace/page.tsx" },
   { href: "/buyer/offers", file: "src/app/(workspace)/buyer/offers/page.tsx" },
+  { href: "/buyer/markets", file: "src/app/(workspace)/buyer/markets/page.tsx" },
+  { href: "/buyer/sales", file: "src/app/(workspace)/buyer/sales/page.tsx" },
   { href: "/operator", file: "src/app/(workspace)/operator/page.tsx" },
   { href: "/operator/services", file: "src/app/(workspace)/operator/services/page.tsx" },
   { href: "/operator/requests", file: "src/app/(workspace)/operator/requests/page.tsx" },
@@ -85,6 +90,7 @@ export const APP_ROUTE_FILES = [
   { href: "/admin/access-requests", file: "src/app/admin/access-requests/page.tsx" },
   { href: "/admin/market-health", file: "src/app/admin/market-health/page.tsx" },
   { href: "/admin/providers", file: "src/app/admin/providers/page.tsx" },
+  { href: "/admin/security", file: "src/app/admin/security/page.tsx" },
 ] as const;
 
 export function isActiveRoute(pathname: string, href: string): boolean {

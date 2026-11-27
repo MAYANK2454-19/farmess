@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { WorkspaceLayout } from "@/components/workspace-layout";
 import { getFarmessSession } from "@/lib/auth/session";
 import "./admin.css";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminRootLayout({ children }: { children: ReactNode }) {
   const session = await getFarmessSession();
 
-  if (!session) redirect("/login");
-  if (session.role !== "admin") redirect("/workspace-unavailable");
+  // Anyone who is not a signed-in admin gets the ordinary "page not found",
+  // the same answer as for an address that does not exist.
+  if (!session || session.role !== "admin") notFound();
 
   return (
     <WorkspaceLayout

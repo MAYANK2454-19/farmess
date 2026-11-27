@@ -2060,3 +2060,440 @@ textarea:focus-visible {
   display: grid;
   gap: 16px;
 }
+
+/* ---------- Ratings ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rating-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--haldi-soft);
+  color: #7a4e0a;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rating-badge small {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.rating-badge-new {
+  background: var(--info-tint);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.rate-form {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+}
+
+.star-input {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.star-input legend {
+  padding: 0;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.star-input-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--line-strong);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.star input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.star-on {
+  color: var(--haldi);
+}
+
+.star:has(input:focus-visible) {
+  outline: 2px solid #70a77e;
+  outline-offset: 2px;
+}
+
+.star-word {
+  margin-left: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ---------- Sales ---------- */
+.sale-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.sale-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.sale-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sale-card-head strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.sale-card-head span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.sale-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.sale-step {
+  padding: 8px 6px 0;
+  border-top: 4px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.sale-step-done {
+  border-top-color: var(--khet-mid);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sale-status-text {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.sale-card-people {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.produce-status-agreed,
+.produce-status-dispatched,
+.produce-status-accepted {
+  background: var(--haldi-soft);
+  color: #7a4e0a;
+}
+
+.produce-status-delivered,
+.produce-status-payment_pending,
+.produce-status-paid,
+.produce-status-completed {
+  background: var(--brand-tint);
+  color: var(--khet);
+}
+
+.service-request-rating,
+.operator-request-rating {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.rating-received-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.rating-received-list li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+}
+
+.rating-received-list strong {
+  color: var(--haldi-deep);
+  letter-spacing: 1px;
+}
+
+.rating-received-list span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.rating-received-list p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+}
+
+/* ---------- Session security ---------- */
+.session-warning {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 38, 32, 0.55);
+}
+
+.session-warning-card {
+  width: min(420px, 100%);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 12px;
+}
+
+.session-warning-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.session-warning-card p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.device-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.device-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+}
+
+.device-row strong {
+  display: block;
+}
+
+.device-row span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.auth-single-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+/* ---------- Language switch ---------- */
+/* Hidden for a moment on load while a remembered language is applied. */
+html[data-i18n-pending] body {
+  visibility: hidden;
+}
+
+/* The small Hindi sub-labels would repeat the translated label. */
+html[data-i18n] body [lang="hi"]:not(option) {
+  display: none;
+}
+
+/* The Hindi taglines are part of the brand; keep them when Hindi is the chosen language. */
+html[lang="hi"] body :is(.landing-kicker, .auth-aside-kicker)[lang="hi"] {
+  display: block;
+}
+
+/* Indic and Perso-Arabic scripts need more room between lines than Latin. */
+html[data-i18n] body {
+  line-height: 1.7;
+}
+
+html[data-i18n] h1,
+html[data-i18n] h2,
+html[data-i18n] h3 {
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+/* Urdu and Kashmiri read right to left; the page layout itself stays as it is. */
+html[data-i18n-rtl] :is(p, h1, h2, h3, h4, li, label, legend, caption, td, th, dd, dt, summary) {
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+
+.language-switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.language-switcher label {
+  font-weight: 600;
+  color: var(--khet-mid);
+  white-space: nowrap;
+}
+
+.language-switcher select {
+  appearance: auto;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  min-height: 38px;
+  max-width: 132px;
+  padding: 0 2px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.language-switcher select:focus-visible {
+  outline: 2px solid #70a77e;
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+.language-switcher[data-busy="true"] {
+  opacity: 0.7;
+}
+
+.language-switcher-error {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--mitti-soft);
+  color: var(--mitti);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.language-switcher-dark {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.language-switcher-dark label {
+  color: var(--haldi);
+}
+
+.language-switcher-dark select option {
+  color: var(--text);
+}
+
+.auth-language {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+  .language-switcher select {
+    max-width: 96px;
+  }
+}
+
+/* On phones the language menu sits beside the logo and the sign-in button. */
+@media (max-width: 640px) {
+  .landing-nav {
+    gap: 8px;
+  }
+
+  .landing-nav .language-switcher label {
+    display: none;
+  }
+
+  .landing-nav .language-switcher {
+    padding-left: 6px;
+  }
+
+  .landing-nav .button {
+    padding-inline: 14px;
+    white-space: nowrap;
+  }
+
+  .topbar-right .language-switcher label {
+    display: none;
+  }
+
+  .topbar-right .language-switcher {
+    padding-left: 6px;
+  }
+
+  .topbar-right .language-switcher select {
+    max-width: 84px;
+  }
+}

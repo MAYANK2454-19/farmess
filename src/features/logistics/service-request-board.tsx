@@ -3,6 +3,9 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import { ContactCard, type CounterpartyContact } from "@/features/contacts/contact-card";
+import { RateForm } from "@/features/ratings/rate-form";
+import { RatingBadge } from "@/features/ratings/rating-badge";
+import type { RatingSummary } from "@/features/ratings/rating";
 
 type Listing = Pick<
   Database["public"]["Tables"]["service_listings"]["Row"],
@@ -22,7 +25,7 @@ type Listing = Pick<
   | "crop_suitability"
   | "cold_chain_available"
   | "verification_state"
->;
+> & { provider_rating?: RatingSummary | null };
 
 type ServiceRequest = Pick<
   Database["public"]["Tables"]["service_requests"]["Row"],
@@ -36,7 +39,12 @@ type ServiceRequest = Pick<
   | "status"
   | "message"
   | "created_at"
-> & { contact?: CounterpartyContact | null };
+> & {
+  contact?: CounterpartyContact | null;
+  provider_rating?: RatingSummary | null;
+  my_stars?: number | null;
+  their_stars?: number | null;
+};
 
 function formatDate(value: string | null) {
   if (!value) return "Not specified";
@@ -156,6 +164,7 @@ function ListingCard({
         {listing.service_radius_km ? ` · Service radius ${listing.service_radius_km} km` : ""}
       </p>
       <div className="service-listing-tags">
+        <RatingBadge summary={listing.provider_rating} label="Provider rating" />
         <span>{listing.verification_state.replaceAll("_", " ")}</span>
         {listing.cold_chain_available ? <span>Cold-chain service</span> : null}
         {listing.crop_suitability.length ? (
@@ -406,6 +415,7 @@ export function ServiceRequestBoard() {
                 <span className={"produce-status produce-status-" + request.status}>
                   {request.status}
                 </span>
+                <RatingBadge summary={request.provider_rating} label="Provider rating" />
                 <ContactCard
                   title="Provider"
                   contact={request.contact}
@@ -415,6 +425,33 @@ export function ServiceRequestBoard() {
                       : "Contact details are shared only for accepted requests."
                   }
                 />
+                {request.status === "completed" ? (
+                  <div className="service-request-rating">
+                    {request.my_stars == null ? (
+                      <RateForm
+                        contextType="service_request"
+                        contextId={request.id}
+                        who="this provider"
+                        onRated={(stars) =>
+                          setRequests((current) =>
+                            current.map((item) =>
+                              item.id === request.id ? { ...item, my_stars: stars } : item,
+                            ),
+                          )
+                        }
+                      />
+                    ) : (
+                      <p className="form-help">
+                        You rated this provider {request.my_stars} out of 5.
+                      </p>
+                    )}
+                    {request.their_stars != null ? (
+                      <p className="form-help">
+                        The provider rated you {request.their_stars} out of 5.
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
                 {request.status === "pending" || request.status === "accepted" ? (
                   <div className="service-request-cancel">
                     {cancelConfirmId === request.id ? (

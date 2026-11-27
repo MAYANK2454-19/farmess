@@ -7,6 +7,7 @@ import {
   describeLocation,
   type LocationValue,
 } from "@/features/location/location-picker";
+import { RatingBadge } from "@/features/ratings/rating-badge";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
   LogisticsRecommendation,
@@ -265,6 +266,12 @@ function RecommendationCard({
         <div>
           <span>Verification</span>
           <strong>{listing.verification_state.replaceAll("_", " ")}</strong>
+        </div>
+        <div>
+          <span>Rating from farmers</span>
+          <strong>
+            <RatingBadge summary={recommendation.providerRating} label="Provider rating" />
+          </strong>
         </div>
         <div>
           <span>Capacity</span>

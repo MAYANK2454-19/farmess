@@ -78,6 +78,8 @@ export type Database = {
           feedback_note: string | null;
           id: string;
           price_paise: number | null;
+          provider_rating_average: number | null;
+          provider_rating_count: number | null;
           provider_verification_state: string | null;
           road_distance_meters: number | null;
           drive_duration_seconds: number | null;
@@ -101,6 +103,8 @@ export type Database = {
           feedback_note?: string | null;
           id?: string;
           price_paise?: number | null;
+          provider_rating_average?: number | null;
+          provider_rating_count?: number | null;
           provider_verification_state?: string | null;
           road_distance_meters?: number | null;
           drive_duration_seconds?: number | null;
@@ -124,6 +128,8 @@ export type Database = {
           feedback_note?: string | null;
           id?: string;
           price_paise?: number | null;
+          provider_rating_average?: number | null;
+          provider_rating_count?: number | null;
           provider_verification_state?: string | null;
           road_distance_meters?: number | null;
           drive_duration_seconds?: number | null;
@@ -791,6 +797,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      ratings: {
+        Row: {
+          comment: string | null;
+          context_id: string;
+          context_type: string;
+          created_at: string;
+          id: string;
+          ratee_id: string;
+          rater_id: string;
+          stars: number;
+        };
+        Insert: {
+          comment?: string | null;
+          context_id: string;
+          context_type: string;
+          created_at?: string;
+          id?: string;
+          ratee_id: string;
+          rater_id: string;
+          stars: number;
+        };
+        Update: {
+          comment?: string | null;
+          context_id?: string;
+          context_type?: string;
+          created_at?: string;
+          id?: string;
+          ratee_id?: string;
+          rater_id?: string;
+          stars?: number;
+        };
+        Relationships: [];
+      };
       role_access_requests: {
         Row: {
           created_at: string;
@@ -1130,6 +1169,45 @@ export type Database = {
           },
         ];
       };
+      weather_daily: {
+        Row: {
+          district: string;
+          latitude: number;
+          longitude: number;
+          observation_date: string;
+          rain_mm: number | null;
+          retrieved_at: string;
+          source_name: string;
+          state: string;
+          tmax_c: number | null;
+          tmin_c: number | null;
+        };
+        Insert: {
+          district: string;
+          latitude: number;
+          longitude: number;
+          observation_date: string;
+          rain_mm?: number | null;
+          retrieved_at?: string;
+          source_name?: string;
+          state: string;
+          tmax_c?: number | null;
+          tmin_c?: number | null;
+        };
+        Update: {
+          district?: string;
+          latitude?: number;
+          longitude?: number;
+          observation_date?: string;
+          rain_mm?: number | null;
+          retrieved_at?: string;
+          source_name?: string;
+          state?: string;
+          tmax_c?: number | null;
+          tmin_c?: number | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       buyer_marketplace_lots: {
@@ -1253,6 +1331,8 @@ export type Database = {
           buyer_type: string | null;
           buyer_phone: string | null;
           buyer_email: string | null;
+          buyer_rating_average: number | null;
+          buyer_rating_count: number;
         }[];
       };
       marketplace_lot_contacts: {
@@ -1291,6 +1371,98 @@ export type Database = {
       complete_service_request: {
         Args: { p_request_id: string };
         Returns: { id: string; status: string; updated_at: string }[];
+      };
+      claim_market_import: {
+        Args: { p_token: string; p_series_key: string };
+        Returns: boolean;
+      };
+      finish_market_import: {
+        Args: { p_token: string; p_series_key: string; p_outcome: string; p_retry_seconds: number };
+        Returns: undefined;
+      };
+      ingest_market_observations: {
+        Args: {
+          p_token: string;
+          p_rows: Json;
+          p_filters: Json;
+          p_received: number;
+          p_note: string | null;
+          p_source?: string;
+        };
+        Returns: number;
+      };
+      ingest_weather_daily: {
+        Args: {
+          p_token: string;
+          p_state: string;
+          p_district: string;
+          p_latitude: number;
+          p_longitude: number;
+          p_rows: Json;
+        };
+        Returns: number;
+      };
+      submit_rating: {
+        Args: {
+          p_context_type: string;
+          p_context_id: string;
+          p_stars: number;
+          p_comment: string | null;
+        };
+        Returns: { id: string; stars: number; created_at: string }[];
+      };
+      user_rating_summaries: {
+        Args: { p_user_ids: string[] };
+        Returns: { user_id: string; average: number | null; rating_count: number }[];
+      };
+      listing_provider_ratings: {
+        Args: { p_listing_ids: string[] };
+        Returns: { listing_id: string; average: number | null; rating_count: number }[];
+      };
+      lot_owner_ratings: {
+        Args: { p_lot_ids: string[] };
+        Returns: { lot_id: string; average: number | null; rating_count: number }[];
+      };
+      advance_sale: {
+        Args: { p_sale_id: string; p_action: string };
+        Returns: { id: string; status: string; updated_at: string }[];
+      };
+      my_sales: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          my_role: string;
+          crop: string;
+          variety: string | null;
+          agreed_quantity: number;
+          unit: string;
+          agreed_price_paise_per_quintal: number;
+          status: string;
+          agreed_at: string;
+          updated_at: string;
+          counterparty_name: string | null;
+          counterparty_organisation: string | null;
+          counterparty_phone: string | null;
+          counterparty_email: string | null;
+          counterparty_rating_average: number | null;
+          counterparty_rating_count: number;
+          my_stars: number | null;
+          their_stars: number | null;
+        }[];
+      };
+      my_sessions: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          created_at: string;
+          last_active_at: string;
+          user_agent: string | null;
+          is_current: boolean;
+        }[];
+      };
+      revoke_my_session: {
+        Args: { p_session_id: string };
+        Returns: boolean;
       };
       cancel_accepted_service_request: {
         Args: {

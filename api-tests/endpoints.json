@@ -26,8 +26,8 @@
         "quantity": 12.5,
         "unit": "quintal",
         "location": "Narwal mandi area, Jammu",
-        "availableAt": "2026-11-26",
-        "sellBy": "2026-12-01"
+        "availableAt": "2026-11-27",
+        "sellBy": "2026-12-02"
       }
     },
     {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "name": "Price trend plus statistical and machine-learning forecasts for a crop at a mandi, from saved AGMARKNET reports",
+      "name": "Price trend plus statistical, machine-learning and weather-aware forecasts for a crop at a mandi, from saved AGMARKNET reports",
       "tag": "Market data",
       "method": "GET",
       "path": "/api/market-forecasts",
@@ -269,7 +269,7 @@
         "quantity": 5,
         "unit": "quintal",
         "price_paise_per_quintal": 180000,
-        "valid_until": "2026-11-29"
+        "valid_until": "2026-11-30"
       }
     },
     {
@@ -409,7 +409,7 @@
       }
     },
     {
-      "name": "Admin-only import of past mandi prices (AGMARKNET history on data.gov.in) for a crop and state",
+      "name": "Admin-only bulk import of past mandi prices for a crop and state (optional: prices are fetched automatically)",
       "tag": "Admin",
       "method": "POST",
       "path": "/api/admin/market-history",
@@ -549,6 +549,95 @@
       "query": {
         "state": "Jammu and Kashmir",
         "district": "Jammu"
+      }
+    },
+    {
+      "name": "Make sure Farmess has a crop's prices for an area; starts a background fetch from data.gov.in when something is missing",
+      "tag": "Market data",
+      "method": "POST",
+      "path": "/api/market-history/ensure",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403],
+      "body": {
+        "crop": "Tomato",
+        "state": "Jammu and Kashmir",
+        "district": "Jammu"
+      }
+    },
+    {
+      "name": "The caller's sales (as farmer or buyer) with status, the other side's contact details and ratings",
+      "tag": "Sales and ratings",
+      "method": "GET",
+      "path": "/api/sales",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 403, 500]
+    },
+    {
+      "name": "Move a sale forward: dispatch (farmer), confirm_delivery (buyer), confirm_payment (farmer)",
+      "tag": "Sales and ratings",
+      "method": "PATCH",
+      "path": "/api/sales",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 409, 500],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "action": "dispatch"
+      }
+    },
+    {
+      "name": "The caller's own rating summary and the ratings they have received",
+      "tag": "Sales and ratings",
+      "method": "GET",
+      "path": "/api/ratings",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 500]
+    },
+    {
+      "name": "Rate the other side of a completed sale or service request, once, from 1 to 5 stars",
+      "tag": "Sales and ratings",
+      "method": "POST",
+      "path": "/api/ratings",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [201, 400, 401, 403, 409, 500],
+      "body": {
+        "contextType": "sale",
+        "contextId": "00000000-0000-4000-8000-000000000000",
+        "stars": 5
+      }
+    },
+    {
+      "name": "State of the current session and the limits that apply to it",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/session",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401]
+    },
+    {
+      "name": "Devices (browsers) where the account is signed in",
+      "tag": "Account",
+      "method": "GET",
+      "path": "/api/session/devices",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 401, 500]
+    },
+    {
+      "name": "Sign out one other device ({ id }) or every other device ({ others: true })",
+      "tag": "Account",
+      "method": "DELETE",
+      "path": "/api/session/devices",
+      "auth": "signed-in",
+      "expect_signed_out": [401],
+      "expect_documented": [200, 400, 401, 403, 404, 500],
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000000"
       }
     }
   ]

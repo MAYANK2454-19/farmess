@@ -1,27 +1,69 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   ForecastPoint,
   PriceForecastResult,
   PricePoint,
 } from "@/lib/market-data/price-forecast";
 import type { MlForecastResult } from "@/lib/market-data/ml-forecast";
+import type { WeatherForecastResult } from "@/lib/market-data/weather-forecast";
+import { BACKGROUND_HEADER } from "@/lib/auth/session-policy";
 import styles from "./market-forecast-panel.module.css";
+
+type WeatherOutlook = {
+  district: string;
+  source: string;
+  days: { date: string; rainMm: number | null; tmaxC: number | null; tminC: number | null }[];
+  rainNext7Mm: number | null;
+};
 
 type ForecastResponse = {
   status: string;
   crop?: string;
+  area?: { state: string | null; district: string | null; widened: boolean };
   market?: string | null;
   district?: string | null;
   state?: string | null;
-  markets?: { name: string; reports: number }[];
+  markets?: { name: string; reports: number; district?: string | null }[];
   minimumReports?: number;
   message?: string;
   result?: PriceForecastResult;
   ml?: MlForecastResult | { status: "unavailable" };
+  weather?: WeatherForecastResult | { status: "unavailable"; reason: string };
+  weatherOutlook?: WeatherOutlook | null;
   error?: string;
 };
+
+/** Answer of POST /api/market-history/ensure. */
+type FetchStatus = {
+  configured: boolean;
+  crop: string;
+  state: string | null;
+  district: string | null;
+  scope: "district" | "state" | null;
+  savedReports: number;
+  newestDate: string | null;
+  oldestDate: string | null;
+  needed: boolean;
+  reason: string;
+  started: boolean;
+  weatherStarted?: boolean;
+};
+
+type FetchPhase = "fetching" | "waiting" | "paused" | "done";
+
+const POLL_MS = 8_000;
+/** One background fetch runs for at most about five minutes. */
+const ACTIVE_WINDOW_MS = 6 * 60_000;
+/** How long to keep looking when another person's fetch may be running. */
+const WAIT_WINDOW_MS = 3 * 60_000;
+/** Forecasts are recomputed on reload, so new rows are picked up at most this often. */
+const RELOAD_GAP_MS = 45_000;
+const WEATHER_RETRY_MS = 40_000;
+/** District weather takes about a minute to fetch; look at the forecast again after that. */
+const WEATHER_RELOAD_MS = 75_000;
+const WEATHER_RETRIES = 3;
 
 const rupees = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -43,6 +85,7 @@ type ChartForecast = { points: ForecastPoint[]; color: string };
 
 const STATS_COLOR = "var(--haldi-deep)";
 const ML_COLOR = "var(--mitti)";
+const WEATHER_COLOR = "var(--megh)";
 
 function TrendChart({
   history,
@@ -63,7 +106,7 @@ function TrendChart({
   ];
   const day = (date: string) => new Date(`${date}T00:00:00.000Z`).getTime() / 86_400_000;
   const minX = day(all[0].date);
-  const maxX = Math.max(day(all[all.length - 1].date), minX + 1);
+  const maxX = Math.max(...all.map((p) => day(p.date)), minX + 1);
   const minY = Math.min(...all.map((p) => p.low)) * 0.95;
   const maxY = Math.max(...all.map((p) => p.high)) * 1.05;
   const x = (date: string) =>
@@ -137,6 +180,218 @@ function TrendChart({
   );
 }
 
+/** Keeps asking the server to fetch missing prices and reports how that is going. */
+function useAutomaticFetch(
+  crop: string,
+  state: string,
+  district: string,
+  onNewData: () => void,
+): { status: FetchStatus; phase: FetchPhase } | null {
+  const [value, setValue] = useState<{
+    key: string;
+    status: FetchStatus;
+    phase: FetchPhase;
+  } | null>(null);
+  const notify = useRef(onNewData);
+  useEffect(() => {
+    notify.current = onNewData;
+  });
+  const key = `${crop.trim()}|${state.trim()}|${district.trim()}`;
+
+  useEffect(() => {
+    if (!crop.trim() || !state.trim()) return;
+    let active = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const beganAt = Date.now();
+    let lastStarted = 0;
+    let lastVersion = "";
+    let lastReload = 0;
+    let reloadOwed = false;
+    let calls = 0;
+    let weatherTimer: ReturnType<typeof setTimeout> | undefined;
+
+    async function check() {
+      if (!active) return;
+      calls += 1;
+      let status: FetchStatus | null = null;
+      try {
+        const response = await fetch("/api/market-history/ensure", {
+          method: "POST",
+          // Only the first check follows something the person did; the repeats
+          // are automatic and must not keep an unattended session alive.
+          headers: {
+            "Content-Type": "application/json",
+            ...(calls > 1 ? { [BACKGROUND_HEADER]: "1" } : {}),
+          },
+          body: JSON.stringify({
+            crop: crop.trim(),
+            state: state.trim(),
+            district: district.trim() || undefined,
+          }),
+        });
+        if (response.ok) status = (await response.json()) as FetchStatus;
+      } catch {
+        // A failed check is simply tried again below.
+      }
+      if (!active) return;
+      if (!status) {
+        if (calls < 3) timer = setTimeout(check, POLL_MS);
+        return;
+      }
+
+      const now = Date.now();
+      // Weather does not change the number of saved prices, so it gets its own reload.
+      if (status.weatherStarted && !weatherTimer) {
+        weatherTimer = setTimeout(() => {
+          if (active) notify.current();
+        }, WEATHER_RELOAD_MS);
+      }
+      if (status.started) lastStarted = now;
+      const version = `${status.savedReports}:${status.newestDate ?? ""}`;
+      if (lastVersion && version !== lastVersion) reloadOwed = true;
+      lastVersion = version;
+
+      const fetching = status.needed && lastStarted > 0 && now - lastStarted < ACTIVE_WINDOW_MS;
+      const waiting =
+        !fetching && status.needed && status.configured && now - beganAt < WAIT_WINDOW_MS;
+      const phase: FetchPhase = fetching
+        ? "fetching"
+        : waiting
+          ? "waiting"
+          : status.needed
+            ? "paused"
+            : "done";
+      setValue({ key, status, phase });
+
+      const keepGoing = fetching || waiting;
+      if (reloadOwed && (!keepGoing || now - lastReload > RELOAD_GAP_MS)) {
+        reloadOwed = false;
+        lastReload = now;
+        notify.current();
+      }
+      if (keepGoing) timer = setTimeout(check, POLL_MS);
+      // The search itself saves today's reports a moment later: look once more.
+      else if (calls === 1) timer = setTimeout(check, 6_000);
+    }
+
+    void check();
+    return () => {
+      active = false;
+      if (timer) clearTimeout(timer);
+      if (weatherTimer) clearTimeout(weatherTimer);
+    };
+  }, [key, crop, state, district]);
+
+  return value && value.key === key ? value : null;
+}
+
+function FetchNotice({
+  fetch,
+  hasData,
+}: {
+  fetch: { status: FetchStatus; phase: FetchPhase } | null;
+  hasData: boolean;
+}) {
+  if (!fetch) return null;
+  const { status, phase } = fetch;
+  const place = status.district ?? status.state ?? "this area";
+  if (phase === "fetching" || phase === "waiting") {
+    return (
+      <p className={styles.fetchNotice} role="status">
+        <span className={styles.fetchDot} aria-hidden="true" />
+        {hasData
+          ? `Fetching more ${status.crop} prices for ${place} from data.gov.in in the background (${status.savedReports} reports saved so far). This page updates by itself.`
+          : `Fetching ${status.crop} prices for ${place} from data.gov.in. This usually takes a minute or two; the page updates by itself.`}
+      </p>
+    );
+  }
+  if (phase === "paused" && status.configured && status.savedReports > 0) {
+    return (
+      <p className={styles.fetchNotice} role="status">
+        {status.savedReports} reports for {status.crop} in {place} are saved. data.gov.in limits how
+        much can be fetched at once, so the rest is fetched automatically the next time this page is
+        opened.
+      </p>
+    );
+  }
+  return null;
+}
+
+function WeatherBlock({
+  outlook,
+  weather,
+}: {
+  outlook: WeatherOutlook | null | undefined;
+  weather: WeatherForecastResult | null;
+}) {
+  if (!outlook || outlook.days.length === 0) return null;
+  const passed = weather?.status === "forecast" ? weather : null;
+  const scenarios = passed?.scenarios ?? null;
+  const spread = scenarios ? Math.abs(scenarios.heavy - scenarios.dry) : 0;
+  return (
+    <div className={styles.weather} aria-labelledby="weather-outlook-heading">
+      <h3 id="weather-outlook-heading">{`Weather outlook for ${outlook.district} district`}</h3>
+      <p className={styles.weatherLead}>
+        {outlook.rainNext7Mm === null
+          ? "Rain forecast not available."
+          : outlook.rainNext7Mm < 1
+            ? "No rain expected in the next 7 days."
+            : `${outlook.rainNext7Mm} mm of rain expected in the next 7 days.`}{" "}
+        Source: Open-Meteo forecast for the district centre.
+      </p>
+      <ul className={styles.weatherDays}>
+        {outlook.days.map((day) => (
+          <li key={day.date}>
+            <span>{shortDate(day.date)}</span>
+            <strong>{day.rainMm === null ? "—" : `${Math.round(day.rainMm * 10) / 10} mm`}</strong>
+            <span>
+              {day.tmaxC === null ? "—" : `${Math.round(day.tmaxC)}°`}
+              {day.tminC === null ? "" : ` / ${Math.round(day.tminC)}°`}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {scenarios ? (
+        <>
+          <p className={styles.weatherLead}>
+            What the weather could do to the price by {shortDate(scenarios.date)}, according to the
+            weather-aware model:
+          </p>
+          <div className={styles.scenarios}>
+            <div>
+              <span>If it stays dry</span>
+              <strong>{rupees(scenarios.dry)}/q</strong>
+            </div>
+            <div>
+              <span>
+                With the forecast rain
+                {scenarios.forecastRainMm === null ? "" : ` (${scenarios.forecastRainMm} mm)`}
+              </span>
+              <strong>{rupees(scenarios.asForecast)}/q</strong>
+            </div>
+            <div>
+              <span>With heavy rain ({scenarios.heavyRainMm} mm or more)</span>
+              <strong>{rupees(scenarios.heavy)}/q</strong>
+            </div>
+          </div>
+          <p className={styles.note}>
+            {spread < 1
+              ? "The model found no clear effect of rain on this crop's price at this mandi."
+              : `Rain moves this estimate by about ${rupees(spread)} per quintal.`}{" "}
+            These are what-if estimates learned from past weeks with similar weather, not a
+            guarantee.
+          </p>
+        </>
+      ) : passed ? (
+        <p className={styles.note}>
+          Rain scenarios are not shown because the past year had no rainy spell long enough here to
+          learn from.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function MarketForecastPanel({
   crop,
   market,
@@ -149,6 +404,7 @@ export function MarketForecastPanel({
   district?: string;
 }) {
   const [picked, setPicked] = useState("");
+  const [reload, setReload] = useState(0);
   const query = new URLSearchParams();
   if (crop.trim()) query.set("crop", crop.trim());
   const chosen = picked || market.trim();
@@ -182,15 +438,38 @@ export function MarketForecastPanel({
     return () => {
       active = false;
     };
-  }, [key]);
+  }, [key, reload]);
 
   const current = response?.key === key ? response : null;
   const data = current?.data;
   const result = data?.result;
   const ml = data?.ml && data.ml.status !== "unavailable" ? data.ml : null;
+  const weather = data?.weather && data.weather.status !== "unavailable" ? data.weather : null;
+
+  // Prices are fetched only for an area the person chose (or their profile's),
+  // never for wherever the saved prices happen to come from.
+  const fetchState = state?.trim() ?? "";
+  const automatic = useAutomaticFetch(crop, fetchState, district?.trim() ?? "", () =>
+    setReload((n) => n + 1),
+  );
+
+  // District weather is fetched in the background on first use; look again shortly.
+  const weatherPending =
+    data?.weather?.status === "insufficient_data" && data.weather.reason === "no_weather";
+  const weatherRetries = useRef({ key: "", count: 0 });
+  useEffect(() => {
+    if (weatherRetries.current.key !== key) weatherRetries.current = { key, count: 0 };
+    if (!weatherPending || weatherRetries.current.count >= WEATHER_RETRIES) return;
+    const timer = setTimeout(() => {
+      weatherRetries.current.count += 1;
+      setReload((n) => n + 1);
+    }, WEATHER_RETRY_MS);
+    return () => clearTimeout(timer);
+  }, [key, weatherPending, data]);
 
   const statsPassed = result?.status === "forecast" ? result : null;
   const mlPassed = ml?.status === "forecast" ? ml : null;
+  const weatherPassed = weather?.status === "forecast" ? weather : null;
   const candidates = [
     statsPassed && {
       label: "Statistical model",
@@ -202,6 +481,11 @@ export function MarketForecastPanel({
       mae: mlPassed.backtest.modelMae,
       points: mlPassed.points,
     },
+    weatherPassed && {
+      label: "Machine learning with weather",
+      mae: weatherPassed.backtest.modelMae,
+      points: weatherPassed.points,
+    },
   ].filter((item): item is { label: string; mae: number; points: ForecastPoint[] } =>
     Boolean(item),
   );
@@ -211,9 +495,11 @@ export function MarketForecastPanel({
     result && result.status !== "insufficient_history" && result.backtest
       ? result.backtest.baselineMae
       : null;
+  const staleNote = result?.status === "trend_only" && result.reason === "stale";
+  const hasData = Boolean(result) || (data?.markets?.length ?? 0) > 0;
 
   return (
-    <section className="panel" aria-labelledby="market-forecast-heading">
+    <section className={`panel ${styles.root}`} aria-labelledby="market-forecast-heading">
       <div className="panel-header">
         <div>
           <p className="eyebrow">Price trend</p>
@@ -223,11 +509,21 @@ export function MarketForecastPanel({
               : "Price trend and forecast"}
           </h2>
           <p className="panel-caption">
-            From real government (AGMARKNET) mandi reports saved in Farmess. A forecast is shown
-            only if it was more accurate than “today’s price stays the same” on recent reports.
+            From real government (AGMARKNET) mandi reports, fetched automatically for the crop and
+            area you choose. A forecast is shown only if it was more accurate than “today’s price
+            stays the same” on recent reports.
           </p>
         </div>
       </div>
+
+      <FetchNotice fetch={automatic} hasData={hasData} />
+
+      {data?.area?.widened && data.area.district ? (
+        <p className={styles.fetchNotice} role="note">
+          No mandi in {data.area.district} district reports {data.crop}, so mandis elsewhere in{" "}
+          {data.area.state} are shown.
+        </p>
+      ) : null}
 
       {data?.markets && data.markets.length > 1 ? (
         <div className={styles.markets} aria-label="Choose a mandi">
@@ -261,19 +557,30 @@ export function MarketForecastPanel({
       ) : data?.status === "no_saved_prices" ? (
         <div className={styles.message}>
           <strong>No saved prices for {data.crop} here yet</strong>
-          {data.message}
+          {automatic?.phase === "fetching" || automatic?.phase === "waiting"
+            ? "They are being fetched from data.gov.in now. This page updates by itself."
+            : !fetchState
+              ? "Choose your state and district above and Farmess fetches the prices from data.gov.in automatically."
+              : automatic && !automatic.status.configured
+                ? "Automatic price fetching is not set up on this server yet."
+                : automatic?.phase === "done" || automatic?.phase === "paused"
+                  ? "data.gov.in has no recent reports for this crop here. Try a nearby district or the whole state."
+                  : data.message}
         </div>
       ) : result?.status === "insufficient_history" ? (
         <div className={styles.message}>
           <strong>Not enough history yet</strong>
           Farmess has {result.reportCount} report day(s) for this mandi. A trend needs at least{" "}
-          {result.minimumReports}. An admin can import past prices from data.gov.in.
+          {result.minimumReports}.{" "}
+          {automatic?.phase === "fetching" || automatic?.phase === "waiting"
+            ? "More are being fetched now."
+            : "More are fetched automatically as data.gov.in publishes them."}
         </div>
       ) : result ? (
         <>
           <div className={styles.summary}>
             <div className={styles.stat}>
-              <span>Latest modal price ({shortDate(result.trend.latestDate)})</span>
+              <span>{`Latest modal price (${shortDate(result.trend.latestDate)})`}</span>
               <strong>{rupees(result.trend.latestPrice)}/q</strong>
             </div>
             <div className={styles.stat}>
@@ -295,7 +602,7 @@ export function MarketForecastPanel({
             {best && bestLast ? (
               <div className={styles.stat}>
                 <span>
-                  Expected by {shortDate(bestLast.date)} ({best.label.toLowerCase()})
+                  {`Expected by ${shortDate(bestLast.date)} (${best.label.toLowerCase()})`}
                 </span>
                 <strong>{rupees(bestLast.price)}/q</strong>
               </div>
@@ -311,6 +618,7 @@ export function MarketForecastPanel({
             forecasts={[
               ...(statsPassed ? [{ points: statsPassed.points, color: STATS_COLOR }] : []),
               ...(mlPassed ? [{ points: mlPassed.points, color: ML_COLOR }] : []),
+              ...(weatherPassed ? [{ points: weatherPassed.points, color: WEATHER_COLOR }] : []),
             ]}
             band={best ? best.points : []}
           />
@@ -331,6 +639,12 @@ export function MarketForecastPanel({
                 ML forecast (gradient-boosted trees)
               </span>
             ) : null}
+            {weatherPassed ? (
+              <span>
+                <i className={styles.swatch} style={{ background: WEATHER_COLOR }} />
+                ML forecast with weather
+              </span>
+            ) : null}
             {best ? (
               <span>
                 <i
@@ -343,7 +657,7 @@ export function MarketForecastPanel({
           </div>
 
           <div className="table-wrap">
-            <table className="produce-table">
+            <table className={`produce-table ${styles.models}`}>
               <caption className={styles.caption}>
                 Which forecast to trust: average error over the next 7 reports, tested on recent
                 reports the models never saw
@@ -367,25 +681,23 @@ export function MarketForecastPanel({
                   <td>
                     {statsPassed
                       ? "Yes, beat the baseline"
-                      : result.status === "trend_only" && result.reason === "stale"
+                      : staleNote
                         ? "No, prices are out of date"
                         : "No, not better than the baseline"}
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    Machine learning (gradient-boosted trees
                     {ml && ml.status !== "insufficient_data"
-                      ? `, ${ml.seriesUsed} mandi series`
-                      : ""}
-                    )
+                      ? `Machine learning (gradient-boosted trees, ${ml.seriesUsed} mandi series)`
+                      : "Machine learning (gradient-boosted trees)"}
                   </td>
                   <td>
                     {ml && ml.status !== "insufficient_data" ? rupees(ml.backtest.modelMae) : "—"}
                   </td>
                   <td>
                     {!ml
-                      ? result.status === "trend_only" && result.reason === "stale"
+                      ? staleNote
                         ? "No, prices are out of date"
                         : "Not available"
                       : ml.status === "insufficient_data"
@@ -395,16 +707,57 @@ export function MarketForecastPanel({
                           : "No, not better than the baseline"}
                   </td>
                 </tr>
+                <tr>
+                  <td>
+                    {weather && weather.status !== "insufficient_data"
+                      ? `Machine learning with weather (rain and temperature of each mandi’s district, ${weather.seriesUsed} mandi series)`
+                      : "Machine learning with weather (rain and temperature of each mandi’s district)"}
+                  </td>
+                  <td>
+                    {weather && weather.status !== "insufficient_data"
+                      ? rupees(weather.backtest.modelMae)
+                      : "—"}
+                  </td>
+                  <td>
+                    {!weather
+                      ? staleNote
+                        ? "No, prices are out of date"
+                        : data?.weather?.status === "unavailable" &&
+                            data.weather.reason === "weather_disabled"
+                          ? "Not available on this server"
+                          : "Not available"
+                      : weather.status === "insufficient_data"
+                        ? weather.reason === "no_weather"
+                          ? "Weather for this district is being fetched"
+                          : `No, needs ${weather.minimumSamples} training examples (has ${weather.trainingSamples})`
+                        : weatherPassed
+                          ? "Yes, beat the baseline"
+                          : "No, not better than the baseline"}
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
 
+          {weather && weather.status !== "insufficient_data" ? (
+            <p className={styles.note}>
+              The weather model is tested the hard way: it gets only weather known on the day of the
+              forecast. With the real weather of the following days its error would have been{" "}
+              {rupees(weather.backtest.knownWeatherMae)}
+              {weatherPassed
+                ? `; weather inputs account for about ${Math.round(weatherPassed.weatherShare * 100)}% of what it learned.`
+                : "."}
+            </p>
+          ) : null}
+
+          <WeatherBlock outlook={data?.weatherOutlook} weather={weather} />
+
           <p className={styles.note}>
             {best && bestLast
               ? `Expected around ${rupees(bestLast.price)} per quintal by ${shortDate(bestLast.date)} (likely range ${rupees(bestLast.low)}–${rupees(bestLast.high)}), from the ${best.label.toLowerCase()}, which had the lowest error. This is an estimate, not a guaranteed price.`
-              : result.status === "trend_only" && result.reason === "stale"
-                ? `The latest saved report is from ${shortDate(result.trend.latestDate)}, so no forecast is shown. Import recent prices to refresh it.`
-                : "No forecast is shown because neither model was more accurate than assuming today’s price holds. The trend above is still real reported data."}
+              : staleNote
+                ? `The latest saved report is from ${shortDate(result.trend.latestDate)}, so no forecast is shown. Newer prices are fetched automatically when data.gov.in publishes them.`
+                : "No forecast is shown because no model was more accurate than assuming today’s price holds. The trend above is still real reported data."}
           </p>
         </>
       ) : null}

@@ -1,3 +1,5 @@
+import { formatRating, reputationPoints, type RatingSummary } from "../ratings/rating.ts";
+
 export type LogisticsMatch = boolean | null;
 
 export type NearbyServiceCandidate = {
@@ -61,8 +63,12 @@ export type LogisticsRecommendation = {
     verification: number;
     pricingTransparency: number;
     serviceCoverage: number;
+    /** -5 to +5 from ratings given by farmers this provider served. */
+    reputation: number;
   };
-  rankingVersion: "rules-v2";
+  /** The provider's ratings from completed requests on Farmess, when any exist. */
+  providerRating: RatingSummary | null;
+  rankingVersion: "rules-v3";
   method: "explainable-heuristic";
   bookingStatus: "not_booked";
   /** Which distance the proximity score used. */
@@ -118,12 +124,14 @@ function kilometres(meters: number): string {
 /**
  * Rank nearby listings with explainable rules. When a road route is known for a
  * listing (HeiGIT), proximity is scored on road distance (radius scaled by
- * ROAD_DETOUR_ALLOWANCE); otherwise on straight-line distance.
+ * ROAD_DETOUR_ALLOWANCE); otherwise on straight-line distance. Ratings from
+ * farmers the provider has served add or remove up to 5 points (rating.ts).
  */
 export function rankLogisticsCandidates(
   candidates: readonly NearbyServiceCandidate[],
   requirements: LogisticsRequirements,
   roadRoutes: Readonly<Record<string, RoadRouteMetric>> = {},
+  providerRatings: Readonly<Record<string, RatingSummary>> = {},
 ): LogisticsRecommendation[] {
   const radius = requirements.maximumRadiusMeters;
   if (!Number.isFinite(radius) || radius < 500 || radius > 100_000) {
@@ -290,6 +298,14 @@ export function rankLogisticsCandidates(
       unknowns.push("A comparable rate is not listed; request a provider quote.");
     }
 
+    const providerRating = providerRatings[candidate.id] ?? null;
+    const reputation = reputationPoints(providerRating);
+    if (providerRating && providerRating.count > 0) {
+      reasons.push(
+        `Rated ${formatRating(providerRating)} by farmers this provider served on Farmess.`,
+      );
+    }
+
     const score = roundScore(
       roundScore(proximity * 0.8) +
         capacityScore +
@@ -298,7 +314,8 @@ export function rankLogisticsCandidates(
         coldChainScore +
         verification +
         pricingTransparency +
-        serviceCoverageScore,
+        serviceCoverageScore +
+        reputation,
     );
 
     const evaluated = [
@@ -338,8 +355,10 @@ export function rankLogisticsCandidates(
         verification,
         pricingTransparency,
         serviceCoverage: serviceCoverageScore,
+        reputation,
       },
-      rankingVersion: "rules-v2",
+      providerRating: providerRating && providerRating.count > 0 ? providerRating : null,
+      rankingVersion: "rules-v3",
       method: "explainable-heuristic",
       bookingStatus: "not_booked",
       distanceBasis: road ? "road" : "straight_line",

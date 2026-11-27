@@ -33,7 +33,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 MODEL_NAME = "hist_gradient_boosting_logistics_preference"
 MODEL_VERSION = "farmess-logistics-preference-1.0.0"
-FEATURE_SCHEMA_VERSION = "logistics-feedback-v2"
+FEATURE_SCHEMA_VERSION = "logistics-feedback-v3"
 MINIMUM_LABELS = 300
 MINIMUM_TRAINING_LABELS = 200
 MINIMUM_EVALUATION_LABELS = 60
@@ -41,9 +41,16 @@ MINIMUM_UNIQUE_USERS = 30
 MINIMUM_UNIQUE_LISTINGS = 20
 
 NUMERIC_FEATURES = ["distance_meters", "price_paise", "service_radius_km"]
-# HeiGIT road route shown to the farmer (v2). Optional: older exports lack these
-# columns, and ratings without a road route leave them empty (imputed).
-OPTIONAL_NUMERIC_FEATURES = ["road_distance_meters", "drive_duration_seconds"]
+# HeiGIT road route shown to the farmer (v2) and the provider's reputation when
+# the recommendation was judged: mean stars and number of ratings from farmers
+# they served (v3). Optional: older exports lack these columns, and rows
+# without a road route or without ratings leave them empty (imputed).
+OPTIONAL_NUMERIC_FEATURES = [
+    "road_distance_meters",
+    "drive_duration_seconds",
+    "provider_rating_average",
+    "provider_rating_count",
+]
 MODEL_NUMERIC_FEATURES = NUMERIC_FEATURES + OPTIONAL_NUMERIC_FEATURES
 CATEGORICAL_FEATURES = [
     "service_type",

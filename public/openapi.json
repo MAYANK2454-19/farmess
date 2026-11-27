@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Farmess API",
-    "version": "1.0.0",
-    "description": "Server route handlers for Farmess (Next.js App Router). Authentication is the Supabase SSR session cookie set by /login — sign in on the same origin, then use \"Try it out\". Role checks run in every handler and Row Level Security is enforced in PostgreSQL. Errors are JSON objects with an `error` message; 401 = not signed in, 403 = wrong role or not the record owner, 409 = state conflict, 503 = provider or key unavailable (no data is ever fabricated)."
+    "version": "1.1.0",
+    "description": "Server route handlers for Farmess (Next.js App Router). Authentication is the Supabase SSR session cookie set by /login — sign in on the same origin, then use \"Try it out\". Role checks run in every handler and Row Level Security is enforced in PostgreSQL. Sessions end after 30 minutes without activity and 12 hours after sign-in (admin accounts: 15 minutes and 8 hours); a request on an ended session is answered 401 with code `session_expired`. Errors are JSON objects with an `error` message; 401 = not signed in, 403 = wrong role or not the record owner, 409 = state conflict, 503 = provider or key unavailable (no data is ever fabricated)."
   },
   "servers": [
     {
@@ -23,7 +23,7 @@
     },
     {
       "name": "Market data",
-      "description": "Reported mandi prices and approved forecasts"
+      "description": "Reported mandi prices, automatic price history and forecasts"
     },
     {
       "name": "Logistics",
@@ -34,16 +34,20 @@
       "description": "Requirements, matches, marketplace and offers"
     },
     {
+      "name": "Sales and ratings",
+      "description": "Steps of an agreed sale and star ratings after completed work"
+    },
+    {
       "name": "Operator",
       "description": "Service listings and request handling"
     },
     {
       "name": "Account",
-      "description": "Profile, notifications and activity"
+      "description": "Profile, notifications, activity, session and signed-in devices"
     },
     {
       "name": "Admin",
-      "description": "Data-steward imports and forecast review"
+      "description": "Data-steward tools: access requests, provider review, optional bulk price imports"
     }
   ],
   "components": {
@@ -356,7 +360,8 @@
           "503": {
             "$ref": "#/components/responses/Unavailable"
           }
-        }
+        },
+        "description": "The commodity name is matched to the source's spelling before searching (\"bhindi\" -> \"Bhindi(Ladies Finger)\"). For a signed-in caller the reports returned are also saved, in the background, so today's prices appear in trends and forecasts."
       }
     },
     "/api/market-decisions": {
@@ -433,7 +438,7 @@
     "/api/market-forecasts": {
       "get": {
         "tags": ["Market data"],
-        "summary": "Price trend plus statistical and machine-learning forecasts for a crop at a mandi, from saved AGMARKNET reports",
+        "summary": "Price trend plus statistical, machine-learning and weather-aware forecasts for a crop at a mandi, from saved AGMARKNET reports",
         "security": [],
         "responses": {
           "200": {
@@ -446,7 +451,7 @@
             "$ref": "#/components/responses/Unavailable"
           }
         },
-        "description": "Uses saved market_observations; renamed listings of one mandi are joined. Returns result (statistical model on this mandi: forecast, trend_only or insufficient_history) and ml (gradient-boosted trees pooled across all saved crops and mandis in the state: forecast, no_skill or insufficient_data). Each forecast is returned only when it beats the persistence baseline on recent reports it never saw. When market is omitted, the mandi with the most saved report days is used.",
+        "description": "Uses saved market_observations; renamed listings of one mandi are joined. The crop name is matched to the source's spelling (\"tomatoes\" -> \"Tomato\"). If no mandi in the requested district reports the crop, mandis elsewhere in the state are returned and `area.widened` is true. Returns `result` (statistical model on this mandi: forecast, trend_only or insufficient_history), `ml` (gradient-boosted trees pooled across all saved crops and mandis in the state) and `weather` (gradient-boosted trees over every mandi of this crop in the state with each district's rain and temperature from Open-Meteo; includes dry / as-forecast / heavy-rain scenario prices), plus `weatherOutlook` (next 7 days for the mandi's district). Each forecast is returned only when it beats the \"price stays the same\" baseline on recent reports it never saw; the weather model is tested with weather known on the forecast day only. When market is omitted, the mandi still reporting with the most saved report days is used.",
         "parameters": [
           {
             "name": "crop",
@@ -654,7 +659,8 @@
           "503": {
             "$ref": "#/components/responses/Unavailable"
           }
-        }
+        },
+        "description": "Ranking version rules-v3: ratings from farmers a provider has served move a score by at most 5 points either way (fewer than 3 ratings count partly; no ratings = no change). Each result carries `providerRating` and `scoreBreakdown.reputation`."
       }
     },
     "/api/logistics/feedback": {
@@ -690,7 +696,8 @@
           "409": {
             "$ref": "#/components/responses/Conflict"
           }
-        }
+        },
+        "description": "The provider's rating average and count at that moment are stored with the feedback as inputs for the offline ranker."
       }
     },
     "/api/service-requests": {
@@ -1266,7 +1273,7 @@
     "/api/admin/market-history": {
       "post": {
         "tags": ["Admin"],
-        "summary": "Admin-only import of past mandi prices (AGMARKNET history on data.gov.in) for a crop and state",
+        "summary": "Admin-only bulk import of past mandi prices for a crop and state (optional: prices are fetched automatically)",
         "description": "Walks the Variety-wise Daily Market Prices resource newest-first back 30, 90, 180 or 365 days, paced for data.gov.in rate limits (≤240 s). Saves validated rows to market_observations and writes an ingestion audit.",
         "requestBody": {
           "required": true,
@@ -1750,6 +1757,288 @@
           },
           "502": {
             "description": "Map service unreachable"
+          }
+        }
+      }
+    },
+    "/api/market-history/ensure": {
+      "post": {
+        "tags": ["Market data"],
+        "summary": "Make sure Farmess has a crop's prices for an area; starts a background fetch from data.gov.in when something is missing",
+        "description": "Any signed-in account. Reports what is saved for the crop in the district (or the state when no district is given or the district has no reports) and, when today's reports, newer days or older history are missing, starts fetching them in the background: today's reports from the current-day resource, then up to 12 months of history for a district (4 months for a whole state), then the weather of the districts where the crop is reported. One fetch runs per crop and area at a time and retries are spaced out (complete: 6 h, partial: 2 min, rate-limited: 10 min, nothing at the source: 24 h). Rows are validated and written by a database function that only the server can call. Safe to call repeatedly; the forecast panel polls it while a fetch is running.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["crop"],
+                "additionalProperties": false,
+                "properties": {
+                  "crop": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "state": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "district": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                }
+              },
+              "example": {
+                "crop": "Tomato",
+                "state": "Jammu and Kashmir",
+                "district": "Jammu"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "configured, crop (source spelling), state, district, scope (district or state), savedReports, newestDate, oldestDate, needed, reason (nothing_saved, newer_days, older_days, up_to_date, no_location, not_configured, unavailable), started"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/sales": {
+      "get": {
+        "tags": ["Sales and ratings"],
+        "summary": "The caller's sales (as farmer or buyer) with status, the other side's contact details and ratings",
+        "description": "A sale exists once an offer is accepted. Each sale lists my_role, crop, quantity, agreed price, status (agreed, dispatched, delivered, payment_pending, paid, cancelled), the counterparty's contact and rating summary, and the stars exchanged.",
+        "responses": {
+          "200": {
+            "description": "sales[]"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Sales and ratings"],
+        "summary": "Move a sale forward: dispatch (farmer), confirm_delivery (buyer), confirm_payment (farmer)",
+        "description": "Each side confirms only its own step, in order. The change is recorded in the sale timeline and the other side is notified.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id", "action"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": ["dispatch", "confirm_delivery", "confirm_payment"]
+                  }
+                }
+              },
+              "example": {
+                "id": "00000000-0000-4000-8000-000000000000",
+                "action": "dispatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "sale { id, status, updated_at }"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/ratings": {
+      "get": {
+        "tags": ["Sales and ratings"],
+        "summary": "The caller's own rating summary and the ratings they have received",
+        "responses": {
+          "200": {
+            "description": "summary { average, count } and received[]"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Sales and ratings"],
+        "summary": "Rate the other side of a completed sale or service request, once, from 1 to 5 stars",
+        "description": "Allowed only for a participant, after a sale is delivered or paid or a service request is completed. One rating per person per sale or request; it cannot be changed. Others see only averages and counts.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["contextType", "contextId", "stars"],
+                "additionalProperties": false,
+                "properties": {
+                  "contextType": {
+                    "type": "string",
+                    "enum": ["sale", "service_request"]
+                  },
+                  "contextId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "stars": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "comment": {
+                    "type": ["string", "null"],
+                    "maxLength": 300
+                  }
+                }
+              },
+              "example": {
+                "contextType": "sale",
+                "contextId": "00000000-0000-4000-8000-000000000000",
+                "stars": 5,
+                "comment": "Paid on time"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "rating { id, stars, created_at }"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/session": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "State of the current session and the limits that apply to it",
+        "description": "signedIn, role, signedInAt, idleSeconds, absoluteSeconds and endsAt. The limits are enforced on the server for every request; this endpoint lets the browser warn before an idle sign-out.",
+        "responses": {
+          "200": {
+            "description": "Session state"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/session/devices": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Devices (browsers) where the account is signed in",
+        "responses": {
+          "200": {
+            "description": "devices[] with device, signedInAt, lastActiveAt, current"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Account"],
+        "summary": "Sign out one other device ({ id }) or every other device ({ others: true })",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "others": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "example": {
+                "others": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "signedOut"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "That device is no longer signed in"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }

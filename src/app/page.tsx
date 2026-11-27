@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BrandLogo } from "@/components/brand-logo";
 import { Icon, type IconName } from "@/components/icons";
+import { LanguageSwitcher } from "@/i18n/language-switcher";
 import { getFarmessSession } from "@/lib/auth/session";
 
 // Worked example only — rendered with an "Illustrative" label, never as market data.
@@ -97,6 +98,7 @@ export default async function HomePage() {
             <a href="#how-it-works">How it works</a>
             <a href="#principles">Principles</a>
             <a href="#who">Who it is for</a>
+            <LanguageSwitcher tone="dark" />
             <Link href="/login" className="button button-accent">
               Sign in
             </Link>
