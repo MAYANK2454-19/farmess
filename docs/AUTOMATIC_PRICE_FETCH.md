@@ -57,6 +57,10 @@ district of the state (`sourceDistrictNames`). "Siwan" is two letters from "Sara
 mixed in. The same rule is used by the live price search, the price-trend panel and the
 district weather (which looks a district up on the map under its usual name).
 
+Jammu and Kashmir was checked the same day and needs no entries: 14 of its 20 districts are
+listed under the usual name, and no rows were found for Bandipora, Doda, Kishtwar, Poonch,
+Reasi or Samba under any spelling tried, so those fall back to the state.
+
 Other states have not been checked name by name yet. Their districts are matched by the
 spelling rules, and a district the source names differently still falls back to the state.
 To check a state and see which names to add to the list:

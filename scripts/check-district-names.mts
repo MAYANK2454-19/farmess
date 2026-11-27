@@ -122,7 +122,7 @@ for (const name of [...seen.keys()].sort()) {
   differing += 1;
   const district: string | null = india.districtForSourceName(canonical, name);
   console.log(
-    `  ${JSON.stringify(name)} -> ${district ?? "NOT MATCHED (add it to OGD_DISTRICT_NAMES)"}`,
+    `  ${JSON.stringify(name)} -> ${district ?? "not matched (if it is a district of this state, add it to OGD_DISTRICT_NAMES)"}`,
   );
 }
 if (differing === 0) console.log("  none in this sample");
