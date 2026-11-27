@@ -54,7 +54,14 @@ test("coordinates are rounded to about one kilometre", () => {
 test("OGD state spellings are used for filters", async () => {
   const { ogdStateName } = await import("./india.ts");
   assert.equal(ogdStateName("Kerala"), "Keralam");
+  assert.equal(ogdStateName("Chhattisgarh"), "Chattisgarh");
+  assert.equal(ogdStateName("Andaman and Nicobar Islands"), "Andaman and Nicobar");
+  assert.equal(ogdStateName("Delhi"), "NCT of Delhi");
+  assert.equal(ogdStateName("Puducherry"), "Pondicherry");
+  assert.equal(ogdStateName("Uttarakhand"), "Uttarakhand");
   assert.equal(ogdStateName("Jammu and Kashmir"), "Jammu and Kashmir");
+  // The source's spelling leads back to the state of the list.
+  for (const state of INDIA_STATES) assert.equal(canonicalState(ogdStateName(state)), state);
 });
 
 test("place names match across small spelling differences", async () => {

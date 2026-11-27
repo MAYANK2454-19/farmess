@@ -20,3 +20,6 @@ ml/artifacts/
 ml/.venv/
 **/__pycache__/
 *.py[cod]
+
+# Checkpoints of an unfinished district-name scan (scripts/check-district-names.mts)
+scripts/data/ogd-districts/*.partial

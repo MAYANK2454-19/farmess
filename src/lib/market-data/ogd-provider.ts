@@ -1,15 +1,17 @@
 import "server-only";
 
 import { assessMarketSourceDateIntegrity } from "./source-integrity";
+import { canonicalCommodity } from "./commodities";
 import { fetchOgdRecordsPaginated } from "./ogd-pagination";
 import {
   canonicalState,
   ogdDistrictNames,
+  ogdDistrictNamesChecked,
   ogdStateName,
   sourceDistrictNames,
 } from "@/lib/location/india";
 
-/** Records fetched for a state when an exact district filter finds nothing. */
+/** Records read when looking for a district under another spelling. */
 const DISTRICT_FALLBACK_LIMIT = 300;
 import {
   RATE_LIMIT_TTL_MS,
@@ -21,9 +23,9 @@ import {
 import {
   emptyMarketSourceQuality,
   normalizeOgdResponseWithDiagnostics,
-  OGD_API_URL,
   SOURCE_NAME,
 } from "./normalize";
+import { currentPricesUrl, type NameFilter } from "./ogd-query";
 import type { MarketDataResult, MarketSearchFilters } from "./types";
 
 const SOURCE_URL =
@@ -73,42 +75,55 @@ async function fetchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataR
   }
 
   // OGD spells some states differently from the administrative list (e.g. Keralam).
-  const stateFilter = filters.state
-    ? ogdStateName(canonicalState(filters.state) ?? filters.state)
-    : undefined;
+  const knownState = filters.state ? canonicalState(filters.state) : null;
+  const stateFilter = filters.state ? ogdStateName(knownState ?? filters.state) : undefined;
+  const commodity = filters.commodity ? canonicalCommodity(filters.commodity) : null;
 
-  function buildUrl(district: string | null): URL {
-    const url = new URL(OGD_API_URL);
-    url.searchParams.set("api-key", apiKey as string);
-    url.searchParams.set("format", "json");
-    url.searchParams.set("offset", String(filters.offset ?? 0));
-    if (filters.commodity) url.searchParams.set("filters[commodity]", filters.commodity);
-    if (stateFilter) url.searchParams.set("filters[state]", stateFilter);
-    if (district) url.searchParams.set("filters[district]", district);
-    if (filters.market) url.searchParams.set("filters[market]", filters.market);
-    return url;
-  }
+  // A state of the list and a listed commodity are asked for exactly; anything
+  // else is matched by words (see ogd-query.ts for why that matters).
+  const buildUrl = (district: NameFilter | null): URL =>
+    currentPricesUrl(apiKey, {
+      commodity: commodity ? { name: commodity.name, exact: commodity.known } : null,
+      state: stateFilter ? { name: stateFilter, exact: knownState !== null } : null,
+      district,
+      market: filters.market,
+      offset: filters.offset,
+    });
 
   try {
     const limit = safeLimit(filters.limit);
-    // The district filter is an exact match on OGD's spelling, so a district
-    // the source is known to list differently ("East Champaran/ Motihari", or
-    // both "Chhapra" and "Saran" for Saran) is asked for under those names.
+    // A district the source is known to list differently ("East Champaran/
+    // Motihari", or both "Chhapra" and "Saran" for Saran) is asked for under
+    // those names; any other under the name it was given.
     const listed =
       filters.district && stateFilter ? ogdDistrictNames(stateFilter, filters.district) : [];
-    const districtNames = listed.length > 0 ? listed : [filters.district ?? null];
+    const districtNames = listed.length > 0 ? listed : filters.district ? [filters.district] : [];
     let rawRecords: unknown[] = [];
+    if (districtNames.length === 0) {
+      rawRecords = await fetchOgdRecordsPaginated(buildUrl(null), limit);
+    }
     for (const name of districtNames) {
       if (rawRecords.length >= limit) break;
       rawRecords.push(
-        ...(await fetchOgdRecordsPaginated(buildUrl(name), limit - rawRecords.length)),
+        ...(await fetchOgdRecordsPaginated(
+          buildUrl({ name, exact: true }),
+          limit - rawRecords.length,
+        )),
       );
     }
 
-    // Still nothing: read the state and keep the rows of whichever district
-    // name there means this district (e.g. Mayurbhanja for Mayurbhanj), never
-    // a neighbour with a similar name.
-    if (rawRecords.length === 0 && filters.district && stateFilter) {
+    // Still nothing, and the source's names for this state's districts have not
+    // been checked: look for the district under another spelling. First let the
+    // source match the name word by word ("East Champaran" finds "East
+    // Champaran/ Motihari"), then read the state's rows ("Farukhabad" for
+    // Farrukhabad shares no whole word). Either way only rows of a district
+    // name that means this district are kept, never a similar neighbour's.
+    if (
+      rawRecords.length === 0 &&
+      filters.district &&
+      stateFilter &&
+      !ogdDistrictNamesChecked(stateFilter)
+    ) {
       const districtOf = (record: unknown): string | null => {
         const value =
           typeof record === "object" && record !== null
@@ -116,20 +131,23 @@ async function fetchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataR
             : undefined;
         return typeof value === "string" ? value : null;
       };
-      const broad = await fetchOgdRecordsPaginated(buildUrl(null), DISTRICT_FALLBACK_LIMIT);
-      const names = new Set(
-        sourceDistrictNames(
-          stateFilter,
-          filters.district,
-          broad.map(districtOf).filter((name): name is string => name !== null),
-        ),
-      );
-      rawRecords = broad
-        .filter((record) => {
-          const name = districtOf(record);
-          return name !== null && names.has(name);
-        })
-        .slice(0, limit);
+      for (const attempt of [{ name: filters.district, exact: false }, null]) {
+        const found = await fetchOgdRecordsPaginated(buildUrl(attempt), DISTRICT_FALLBACK_LIMIT);
+        const names = new Set(
+          sourceDistrictNames(
+            stateFilter,
+            filters.district,
+            found.map(districtOf).filter((name): name is string => name !== null),
+          ),
+        );
+        rawRecords = found
+          .filter((record) => {
+            const name = districtOf(record);
+            return name !== null && names.has(name);
+          })
+          .slice(0, limit);
+        if (rawRecords.length > 0) break;
+      }
     }
     const normalized = normalizeOgdResponseWithDiagnostics({ records: rawRecords }, retrievedAt);
     const { records, quality: sourceQuality } = normalized;

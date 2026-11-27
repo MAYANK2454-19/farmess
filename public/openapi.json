@@ -361,7 +361,7 @@
             "$ref": "#/components/responses/Unavailable"
           }
         },
-        "description": "The commodity name is matched to the source's spelling before searching (\"bhindi\" -> \"Bhindi(Ladies Finger)\"). For a signed-in caller the reports returned are also saved, in the background, so today's prices appear in trends and forecasts."
+        "description": "The commodity name is matched to the source's spelling before searching (\"bhindi\" -> \"Bhindi(Ladies Finger)\"), and the state and district are asked for under the names data.gov.in uses (\"Chattisgarh\", \"NCT of Delhi\", \"East Champaran/ Motihari\"). A state of the list, a listed commodity and a district are matched exactly, so \"Uttar Pradesh\" no longer brings rows of Madhya Pradesh, nor \"Bitter gourd\" other gourds; an unlisted commodity and the market name are matched by words. When a district's exact name finds nothing, its rows are looked for under another spelling (\"Farukhabad\" for Farrukhabad), never a similar neighbour's. For a signed-in caller the reports returned are also saved, in the background, so today's prices appear in trends and forecasts."
       }
     },
     "/api/market-decisions": {

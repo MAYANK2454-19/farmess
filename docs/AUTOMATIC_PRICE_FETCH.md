@@ -36,9 +36,47 @@ shown instead, and the screen says so.
 The newest rows are saved first, about eight seconds after a fetch starts, so the latest prices
 are on the page long before the whole year has been read.
 
+## How data.gov.in matches names
+
+The two datasets behave differently, and neither forgives a spelling.
+
+| Dataset                                            | A filter matches                   | What Farmess does                                               |
+| -------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------- |
+| Price history ("Variety-wise daily market prices") | the exact value, capitals included | asks with the source's own spelling of state, district and crop |
+| Today's reports ("Current daily price")            | single words, best matches first   | uses the exact `.keyword` form of a field for names it knows    |
+
+"Single words" means that in today's reports `filters[state]=Uttar Pradesh` also returns
+Madhya Pradesh and Andhra Pradesh, and `filters[commodity]=Bitter gourd` every other gourd.
+Measured on 27 Nov 2026: 2,269 rows against 330 with `filters[state.keyword]`, and 712 against
+320 with `filters[commodity.keyword]`. The live search therefore asks in the exact form for a
+state of the list, a listed crop and a district's name at the source; free text (an unlisted
+crop, part of a mandi's name) keeps the word match (`src/lib/market-data/ogd-query.ts`).
+
+## State names
+
+Five states are written differently at the source, in both datasets. Asked for under the usual
+name they returned nothing at all, so no price could be shown or fetched for them:
+
+| State                       | Name at data.gov.in   |
+| --------------------------- | --------------------- |
+| Andaman and Nicobar Islands | `Andaman and Nicobar` |
+| Chhattisgarh                | `Chattisgarh`         |
+| Delhi                       | `NCT of Delhi`        |
+| Kerala                      | `Keralam`             |
+| Puducherry                  | `Pondicherry`         |
+
+All 36 states and union territories were checked on 27 Nov 2026 (`OGD_STATE_NAMES` in
+`src/lib/location/india.ts`). The other 28 with data use the usual name. No rows were found
+under any name for Ladakh, Lakshadweep, or Dadra and Nagar Haveli and Daman and Diu.
+
+The history keeps older spellings for older rows. Kerala's reports before April 2026 are under
+`Kerala` and are not read, so a fetch for Kerala reaches back to April 2026 rather than a full
+year until then. Uttarakhand's reports before November 2025 are under `Uttrakhand`, which is
+already past the year Farmess reads.
+
 ## District names
 
-data.gov.in writes some districts its own way, and its district filter is an exact match:
+data.gov.in writes some districts its own way, and it matches the district exactly:
 asking for "East Champaran" finds nothing, because the source lists that district as
 "East Champaran/ Motihari". Farmess therefore asks under the source's name, which it gets from:
 
@@ -62,12 +100,20 @@ listed under the usual name, and no rows were found for Bandipora, Doda, Kishtwa
 Reasi or Samba under any spelling tried, so those fall back to the state.
 
 Other states have not been checked name by name yet. Their districts are matched by the
-spelling rules, and a district the source names differently still falls back to the state.
-To check a state and see which names to add to the list:
+spelling rules: the live search looks for the district under another spelling among today's
+reports ("Farukhabad" for Farrukhabad), and the automatic fetch falls back to the state.
+
+To list every district name a state has at the source:
 
 ```
 node --experimental-strip-types scripts/check-district-names.mts "Uttar Pradesh"
 ```
+
+It reads the price history sorted by district, one row at a time: the first row names a
+district, a second request counts that district's rows and gives its newest report, and the
+next read starts that many rows further on. That is two small requests per name, and the counts
+must add up to the state's total (Goa: 95,611 + 53,174 = 148,785). Results are saved in
+`scripts/data/ogd-districts/`; a scan that is cut short carries on from where it stopped.
 
 ## How it stays safe and within limits
 

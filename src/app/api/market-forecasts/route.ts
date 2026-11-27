@@ -164,7 +164,8 @@ async function handleGET(request: NextRequest) {
     Boolean(districtKeys) && districtCropRows.length === 0 && stateCropRows.length > 0;
   const cropRows = widened ? stateCropRows : districtCropRows;
   const area = {
-    state: stateName,
+    // Shown to people, so the usual name ("Chhattisgarh"), not the source's ("Chattisgarh").
+    state: stateName ? (canonicalState(stateName) ?? stateName) : null,
     district: district.value ?? null,
     widened,
     /** The district as data.gov.in writes it, when that differs from the chosen name. */

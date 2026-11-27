@@ -907,9 +907,24 @@ export function approximateCoordinate(value: number): number {
  * (e.g. "Keralam", "Mayurbhanja"), so filters must tolerate small differences.
  */
 
-/** State names as written in the OGD mandi dataset, where they differ. */
+/**
+ * State names as written in the OGD mandi datasets, where they differ. A state
+ * asked for under its usual name returns nothing at all there. Every state of
+ * the list was checked against both datasets on 27 Nov 2026; these five are
+ * the ones written differently. (No rows were found under any name for Ladakh,
+ * Lakshadweep, or Dadra and Nagar Haveli and Daman and Diu.)
+ *
+ * The price history keeps older spellings for older rows: Kerala's reports
+ * before April 2026 are under "Kerala" and are not read, and Uttarakhand's
+ * before November 2025 are under "Uttrakhand", which is past the year Farmess
+ * reads.
+ */
 const OGD_STATE_NAMES: Record<string, string> = {
+  "Andaman and Nicobar Islands": "Andaman and Nicobar",
+  Chhattisgarh: "Chattisgarh",
+  Delhi: "NCT of Delhi",
   Kerala: "Keralam",
+  Puducherry: "Pondicherry",
 };
 
 export function ogdStateName(state: string): string {
@@ -1013,10 +1028,22 @@ function listedSourceNames(state: string, district: string): readonly string[] {
 
 /**
  * The names the source is known to use for a district ("Chhapra" and "Saran"
- * for Saran), or an empty list when the district has not been checked.
+ * for Saran), or an empty list when it uses the usual name or the district has
+ * not been checked.
  */
 export function ogdDistrictNames(state: string, district: string): readonly string[] {
   return listedSourceNames(canonicalState(state) ?? state, district);
+}
+
+/**
+ * States whose district names were all compared with the source: a district
+ * of such a state that is not in OGD_DISTRICT_NAMES is written the usual way
+ * there (or has no mandi reports), so looking for another spelling is pointless.
+ */
+const OGD_DISTRICT_NAMES_CHECKED: ReadonlySet<string> = new Set(["Bihar", "Goa"]);
+
+export function ogdDistrictNamesChecked(state: string): boolean {
+  return OGD_DISTRICT_NAMES_CHECKED.has(canonicalState(state) ?? state);
 }
 
 function districtMatchStrength(state: string, sourceName: string, district: string): number {
