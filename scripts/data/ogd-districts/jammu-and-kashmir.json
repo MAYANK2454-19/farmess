@@ -1,0 +1,99 @@
+{
+  "state": "Jammu and Kashmir",
+  "sourceState": "Jammu and Kashmir",
+  "scannedOn": "2026-11-27",
+  "rows": 602528,
+  "rowsCounted": 602528,
+  "names": [
+    {
+      "name": "Anantnag",
+      "rows": 20551,
+      "newest": "2026-11-26",
+      "market": "Batengoo Anantnag (F&V)"
+    },
+    {
+      "name": "Badgam",
+      "rows": 4401,
+      "newest": "2025-11-27",
+      "market": "Zaloosa-Chararishrief (F&V) APMC"
+    },
+    {
+      "name": "Baramulla",
+      "rows": 5035,
+      "newest": "2026-11-26",
+      "market": "Sopore (Nowpora) (F&V)"
+    },
+    {
+      "name": "Budgam",
+      "rows": 87,
+      "newest": "2026-11-23",
+      "market": "Zaloosa-Chararishrief (F&V)"
+    },
+    {
+      "name": "Ganderbal",
+      "rows": 347,
+      "newest": "2026-11-19",
+      "market": "Market Administrative Committee Zazna"
+    },
+    {
+      "name": "Jammu",
+      "rows": 266873,
+      "newest": "2026-11-26",
+      "market": "MAC F&V Market Narwal Jammu"
+    },
+    {
+      "name": "Kathua",
+      "rows": 90037,
+      "newest": "2026-11-26",
+      "market": "Kathua (F&V)"
+    },
+    {
+      "name": "Kulgam",
+      "rows": 196,
+      "newest": "2026-11-26",
+      "market": "Kulgam (F&V)"
+    },
+    {
+      "name": "Kupwara",
+      "rows": 1206,
+      "newest": "2026-11-26",
+      "market": "Bumhama Kupwara (F&V)"
+    },
+    {
+      "name": "Pulwama",
+      "rows": 11485,
+      "newest": "2026-11-26",
+      "market": "Pachar Pulwama (F&V)"
+    },
+    {
+      "name": "Rajouri",
+      "rows": 30096,
+      "newest": "2026-11-26",
+      "market": "Rajouri (Phaliana) (F&V)"
+    },
+    {
+      "name": "Ramban",
+      "rows": 64,
+      "newest": "2025-11-06",
+      "market": "Batote APMC"
+    },
+    {
+      "name": "Shopian",
+      "rows": 1001,
+      "newest": "2026-11-26",
+      "market": "APMC/MAC Shopian"
+    },
+    {
+      "name": "Srinagar",
+      "rows": 67159,
+      "newest": "2026-11-25",
+      "market": "Parimpore Srinagar (F&V)"
+    },
+    {
+      "name": "Udhampur",
+      "rows": 103990,
+      "newest": "2026-11-26",
+      "market": "Fruit and Vegetable Market Udhampur"
+    }
+  ]
+}

@@ -6,7 +6,11 @@
  * as an option instead of rejecting the user's real address.
  */
 
-import { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED } from "./ogd-district-names.ts";
+import {
+  OGD_DISTRICT_NAMES,
+  OGD_DISTRICT_NAMES_CHECKED,
+  OGD_STATEWIDE_DISTRICT_NAMES,
+} from "./ogd-district-names.ts";
 
 export const INDIA_DISTRICTS: Readonly<Record<string, readonly string[]>> = {
   "Andaman and Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
@@ -1007,13 +1011,15 @@ export function placeNamesMatch(
  */
 
 function listedSourceNames(state: string, district: string): readonly string[] {
-  const byDistrict = OGD_DISTRICT_NAMES[state];
-  if (!byDistrict) return [];
+  // A name the source uses for the whole state ("Delhi") stands for each district of it.
+  const everywhere = OGD_STATEWIDE_DISTRICT_NAMES[state] ?? [];
   const key = normalise(district);
-  for (const [name, sourceNames] of Object.entries(byDistrict)) {
-    if (normalise(name) === key) return sourceNames;
+  for (const [name, sourceNames] of Object.entries(OGD_DISTRICT_NAMES[state] ?? {})) {
+    if (normalise(name) === key) {
+      return everywhere.length > 0 ? [...sourceNames, ...everywhere] : sourceNames;
+    }
   }
-  return [];
+  return everywhere;
 }
 
 /**
@@ -1080,7 +1086,13 @@ export function sourceDistrictNames(
   for (const name of new Set(sourceNames)) {
     const strength = districtMatchStrength(canonical, name, wanted);
     if (strength === 0) continue;
-    if (others.some((other) => districtMatchStrength(canonical, name, other) >= strength)) continue;
+    // A listed name is settled; any other must fit this district better than the rest.
+    if (
+      strength < 5 &&
+      others.some((other) => districtMatchStrength(canonical, name, other) >= strength)
+    ) {
+      continue;
+    }
     matches.push({ name, strength });
   }
   return matches.sort((a, b) => b.strength - a.strength).map((match) => match.name);

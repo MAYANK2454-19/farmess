@@ -123,13 +123,25 @@ The states scanned so far are listed in `OGD_DISTRICT_NAMES_CHECKED` in the gene
 the others, the live search looks for the district under another spelling among today's reports
 ("Farukhabad" for Farrukhabad), and the automatic fetch falls back to the state.
 
-Two things the scans showed that the list cannot repair:
+What the scans showed beyond spellings:
 
-- **Districts split from an older one** carry their own name only since the source adopted it.
-  Sri Sathya Sai (Andhra Pradesh) has reports under its own name from May 2026; before that its
-  mandis were reported under the undivided `Anantapur`.
+- **A wave of renaming in 2026.** The source switched many districts to new names in April to
+  July 2026 (Karnataka: `Mysore` to `Mysuru`, `Shimoga` to `Shivamogga`, `Bijapur` to
+  `Vijayapura`; Andhra Pradesh: `Cuddapah` to `YSR Kadapa`). A year of history therefore sits
+  under two names, and both are asked for.
+- **One name for a whole state.** The source lists all of Delhi's mandis under the single
+  district `Delhi`, so that name is used for each of Delhi's eleven districts.
+- **An old name that covered several of today's districts** stays with the district that kept
+  it. `Bangalore` held the mandis of Bengaluru Urban, Bengaluru Rural and Ramanagara until May
+  2026; it is read for Bengaluru Urban, and the other two have history from May 2026 under
+  `Bengaluru Rural` and `Bengaluru South`.
+- **Districts split from an older one** likewise carry their own name only since the source
+  adopted it. Sri Sathya Sai (Andhra Pradesh) has reports from May 2026; before that its mandis
+  were reported under the undivided `Anantapur`.
 - **Districts the source lists and Farmess did not have** are added to the district list when
   the source's mandis place them clearly (Markapuram and Polavaram in Andhra Pradesh).
+- **States with nothing recent.** Jharkhand's newest report in the history is from 2023, and
+  Dadra and Nagar Haveli and Daman and Diu has no rows at all, so no price can be shown there.
 
 ## How it stays safe and within limits
 

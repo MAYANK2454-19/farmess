@@ -1,0 +1,219 @@
+{
+  "state": "Chhattisgarh",
+  "sourceState": "Chattisgarh",
+  "scannedOn": "2026-11-27",
+  "rows": 1077131,
+  "rowsCounted": 1077131,
+  "names": [
+    {
+      "name": "Balod",
+      "rows": 23860,
+      "newest": "2026-11-26",
+      "market": "Balod APMC"
+    },
+    {
+      "name": "Balodabazar",
+      "rows": 77160,
+      "newest": "2026-11-26",
+      "market": "Balodabazar APMC"
+    },
+    {
+      "name": "Balrampur",
+      "rows": 13961,
+      "newest": "2026-11-26",
+      "market": "Ramanujganj APMC"
+    },
+    {
+      "name": "Bastar",
+      "rows": 28471,
+      "newest": "2026-11-26",
+      "market": "Jagdalpur APMC"
+    },
+    {
+      "name": "Bemetara",
+      "rows": 12331,
+      "newest": "2026-10-30",
+      "market": "Dadhi APMC"
+    },
+    {
+      "name": "Bijapur",
+      "rows": 9777,
+      "newest": "2026-11-25",
+      "market": "Bhopalpattnam APMC"
+    },
+    {
+      "name": "Bilaspur",
+      "rows": 82090,
+      "newest": "2026-11-26",
+      "market": "Kota APMC"
+    },
+    {
+      "name": "Dantewada",
+      "rows": 9317,
+      "newest": "2026-11-25",
+      "market": "Gidam APMC"
+    },
+    {
+      "name": "Dhamtari",
+      "rows": 74623,
+      "newest": "2026-11-25",
+      "market": "Dhamtari APMC"
+    },
+    {
+      "name": "Durg",
+      "rows": 78076,
+      "newest": "2026-11-25",
+      "market": "Durg APMC"
+    },
+    {
+      "name": "Gariyaband",
+      "rows": 33684,
+      "newest": "2026-11-25",
+      "market": "Devbhog APMC"
+    },
+    {
+      "name": "Gourela Pendra Marwahi",
+      "rows": 192,
+      "newest": "2026-11-26",
+      "market": "Pendraroad APMC"
+    },
+    {
+      "name": "Janjgeer-Champa",
+      "rows": 249,
+      "newest": "2026-11-17",
+      "market": "Champa APMC"
+    },
+    {
+      "name": "Janjgir",
+      "rows": 23720,
+      "newest": "2026-07-16",
+      "market": "Amadula APMC"
+    },
+    {
+      "name": "Jashpur",
+      "rows": 23073,
+      "newest": "2026-11-26",
+      "market": "Pathalgaon APMC"
+    },
+    {
+      "name": "Kabirdham",
+      "rows": 31475,
+      "newest": "2026-11-26",
+      "market": "Kawardha APMC"
+    },
+    {
+      "name": "Kanker",
+      "rows": 58307,
+      "newest": "2026-11-26",
+      "market": "Charama APMC"
+    },
+    {
+      "name": "Khairagarh Chhuikhadan Gandai",
+      "rows": 1236,
+      "newest": "2026-11-26",
+      "market": "Kheragarh APMC"
+    },
+    {
+      "name": "Kondagaon",
+      "rows": 54190,
+      "newest": "2026-11-26",
+      "market": "Chhinari APMC"
+    },
+    {
+      "name": "Korba",
+      "rows": 6700,
+      "newest": "2026-11-16",
+      "market": "Katghora APMC"
+    },
+    {
+      "name": "Koria",
+      "rows": 12077,
+      "newest": "2026-07-16",
+      "market": "Manendragarh APMC"
+    },
+    {
+      "name": "Koriya",
+      "rows": 177,
+      "newest": "2026-11-26",
+      "market": "Baikunthpur APMC"
+    },
+    {
+      "name": "Mahasamund",
+      "rows": 61976,
+      "newest": "2026-11-26",
+      "market": "Bhavarpur APMC"
+    },
+    {
+      "name": "Manendragarh Chirmiri Bhartpur",
+      "rows": 184,
+      "newest": "2026-11-26",
+      "market": "Manendragarh APMC"
+    },
+    {
+      "name": "Mohla Manpur Ambagarh Chouki",
+      "rows": 95,
+      "newest": "2026-11-26",
+      "market": "Bandhabazar APMC"
+    },
+    {
+      "name": "Mungeli",
+      "rows": 46417,
+      "newest": "2026-11-25",
+      "market": "Mungeli APMC"
+    },
+    {
+      "name": "Narayanpur",
+      "rows": 9046,
+      "newest": "2026-11-26",
+      "market": "Narayanpur APMC"
+    },
+    {
+      "name": "Raigarh",
+      "rows": 47606,
+      "newest": "2026-11-25",
+      "market": "Dharamjaygarh APMC"
+    },
+    {
+      "name": "Raipur",
+      "rows": 67622,
+      "newest": "2026-11-26",
+      "market": "Tulsi APMC"
+    },
+    {
+      "name": "Rajnandgaon",
+      "rows": 150837,
+      "newest": "2026-11-25",
+      "market": "Rajnandgaon APMC"
+    },
+    {
+      "name": "Sakti",
+      "rows": 169,
+      "newest": "2026-11-25",
+      "market": "Sakti APMC"
+    },
+    {
+      "name": "Sarangarh Bilaigarh",
+      "rows": 433,
+      "newest": "2026-11-26",
+      "market": "Baramkela APMC"
+    },
+    {
+      "name": "Sukma",
+      "rows": 12136,
+      "newest": "2026-11-25",
+      "market": "Kukanar APMC"
+    },
+    {
+      "name": "Surajpur",
+      "rows": 12145,
+      "newest": "2026-11-26",
+      "market": "Pratappur APMC"
+    },
+    {
+      "name": "Surguja",
+      "rows": 13719,
+      "newest": "2026-11-26",
+      "market": "Ambikapur APMC"
+    }
+  ]
+}

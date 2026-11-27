@@ -11,5 +11,33 @@
     "Chhapra": "Saran",
     "Luckeesarai": "Lakhisarai",
     "Munghair": "Munger"
+  },
+  "Chhattisgarh": {
+    "Koria": "Koriya"
+  },
+  "Delhi": {
+    "Delhi": "*"
+  },
+  "Gujarat": {
+    "Kachchh": "Kutch",
+    "The Dangs": "Dang"
+  },
+  "Haryana": {
+    "Gurgaon": "Gurugram",
+    "Mewat": "Nuh"
+  },
+  "Himachal Pradesh": {
+    "Sirmore": "Sirmaur"
+  },
+  "Karnataka": {
+    "Bangalore": "Bengaluru Urban",
+    "Belgaum": "Belagavi",
+    "Bengaluru": "Bengaluru Urban",
+    "Bengaluru South": "Ramanagara",
+    "Bijapur": "Vijayapura",
+    "Chikmagalur": "Chikkamagaluru",
+    "Karwar(Uttar Kannad)": "Uttara Kannada",
+    "Mangalore(Dakshin Kannad)": "Dakshina Kannada",
+    "Shimoga": "Shivamogga"
   }
 }

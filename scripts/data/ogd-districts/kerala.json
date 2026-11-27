@@ -1,0 +1,93 @@
+{
+  "state": "Kerala",
+  "sourceState": "Keralam",
+  "scannedOn": "2026-11-27",
+  "rows": 358364,
+  "rowsCounted": 358364,
+  "names": [
+    {
+      "name": "Alappuzha",
+      "rows": 26705,
+      "newest": "2026-11-26",
+      "market": "Chengannur Market"
+    },
+    {
+      "name": "Ernakulam",
+      "rows": 47544,
+      "newest": "2026-11-26",
+      "market": "Perumbavoor Market"
+    },
+    {
+      "name": "Idukki",
+      "rows": 19544,
+      "newest": "2026-11-26",
+      "market": "Kodikulam  VFPCK Market"
+    },
+    {
+      "name": "Kannur",
+      "rows": 11377,
+      "newest": "2026-11-26",
+      "market": "Kannur Market"
+    },
+    {
+      "name": "Kasargod",
+      "rows": 14562,
+      "newest": "2026-11-25",
+      "market": "Kanjangadu Market"
+    },
+    {
+      "name": "Kollam",
+      "rows": 28114,
+      "newest": "2026-11-26",
+      "market": "Piravanthoor VFPCK Market"
+    },
+    {
+      "name": "Kottayam",
+      "rows": 33182,
+      "newest": "2026-11-26",
+      "market": "Kottayam Market"
+    },
+    {
+      "name": "Kozhikode(Calicut)",
+      "rows": 24334,
+      "newest": "2026-11-26",
+      "market": "Thalakulathur VFPCK Market"
+    },
+    {
+      "name": "Malappuram",
+      "rows": 28879,
+      "newest": "2026-11-26",
+      "market": "Perinthalmanna Market"
+    },
+    {
+      "name": "Palakad",
+      "rows": 44962,
+      "newest": "2026-11-26",
+      "market": "Palakkad Market"
+    },
+    {
+      "name": "Pathanamthitta",
+      "rows": 9470,
+      "newest": "2026-11-26",
+      "market": "Pandalam Thekkekkara  VFPCK Market"
+    },
+    {
+      "name": "Thirssur",
+      "rows": 21834,
+      "newest": "2026-11-26",
+      "market": "Chelakkara Market"
+    },
+    {
+      "name": "Thiruvananthapuram",
+      "rows": 39830,
+      "newest": "2026-11-26",
+      "market": "Pappanchani VFPCK Market"
+    },
+    {
+      "name": "Wayanad",
+      "rows": 8027,
+      "newest": "2026-11-26",
+      "market": "Mananthavady Market"
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "state": "Gujarat",
+  "sourceState": "Gujarat",
+  "scannedOn": "2026-11-27",
+  "rows": 5481351,
+  "rowsCounted": 5481351,
+  "names": [
+    {
+      "name": "Ahmedabad",
+      "rows": 344762,
+      "newest": "2026-11-26",
+      "market": "Mandal APMC"
+    },
+    {
+      "name": "Amreli",
+      "rows": 315619,
+      "newest": "2026-11-26",
+      "market": "Damnagar APMC"
+    },
+    {
+      "name": "Anand",
+      "rows": 128607,
+      "newest": "2026-11-26",
+      "market": "Anand(Veg,Yard,Anand) APMC"
+    },
+    {
+      "name": "Banaskanth",
+      "rows": 346968,
+      "newest": "2026-11-26",
+      "market": "Deesa(Deesa Veg Yard) APMC"
+    },
+    {
+      "name": "Bharuch",
+      "rows": 231071,
+      "newest": "2026-11-26",
+      "market": "Ankleshwar APMC"
+    },
+    {
+      "name": "Bhavnagar",
+      "rows": 138922,
+      "newest": "2026-11-26",
+      "market": "Palitana APMC"
+    },
+    {
+      "name": "Botad",
+      "rows": 70663,
+      "newest": "2026-11-25",
+      "market": "Botad(Bhabarkot) APMC"
+    },
+    {
+      "name": "Chhota Udaipur",
+      "rows": 20471,
+      "newest": "2026-11-26",
+      "market": "Modasar APMC"
+    },
+    {
+      "name": "Dahod",
+      "rows": 309612,
+      "newest": "2026-11-26",
+      "market": "Dahod(Veg. Market) APMC"
+    },
+    {
+      "name": "Dang",
+      "rows": 155,
+      "newest": "2025-09-26",
+      "market": "Vaghai"
+    },
+    {
+      "name": "Devbhumi Dwarka",
+      "rows": 16323,
+      "newest": "2026-11-26",
+      "market": "Jam Khambalia APMC"
+    },
+    {
+      "name": "Gandhinagar",
+      "rows": 183486,
+      "newest": "2026-11-26",
+      "market": "Mansa(Manas Veg Yard) APMC"
+    },
+    {
+      "name": "Gir Somnath",
+      "rows": 98397,
+      "newest": "2026-11-26",
+      "market": "Talalagir APMC"
+    },
+    {
+      "name": "Jamnagar",
+      "rows": 154148,
+      "newest": "2026-11-26",
+      "market": "Jamnagar APMC"
+    },
+    {
+      "name": "Junagarh",
+      "rows": 189164,
+      "newest": "2026-11-26",
+      "market": "Junagadh APMC"
+    },
+    {
+      "name": "Kachchh",
+      "rows": 75255,
+      "newest": "2026-11-26",
+      "market": "Rapar APMC"
+    },
+    {
+      "name": "Kheda",
+      "rows": 169069,
+      "newest": "2026-11-26",
+      "market": "Nadiyad(Piplag) APMC"
+    },
+    {
+      "name": "Mehsana",
+      "rows": 256925,
+      "newest": "2026-11-26",
+      "market": "Mehsana(Mehsana Veg) APMC"
+    },
+    {
+      "name": "Morbi",
+      "rows": 190664,
+      "newest": "2026-11-26",
+      "market": "Morbi APMC"
+    },
+    {
+      "name": "Narmada",
+      "rows": 3814,
+      "newest": "2026-11-26",
+      "market": "Rajpipla APMC"
+    },
+    {
+      "name": "Navsari",
+      "rows": 124698,
+      "newest": "2026-11-26",
+      "market": "Navsari APMC"
+    },
+    {
+      "name": "Panchmahals",
+      "rows": 54650,
+      "newest": "2026-11-26",
+      "market": "Morva Hafad APMC"
+    },
+    {
+      "name": "Patan",
+      "rows": 167420,
+      "newest": "2026-11-26",
+      "market": "Siddhpur APMC"
+    },
+    {
+      "name": "Porbandar",
+      "rows": 58094,
+      "newest": "2026-11-26",
+      "market": "Porbandar APMC"
+    },
+    {
+      "name": "Rajkot",
+      "rows": 486020,
+      "newest": "2026-11-26",
+      "market": "Rajkot APMC"
+    },
+    {
+      "name": "Sabarkantha",
+      "rows": 256571,
+      "newest": "2026-11-26",
+      "market": "Modasa(Tintoi) APMC"
+    },
+    {
+      "name": "Surat",
+      "rows": 383529,
+      "newest": "2026-11-26",
+      "market": "Surat APMC"
+    },
+    {
+      "name": "Surendranagar",
+      "rows": 160683,
+      "newest": "2026-11-26",
+      "market": "Vadhvan APMC"
+    },
+    {
+      "name": "The Dangs",
+      "rows": 684,
+      "newest": "2026-11-25",
+      "market": "Ahwa-Dang APMC"
+    },
+    {
+      "name": "Vadodara(Baroda)",
+      "rows": 509091,
+      "newest": "2026-11-26",
+      "market": "Padra APMC"
+    },
+    {
+      "name": "Valsad",
+      "rows": 35816,
+      "newest": "2026-11-26",
+      "market": "Chikli(Khorgam) APMC"
+    }
+  ]
+}

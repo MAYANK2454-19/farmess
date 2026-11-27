@@ -106,10 +106,14 @@ test("a source name is given to the district it fits best, never to a similar ne
 });
 
 test("the list of source names points only at real districts, each name at one", async () => {
-  const { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED } =
+  const { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED, OGD_STATEWIDE_DISTRICT_NAMES } =
     await import("./ogd-district-names.ts");
   for (const state of OGD_DISTRICT_NAMES_CHECKED) {
     assert.ok(INDIA_STATES.includes(state), `${state} is not a state of the list`);
+  }
+  for (const [state, names] of Object.entries(OGD_STATEWIDE_DISTRICT_NAMES)) {
+    assert.ok(OGD_DISTRICT_NAMES_CHECKED.includes(state), `${state} was not read to the end`);
+    assert.ok(names.length > 0 && names.every((name) => name.trim().length > 0));
   }
   for (const [state, districts] of Object.entries(OGD_DISTRICT_NAMES)) {
     assert.ok(OGD_DISTRICT_NAMES_CHECKED.includes(state), `${state} was not read to the end`);
@@ -148,6 +152,42 @@ test("renamed districts and padded names are asked for exactly as the source wri
   ]);
   assert.equal(ogdDistrictNamesChecked("Bihar"), true);
   assert.equal(ogdDistrictNamesChecked("Atlantis"), false);
+});
+
+test("one source name can stand for every district of a state", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  // The source lists all of Delhi's mandis under the single district "Delhi".
+  assert.deepEqual(ogdDistrictNames("Delhi", "New Delhi"), ["Delhi"]);
+  assert.deepEqual(ogdDistrictNames("NCT of Delhi", "South West Delhi"), ["Delhi"]);
+  assert.deepEqual(sourceDistrictNames("Delhi", "Shahdara", ["Delhi"]), ["Delhi"]);
+  // It belongs to no single district, so the map is not asked for one.
+  assert.equal(districtForSourceName("Delhi", "Delhi"), null);
+});
+
+test("old and new names of renamed districts both lead to the district", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  assert.deepEqual(ogdDistrictNames("Karnataka", "Bengaluru Urban"), ["Bengaluru", "Bangalore"]);
+  assert.deepEqual(ogdDistrictNames("Karnataka", "Shivamogga"), ["Shivamogga", "Shimoga"]);
+  assert.equal(districtForSourceName("Karnataka", "Bengaluru South"), "Ramanagara");
+  assert.equal(districtForSourceName("Karnataka", "Mangalore(Dakshin Kannad)"), "Dakshina Kannada");
+  // "Bengaluru" is the city district; the rural district keeps only its own name.
+  assert.deepEqual(
+    sourceDistrictNames("Karnataka", "Bengaluru Rural", [
+      "Bengaluru",
+      "Bengaluru Rural",
+      "Bengaluru South",
+    ]),
+    ["Bengaluru Rural"],
+  );
+  assert.deepEqual(ogdDistrictNames("Haryana", "Gurugram"), ["Gurgaon"]);
+  assert.deepEqual(ogdDistrictNames("Haryana", "Nuh"), ["Mewat"]);
+  assert.deepEqual(ogdDistrictNames("Gujarat", "Kutch"), ["Kachchh"]);
+  assert.deepEqual(ogdDistrictNames("Chhattisgarh", "Koriya"), ["Koriya", "Koria"]);
+  // "Koria" is one letter from Korba as well; the list settles it.
+  assert.equal(districtForSourceName("Chhattisgarh", "Koria"), "Koriya");
+  assert.deepEqual(sourceDistrictNames("Chhattisgarh", "Korba", ["Koria", "Korba"]), ["Korba"]);
 });
 
 test("districts the source names its own way use the checked names", async () => {

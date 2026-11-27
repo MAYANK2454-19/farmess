@@ -1,0 +1,135 @@
+{
+  "state": "Jharkhand",
+  "sourceState": "Jharkhand",
+  "scannedOn": "2026-11-27",
+  "rows": 980551,
+  "rowsCounted": 980551,
+  "names": [
+    {
+      "name": "Bokaro",
+      "rows": 25370,
+      "newest": "2018-09-16",
+      "market": "Bermo"
+    },
+    {
+      "name": "Deogarh",
+      "rows": 61995,
+      "newest": "2018-09-08",
+      "market": "Madhupur"
+    },
+    {
+      "name": "Dhanbad",
+      "rows": 49311,
+      "newest": "2018-09-15",
+      "market": "Dhanbad"
+    },
+    {
+      "name": "Dumka",
+      "rows": 15611,
+      "newest": "2018-09-14",
+      "market": "Dumka"
+    },
+    {
+      "name": "East Singhbhum",
+      "rows": 51155,
+      "newest": "2019-01-23",
+      "market": "Jamshedpur"
+    },
+    {
+      "name": "Garhwa",
+      "rows": 90183,
+      "newest": "2023-01-24",
+      "market": "Gadhwah"
+    },
+    {
+      "name": "Giridih",
+      "rows": 37307,
+      "newest": "2019-11-15",
+      "market": "Giridih"
+    },
+    {
+      "name": "Godda",
+      "rows": 16977,
+      "newest": "2018-09-22",
+      "market": "Godda"
+    },
+    {
+      "name": "Gumla",
+      "rows": 45284,
+      "newest": "2019-05-18",
+      "market": "Gumla"
+    },
+    {
+      "name": "Hazaribagh",
+      "rows": 38053,
+      "newest": "2018-09-13",
+      "market": "Hazaribagh"
+    },
+    {
+      "name": "Jamtara",
+      "rows": 24910,
+      "newest": "2017-09-25",
+      "market": "Jamtara"
+    },
+    {
+      "name": "Koderma",
+      "rows": 27543,
+      "newest": "2019-07-29",
+      "market": "Koderma"
+    },
+    {
+      "name": "Latehar",
+      "rows": 35010,
+      "newest": "2018-09-25",
+      "market": "Latehar"
+    },
+    {
+      "name": "Lohardaga",
+      "rows": 59186,
+      "newest": "2021-07-10",
+      "market": "Lohardaga"
+    },
+    {
+      "name": "Pakur",
+      "rows": 45257,
+      "newest": "2019-03-07",
+      "market": "Pakur"
+    },
+    {
+      "name": "Palamu",
+      "rows": 37307,
+      "newest": "2018-11-01",
+      "market": "Daltenganj"
+    },
+    {
+      "name": "Ranchi",
+      "rows": 130458,
+      "newest": "2020-09-25",
+      "market": "Khunti"
+    },
+    {
+      "name": "Sahebgang",
+      "rows": 49130,
+      "newest": "2018-05-21",
+      "market": "Sahebganj"
+    },
+    {
+      "name": "Saraikela(Kharsanwa)",
+      "rows": 42927,
+      "newest": "2018-09-23",
+      "market": "Saraikela"
+    },
+    {
+      "name": "Simdega",
+      "rows": 56066,
+      "newest": "2018-10-02",
+      "market": "Simdega"
+    },
+    {
+      "name": "West Singbhum",
+      "rows": 41511,
+      "newest": "2017-09-08",
+      "market": "Chaibasa"
+    }
+  ]
+}

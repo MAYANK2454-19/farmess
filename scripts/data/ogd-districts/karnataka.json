@@ -1,0 +1,273 @@
+{
+  "state": "Karnataka",
+  "sourceState": "Karnataka",
+  "scannedOn": "2026-11-27",
+  "rows": 4042642,
+  "rowsCounted": 4042642,
+  "names": [
+    {
+      "name": "Bagalkot",
+      "rows": 61778,
+      "newest": "2026-11-26",
+      "market": "Bagalkot APMC"
+    },
+    {
+      "name": "Bangalore",
+      "rows": 696664,
+      "newest": "2026-05-28",
+      "market": "Ramanagara APMC"
+    },
+    {
+      "name": "Belagavi",
+      "rows": 4456,
+      "newest": "2026-11-26",
+      "market": "Belgaum APMC"
+    },
+    {
+      "name": "Belgaum",
+      "rows": 99302,
+      "newest": "2026-05-27",
+      "market": "Bailahongal APMC"
+    },
+    {
+      "name": "Bellary",
+      "rows": 109564,
+      "newest": "2026-11-26",
+      "market": "Kampli APMC"
+    },
+    {
+      "name": "Bengaluru",
+      "rows": 16866,
+      "newest": "2026-11-26",
+      "market": "Bengaluru APMC"
+    },
+    {
+      "name": "Bengaluru Rural",
+      "rows": 3816,
+      "newest": "2026-11-24",
+      "market": "Doddaballapur APMC"
+    },
+    {
+      "name": "Bengaluru South",
+      "rows": 7534,
+      "newest": "2026-11-26",
+      "market": "Ramanagara APMC"
+    },
+    {
+      "name": "Bidar",
+      "rows": 104369,
+      "newest": "2026-11-26",
+      "market": "Basava Kalayana APMC"
+    },
+    {
+      "name": "Bijapur",
+      "rows": 57835,
+      "newest": "2026-05-27",
+      "market": "Bijapur APMC"
+    },
+    {
+      "name": "Chamarajanagar",
+      "rows": 4731,
+      "newest": "2026-11-26",
+      "market": "Gundlupet APMC"
+    },
+    {
+      "name": "Chamrajnagar",
+      "rows": 81615,
+      "newest": "2026-05-28",
+      "market": "Chamaraj Nagar APMC"
+    },
+    {
+      "name": "Chikkaballapur",
+      "rows": 15458,
+      "newest": "2026-11-26",
+      "market": "Bagepalli APMC"
+    },
+    {
+      "name": "Chikkamagaluru",
+      "rows": 5746,
+      "newest": "2026-11-26",
+      "market": "Mudigere APMC"
+    },
+    {
+      "name": "Chikmagalur",
+      "rows": 157171,
+      "newest": "2026-05-28",
+      "market": "Chikkamagalore APMC"
+    },
+    {
+      "name": "Chitradurga",
+      "rows": 53088,
+      "newest": "2026-11-26",
+      "market": "Hiriyur APMC"
+    },
+    {
+      "name": "Dakshina Kannada",
+      "rows": 2486,
+      "newest": "2026-11-25",
+      "market": "Bantwala APMC"
+    },
+    {
+      "name": "Davangere",
+      "rows": 170173,
+      "newest": "2026-11-26",
+      "market": "Honnali APMC"
+    },
+    {
+      "name": "Dharwad",
+      "rows": 111890,
+      "newest": "2026-11-26",
+      "market": "APMC Hubballi"
+    },
+    {
+      "name": "Gadag",
+      "rows": 161624,
+      "newest": "2026-11-26",
+      "market": "Laxmeshwar APMC"
+    },
+    {
+      "name": "Hassan",
+      "rows": 165893,
+      "newest": "2026-11-25",
+      "market": "Hassan APMC"
+    },
+    {
+      "name": "Haveri",
+      "rows": 77586,
+      "newest": "2026-11-26",
+      "market": "Haveri APMC"
+    },
+    {
+      "name": "Kalaburagi",
+      "rows": 6562,
+      "newest": "2026-11-26",
+      "market": "Chincholi APMC"
+    },
+    {
+      "name": "Kalburgi",
+      "rows": 81891,
+      "newest": "2026-05-27",
+      "market": "Kalburgi APMC"
+    },
+    {
+      "name": "Karwar(Uttar Kannad)",
+      "rows": 143554,
+      "newest": "2026-05-27",
+      "market": "Siddapur APMC"
+    },
+    {
+      "name": "Kodagu",
+      "rows": 693,
+      "newest": "2026-11-25",
+      "market": "Gonikappal APMC"
+    },
+    {
+      "name": "Kolar",
+      "rows": 392724,
+      "newest": "2026-11-26",
+      "market": "Malur APMC"
+    },
+    {
+      "name": "Koppal",
+      "rows": 60843,
+      "newest": "2026-11-26",
+      "market": "Kustagi APMC"
+    },
+    {
+      "name": "Madikeri(Kodagu)",
+      "rows": 29378,
+      "newest": "2026-05-27",
+      "market": "Gonikappal APMC"
+    },
+    {
+      "name": "Mandya",
+      "rows": 116646,
+      "newest": "2026-11-26",
+      "market": "Pandavapura APMC"
+    },
+    {
+      "name": "Mangalore(Dakshin Kannad)",
+      "rows": 142413,
+      "newest": "2026-05-27",
+      "market": "Puttur APMC"
+    },
+    {
+      "name": "Mysore",
+      "rows": 321432,
+      "newest": "2026-05-27",
+      "market": "Santhesargur APMC"
+    },
+    {
+      "name": "Mysuru",
+      "rows": 14745,
+      "newest": "2026-11-26",
+      "market": "Mysuru APMC"
+    },
+    {
+      "name": "Raichur",
+      "rows": 95421,
+      "newest": "2026-11-26",
+      "market": "Lingasugur APMC"
+    },
+    {
+      "name": "Shimoga",
+      "rows": 218350,
+      "newest": "2026-05-27",
+      "market": "Shimoga APMC"
+    },
+    {
+      "name": "Shivamogga",
+      "rows": 9781,
+      "newest": "2026-11-26",
+      "market": "Shimoga APMC"
+    },
+    {
+      "name": "Tumakuru",
+      "rows": 4883,
+      "newest": "2026-11-25",
+      "market": "Huliyar APMC"
+    },
+    {
+      "name": "Tumkur",
+      "rows": 100752,
+      "newest": "2026-05-26",
+      "market": "Turvekere APMC"
+    },
+    {
+      "name": "Udupi",
+      "rows": 99808,
+      "newest": "2026-11-26",
+      "market": "Udupi APMC"
+    },
+    {
+      "name": "Uttara Kannada",
+      "rows": 4864,
+      "newest": "2026-11-26",
+      "market": "Siddapur APMC"
+    },
+    {
+      "name": "Vijayanagara",
+      "rows": 3773,
+      "newest": "2026-11-26",
+      "market": "H.B. Halli APMC"
+    },
+    {
+      "name": "Vijayapura",
+      "rows": 3402,
+      "newest": "2026-11-26",
+      "market": "Vijayapura APMC"
+    },
+    {
+      "name": "Yadgir",
+      "rows": 996,
+      "newest": "2026-11-25",
+      "market": "Shahapur APMC"
+    },
+    {
+      "name": "Yadgiri",
+      "rows": 20086,
+      "newest": "2026-05-27",
+      "market": "Yadgir APMC"
+    }
+  ]
+}

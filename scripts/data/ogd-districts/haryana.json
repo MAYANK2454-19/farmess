@@ -1,0 +1,135 @@
+{
+  "state": "Haryana",
+  "sourceState": "Haryana",
+  "scannedOn": "2026-11-27",
+  "rows": 4258857,
+  "rowsCounted": 4258857,
+  "names": [
+    {
+      "name": "Ambala",
+      "rows": 547884,
+      "newest": "2026-11-26",
+      "market": "Naraingarh APMC"
+    },
+    {
+      "name": "Bhiwani",
+      "rows": 115496,
+      "newest": "2026-11-26",
+      "market": "Loharu APMC"
+    },
+    {
+      "name": "Faridabad",
+      "rows": 157137,
+      "newest": "2026-11-26",
+      "market": "Ballabhgarh APMC"
+    },
+    {
+      "name": "Fatehabad",
+      "rows": 344379,
+      "newest": "2026-11-26",
+      "market": "Fatehabad APMC"
+    },
+    {
+      "name": "Gurgaon",
+      "rows": 169080,
+      "newest": "2026-11-26",
+      "market": "Pataudi APMC"
+    },
+    {
+      "name": "Hissar",
+      "rows": 311640,
+      "newest": "2026-11-26",
+      "market": "Barwala(Hisar) APMC"
+    },
+    {
+      "name": "Jhajar",
+      "rows": 99146,
+      "newest": "2026-11-26",
+      "market": "Bahadurgarh APMC"
+    },
+    {
+      "name": "Jind",
+      "rows": 112143,
+      "newest": "2026-11-26",
+      "market": "Narwana APMC"
+    },
+    {
+      "name": "Kaithal",
+      "rows": 107443,
+      "newest": "2026-11-26",
+      "market": "Pundri APMC"
+    },
+    {
+      "name": "Karnal",
+      "rows": 204912,
+      "newest": "2026-11-26",
+      "market": "Gharaunda APMC"
+    },
+    {
+      "name": "Kurukshetra",
+      "rows": 398629,
+      "newest": "2026-11-26",
+      "market": "Ladwa APMC"
+    },
+    {
+      "name": "Mahendragarh-Narnaul",
+      "rows": 256628,
+      "newest": "2026-11-26",
+      "market": "Khanina APMC"
+    },
+    {
+      "name": "Mewat",
+      "rows": 89942,
+      "newest": "2026-11-26",
+      "market": "FerozpurZirkha(Nagina) APMC"
+    },
+    {
+      "name": "Palwal",
+      "rows": 84245,
+      "newest": "2026-11-26",
+      "market": "Palwal APMC"
+    },
+    {
+      "name": "Panchkula",
+      "rows": 95099,
+      "newest": "2026-11-26",
+      "market": "Raipur Rani APMC"
+    },
+    {
+      "name": "Panipat",
+      "rows": 117917,
+      "newest": "2026-11-26",
+      "market": "Panipat APMC"
+    },
+    {
+      "name": "Rewari",
+      "rows": 40820,
+      "newest": "2026-11-26",
+      "market": "Kosli APMC"
+    },
+    {
+      "name": "Rohtak",
+      "rows": 104533,
+      "newest": "2026-11-26",
+      "market": "Meham"
+    },
+    {
+      "name": "Sirsa",
+      "rows": 218588,
+      "newest": "2026-11-26",
+      "market": "Ding APMC"
+    },
+    {
+      "name": "Sonipat",
+      "rows": 198518,
+      "newest": "2026-11-26",
+      "market": "Ganaur APMC"
+    },
+    {
+      "name": "Yamuna Nagar",
+      "rows": 484678,
+      "newest": "2026-11-26",
+      "market": "Jagadhri APMC"
+    }
+  ]
+}

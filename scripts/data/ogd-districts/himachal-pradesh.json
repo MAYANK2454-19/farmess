@@ -1,0 +1,69 @@
+{
+  "state": "Himachal Pradesh",
+  "sourceState": "Himachal Pradesh",
+  "scannedOn": "2026-11-27",
+  "rows": 2133610,
+  "rowsCounted": 2133610,
+  "names": [
+    {
+      "name": "Bilaspur",
+      "rows": 80544,
+      "newest": "2026-11-26",
+      "market": "PMY Bilaspur"
+    },
+    {
+      "name": "Chamba",
+      "rows": 68938,
+      "newest": "2026-11-26",
+      "market": "PMY Chamba"
+    },
+    {
+      "name": "Hamirpur",
+      "rows": 201371,
+      "newest": "2026-11-26",
+      "market": "SMY Nadaun"
+    },
+    {
+      "name": "Kangra",
+      "rows": 607194,
+      "newest": "2026-11-26",
+      "market": "SMY Jaisinghpur"
+    },
+    {
+      "name": "Kullu",
+      "rows": 302101,
+      "newest": "2026-11-26",
+      "market": "SMY Bhuntar"
+    },
+    {
+      "name": "Mandi",
+      "rows": 307607,
+      "newest": "2026-11-26",
+      "market": "PMY Kangni Mandi"
+    },
+    {
+      "name": "Shimla",
+      "rows": 86373,
+      "newest": "2026-11-26",
+      "market": "SMY Rohroo"
+    },
+    {
+      "name": "Sirmore",
+      "rows": 146659,
+      "newest": "2026-11-26",
+      "market": "PMY Paonta Sahib"
+    },
+    {
+      "name": "Solan",
+      "rows": 152281,
+      "newest": "2026-11-26",
+      "market": "PMY Kather Solan"
+    },
+    {
+      "name": "Una",
+      "rows": 180542,
+      "newest": "2026-11-26",
+      "market": "PMY Una"
+    }
+  ]
+}
