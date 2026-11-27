@@ -1,0 +1,21 @@
+{
+  "state": "Puducherry",
+  "sourceState": "Pondicherry",
+  "scannedOn": "2026-11-27",
+  "rows": 77270,
+  "rowsCounted": 77270,
+  "names": [
+    {
+      "name": "Karaikal",
+      "rows": 10049,
+      "newest": "2026-11-05",
+      "market": "Karaikal APMC"
+    },
+    {
+      "name": "Pondicherry",
+      "rows": 67221,
+      "newest": "2026-11-25",
+      "market": "Thattanchavady APMC"
+    }
+  ]
+}

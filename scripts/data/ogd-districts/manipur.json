@@ -1,0 +1,39 @@
+{
+  "state": "Manipur",
+  "sourceState": "Manipur",
+  "scannedOn": "2026-11-27",
+  "rows": 161581,
+  "rowsCounted": 161581,
+  "names": [
+    {
+      "name": "Bishnupur",
+      "rows": 28585,
+      "newest": "2026-11-26",
+      "market": "Bishenpur APMC"
+    },
+    {
+      "name": "Imphal East",
+      "rows": 46152,
+      "newest": "2026-11-26",
+      "market": "Lamlong Bazaar APMC"
+    },
+    {
+      "name": "Imphal West",
+      "rows": 49576,
+      "newest": "2026-11-26",
+      "market": "Imphal APMC"
+    },
+    {
+      "name": "Kakching",
+      "rows": 6354,
+      "newest": "2026-11-26",
+      "market": "Kakching Market APMC"
+    },
+    {
+      "name": "Thoubal",
+      "rows": 30914,
+      "newest": "2026-11-26",
+      "market": "Thoubal APMC"
+    }
+  ]
+}

@@ -39,5 +39,28 @@
     "Karwar(Uttar Kannad)": "Uttara Kannada",
     "Mangalore(Dakshin Kannad)": "Dakshina Kannada",
     "Shimoga": "Shivamogga"
+  },
+  "Madhya Pradesh": {
+    "Hoshangabad": "Narmadapuram"
+  },
+  "Maharashtra": {
+    "Ahilyanagar": "Ahmednagar",
+    "Mumbai": ["Mumbai City", "Mumbai Suburban"],
+    "Vashim": "Washim"
+  },
+  "Meghalaya": {
+    "Nongpoh (R-Bhoi)": "Ri Bhoi"
+  },
+  "Odisha": {
+    "Keonjhar": "Kendujhar",
+    "Sonepur": "Subarnapur"
+  },
+  "Puducherry": {
+    "Pondicherry": "Puducherry"
+  },
+  "Punjab": {
+    "Mohali": "Sahibzada Ajit Singh Nagar",
+    "Muktsar": "Sri Muktsar Sahib",
+    "Nawanshahr": "Shaheed Bhagat Singh Nagar"
   }
 }

@@ -131,6 +131,15 @@ What the scans showed beyond spellings:
   under two names, and both are asked for.
 - **One name for a whole state.** The source lists all of Delhi's mandis under the single
   district `Delhi`, so that name is used for each of Delhi's eleven districts.
+- **One name for a group of districts.** The source keeps the mandis of both Mumbai districts
+  under `Mumbai`, so Mumbai City and Mumbai Suburban are both asked for under it. In the
+  hand-checked file such a name maps to a list of districts.
+- **The name a district had before, or its town.** Punjab's Sahibzada Ajit Singh Nagar is
+  `Mohali` at the source, Shaheed Bhagat Singh Nagar is `Nawanshahr` and Sri Muktsar Sahib is
+  `Muktsar`; Odisha's Kendujhar is `Keonjhar` and Subarnapur is `Sonepur`; Meghalaya's Ri Bhoi
+  is `Nongpoh (R-Bhoi)`; Madhya Pradesh's Narmadapuram was `Hoshangabad` until September 2026.
+- **A name written two ways.** Kapurthala (Punjab) was `kapurthala` until November 2025. The
+  filter tells capital letters apart, so both writings are asked for.
 - **An old name that covered several of today's districts** stays with the district that kept
   it. `Bangalore` held the mandis of Bengaluru Urban, Bengaluru Rural and Ramanagara until May
   2026; it is read for Bengaluru Urban, and the other two have history from May 2026 under
@@ -142,6 +151,9 @@ What the scans showed beyond spellings:
   the source's mandis place them clearly (Markapuram and Polavaram in Andhra Pradesh).
 - **States with nothing recent.** Jharkhand's newest report in the history is from 2023, and
   Dadra and Nagar Haveli and Daman and Diu has no rows at all, so no price can be shown there.
+- **States where only some districts report.** In the hill states the source has mandis in a
+  few districts only: 5 of Manipur's 16, 2 of Mizoram's 11, 12 of Nagaland's 17. A district
+  with no mandi of its own gets the state's reports instead (the panel says so).
 
 ## How it stays safe and within limits
 

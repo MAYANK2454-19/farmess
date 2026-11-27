@@ -1,0 +1,81 @@
+{
+  "state": "Nagaland",
+  "sourceState": "Nagaland",
+  "scannedOn": "2026-11-27",
+  "rows": 91034,
+  "rowsCounted": 91034,
+  "names": [
+    {
+      "name": "Dimapur",
+      "rows": 27881,
+      "newest": "2026-11-25",
+      "market": "Dimapur APMC"
+    },
+    {
+      "name": "Kiphire",
+      "rows": 3305,
+      "newest": "2026-11-07",
+      "market": "Kipheri APMC"
+    },
+    {
+      "name": "Kohima",
+      "rows": 19042,
+      "newest": "2026-11-26",
+      "market": "Kohima APMC"
+    },
+    {
+      "name": "Longleng",
+      "rows": 3879,
+      "newest": "2026-11-24",
+      "market": "Longleng APMC"
+    },
+    {
+      "name": "Mokokchung",
+      "rows": 9608,
+      "newest": "2026-11-24",
+      "market": "Tuli APMC"
+    },
+    {
+      "name": "Mon",
+      "rows": 802,
+      "newest": "2026-11-26",
+      "market": "Mon APMC"
+    },
+    {
+      "name": "Peren",
+      "rows": 1952,
+      "newest": "2026-08-28",
+      "market": "Tenning APMC"
+    },
+    {
+      "name": "Phek",
+      "rows": 5651,
+      "newest": "2026-11-25",
+      "market": "Phek APMC"
+    },
+    {
+      "name": "Tsemenyu",
+      "rows": 5365,
+      "newest": "2026-11-26",
+      "market": "Tsemenyu APMC"
+    },
+    {
+      "name": "Tuensang",
+      "rows": 3175,
+      "newest": "2025-12-16",
+      "market": "Tuensang APMC"
+    },
+    {
+      "name": "Wokha",
+      "rows": 6928,
+      "newest": "2026-11-26",
+      "market": "Wokha Town APMC"
+    },
+    {
+      "name": "Zunheboto",
+      "rows": 3446,
+      "newest": "2026-11-25",
+      "market": "Ghathashi APMC"
+    }
+  ]
+}

@@ -10,6 +10,8 @@
 // names no spelling rule can connect to a district. In that file a source name
 // maps to:
 //   - a district of the list ("Chhapra": "Saran");
+//   - several districts, when the source keeps the mandis of all of them under
+//     one name ("Mumbai": ["Mumbai City", "Mumbai Suburban"]);
 //   - "*" when the source uses one name for every district of the state
 //     (its single "Delhi" for the eleven districts of Delhi);
 //   - null when it is not a district of that state at all.
@@ -39,7 +41,7 @@ type StateScan = {
   names: Found[];
 };
 
-const manual: Record<string, Record<string, string | null>> = fs.existsSync(MANUAL)
+const manual: Record<string, Record<string, string | string[] | null>> = fs.existsSync(MANUAL)
   ? JSON.parse(fs.readFileSync(MANUAL, "utf8"))
   : {};
 
@@ -101,20 +103,30 @@ for (const file of files.sort()) {
   const report: string[] = [];
   const unmatchedOld: string[] = [];
 
+  const scanned = new Set(scan.names.map((found) => found.name.trim()));
+  for (const name of Object.keys(byHand)) {
+    // A hand mapping for a name the source does not have is a slip of the pen.
+    if (!scanned.has(name)) {
+      problems.push(`${scan.state}: "${name}" is mapped by hand, but the scan has no such name.`);
+    }
+  }
+
   for (const found of scan.names) {
     const name = found.name.trim();
     const current = found.newest !== null && found.newest >= since;
-    let district: string | null;
+    let districts: string[];
     if (name in byHand) {
-      district = byHand[name];
-      if (district === null) continue;
-      if (district === EVERY_DISTRICT) {
+      const target = byHand[name];
+      if (target === null) continue;
+      if (target === EVERY_DISTRICT) {
         if (current) forAll.push(found);
         continue;
       }
-      if (!listed.includes(district)) {
+      districts = Array.isArray(target) ? target : [target];
+      const unknown = districts.filter((district) => !listed.includes(district));
+      if (districts.length === 0 || unknown.length > 0) {
         problems.push(
-          `${scan.state}: "${name}" is mapped by hand to "${district}", not a listed district.`,
+          `${scan.state}: "${name}" is mapped by hand to "${unknown.join('", "')}", not a listed district.`,
         );
         continue;
       }
@@ -126,18 +138,20 @@ for (const file of files.sort()) {
         else unmatchedOld.push(name);
         continue;
       }
-      district = match.district;
+      districts = [match.district];
       // A match that is not the same name is shown, so that a wrong one is noticed.
       if (current && match.strength < 4) {
         report.push(
-          `  check        ${JSON.stringify(name)} -> ${district} (spelling ${match.strength}; ${found.rows} rows, newest ${found.newest}, e.g. ${found.market ?? "?"})`,
+          `  check        ${JSON.stringify(name)} -> ${match.district} (spelling ${match.strength}; ${found.rows} rows, newest ${found.newest}, e.g. ${found.market ?? "?"})`,
         );
       }
     }
     if (!current) continue;
     // Kept exactly as the source writes it: the filter is exact down to a
     // trailing space ("North and Middle Andaman " finds rows, without it none).
-    assigned.set(district, [...(assigned.get(district) ?? []), found]);
+    for (const district of districts) {
+      assigned.set(district, [...(assigned.get(district) ?? []), found]);
+    }
   }
 
   const entries: Record<string, string[]> = {};

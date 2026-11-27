@@ -1,0 +1,249 @@
+{
+  "state": "Maharashtra",
+  "sourceState": "Maharashtra",
+  "scannedOn": "2026-11-27",
+  "rows": 6602070,
+  "rowsCounted": 6602070,
+  "names": [
+    {
+      "name": "Ahilyanagar",
+      "rows": 25929,
+      "newest": "2026-11-26",
+      "market": "APMC Shrirampur"
+    },
+    {
+      "name": "Ahmednagar",
+      "rows": 474147,
+      "newest": "2026-05-13",
+      "market": "Shrirampur APMC"
+    },
+    {
+      "name": "Akola",
+      "rows": 102040,
+      "newest": "2026-11-26",
+      "market": "APMC Telhara"
+    },
+    {
+      "name": "Amarawati",
+      "rows": 234571,
+      "newest": "2026-11-26",
+      "market": "Amrawati(Frui & Veg. Market)"
+    },
+    {
+      "name": "Beed",
+      "rows": 162096,
+      "newest": "2026-11-26",
+      "market": "APMC Beed"
+    },
+    {
+      "name": "Bhandara",
+      "rows": 53077,
+      "newest": "2026-11-26",
+      "market": "APMC Tumsar"
+    },
+    {
+      "name": "Buldhana",
+      "rows": 256909,
+      "newest": "2026-11-26",
+      "market": "APMC Khamgaon"
+    },
+    {
+      "name": "Chandrapur",
+      "rows": 118942,
+      "newest": "2026-11-26",
+      "market": "Chandrapur(Ganjwad)"
+    },
+    {
+      "name": "Chattrapati Sambhajinagar",
+      "rows": 286650,
+      "newest": "2026-11-26",
+      "market": "APMC Chattrapati Sambhajinagar"
+    },
+    {
+      "name": "Dharashiv",
+      "rows": 8127,
+      "newest": "2026-11-26",
+      "market": "APMC Tuljapur"
+    },
+    {
+      "name": "Dharashiv(Usmanabad)",
+      "rows": 106588,
+      "newest": "2026-05-13",
+      "market": "Dharashiv APMC"
+    },
+    {
+      "name": "Dhule",
+      "rows": 130602,
+      "newest": "2026-11-26",
+      "market": "APMC Dhule"
+    },
+    {
+      "name": "Gadchiroli",
+      "rows": 19702,
+      "newest": "2026-11-26",
+      "market": "Armori(Desaiganj)"
+    },
+    {
+      "name": "Gondiya",
+      "rows": 13856,
+      "newest": "2026-11-26",
+      "market": "APMC Amgaon"
+    },
+    {
+      "name": "Hingoli",
+      "rows": 67737,
+      "newest": "2026-11-26",
+      "market": "APMC Hingoli"
+    },
+    {
+      "name": "Jalana",
+      "rows": 107774,
+      "newest": "2026-05-13",
+      "market": "Jalana APMC"
+    },
+    {
+      "name": "Jalgaon",
+      "rows": 339252,
+      "newest": "2026-11-26",
+      "market": "APMC Bhusaval"
+    },
+    {
+      "name": "Jalna",
+      "rows": 4134,
+      "newest": "2026-11-26",
+      "market": "APMC Ambad (Vadigodri)"
+    },
+    {
+      "name": "Kolhapur",
+      "rows": 208196,
+      "newest": "2026-11-26",
+      "market": "APMC Kolhapur"
+    },
+    {
+      "name": "Latur",
+      "rows": 130928,
+      "newest": "2026-11-26",
+      "market": "APMC Devani"
+    },
+    {
+      "name": "Mumbai",
+      "rows": 351379,
+      "newest": "2026-11-26",
+      "market": "APMC Mumbai"
+    },
+    {
+      "name": "Murum",
+      "rows": 13865,
+      "newest": "2025-03-11",
+      "market": "Dharashiv"
+    },
+    {
+      "name": "Nagpur",
+      "rows": 455721,
+      "newest": "2026-11-26",
+      "market": "APMC Nagpur"
+    },
+    {
+      "name": "Nanded",
+      "rows": 90155,
+      "newest": "2026-11-26",
+      "market": "APMC Loha"
+    },
+    {
+      "name": "Nandurbar",
+      "rows": 76382,
+      "newest": "2026-11-26",
+      "market": "APMC Nandurbar"
+    },
+    {
+      "name": "Nashik",
+      "rows": 462893,
+      "newest": "2026-11-26",
+      "market": "APMC Nasik"
+    },
+    {
+      "name": "Palghar",
+      "rows": 4402,
+      "newest": "2026-11-26",
+      "market": "APMC  VASAI"
+    },
+    {
+      "name": "Parbhani",
+      "rows": 103483,
+      "newest": "2026-11-26",
+      "market": "APMC Jintur"
+    },
+    {
+      "name": "Pune",
+      "rows": 815778,
+      "newest": "2026-11-26",
+      "market": "Junnar(Narayangaon)"
+    },
+    {
+      "name": "Raigad",
+      "rows": 84001,
+      "newest": "2026-11-26",
+      "market": "APMC Panvel"
+    },
+    {
+      "name": "Ratnagiri",
+      "rows": 29673,
+      "newest": "2026-11-26",
+      "market": "APMC Ratnagiri (Nachane)"
+    },
+    {
+      "name": "Sangli",
+      "rows": 132635,
+      "newest": "2026-11-26",
+      "market": "APMC Sangli"
+    },
+    {
+      "name": "Satara",
+      "rows": 280936,
+      "newest": "2026-11-26",
+      "market": "APMC Vai"
+    },
+    {
+      "name": "Sholapur",
+      "rows": 407476,
+      "newest": "2026-05-13",
+      "market": "Solapur APMC"
+    },
+    {
+      "name": "Solapur",
+      "rows": 21458,
+      "newest": "2026-11-26",
+      "market": "APMC Solapur"
+    },
+    {
+      "name": "Thane",
+      "rows": 145133,
+      "newest": "2026-11-26",
+      "market": "APMC Ulhasnagar"
+    },
+    {
+      "name": "Vashim",
+      "rows": 91309,
+      "newest": "2026-05-13",
+      "market": "Karanja APMC"
+    },
+    {
+      "name": "Wardha",
+      "rows": 77690,
+      "newest": "2026-11-26",
+      "market": "Sai Agro Infratrade Pvt Agri Market, Dist Wardha"
+    },
+    {
+      "name": "Washim",
+      "rows": 5829,
+      "newest": "2026-11-26",
+      "market": "Washim(Ansing)"
+    },
+    {
+      "name": "Yavatmal",
+      "rows": 100615,
+      "newest": "2026-11-26",
+      "market": "APMC Yavatmal"
+    }
+  ]
+}

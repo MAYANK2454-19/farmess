@@ -1,0 +1,147 @@
+{
+  "state": "Punjab",
+  "sourceState": "Punjab",
+  "scannedOn": "2026-11-27",
+  "rows": 6400362,
+  "rowsCounted": 6400362,
+  "names": [
+    {
+      "name": "Amritsar",
+      "rows": 221618,
+      "newest": "2026-11-26",
+      "market": "Rayya APMC"
+    },
+    {
+      "name": "Barnala",
+      "rows": 152389,
+      "newest": "2026-11-25",
+      "market": "Dhanaula APMC"
+    },
+    {
+      "name": "Bhatinda",
+      "rows": 255582,
+      "newest": "2026-11-26",
+      "market": "Rampuraphul(Nabha Mandi) APMC"
+    },
+    {
+      "name": "Faridkot",
+      "rows": 126976,
+      "newest": "2026-11-26",
+      "market": "Kotkapura APMC"
+    },
+    {
+      "name": "Fatehgarh",
+      "rows": 286929,
+      "newest": "2026-11-26",
+      "market": "Bassi Pathana APMC"
+    },
+    {
+      "name": "Fazilka",
+      "rows": 253883,
+      "newest": "2026-11-26",
+      "market": "Jalalabad APMC"
+    },
+    {
+      "name": "Ferozpur",
+      "rows": 387423,
+      "newest": "2026-11-26",
+      "market": "Zira APMC"
+    },
+    {
+      "name": "Gurdaspur",
+      "rows": 357232,
+      "newest": "2026-11-26",
+      "market": "Dinanagar APMC"
+    },
+    {
+      "name": "Hoshiarpur",
+      "rows": 476826,
+      "newest": "2026-11-26",
+      "market": "Mukerian APMC"
+    },
+    {
+      "name": "Jalandhar",
+      "rows": 594668,
+      "newest": "2026-11-26",
+      "market": "Adampur APMC"
+    },
+    {
+      "name": "Kapurthala",
+      "rows": 13596,
+      "newest": "2026-11-26",
+      "market": "Bhulath (Nadala) APMC"
+    },
+    {
+      "name": "Ludhiana",
+      "rows": 485957,
+      "newest": "2026-11-26",
+      "market": "Jagraon APMC"
+    },
+    {
+      "name": "Mansa",
+      "rows": 175748,
+      "newest": "2026-11-26",
+      "market": "Boha APMC"
+    },
+    {
+      "name": "Moga",
+      "rows": 175803,
+      "newest": "2026-11-25",
+      "market": "Nihal Singh Wala APMC"
+    },
+    {
+      "name": "Mohali",
+      "rows": 291905,
+      "newest": "2026-11-26",
+      "market": "Kurali APMC"
+    },
+    {
+      "name": "Muktsar",
+      "rows": 274943,
+      "newest": "2026-11-26",
+      "market": "Muktsar APMC"
+    },
+    {
+      "name": "Nawanshahr",
+      "rows": 319520,
+      "newest": "2026-11-25",
+      "market": "Nawan Shahar(Subzi Mandi) APMC"
+    },
+    {
+      "name": "Pathankot",
+      "rows": 59129,
+      "newest": "2026-11-26",
+      "market": "Pathankot (Kanwa) APMC"
+    },
+    {
+      "name": "Patiala",
+      "rows": 440310,
+      "newest": "2026-11-26",
+      "market": "Patiala APMC"
+    },
+    {
+      "name": "Ropar (Rupnagar)",
+      "rows": 208503,
+      "newest": "2026-11-26",
+      "market": "Morinda APMC"
+    },
+    {
+      "name": "Sangrur",
+      "rows": 496227,
+      "newest": "2026-11-26",
+      "market": "Dhuri APMC"
+    },
+    {
+      "name": "Tarntaran",
+      "rows": 181198,
+      "newest": "2026-11-26",
+      "market": "Patti APMC"
+    },
+    {
+      "name": "kapurthala",
+      "rows": 163997,
+      "newest": "2025-11-05",
+      "market": "Bhulath"
+    }
+  ]
+}

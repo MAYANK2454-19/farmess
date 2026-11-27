@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -108,6 +109,18 @@ test("a source name is given to the district it fits best, never to a similar ne
 test("the list of source names points only at real districts, each name at one", async () => {
   const { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED, OGD_STATEWIDE_DISTRICT_NAMES } =
     await import("./ogd-district-names.ts");
+  // The one exception: a name the hand-checked file gives to several districts on
+  // purpose, because the source keeps their mandis together ("Mumbai").
+  const byHand: Record<string, Record<string, string | string[] | null>> = JSON.parse(
+    readFileSync(
+      new URL("../../../scripts/data/ogd-district-manual.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const sharedOnPurpose = (state: string, name: string, district: string) => {
+    const target = byHand[state]?.[name.trim()];
+    return Array.isArray(target) && target.includes(district);
+  };
   for (const state of OGD_DISTRICT_NAMES_CHECKED) {
     assert.ok(INDIA_STATES.includes(state), `${state} is not a state of the list`);
   }
@@ -123,8 +136,14 @@ test("the list of source names points only at real districts, each name at one",
       assert.ok(names.length > 0, `${state}: ${district} has no names`);
       for (const name of names) {
         assert.ok(name.trim().length > 0, `${state}: ${district} has an empty name`);
+        // Two writings of one name ("Kapurthala", "kapurthala") may share a district.
         const other = taken.get(name.trim().toLowerCase());
-        assert.equal(other, undefined, `${state}: "${name}" is given to ${other} and ${district}`);
+        if (other !== undefined && other !== district) {
+          assert.ok(
+            sharedOnPurpose(state, name, other) && sharedOnPurpose(state, name, district),
+            `${state}: "${name}" is given to ${other} and ${district}`,
+          );
+        }
         taken.set(name.trim().toLowerCase(), district);
       }
     }
@@ -163,6 +182,45 @@ test("one source name can stand for every district of a state", async () => {
   assert.deepEqual(sourceDistrictNames("Delhi", "Shahdara", ["Delhi"]), ["Delhi"]);
   // It belongs to no single district, so the map is not asked for one.
   assert.equal(districtForSourceName("Delhi", "Delhi"), null);
+});
+
+test("one source name can stand for a group of districts", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  // The source keeps the mandis of both Mumbai districts under "Mumbai".
+  assert.deepEqual(ogdDistrictNames("Maharashtra", "Mumbai City"), ["Mumbai"]);
+  assert.deepEqual(ogdDistrictNames("Maharashtra", "Mumbai Suburban"), ["Mumbai"]);
+  assert.deepEqual(sourceDistrictNames("Maharashtra", "Mumbai Suburban", ["Mumbai", "Thane"]), [
+    "Mumbai",
+  ]);
+  assert.deepEqual(sourceDistrictNames("Maharashtra", "Thane", ["Mumbai", "Thane"]), ["Thane"]);
+  // It belongs to neither alone, so the map is not asked for one.
+  assert.equal(districtForSourceName("Maharashtra", "Mumbai"), null);
+});
+
+test("districts known by an older or a shorter name are found under it", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  assert.deepEqual(ogdDistrictNames("Punjab", "Sahibzada Ajit Singh Nagar"), ["Mohali"]);
+  assert.deepEqual(ogdDistrictNames("Punjab", "Shaheed Bhagat Singh Nagar"), ["Nawanshahr"]);
+  assert.deepEqual(ogdDistrictNames("Punjab", "Sri Muktsar Sahib"), ["Muktsar"]);
+  assert.deepEqual(ogdDistrictNames("Punjab", "Tarn Taran"), ["Tarntaran"]);
+  // The source wrote this one in small letters for a while; both writings are asked for.
+  assert.deepEqual(ogdDistrictNames("Punjab", "Kapurthala"), ["Kapurthala", "kapurthala"]);
+  assert.deepEqual(ogdDistrictNames("Odisha", "Kendujhar"), ["Keonjhar"]);
+  assert.deepEqual(ogdDistrictNames("Odisha", "Subarnapur"), ["Sonepur"]);
+  assert.deepEqual(ogdDistrictNames("Puducherry", "Puducherry"), ["Pondicherry"]);
+  assert.deepEqual(ogdDistrictNames("Meghalaya", "Ri Bhoi"), ["Nongpoh (R-Bhoi)"]);
+  assert.deepEqual(ogdDistrictNames("Madhya Pradesh", "Narmadapuram"), [
+    "Narmadapuram",
+    "Hoshangabad",
+  ]);
+  assert.deepEqual(ogdDistrictNames("Maharashtra", "Ahmednagar"), ["Ahilyanagar", "Ahmednagar"]);
+  assert.equal(districtForSourceName("Maharashtra", "Ahilyanagar"), "Ahmednagar");
+  // "Vashim" is as close to Nashik as to Washim by letters; the list settles it.
+  assert.equal(districtForSourceName("Maharashtra", "Vashim"), "Washim");
+  assert.deepEqual(sourceDistrictNames("Maharashtra", "Nashik", ["Vashim", "Nashik"]), ["Nashik"]);
+  assert.equal(districtForSourceName("Madhya Pradesh", "Badwani"), "Barwani");
 });
 
 test("old and new names of renamed districts both lead to the district", async () => {

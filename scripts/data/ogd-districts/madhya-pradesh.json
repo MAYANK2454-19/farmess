@@ -1,0 +1,345 @@
+{
+  "state": "Madhya Pradesh",
+  "sourceState": "Madhya Pradesh",
+  "scannedOn": "2026-11-27",
+  "rows": 7214045,
+  "rowsCounted": 7214045,
+  "names": [
+    {
+      "name": "Agar Malwa",
+      "rows": 1937,
+      "newest": "2026-11-26",
+      "market": "Nalkheda APMC"
+    },
+    {
+      "name": "Alirajpur",
+      "rows": 57872,
+      "newest": "2026-11-26",
+      "market": "Jobat APMC"
+    },
+    {
+      "name": "Anupur",
+      "rows": 14764,
+      "newest": "2026-11-26",
+      "market": "Anuppur APMC"
+    },
+    {
+      "name": "Ashoknagar",
+      "rows": 112820,
+      "newest": "2026-11-26",
+      "market": "Mungawali APMC"
+    },
+    {
+      "name": "Badwani",
+      "rows": 134551,
+      "newest": "2026-11-26",
+      "market": "Sendhwa(F&V) APMC"
+    },
+    {
+      "name": "Balaghat",
+      "rows": 53292,
+      "newest": "2026-11-26",
+      "market": "Paraswada APMC"
+    },
+    {
+      "name": "Betul",
+      "rows": 70104,
+      "newest": "2026-11-26",
+      "market": "Betul(F&V) APMC"
+    },
+    {
+      "name": "Bhind",
+      "rows": 108290,
+      "newest": "2026-11-26",
+      "market": "Gohad APMC"
+    },
+    {
+      "name": "Bhopal",
+      "rows": 149009,
+      "newest": "2026-11-26",
+      "market": "Berasia APMC"
+    },
+    {
+      "name": "Burhanpur",
+      "rows": 72537,
+      "newest": "2026-11-26",
+      "market": "Burhanpur(F&V) APMC"
+    },
+    {
+      "name": "Chhatarpur",
+      "rows": 96008,
+      "newest": "2026-11-26",
+      "market": "Badamalhera APMC"
+    },
+    {
+      "name": "Chhindwara",
+      "rows": 153737,
+      "newest": "2026-11-26",
+      "market": "Chaurai APMC"
+    },
+    {
+      "name": "Damoh",
+      "rows": 107145,
+      "newest": "2026-11-26",
+      "market": "Damoh APMC"
+    },
+    {
+      "name": "Datia",
+      "rows": 67444,
+      "newest": "2026-11-26",
+      "market": "Sevda APMC"
+    },
+    {
+      "name": "Dewas",
+      "rows": 286217,
+      "newest": "2026-11-26",
+      "market": "Dewas(F&V) APMC"
+    },
+    {
+      "name": "Dhar",
+      "rows": 305036,
+      "newest": "2026-11-26",
+      "market": "Dhar(F&V) APMC"
+    },
+    {
+      "name": "Dindori",
+      "rows": 52396,
+      "newest": "2026-11-26",
+      "market": "Gorakhpur APMC"
+    },
+    {
+      "name": "Guna",
+      "rows": 192003,
+      "newest": "2026-11-26",
+      "market": "Maksudangarh APMC"
+    },
+    {
+      "name": "Gwalior",
+      "rows": 177793,
+      "newest": "2026-11-26",
+      "market": "Lashkar APMC"
+    },
+    {
+      "name": "Harda",
+      "rows": 232203,
+      "newest": "2026-11-26",
+      "market": "Harda(F&V) APMC"
+    },
+    {
+      "name": "Hoshangabad",
+      "rows": 205311,
+      "newest": "2026-09-08",
+      "market": "Itarsi APMC"
+    },
+    {
+      "name": "Indore",
+      "rows": 242328,
+      "newest": "2026-11-26",
+      "market": "Indore(F&V) APMC"
+    },
+    {
+      "name": "Jabalpur",
+      "rows": 156718,
+      "newest": "2026-11-26",
+      "market": "Paatan APMC"
+    },
+    {
+      "name": "Jhabua",
+      "rows": 132267,
+      "newest": "2026-11-26",
+      "market": "Petlawad APMC"
+    },
+    {
+      "name": "Katni",
+      "rows": 68746,
+      "newest": "2026-11-26",
+      "market": "Katni APMC"
+    },
+    {
+      "name": "Khandwa",
+      "rows": 143922,
+      "newest": "2026-11-26",
+      "market": "Khandwa(F&V) APMC"
+    },
+    {
+      "name": "Khargone",
+      "rows": 225381,
+      "newest": "2026-11-26",
+      "market": "Sanawad(F&V) APMC"
+    },
+    {
+      "name": "Maihar",
+      "rows": 1158,
+      "newest": "2026-11-26",
+      "market": "Maihar APMC"
+    },
+    {
+      "name": "Mandla",
+      "rows": 80889,
+      "newest": "2026-11-26",
+      "market": "Krishi Upaj Mandi Samiti Bichhiya"
+    },
+    {
+      "name": "Mandsaur",
+      "rows": 238968,
+      "newest": "2026-11-26",
+      "market": "Mandsaur APMC"
+    },
+    {
+      "name": "Mauganj",
+      "rows": 242,
+      "newest": "2026-11-26",
+      "market": "Hanumana APMC"
+    },
+    {
+      "name": "Morena",
+      "rows": 156295,
+      "newest": "2026-11-26",
+      "market": "Morena(F&V) APMC"
+    },
+    {
+      "name": "Narmadapuram",
+      "rows": 6006,
+      "newest": "2026-11-26",
+      "market": "Pipariya(F&V) APMC"
+    },
+    {
+      "name": "Narsinghpur",
+      "rows": 158250,
+      "newest": "2026-11-26",
+      "market": "Gadarwada (F&V) APMC"
+    },
+    {
+      "name": "Neemuch",
+      "rows": 159145,
+      "newest": "2026-11-26",
+      "market": "Neemuch APMC"
+    },
+    {
+      "name": "Niwadi",
+      "rows": 309,
+      "newest": "2026-11-26",
+      "market": "Niwadi APMC"
+    },
+    {
+      "name": "Pandhurna",
+      "rows": 413,
+      "newest": "2026-11-26",
+      "market": "Saunsar APMC"
+    },
+    {
+      "name": "Panna",
+      "rows": 54823,
+      "newest": "2026-11-26",
+      "market": "Panna APMC"
+    },
+    {
+      "name": "Raisen",
+      "rows": 192756,
+      "newest": "2026-11-26",
+      "market": "Begamganj APMC"
+    },
+    {
+      "name": "Rajgarh",
+      "rows": 280914,
+      "newest": "2026-11-26",
+      "market": "Narsinghgarh APMC"
+    },
+    {
+      "name": "Ratlam",
+      "rows": 231582,
+      "newest": "2026-11-26",
+      "market": "Jaora APMC"
+    },
+    {
+      "name": "Rewa",
+      "rows": 74314,
+      "newest": "2026-11-26",
+      "market": "Baikunthpur APMC"
+    },
+    {
+      "name": "Sagar",
+      "rows": 297727,
+      "newest": "2026-11-26",
+      "market": "Gadakota APMC"
+    },
+    {
+      "name": "Satna",
+      "rows": 90914,
+      "newest": "2026-11-26",
+      "market": "Satna APMC"
+    },
+    {
+      "name": "Sehore",
+      "rows": 197090,
+      "newest": "2026-11-26",
+      "market": "Sehore(F&V) APMC"
+    },
+    {
+      "name": "Seoni",
+      "rows": 75701,
+      "newest": "2026-11-26",
+      "market": "Barghat APMC"
+    },
+    {
+      "name": "Shajapur",
+      "rows": 352101,
+      "newest": "2026-11-26",
+      "market": "Akodiya APMC"
+    },
+    {
+      "name": "Shehdol",
+      "rows": 28958,
+      "newest": "2026-11-26",
+      "market": "Shahdol APMC"
+    },
+    {
+      "name": "Sheopur",
+      "rows": 106143,
+      "newest": "2026-11-26",
+      "market": "Vijaypur APMC"
+    },
+    {
+      "name": "Shivpuri",
+      "rows": 229299,
+      "newest": "2026-11-26",
+      "market": "Shivpuri(F&V) APMC"
+    },
+    {
+      "name": "Sidhi",
+      "rows": 20616,
+      "newest": "2026-11-26",
+      "market": "Sidhi APMC"
+    },
+    {
+      "name": "Singroli",
+      "rows": 12053,
+      "newest": "2026-11-26",
+      "market": "Singroli APMC"
+    },
+    {
+      "name": "Tikamgarh",
+      "rows": 58993,
+      "newest": "2026-11-26",
+      "market": "Khargapur APMC"
+    },
+    {
+      "name": "Ujjain",
+      "rows": 270742,
+      "newest": "2026-11-26",
+      "market": "Badnagar APMC"
+    },
+    {
+      "name": "Umariya",
+      "rows": 19756,
+      "newest": "2026-11-26",
+      "market": "Umariya APMC"
+    },
+    {
+      "name": "Vidisha",
+      "rows": 198057,
+      "newest": "2026-11-26",
+      "market": "Sironj APMC"
+    }
+  ]
+}

@@ -99,6 +99,59 @@ export const OGD_DISTRICT_NAMES: Record<string, Record<string, readonly string[]
     Palakkad: ["Palakad"],
     Thrissur: ["Thirssur"],
   },
+  "Madhya Pradesh": {
+    Anuppur: ["Anupur"],
+    Barwani: ["Badwani"],
+    Narmadapuram: ["Narmadapuram", "Hoshangabad"],
+    Niwari: ["Niwadi"],
+    Shahdol: ["Shehdol"],
+    Singrauli: ["Singroli"],
+    Umaria: ["Umariya"],
+  },
+  Maharashtra: {
+    Ahmednagar: ["Ahilyanagar", "Ahmednagar"],
+    Amravati: ["Amarawati"],
+    "Chhatrapati Sambhajinagar": ["Chattrapati Sambhajinagar"],
+    Dharashiv: ["Dharashiv", "Dharashiv(Usmanabad)"],
+    Gondia: ["Gondiya"],
+    Jalna: ["Jalna", "Jalana"],
+    "Mumbai City": ["Mumbai"],
+    "Mumbai Suburban": ["Mumbai"],
+    Solapur: ["Solapur", "Sholapur"],
+    Washim: ["Washim", "Vashim"],
+  },
+  Meghalaya: {
+    "Ri Bhoi": ["Nongpoh (R-Bhoi)"],
+  },
+  Mizoram: {
+    Lunglei: ["Lungli"],
+  },
+  Nagaland: {
+    Tseminyu: ["Tsemenyu"],
+  },
+  Odisha: {
+    Balangir: ["Bolangir"],
+    Kendujhar: ["Keonjhar"],
+    Khordha: ["Khurda"],
+    Mayurbhanj: ["Mayurbhanja"],
+    Nabarangpur: ["Nowarangpur"],
+    Subarnapur: ["Sonepur"],
+    Sundargarh: ["Sundergarh"],
+  },
+  Puducherry: {
+    Puducherry: ["Pondicherry"],
+  },
+  Punjab: {
+    Bathinda: ["Bhatinda"],
+    "Fatehgarh Sahib": ["Fatehgarh"],
+    Ferozepur: ["Ferozpur"],
+    Kapurthala: ["Kapurthala", "kapurthala"],
+    Rupnagar: ["Ropar (Rupnagar)"],
+    "Sahibzada Ajit Singh Nagar": ["Mohali"],
+    "Shaheed Bhagat Singh Nagar": ["Nawanshahr"],
+    "Sri Muktsar Sahib": ["Muktsar"],
+    "Tarn Taran": ["Tarntaran"],
+  },
 };
 
 /**
@@ -135,4 +188,13 @@ export const OGD_DISTRICT_NAMES_CHECKED: readonly string[] = [
   "Kerala",
   "Ladakh",
   "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Puducherry",
+  "Punjab",
 ];

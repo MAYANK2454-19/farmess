@@ -1,0 +1,69 @@
+{
+  "state": "Meghalaya",
+  "sourceState": "Meghalaya",
+  "scannedOn": "2026-11-27",
+  "rows": 138527,
+  "rowsCounted": 138527,
+  "names": [
+    {
+      "name": "East Garo Hills",
+      "rows": 1344,
+      "newest": "2026-09-19",
+      "market": "Williamnagar APMC"
+    },
+    {
+      "name": "East Jaintia Hills",
+      "rows": 3524,
+      "newest": "2026-07-10",
+      "market": "Khliehriat APMC"
+    },
+    {
+      "name": "East Khasi Hills",
+      "rows": 77257,
+      "newest": "2026-11-26",
+      "market": "Shillong APMC"
+    },
+    {
+      "name": "Nongpoh (R-Bhoi)",
+      "rows": 3518,
+      "newest": "2026-07-15",
+      "market": "Nongpoh (R-Bhoi) APMC"
+    },
+    {
+      "name": "South Garo Hills",
+      "rows": 1996,
+      "newest": "2026-09-30",
+      "market": "Gasuapara APMC"
+    },
+    {
+      "name": "South West Garo Hills",
+      "rows": 6256,
+      "newest": "2026-11-24",
+      "market": "Garobadha APMC"
+    },
+    {
+      "name": "South West Khasi Hills",
+      "rows": 2164,
+      "newest": "2026-11-26",
+      "market": "Mawkyrwat APMC"
+    },
+    {
+      "name": "West Garo Hills",
+      "rows": 25530,
+      "newest": "2026-11-25",
+      "market": "Tura APMC"
+    },
+    {
+      "name": "West Jaintia Hills",
+      "rows": 14921,
+      "newest": "2026-11-26",
+      "market": "Jowai APMC"
+    },
+    {
+      "name": "West Khasi Hills",
+      "rows": 2017,
+      "newest": "2026-10-26",
+      "market": "Nongstoin APMC"
+    }
+  ]
+}

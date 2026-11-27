@@ -1,0 +1,21 @@
+{
+  "state": "Mizoram",
+  "sourceState": "Mizoram",
+  "scannedOn": "2026-11-27",
+  "rows": 15205,
+  "rowsCounted": 15205,
+  "names": [
+    {
+      "name": "Aizawl",
+      "rows": 5736,
+      "newest": "2026-08-24",
+      "market": "Champai APMC"
+    },
+    {
+      "name": "Lungli",
+      "rows": 9469,
+      "newest": "2026-07-09",
+      "market": "Lunglei Bara Bazar"
+    }
+  ]
+}

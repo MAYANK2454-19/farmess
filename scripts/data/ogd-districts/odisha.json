@@ -1,0 +1,189 @@
+{
+  "state": "Odisha",
+  "sourceState": "Odisha",
+  "scannedOn": "2026-11-27",
+  "rows": 2601816,
+  "rowsCounted": 2601816,
+  "names": [
+    {
+      "name": "Angul",
+      "rows": 107108,
+      "newest": "2026-11-26",
+      "market": "Talcher APMC"
+    },
+    {
+      "name": "Balasore",
+      "rows": 87023,
+      "newest": "2026-11-26",
+      "market": "Balasore APMC"
+    },
+    {
+      "name": "Bargarh",
+      "rows": 147279,
+      "newest": "2026-11-26",
+      "market": "Sohela APMC"
+    },
+    {
+      "name": "Bhadrak",
+      "rows": 62484,
+      "newest": "2026-11-26",
+      "market": "Chandabali APMC"
+    },
+    {
+      "name": "Bolangir",
+      "rows": 95247,
+      "newest": "2026-11-26",
+      "market": "Bolangir APMC"
+    },
+    {
+      "name": "Boudh",
+      "rows": 121443,
+      "newest": "2026-11-26",
+      "market": "Khunthabandha APMC"
+    },
+    {
+      "name": "Cuttack",
+      "rows": 72569,
+      "newest": "2026-11-26",
+      "market": "Banki APMC"
+    },
+    {
+      "name": "Deogarh",
+      "rows": 30497,
+      "newest": "2026-11-26",
+      "market": "Deogarh APMC"
+    },
+    {
+      "name": "Dhenkanal",
+      "rows": 246059,
+      "newest": "2026-11-26",
+      "market": "Hindol APMC"
+    },
+    {
+      "name": "Gajapati",
+      "rows": 60523,
+      "newest": "2026-11-26",
+      "market": "Kasinagar APMC"
+    },
+    {
+      "name": "Ganjam",
+      "rows": 94229,
+      "newest": "2026-11-26",
+      "market": "Bhanjanagar APMC"
+    },
+    {
+      "name": "Jagatsinghpur",
+      "rows": 29341,
+      "newest": "2026-11-26",
+      "market": "Rahama APMC"
+    },
+    {
+      "name": "Jajpur",
+      "rows": 78881,
+      "newest": "2026-11-26",
+      "market": "Jajpur APMC"
+    },
+    {
+      "name": "Jharsuguda",
+      "rows": 11463,
+      "newest": "2026-11-26",
+      "market": "Jharsuguda APMC"
+    },
+    {
+      "name": "Kalahandi",
+      "rows": 77102,
+      "newest": "2026-11-26",
+      "market": "Mukhiguda APMC"
+    },
+    {
+      "name": "Kandhamal",
+      "rows": 21119,
+      "newest": "2026-11-26",
+      "market": "Kandhamal APMC"
+    },
+    {
+      "name": "Kendrapara",
+      "rows": 137753,
+      "newest": "2026-11-26",
+      "market": "Gopa APMC"
+    },
+    {
+      "name": "Keonjhar",
+      "rows": 115886,
+      "newest": "2026-11-26",
+      "market": "Keonjhar APMC"
+    },
+    {
+      "name": "Khurda",
+      "rows": 90821,
+      "newest": "2026-11-26",
+      "market": "Jatni APMC"
+    },
+    {
+      "name": "Koraput",
+      "rows": 73611,
+      "newest": "2026-11-26",
+      "market": "Koraput(Semilguda) APMC"
+    },
+    {
+      "name": "Malkangiri",
+      "rows": 34927,
+      "newest": "2026-11-27",
+      "market": "Malkangiri(Korakunda) APMC"
+    },
+    {
+      "name": "Mayurbhanja",
+      "rows": 251573,
+      "newest": "2026-11-26",
+      "market": "Udala APMC"
+    },
+    {
+      "name": "Nayagarh",
+      "rows": 48912,
+      "newest": "2026-11-26",
+      "market": "Bahadajholla APMC"
+    },
+    {
+      "name": "Nowarangpur",
+      "rows": 42677,
+      "newest": "2026-11-26",
+      "market": "Nabarangpur(Umerkote) APMC"
+    },
+    {
+      "name": "Nuapada",
+      "rows": 83183,
+      "newest": "2026-11-26",
+      "market": "Khariar Road APMC"
+    },
+    {
+      "name": "Puri",
+      "rows": 78122,
+      "newest": "2026-11-26",
+      "market": "Sakhigopal APMC"
+    },
+    {
+      "name": "Rayagada",
+      "rows": 66353,
+      "newest": "2026-11-26",
+      "market": "Rayagada(Muniguda) APMC"
+    },
+    {
+      "name": "Sambalpur",
+      "rows": 66197,
+      "newest": "2026-11-26",
+      "market": "Rairakhol APMC"
+    },
+    {
+      "name": "Sonepur",
+      "rows": 48348,
+      "newest": "2026-11-26",
+      "market": "Pandkital APMC"
+    },
+    {
+      "name": "Sundergarh",
+      "rows": 121086,
+      "newest": "2026-11-26",
+      "market": "Sargipali APMC"
+    }
+  ]
+}
