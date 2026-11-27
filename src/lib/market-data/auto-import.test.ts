@@ -214,6 +214,68 @@ test("a rate limit keeps what was saved and asks to retry later", async () => {
   assert.match(result.note ?? "", /rate limit/i);
 });
 
+test("the newest rows are saved before the rest of the history is read", async () => {
+  // Twenty report days a page, newest first, as a small key would return them.
+  const day = (n: number) => {
+    const date = new Date(Date.UTC(2026, 10, 26) - n * 86_400_000).toISOString().slice(0, 10);
+    return `${date.slice(8)}/${date.slice(5, 7)}/${date.slice(0, 4)}`;
+  };
+  const page = (from: number) => Array.from({ length: 20 }, (_, i) => row(day(from + i), "2000"));
+  const { fetchPage: read } = source([page(0), page(20), page(40), []], 20);
+  const events: string[] = [];
+  const progress: number[] = [];
+  const result = await runAutoImport({
+    apiKey: "k",
+    scope,
+    coverage: empty,
+    today: "2026-11-27",
+    deadline: Number.MAX_SAFE_INTEGER,
+    ingest: async (rows) => {
+      events.push(`save ${rows.length}`);
+      return rows.length;
+    },
+    onProgress: ({ saved }) => progress.push(saved),
+    deps: {
+      fetchPage: async (url) => {
+        events.push("read");
+        return read(url);
+      },
+      sleep: noSleep,
+    },
+  });
+  // After two pages there is enough to show; the oldest day waits for the next page.
+  assert.deepEqual(events, ["read", "read", "save 39", "read", "read", "save 21"]);
+  assert.equal(result.saved, 60);
+  assert.equal(result.outcome, "complete");
+  assert.equal(progress[0], 0);
+  assert.equal(progress.at(-1), 60);
+});
+
+test("each wait asked for by the source is passed on", async () => {
+  let n = 0;
+  const fetchPage = async () => {
+    n += 1;
+    return n === 1
+      ? new Response("slow down", { status: 429 })
+      : new Response(JSON.stringify({ limit: 10, total: 0, records: [] }));
+  };
+  let slowed = 0;
+  const result = await runAutoImport({
+    apiKey: "k",
+    scope,
+    coverage: empty,
+    today: "2026-11-27",
+    deadline: Number.MAX_SAFE_INTEGER,
+    ingest: async (rows) => rows.length,
+    onRateLimit: () => {
+      slowed += 1;
+    },
+    deps: { fetchPage, sleep: noSleep },
+  });
+  assert.equal(slowed, 1);
+  assert.equal(result.outcome, "no_data");
+});
+
 test("no rows at the source is reported as no data, with an audit entry", async () => {
   const { fetchPage } = source([[]], 10, 0);
   const audits: number[] = [];

@@ -40,6 +40,10 @@ export type OgdHistoryRequest = {
    * import can save its progress instead of holding everything until the end.
    */
   onRecords?: (records: Record<string, unknown>[]) => Promise<void> | void;
+  /** Waits between tries after the source asks to slow down (default 5 s, 15 s, 30 s). */
+  rateLimitWaitsMs?: readonly number[];
+  /** Called each time the source asks to slow down, before waiting. */
+  onRateLimit?: (waitMs: number) => void;
 };
 
 export type OgdHistoryStopReason =
@@ -116,6 +120,7 @@ export async function fetchOgdHistory(
   const fetchPage = deps.fetchPage ?? fetch;
   const sleep = deps.sleep ?? defaultSleep;
   const now = deps.now ?? Date.now;
+  const waits = request.rateLimitWaitsMs ?? RATE_LIMIT_WAITS_MS;
 
   const records: Record<string, unknown>[] = [];
   let requests = 0;
@@ -155,18 +160,19 @@ export async function fetchOgdHistory(
         });
       } catch (error) {
         const message = error instanceof Error ? error.message : "request failed";
-        if (attempt < RATE_LIMIT_WAITS_MS.length && now() < request.deadline) {
-          await sleep(RATE_LIMIT_WAITS_MS[attempt]);
+        if (attempt < waits.length && now() < request.deadline) {
+          await sleep(waits[attempt]);
           continue;
         }
         return finish("source_error", `OGD India could not be reached: ${message}`);
       }
 
       if (response.status === 429) {
-        const wait = RATE_LIMIT_WAITS_MS[attempt];
+        const wait = waits[attempt];
         if (wait === undefined || now() + wait >= request.deadline) {
           return finish("rate_limited", "data.gov.in rate limit (HTTP 429). Try again later.");
         }
+        request.onRateLimit?.(wait);
         await sleep(wait);
         continue;
       }

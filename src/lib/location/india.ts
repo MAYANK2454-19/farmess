@@ -839,6 +839,7 @@ const STATE_ALIASES: Record<string, string> = {
   "jammu & kashmir": "Jammu and Kashmir",
   jammukashmir: "Jammu and Kashmir",
   chattisgarh: "Chhattisgarh",
+  keralam: "Kerala",
   orissa: "Odisha",
   pondicherry: "Puducherry",
   uttaranchal: "Uttarakhand",
@@ -933,20 +934,138 @@ function editDistance(a: string, b: string): number {
   return previous[b.length];
 }
 
+/** Names joined in one source name: "East Champaran/ Motihari", "Kaimur (Bhabua)". */
+function nameParts(value: string): string[] {
+  return value
+    .split(/[/(),]/)
+    .map((part) => normalise(part).replace(/ /g, ""))
+    .filter((part) => part.length >= 4);
+}
+
+/**
+ * How well two place names agree: 4 the same name, 3 one of them lists the
+ * other as an alternative ("East Champaran/ Motihari"), 2 one begins with the
+ * other, 1 at most two letters differ (names of five or more letters), 0 none.
+ */
+export function placeMatchStrength(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): 0 | 1 | 2 | 3 | 4 {
+  if (!a || !b) return 0;
+  const x = normalise(a).replace(/ /g, "");
+  const y = normalise(b).replace(/ /g, "");
+  if (!x || !y) return 0;
+  if (x === y) return 4;
+  const xs = nameParts(a);
+  const ys = nameParts(b);
+  if ((xs.length > 1 || ys.length > 1) && xs.some((part) => ys.includes(part))) return 3;
+  if (Math.min(x.length, y.length) >= 4 && (x.startsWith(y) || y.startsWith(x))) return 2;
+  return Math.min(x.length, y.length) >= 5 && editDistance(x, y) <= 2 ? 1 : 0;
+}
+
 /**
  * True when two place names refer to the same place despite spelling
- * differences: same normalised name, one a prefix of the other, or at most two
- * character edits apart (for names of five or more letters).
+ * differences: same normalised name, an alternative name, one a prefix of the
+ * other, or at most two character edits apart (for names of five or more
+ * letters). Two real districts can be this close ("Saran" and "Siwan"), so to
+ * pick a district out of source data use sourceDistrictNames instead.
  */
 export function placeNamesMatch(
   a: string | null | undefined,
   b: string | null | undefined,
 ): boolean {
-  if (!a || !b) return false;
-  const x = normalise(a).replace(/ /g, "");
-  const y = normalise(b).replace(/ /g, "");
-  if (!x || !y) return false;
-  if (x === y) return true;
-  if (Math.min(x.length, y.length) >= 4 && (x.startsWith(y) || y.startsWith(x))) return true;
-  return Math.min(x.length, y.length) >= 5 && editDistance(x, y) <= 2;
+  return placeMatchStrength(a, b) > 0;
+}
+
+/**
+ * District names exactly as the OGD mandi datasets write them, for districts
+ * the source does not list under the name used above. The source's district
+ * filter is an exact match, so these are the names to ask with. A district can
+ * have two (Saran's mandis are listed under "Chhapra" and under "Saran").
+ *
+ * Every name here was checked against data.gov.in (price history resource) on
+ * 27 Nov 2026 and returned rows. Other states are matched by the spelling
+ * rules below until their names have been checked the same way.
+ */
+const OGD_DISTRICT_NAMES: Record<string, Record<string, readonly string[]>> = {
+  Bihar: {
+    "East Champaran": ["East Champaran/ Motihari"],
+    Gopalganj: ["Gopalgang"],
+    Kaimur: ["Kaimur/Bhabhua"],
+    Katihar: ["Kaithar"],
+    Lakhisarai: ["Luckeesarai"],
+    Munger: ["Munghair"],
+    Purnia: ["Purnea"],
+    Saran: ["Chhapra", "Saran"],
+    "West Champaran": ["West Chambaran"],
+  },
+};
+
+function listedSourceNames(state: string, district: string): readonly string[] {
+  const byDistrict = OGD_DISTRICT_NAMES[state];
+  if (!byDistrict) return [];
+  const key = normalise(district);
+  for (const [name, sourceNames] of Object.entries(byDistrict)) {
+    if (normalise(name) === key) return sourceNames;
+  }
+  return [];
+}
+
+/**
+ * The names the source is known to use for a district ("Chhapra" and "Saran"
+ * for Saran), or an empty list when the district has not been checked.
+ */
+export function ogdDistrictNames(state: string, district: string): readonly string[] {
+  return listedSourceNames(canonicalState(state) ?? state, district);
+}
+
+function districtMatchStrength(state: string, sourceName: string, district: string): number {
+  const key = normalise(sourceName);
+  if (listedSourceNames(state, district).some((name) => normalise(name) === key)) return 5;
+  return placeMatchStrength(sourceName, district);
+}
+
+/**
+ * The district of the list above that a source name means ("Munghair" is
+ * Munger), or null when no district fits or two fit equally well.
+ */
+export function districtForSourceName(state: string, sourceName: string): string | null {
+  const canonical = canonicalState(state) ?? state;
+  let best: string | null = null;
+  let bestStrength = 0;
+  let tied = false;
+  for (const district of districtsForState(canonical)) {
+    const strength = districtMatchStrength(canonical, sourceName, district);
+    if (strength === 0 || strength < bestStrength) continue;
+    tied = strength === bestStrength;
+    best = district;
+    bestStrength = strength;
+  }
+  return tied ? null : best;
+}
+
+/**
+ * Which of the source's district names mean the wanted district of a state,
+ * best match first. A name counts only when it fits the wanted district better
+ * than it fits any other district of that state, so "Siwan" is never taken for
+ * "Saran", nor "West Godavari" for "East Godavari"; a name that fits two
+ * districts equally well ("Kanpur") is left out.
+ */
+export function sourceDistrictNames(
+  state: string,
+  wanted: string,
+  sourceNames: readonly string[],
+): string[] {
+  const canonical = canonicalState(state) ?? state;
+  const wantedKey = normalise(wanted);
+  if (!wantedKey) return [];
+  const others = districtsForState(canonical).filter((name) => normalise(name) !== wantedKey);
+  const matches: { name: string; strength: number }[] = [];
+  for (const name of new Set(sourceNames)) {
+    const strength = districtMatchStrength(canonical, name, wanted);
+    if (strength === 0) continue;
+    if (others.some((other) => districtMatchStrength(canonical, name, other) >= strength)) continue;
+    matches.push({ name, strength });
+  }
+  return matches.sort((a, b) => b.strength - a.strength).map((match) => match.name);
 }

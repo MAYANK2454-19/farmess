@@ -2,7 +2,13 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { after } from "next/server";
-import { canonicalDistrict, canonicalState, ogdStateName } from "@/lib/location/india";
+import {
+  canonicalDistrict,
+  canonicalState,
+  ogdDistrictNames,
+  ogdStateName,
+  sourceDistrictNames,
+} from "@/lib/location/india";
 import { logEvent } from "@/lib/observability/logger";
 import { marketIngestToken } from "@/lib/security/server-secret";
 import type { Database } from "@/lib/supabase/database.types";
@@ -18,6 +24,7 @@ import {
   runAutoImport,
   toIngestRow,
   type AutoImportResult,
+  type ImportNeed,
   type ImportNeedReason,
   type ImportOutcome,
   type ImportScope,
@@ -57,8 +64,21 @@ const WEATHER_ONLY_TOKEN_SECONDS = 150;
 const recentWeatherChecks = new TtlCache<true>(300);
 const CURRENT_LIMIT = 500;
 const INGEST_CHUNK = 1_000;
+/** How far back saved reports are searched for the source's spelling of a district. */
+const SPELLING_LOOKBACK_DAYS = 400;
 
 export type ImportTrigger = "search" | "lot" | "requirement";
+
+/** What the latest fetch for one crop and area did, as far as this server knows. */
+export type RunInfo = {
+  state: "running" | ImportOutcome;
+  /** Rows saved by that fetch so far. */
+  saved: number;
+  /** Seconds until Farmess may try this crop and area again (0 while running). */
+  retryInSeconds: number;
+  /** True while data.gov.in has asked Farmess to slow down. */
+  slowedDown: boolean;
+};
 
 export type MarketHistoryStatus = {
   /** False when the server has no data.gov.in key or no server secret. */
@@ -77,14 +97,154 @@ export type MarketHistoryStatus = {
   started: boolean;
   /** True when this request started fetching district weather for the forecast. */
   weatherStarted: boolean;
+  /** The district as data.gov.in spells it, when that differs ("East Champaran/ Motihari"). */
+  sourceDistrict: string | null;
+  /** The latest fetch for the district and for the whole state, when known. */
+  runs: { district: RunInfo | null; state: RunInfo | null };
 };
 
 type Coverage = { history: SavedCoverage; allCount: number; latestAny: string | null };
 
+/*
+ * What each fetch did is remembered in this server's memory, so the page can
+ * say "data.gov.in asked us to slow down" or "nothing is listed for this
+ * district" instead of an endless "fetching". It is a courtesy, not a record:
+ * another server instance simply reports nothing and the page falls back to a
+ * general message. The claims in the database remain the source of truth.
+ */
+type RunNote = { state: RunInfo["state"]; saved: number; slowedDown: boolean; retryAt: number };
+const runNotes = new TtlCache<RunNote>(400);
+const RUNNING_NOTE_MS = 6 * 60_000;
+
+function noteRunning(
+  scope: ImportScope,
+  patch: Partial<Pick<RunNote, "saved" | "slowedDown">> = {},
+) {
+  const key = importSeriesKey(scope);
+  const current = runNotes.get(key);
+  const base: RunNote =
+    current?.state === "running"
+      ? current
+      : { state: "running", saved: 0, slowedDown: false, retryAt: 0 };
+  runNotes.set(key, { ...base, ...patch }, RUNNING_NOTE_MS);
+}
+
+function noteFinished(scope: ImportScope, outcome: ImportOutcome, saved: number) {
+  const retryMs = retrySecondsFor(outcome) * 1000;
+  runNotes.set(
+    importSeriesKey(scope),
+    { state: outcome, saved, slowedDown: false, retryAt: Date.now() + retryMs },
+    Math.min(60 * 60_000, Math.max(2 * 60_000, retryMs + 60_000)),
+  );
+}
+
+function runInfo(scope: ImportScope): RunInfo | null {
+  const note = runNotes.get(importSeriesKey(scope));
+  if (!note) return null;
+  return {
+    state: note.state,
+    saved: note.saved,
+    slowedDown: note.slowedDown,
+    retryInSeconds:
+      note.state === "running" ? 0 : Math.max(0, Math.ceil((note.retryAt - Date.now()) / 1000)),
+  };
+}
+
+/** One answer for a district the source lists under several names. */
+function districtRunInfo(scopes: readonly ImportScope[]): RunInfo | null {
+  const infos = scopes.map(runInfo).filter((info): info is RunInfo => info !== null);
+  return (
+    infos.find((info) => info.state === "running") ??
+    // "Nothing under this name" says little while another name has an answer.
+    infos.find((info) => info.state !== "no_data") ??
+    infos[0] ??
+    null
+  );
+}
+
+/** True while this server knows a new attempt would be refused (running, or cooling down). */
+function knownBusy(scope: ImportScope): boolean {
+  const note = runNotes.get(importSeriesKey(scope));
+  return Boolean(note && (note.state === "running" || note.retryAt > Date.now()));
+}
+
+/** The source's names for a district, by state and requested district. */
+const districtNameCache = new TtlCache<string[]>(300);
+/** A district is asked for under at most this many names. */
+const MAX_DISTRICT_NAMES = 3;
+
+/**
+ * The names to ask data.gov.in with for one district, the main one first.
+ *
+ * The source writes some districts its own way ("East Champaran/ Motihari"
+ * for East Champaran, "Chhapra" as well as "Saran" for Saran) and its district
+ * filter is exact, so asking with the usual name can find nothing. The names
+ * come from reports already saved for the state (they carry the source's
+ * spelling) and from the checked list in india.ts; a district that appears in
+ * neither is asked for under its usual name.
+ */
+async function districtSourceNames(
+  db: Db,
+  canonState: string,
+  sourceState: string,
+  district: string,
+  today: string,
+): Promise<string[]> {
+  const key = `${sourceState}|${district}`.toLowerCase();
+  const cached = districtNameCache.get(key);
+  if (cached) return cached;
+  const listed = ogdDistrictNames(canonState, district);
+  const usual = listed.length > 0 ? [...listed] : [district];
+
+  const since = isoDaysBefore(today, SPELLING_LOOKBACK_DAYS);
+  const savedDistricts = (limit: number, word?: string) => {
+    let query = db
+      .from("market_observations")
+      .select("district")
+      .ilike("state", exact(sourceState))
+      .gte("observation_date", since);
+    if (word) query = query.ilike("district", `%${word}%`);
+    return query.order("observation_date", { ascending: false }).limit(limit);
+  };
+  // The longest word of the name finds "East Champaran/ Motihari" even when the
+  // state has far more recent rows than the second, general query returns.
+  const word =
+    exact(district)
+      .split(/[^A-Za-z]+/)
+      .sort((a, b) => b.length - a.length)[0] ?? "";
+  const [similar, recent] = await Promise.all([
+    word.length >= 4 ? savedDistricts(200, word) : Promise.resolve({ data: [], error: null }),
+    savedDistricts(1000),
+  ]);
+  if (similar.error || recent.error) return usual.slice(0, MAX_DISTRICT_NAMES);
+
+  // Newest first, so the first name that fits is the one the source uses now.
+  const seen = [...(similar.data ?? []), ...(recent.data ?? [])]
+    .map((row) => row.district)
+    .filter((name): name is string => Boolean(name));
+  const fitting = new Set(sourceDistrictNames(canonState, district, seen));
+  const saved = seen.filter((name) => fitting.has(name));
+  const names = [...new Set([...saved, ...usual])].slice(0, MAX_DISTRICT_NAMES);
+  // Names read from saved reports or from the checked list will not change;
+  // "nothing known yet" may change as soon as the first rows for the state arrive.
+  const known = saved.length > 0 || listed.length > 0;
+  districtNameCache.set(key, names, known ? 30 * 60_000 : 20_000);
+  return names;
+}
+
 /** ilike is used as a case-insensitive equals, so pattern characters are removed. */
 const exact = (value: string) => value.replace(/[%_*\\]/g, " ").trim();
 
-async function loadCoverage(db: Db, scope: ImportScope, today: string): Promise<Coverage | null> {
+/**
+ * What is saved for a crop and area. For a district the source lists under
+ * more than one name, pass all of them to count the district as a whole.
+ */
+async function loadCoverage(
+  db: Db,
+  scope: ImportScope,
+  today: string,
+  districtNames?: readonly string[],
+): Promise<Coverage | null> {
   const fromDate = isoDaysBefore(today, historyDaysFor(scope));
   const base = (withCount: boolean) => {
     let query = db
@@ -93,7 +253,8 @@ async function loadCoverage(db: Db, scope: ImportScope, today: string): Promise<
       .ilike("crop", exact(scope.crop))
       .ilike("state", exact(scope.state))
       .gte("observation_date", fromDate);
-    if (scope.district) query = query.ilike("district", exact(scope.district));
+    if (districtNames && districtNames.length > 1) query = query.in("district", [...districtNames]);
+    else if (scope.district) query = query.ilike("district", exact(scope.district));
     return query;
   };
   const [newest, oldest, any] = await Promise.all([
@@ -267,9 +428,11 @@ async function runClaimed(
 ): Promise<AutoImportResult | null> {
   let outcome: ImportOutcome = "source_error";
   let result: AutoImportResult | null = null;
+  noteRunning(scope);
   try {
-    // Today's reports first: they are few, and they are what people look at first.
-    await fetchAndSaveCurrent(db, token, scope, trigger).catch(() => 0);
+    // Today's reports are one small request; it runs alongside the history so
+    // neither keeps the other (and the person looking at the page) waiting.
+    const todays = fetchAndSaveCurrent(db, token, scope, trigger).catch(() => 0);
     result = await runAutoImport({
       apiKey,
       scope,
@@ -278,8 +441,11 @@ async function runClaimed(
       deadline,
       ingest: (rows, received, note) =>
         ingestHistory(db, token, scope, trigger, rows, received, note),
+      onRateLimit: () => noteRunning(scope, { slowedDown: true }),
+      onProgress: ({ saved }) => noteRunning(scope, { saved, slowedDown: false }),
     });
     outcome = result.outcome;
+    await todays;
   } catch (error) {
     logEvent("error", "market_auto_import_failed", {
       crop: scope.crop,
@@ -293,6 +459,7 @@ async function runClaimed(
       p_outcome: outcome,
       p_retry_seconds: retrySecondsFor(outcome),
     });
+    noteFinished(scope, outcome, result?.saved ?? 0);
   }
   logEvent("info", "market_auto_import", {
     crop: scope.crop,
@@ -313,6 +480,34 @@ async function claim(db: Db, token: string, scope: ImportScope): Promise<boolean
     p_series_key: importSeriesKey(scope),
   });
   return !error && data === true;
+}
+
+/** Give back a claim that was only held so that nothing else would start. */
+async function releaseHeldClaim(
+  db: Db,
+  token: string,
+  scope: ImportScope,
+  retrySeconds: number,
+): Promise<void> {
+  await db.rpc("finish_market_import", {
+    p_token: token,
+    p_series_key: importSeriesKey(scope),
+    p_outcome: "released",
+    p_retry_seconds: retrySeconds,
+  });
+}
+
+/**
+ * How long the held state claim stays taken once the district's fetch is over.
+ * A district that got its prices does not need the state at all. One that
+ * failed is tried again first, so the state waits a little longer than it.
+ */
+function heldRetrySeconds(district: AutoImportResult | null): number {
+  if (!district) return retrySecondsFor("source_error") + 15;
+  if (district.saved > 0 || district.outcome === "complete" || district.outcome === "no_data") {
+    return 60;
+  }
+  return retrySecondsFor(district.outcome) + 15;
 }
 
 /**
@@ -349,55 +544,118 @@ export async function prepareMarketHistory(
     reason: "no_location",
     started: false,
     weatherStarted: false,
+    sourceDistrict: null,
+    runs: { district: null, state: null },
   };
   if (!crop || !canonState) return { status, run: null };
 
   const sourceState = ogdStateName(canonState);
   const today = new Date().toISOString().slice(0, 10);
+  // The district under the names the source uses for it, the main one first.
+  const districtNames = district
+    ? await districtSourceNames(supabase, canonState, sourceState, district, today)
+    : [];
+  status.sourceDistrict =
+    districtNames[0] && districtNames[0] !== district ? districtNames[0] : null;
   const stateScope: ImportScope = { crop, state: sourceState, district: null };
-  const scopes: ImportScope[] = district
-    ? [{ crop, state: sourceState, district }, stateScope]
-    : [stateScope];
+  const districtScopes: ImportScope[] = districtNames.map((name) => ({
+    crop,
+    state: sourceState,
+    district: name,
+  }));
+  const reportRuns = () => {
+    status.runs = { district: districtRunInfo(districtScopes), state: runInfo(stateScope) };
+  };
+  const describe = (scope: "district" | "state", coverage: Coverage, need: ImportNeed) => {
+    status.scope = scope;
+    status.savedReports = coverage.allCount;
+    status.newestDate = coverage.latestAny;
+    status.oldestDate = coverage.history.oldestDate;
+    status.needed = need.needed;
+    status.reason = need.needed && !configured ? "not_configured" : need.reason;
+  };
+  const unavailable = () => {
+    status.reason = "unavailable";
+    reportRuns();
+    return { status, run: null };
+  };
   const canStart =
     configured &&
     Boolean(accessToken) &&
     secondsUntilExpiry(accessToken ?? "") >= MINIMUM_TOKEN_SECONDS;
 
-  let claimed: { scope: ImportScope; coverage: SavedCoverage } | null = null;
-  let districtUnavailable = false;
-  for (const scope of scopes) {
-    const coverage = await loadCoverage(supabase, scope, today);
-    if (!coverage) {
-      status.reason = "unavailable";
-      return { status, run: null };
+  let claimed: {
+    scope: ImportScope;
+    coverage: SavedCoverage;
+    heldState: boolean;
+    /** Reports saved for the district, under any of its names, before this fetch. */
+    districtRows: number;
+  } | null = null;
+  let stateIsNext = districtScopes.length === 0;
+
+  if (districtScopes.length > 0) {
+    // The district as a whole: its reports may be saved under more than one name.
+    const whole = await loadCoverage(supabase, districtScopes[0], today, districtNames);
+    if (!whole) return unavailable();
+    const need = assessImportNeed(whole.history, today, historyDaysFor(districtScopes[0]));
+    describe("district", whole, need);
+    if (need.needed) {
+      for (const scope of districtScopes) {
+        if (!canStart || !token || knownBusy(scope)) continue;
+        if (!(await claim(supabase, token, scope))) continue;
+        // Each name is read on from its own saved rows, not the district's total.
+        const own = districtScopes.length > 1 ? await loadCoverage(supabase, scope, today) : whole;
+        if (!own) {
+          await releaseHeldClaim(supabase, token, scope, 60);
+          continue;
+        }
+        // A district with nothing saved may turn out to have no mandi for this
+        // crop, and then the state is fetched instead. Its claim is taken now,
+        // so that nobody starts that larger fetch while this one is running.
+        const heldState =
+          whole.allCount === 0 &&
+          !knownBusy(stateScope) &&
+          (await claim(supabase, token, stateScope));
+        claimed = { scope, coverage: own.history, heldState, districtRows: whole.allCount };
+        noteRunning(scope);
+        break;
+      }
+      // Only a district with nothing saved goes on to the state. Its own fetch
+      // is running, was tried a moment ago, or found no mandi there; in the
+      // first two cases the state's claim is held too, so nothing starts twice.
+      stateIsNext = !claimed && whole.allCount === 0;
     }
-    // The district's own fetch is running or was tried recently and nothing is
-    // saved for the state either: wait for it rather than start a second,
-    // much larger fetch for the whole state.
-    if (districtUnavailable && coverage.allCount === 0) break;
-    const need = assessImportNeed(coverage.history, today, historyDaysFor(scope));
-    // Report the district when it has any reports; otherwise whatever the state has.
-    if (status.scope === null || coverage.allCount > 0) {
-      status.scope = scope.district ? "district" : "state";
-      status.savedReports = coverage.allCount;
-      status.newestDate = coverage.latestAny;
-      status.oldestDate = coverage.history.oldestDate;
-      status.needed = need.needed;
-      status.reason = need.needed && !configured ? "not_configured" : need.reason;
-    }
-    if (!need.needed) break;
-    if (canStart && token && (await claim(supabase, token, scope))) {
-      claimed = { scope, coverage: coverage.history };
-      break;
-    }
-    // A district with nothing saved may simply have no mandi for this crop.
-    // If the state already has reports for it (an earlier fetch found none in
-    // the district and went on to the state), keep that state history current.
-    if (!(scope.district && coverage.allCount === 0)) break;
-    districtUnavailable = true;
   }
 
-  const weatherInput = { crop, state: sourceState, preferredDistrict: district };
+  if (stateIsNext) {
+    const coverage = await loadCoverage(supabase, stateScope, today);
+    if (!coverage) return unavailable();
+    const need = assessImportNeed(coverage.history, today, historyDaysFor(stateScope));
+    // Report the district when it has any reports; otherwise whatever the state has.
+    if (status.scope === null || coverage.allCount > 0) describe("state", coverage, need);
+    if (
+      need.needed &&
+      canStart &&
+      token &&
+      !knownBusy(stateScope) &&
+      (await claim(supabase, token, stateScope))
+    ) {
+      claimed = {
+        scope: stateScope,
+        coverage: coverage.history,
+        heldState: false,
+        districtRows: 0,
+      };
+      noteRunning(stateScope);
+    }
+  }
+  reportRuns();
+
+  const weatherInput = {
+    crop,
+    state: sourceState,
+    preferredDistrict: districtNames[0] ?? district,
+  };
   if (!claimed || !apiKey || !token || !accessToken) {
     // Prices are complete or already being fetched. The weather-aware forecast
     // still needs district weather, so make sure that is there too.
@@ -437,8 +695,9 @@ export async function prepareMarketHistory(
   const run = async () => {
     const startedAt = Date.now();
     const deadline = startedAt + TIME_BUDGET_MS;
+    const db = createUserTokenClient(accessToken);
+    let holdingState = first.heldState;
     try {
-      const db = createUserTokenClient(accessToken);
       const result = await runClaimed(
         db,
         token,
@@ -448,22 +707,55 @@ export async function prepareMarketHistory(
         trigger,
         deadline,
       );
-      // Nothing at the source for this district: fall back to the state.
-      if (first.scope.district && result?.outcome === "no_data" && Date.now() < deadline - 30_000) {
-        const coverage = await loadCoverage(db, stateScope, today);
-        if (
-          coverage &&
-          assessImportNeed(coverage.history, today, historyDaysFor(stateScope)).needed &&
-          (await claim(db, token, stateScope))
-        ) {
-          await runClaimed(db, token, apiKey, stateScope, coverage.history, trigger, deadline);
+      if (first.scope.district) {
+        const timeLeft = () => Date.now() < deadline - 30_000;
+        let nothingFound = first.districtRows === 0 && result?.outcome === "no_data";
+        // The same district under the other names the source uses for it.
+        for (const scope of districtScopes) {
+          if (scope === first.scope || !timeLeft()) continue;
+          if (!(await claim(db, token, scope))) continue;
+          const coverage = await loadCoverage(db, scope, today);
+          if (!coverage) {
+            await releaseHeldClaim(db, token, scope, 60);
+            continue;
+          }
+          const other = await runClaimed(
+            db,
+            token,
+            apiKey,
+            scope,
+            coverage.history,
+            trigger,
+            deadline,
+          );
+          if (other?.outcome !== "no_data") nothingFound = false;
         }
+        // Nothing at the source for this district: fall back to the state.
+        if (nothingFound && timeLeft()) {
+          const coverage = await loadCoverage(db, stateScope, today);
+          if (
+            coverage &&
+            assessImportNeed(coverage.history, today, historyDaysFor(stateScope)).needed &&
+            (holdingState || (await claim(db, token, stateScope)))
+          ) {
+            holdingState = false; // the state run below gives the claim back itself
+            await runClaimed(db, token, apiKey, stateScope, coverage.history, trigger, deadline);
+          }
+        }
+      }
+      if (holdingState) {
+        holdingState = false;
+        await releaseHeldClaim(db, token, stateScope, heldRetrySeconds(result));
       }
       await ensureDistrictWeather(db, token, weatherInput, startedAt + WEATHER_BUDGET_MS);
     } catch (error) {
       logEvent("error", "market_auto_import_crashed", {
         message: error instanceof Error ? error.message : "unknown error",
       });
+    } finally {
+      if (holdingState) {
+        await releaseHeldClaim(db, token, stateScope, 60).catch(() => undefined);
+      }
     }
   };
   return { status, run };

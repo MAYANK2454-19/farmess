@@ -33,6 +33,38 @@ so "tomatoes", "bhindi" or "PADDY" become `Tomato`, `Bhindi(Ladies Finger)` and
 If the chosen district has no mandi reporting the crop, the rest of the state is fetched and
 shown instead, and the screen says so.
 
+The newest rows are saved first, about eight seconds after a fetch starts, so the latest prices
+are on the page long before the whole year has been read.
+
+## District names
+
+data.gov.in writes some districts its own way, and its district filter is an exact match:
+asking for "East Champaran" finds nothing, because the source lists that district as
+"East Champaran/ Motihari". Farmess therefore asks under the source's name, which it gets from:
+
+1. **Reports already saved for the state**, which carry the source's spelling.
+2. **A checked list** in `src/lib/location/india.ts` (`OGD_DISTRICT_NAMES`) for districts whose
+   source name has nothing in common with the usual one. Bihar was checked against the source
+   on 27 Nov 2026: 30 of its 38 districts are listed under the usual name; the others are
+   East Champaran → `East Champaran/ Motihari`, West Champaran → `West Chambaran`,
+   Kaimur → `Kaimur/Bhabhua`, Katihar → `Kaithar`, Lakhisarai → `Luckeesarai`,
+   Munger → `Munghair`, Purnia → `Purnea`, Gopalganj → `Gopalgang`, and Saran, whose mandis
+   appear under both `Chhapra` and `Saran` (both are fetched).
+
+A source name is taken for a district only when it fits that district better than any other
+district of the state (`sourceDistrictNames`). "Siwan" is two letters from "Saran" and
+"West Godavari" two from "East Godavari", but each is a district of its own and is never
+mixed in. The same rule is used by the live price search, the price-trend panel and the
+district weather (which looks a district up on the map under its usual name).
+
+Other states have not been checked name by name yet. Their districts are matched by the
+spelling rules, and a district the source names differently still falls back to the state.
+To check a state and see which names to add to the list:
+
+```
+node --experimental-strip-types scripts/check-district-names.mts "Uttar Pradesh"
+```
+
 ## How it stays safe and within limits
 
 - **Only the server writes prices.** Rows are saved by the database function
@@ -41,9 +73,14 @@ shown instead, and the screen says so.
   in the future, non-negative prices, minimum ≤ modal ≤ maximum. A signed-in user cannot insert
   or change a price directly.
 - **One fetch per crop and area at a time.** `claim_market_import` records a claim; a second
-  person searching the same crop and district does not start a second fetch.
-- **Retries are spaced out** by outcome: complete 6 hours, partial 2 minutes, rate-limited
-  10 minutes, error 15 minutes, nothing at the source 24 hours.
+  person searching the same crop and district does not start a second fetch. While a district
+  with nothing saved is being fetched, the state's claim is held as well, so the larger state
+  fetch cannot start alongside it; it is used only if the district turns out to have no mandi.
+- **"Slow down" answers are waited out.** When data.gov.in answers HTTP 429, the fetch waits
+  5, 10, 20, 30, 45 and 60 seconds between tries (about three minutes in all) before giving up.
+- **Retries are spaced out** by outcome: complete 6 hours, stopped at the time limit 1 minute,
+  rate-limited 3 minutes, source unreachable 5 minutes, could not save 15 minutes, nothing at
+  the source 24 hours.
 - **Progress is saved as it arrives**, so a rate limit or the 300-second function limit never
   loses what was already fetched. Rows of the oldest date in a batch are held back until the
   next page, so conflicting duplicate prices for one mandi, variety and day are still withheld.
@@ -57,13 +94,32 @@ person's own sign-in token; row-level security applies as for any of their reque
 
 The price-trend panel calls `POST /api/market-history/ensure`, shows
 "Fetching Tomato prices for Jammu from data.gov.in…", and refreshes itself as rows arrive.
-If data.gov.in limits how much can be fetched, it says how many reports are saved and that the
-rest is fetched automatically next time.
+It says what is actually happening, never just "fetching":
+
+| Situation                                       | What the panel says                                                        |
+| ----------------------------------------------- | -------------------------------------------------------------------------- |
+| A fetch is running                              | Fetching, and how many reports are saved so far                            |
+| data.gov.in answered "slow down"                | That it was asked to slow down and keeps trying                            |
+| No mandi in the district for this crop          | That the rest of the state is being fetched instead                        |
+| The fetch gave up on a rate limit or an error   | Why, and in about how many minutes it tries again                          |
+| The fetch stopped at its time limit             | How many reports are saved and that it carries on in about a minute        |
+| Nothing at the source for the crop in the state | That data.gov.in has no reports for it in the last four months             |
+| The page has been open for 20 minutes           | How many reports are saved; the rest is fetched the next time it is opened |
+
+The reply of `ensure` carries this in `runs` (`running`, `rate_limited`, `no_data`, …, with
+`retryInSeconds` and `slowedDown`). It is what the answering server instance remembers about
+the latest fetch, so it can be empty on another instance; the panel then falls back to a
+general "fetching" message for a few minutes. The claims in the database stay the source of
+truth for what may start.
 
 ## Files
 
 - `src/lib/market-data/auto-import.ts` — rules and the import loop (tested).
-- `src/lib/market-data/auto-import-server.ts` — claims, background job, today's prices.
+- `src/lib/market-data/auto-import-server.ts` — claims, background job, today's prices,
+  district names.
+- `src/features/market-data/fetch-progress.ts` — what the panel says and when it asks again
+  (tested).
+- `src/lib/location/india.ts` — district-name matching and the checked source names (tested).
 - `src/lib/market-data/history-import.ts` — shared with the admin import.
 - `src/app/api/market-history/ensure/route.ts` — status and trigger.
 - `supabase/migrations/20261127023511_farmess_auto_import_weather_ratings_sessions.sql` and
@@ -71,6 +127,11 @@ rest is fetched automatically next time.
 
 ## Note on speed
 
-The public sample key from data.gov.in returns 10 rows per request and is rate-limited hard, so
-a first fetch can take a few minutes and may need more than one run. With a personal key from
-data.gov.in → My Account in `DATA_GOV_IN_API_KEY`, the same fetch takes seconds.
+The public sample key from data.gov.in returns 10 rows per request and is shared by everyone who
+tries the API, so it is sometimes refused. Measured on 27 Nov 2026 with that key, one crop for
+one district (Bitter gourd, East Champaran, 254 reports in the last year): first prices saved
+after 8 seconds, the whole year after 57 seconds. A whole state takes several minutes and may
+need more than one run. With a personal key from data.gov.in → My Account in
+`DATA_GOV_IN_API_KEY` (Vercel and `.env.local`), each request returns far more rows and the same
+fetch takes seconds. The live search of today's prices also shows at most 10 rows on the sample
+key.

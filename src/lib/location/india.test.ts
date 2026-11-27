@@ -27,6 +27,7 @@ test("provider state spellings resolve to the canonical list", () => {
   assert.equal(canonicalState("JAMMU AND KASHMIR"), "Jammu and Kashmir");
   assert.equal(canonicalState("Orissa"), "Odisha");
   assert.equal(canonicalState("Chattisgarh"), "Chhattisgarh");
+  assert.equal(canonicalState("Keralam"), "Kerala");
   assert.equal(canonicalState("Daman & Diu"), "Dadra and Nagar Haveli and Daman and Diu");
   assert.equal(canonicalState("Atlantis"), null);
 });
@@ -65,4 +66,58 @@ test("place names match across small spelling differences", async () => {
   assert.equal(placeNamesMatch("Jammu", "Samba"), false);
   assert.equal(placeNamesMatch("Pune", "Puri"), false);
   assert.equal(placeNamesMatch("", "Jammu"), false);
+});
+
+test("a source name is given to the district it fits best, never to a similar neighbour", async () => {
+  const { placeMatchStrength, sourceDistrictNames } = await import("./india.ts");
+  // The source joins alternative names with a slash.
+  assert.equal(placeMatchStrength("East Champaran/ Motihari", "East Champaran"), 3);
+  assert.deepEqual(
+    sourceDistrictNames("Bihar", "East Champaran", [
+      "West Chambaran",
+      "East Champaran/ Motihari",
+      "Siwan",
+    ]),
+    ["East Champaran/ Motihari"],
+  );
+  // Two letters apart, but each is a district of its own.
+  assert.equal(placeMatchStrength("Siwan", "Saran"), 1);
+  assert.deepEqual(sourceDistrictNames("Bihar", "Saran", ["Siwan"]), []);
+  assert.deepEqual(sourceDistrictNames("Bihar", "Nawada", ["Nalanda"]), []);
+  assert.deepEqual(sourceDistrictNames("Chhattisgarh", "Bijapur", ["Bilaspur"]), []);
+  assert.deepEqual(sourceDistrictNames("Tamil Nadu", "Tiruvallur", ["Tiruvarur"]), []);
+  assert.deepEqual(sourceDistrictNames("Andhra Pradesh", "East Godavari", ["West Godavari"]), []);
+  // A name that fits two districts equally well is left out.
+  assert.deepEqual(sourceDistrictNames("Uttar Pradesh", "Kanpur Nagar", ["Kanpur"]), []);
+  // Small spelling differences still match when no other district is closer.
+  assert.deepEqual(sourceDistrictNames("Odisha", "Mayurbhanj", ["Mayurbhanja", "Balasore"]), [
+    "Mayurbhanja",
+  ]);
+  assert.deepEqual(sourceDistrictNames("Karnataka", "Davanagere", ["Davangere"]), ["Davangere"]);
+  // The state may be given the way the source writes it.
+  assert.deepEqual(sourceDistrictNames("Keralam", "Palakkad", ["Palakad", "Kollam"]), ["Palakad"]);
+});
+
+test("districts the source names its own way use the checked names", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  assert.deepEqual(ogdDistrictNames("Bihar", "East Champaran"), ["East Champaran/ Motihari"]);
+  assert.deepEqual(ogdDistrictNames("Bihar", "munger district"), ["Munghair"]);
+  assert.deepEqual(ogdDistrictNames("Bihar", "Saran"), ["Chhapra", "Saran"]);
+  assert.deepEqual(ogdDistrictNames("Bihar", "Patna"), []);
+  // "Chhapra" has nothing in common with "Saran" as a word; "Siwan" has, and is still refused.
+  assert.deepEqual(sourceDistrictNames("Bihar", "Saran", ["Siwan", "Chhapra", "Saran"]), [
+    "Chhapra",
+    "Saran",
+  ]);
+  assert.deepEqual(sourceDistrictNames("Bihar", "Lakhisarai", ["Luckeesarai", "Sheikhpura"]), [
+    "Luckeesarai",
+  ]);
+  // The other way round, for the weather map.
+  assert.equal(districtForSourceName("Bihar", "Munghair"), "Munger");
+  assert.equal(districtForSourceName("Bihar", "Kaimur/Bhabhua"), "Kaimur");
+  assert.equal(districtForSourceName("Bihar", "Chhapra"), "Saran");
+  assert.equal(districtForSourceName("Bihar", "Siwan"), "Siwan");
+  assert.equal(districtForSourceName("Bihar", "Atlantis"), null);
+  assert.equal(districtForSourceName("Uttar Pradesh", "Kanpur"), null);
 });

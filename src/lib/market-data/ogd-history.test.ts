@@ -91,6 +91,28 @@ test("retries after HTTP 429, then keeps what it already fetched when still limi
   assert.equal(n, 5);
 });
 
+test("the caller chooses how long to keep trying and hears about each wait", async () => {
+  let n = 0;
+  const fetchPage = async () => {
+    n += 1;
+    return n < 4
+      ? new Response("slow down", { status: 429 })
+      : new Response(JSON.stringify({ limit: 10, records: [] }));
+  };
+  const waits: number[] = [];
+  const result = await fetchOgdHistory(
+    {
+      ...base,
+      fromDate: "2026-01-01",
+      rateLimitWaitsMs: [1, 2, 3, 4],
+      onRateLimit: (ms) => waits.push(ms),
+    },
+    { fetchPage, sleep: noSleep },
+  );
+  assert.equal(result.stopReason, "no_more_records");
+  assert.deepEqual(waits, [1, 2, 3]);
+});
+
 test("history reconcile drops only keys whose prices disagree", () => {
   const a: MarketObservationImportRow = {
     crop: "Tomato",

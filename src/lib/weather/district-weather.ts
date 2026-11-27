@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { canonicalState } from "@/lib/location/india";
+import { canonicalState, districtForSourceName } from "@/lib/location/india";
 import { lookupDistrictCentre } from "@/lib/location/lookup";
 import { TtlCache } from "@/lib/market-data/ogd-cache";
 import { logEvent } from "@/lib/observability/logger";
@@ -322,7 +322,10 @@ export async function ensureDistrictWeather(
       if (!centre) {
         if (geocoded) await sleep(GEOCODE_PAUSE_MS); // OpenStreetMap asks for at most one request a second
         geocoded = true;
-        centre = await withRetries(() => lookupDistrictCentre(stateForGeocoding, need.district));
+        // Mandi reports name some districts their own way ("Munghair" for
+        // Munger); the map knows the district by its usual name.
+        const mapName = districtForSourceName(stateForGeocoding, need.district) ?? need.district;
+        centre = await withRetries(() => lookupDistrictCentre(stateForGeocoding, mapName));
       }
       if (centre) {
         const rows = (await fetchPastWeather(centre, need.from, yesterday)).filter(

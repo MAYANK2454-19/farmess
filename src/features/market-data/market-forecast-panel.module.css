@@ -122,6 +122,12 @@
   line-height: 1.5;
 }
 
+.fetchLines {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
 .fetchDot {
   flex: none;
   width: 10px;

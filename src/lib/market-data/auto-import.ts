@@ -31,7 +31,19 @@ const TOP_UP_AFTER_DAYS = 2;
 /** History counts as reaching the start when it gets within this many days of it. */
 const START_TOLERANCE_DAYS = 14;
 const FLUSH_ROWS = 400;
-const FLUSH_INTERVAL_MS = 40_000;
+const FLUSH_INTERVAL_MS = 30_000;
+/**
+ * The first rows are saved early: they are the newest prices, and the person
+ * who asked should see them within seconds, not after the whole year is read.
+ */
+const FIRST_FLUSH_ROWS = 30;
+const FIRST_FLUSH_MS = 8_000;
+/**
+ * data.gov.in often answers "slow down" (HTTP 429) for a few seconds at a
+ * time, especially on the shared sample key. Someone is waiting on the page, so
+ * a background fetch keeps trying for close to three minutes before giving up.
+ */
+export const AUTO_RATE_LIMIT_WAITS_MS = [5_000, 10_000, 20_000, 30_000, 45_000, 60_000] as const;
 const INGEST_CHUNK = 1_000;
 const MS_PER_DAY = 86_400_000;
 
@@ -81,12 +93,15 @@ export function retrySecondsFor(outcome: ImportOutcome): number {
     case "complete":
       return 6 * 3600;
     case "partial":
-      return 120;
+      // Stopped only because one run may not last longer: carry on almost at once.
+      return 60;
     case "rate_limited":
-      return 600;
+      // The run itself already waited for minutes; try again soon, the page may still be open.
+      return 180;
     case "no_data":
       return 24 * 3600;
     case "source_error":
+      return 300;
     case "save_error":
       return 900;
   }
@@ -186,6 +201,10 @@ export type AutoImportInput = {
   deadline: number;
   /** Saves rows and returns how many the database accepted; throws when it cannot save. */
   ingest: (rows: IngestRow[], received: number, note: string | null) => Promise<number>;
+  /** Told each time the source asks to slow down, so the person waiting can be told too. */
+  onRateLimit?: (waitMs: number) => void;
+  /** Told after each page the source answers and after each save: rows saved and read so far. */
+  onProgress?: (progress: { saved: number; received: number }) => void;
   deps?: HistoryFetchDeps;
 };
 
@@ -223,6 +242,7 @@ export async function runAutoImport(input: AutoImportInput): Promise<AutoImportR
       try {
         saved += await input.ingest(ready.slice(i, i + INGEST_CHUNK), pendingReceived, note);
         calls += 1;
+        input.onProgress?.({ saved, received });
       } catch {
         saveFailed = true;
         return;
@@ -239,12 +259,18 @@ export async function runAutoImport(input: AutoImportInput): Promise<AutoImportR
       district: input.scope.district ?? undefined,
       maxRecords: input.scope.district ? DISTRICT_MAX_RECORDS : STATE_MAX_RECORDS,
       deadline: input.deadline,
+      rateLimitWaitsMs: AUTO_RATE_LIMIT_WAITS_MS,
+      onRateLimit: input.onRateLimit,
       onRecords: async (records) => {
         received += records.length;
         buffer.push(...records);
-        if (buffer.length >= FLUSH_ROWS || now() - lastFlush >= FLUSH_INTERVAL_MS) {
-          await flush(false);
-        }
+        const waited = now() - lastFlush;
+        const due =
+          calls === 0
+            ? buffer.length >= FIRST_FLUSH_ROWS || waited >= FIRST_FLUSH_MS
+            : buffer.length >= FLUSH_ROWS || waited >= FLUSH_INTERVAL_MS;
+        if (due) await flush(false);
+        input.onProgress?.({ saved, received });
       },
     },
     fromDate,

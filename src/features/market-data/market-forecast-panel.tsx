@@ -9,6 +9,7 @@ import type {
 import type { MlForecastResult } from "@/lib/market-data/ml-forecast";
 import type { WeatherForecastResult } from "@/lib/market-data/weather-forecast";
 import { BACKGROUND_HEADER } from "@/lib/auth/session-policy";
+import { fetchView, type FetchStatus, type FetchView } from "./fetch-progress";
 import styles from "./market-forecast-panel.module.css";
 
 type WeatherOutlook = {
@@ -21,7 +22,12 @@ type WeatherOutlook = {
 type ForecastResponse = {
   status: string;
   crop?: string;
-  area?: { state: string | null; district: string | null; widened: boolean };
+  area?: {
+    state: string | null;
+    district: string | null;
+    widened: boolean;
+    sourceDistrict?: string | null;
+  };
   market?: string | null;
   district?: string | null;
   state?: string | null;
@@ -35,31 +41,12 @@ type ForecastResponse = {
   error?: string;
 };
 
-/** Answer of POST /api/market-history/ensure. */
-type FetchStatus = {
-  configured: boolean;
-  crop: string;
-  state: string | null;
-  district: string | null;
-  scope: "district" | "state" | null;
-  savedReports: number;
-  newestDate: string | null;
-  oldestDate: string | null;
-  needed: boolean;
-  reason: string;
-  started: boolean;
-  weatherStarted?: boolean;
-};
+type AutomaticFetch = { status: FetchStatus; view: FetchView };
 
-type FetchPhase = "fetching" | "waiting" | "paused" | "done";
-
-const POLL_MS = 8_000;
-/** One background fetch runs for at most about five minutes. */
-const ACTIVE_WINDOW_MS = 6 * 60_000;
-/** How long to keep looking when another person's fetch may be running. */
-const WAIT_WINDOW_MS = 3 * 60_000;
+/** A check that failed (no connection, server busy) is tried again after this long. */
+const FAILED_CHECK_MS = 8_000;
 /** Forecasts are recomputed on reload, so new rows are picked up at most this often. */
-const RELOAD_GAP_MS = 45_000;
+const RELOAD_GAP_MS = 30_000;
 const WEATHER_RETRY_MS = 40_000;
 /** District weather takes about a minute to fetch; look at the forecast again after that. */
 const WEATHER_RELOAD_MS = 75_000;
@@ -186,12 +173,8 @@ function useAutomaticFetch(
   state: string,
   district: string,
   onNewData: () => void,
-): { status: FetchStatus; phase: FetchPhase } | null {
-  const [value, setValue] = useState<{
-    key: string;
-    status: FetchStatus;
-    phase: FetchPhase;
-  } | null>(null);
+): AutomaticFetch | null {
+  const [value, setValue] = useState<({ key: string } & AutomaticFetch) | null>(null);
   const notify = useRef(onNewData);
   useEffect(() => {
     notify.current = onNewData;
@@ -208,6 +191,7 @@ function useAutomaticFetch(
     let lastReload = 0;
     let reloadOwed = false;
     let calls = 0;
+    let failures = 0;
     let weatherTimer: ReturnType<typeof setTimeout> | undefined;
 
     async function check() {
@@ -235,9 +219,11 @@ function useAutomaticFetch(
       }
       if (!active) return;
       if (!status) {
-        if (calls < 3) timer = setTimeout(check, POLL_MS);
+        failures += 1;
+        if (failures < 3) timer = setTimeout(check, FAILED_CHECK_MS);
         return;
       }
+      failures = 0;
 
       const now = Date.now();
       // Weather does not change the number of saved prices, so it gets its own reload.
@@ -251,25 +237,20 @@ function useAutomaticFetch(
       if (lastVersion && version !== lastVersion) reloadOwed = true;
       lastVersion = version;
 
-      const fetching = status.needed && lastStarted > 0 && now - lastStarted < ACTIVE_WINDOW_MS;
-      const waiting =
-        !fetching && status.needed && status.configured && now - beganAt < WAIT_WINDOW_MS;
-      const phase: FetchPhase = fetching
-        ? "fetching"
-        : waiting
-          ? "waiting"
-          : status.needed
-            ? "paused"
-            : "done";
-      setValue({ key, status, phase });
+      const view = fetchView(status, {
+        sinceBeganMs: now - beganAt,
+        sinceStartedMs: lastStarted > 0 ? now - lastStarted : null,
+      });
+      setValue({ key, status, view });
 
-      const keepGoing = fetching || waiting;
+      // New prices are shown at once when they are the first; later ones a little apart.
+      const keepGoing = view.nextCheckMs !== null;
       if (reloadOwed && (!keepGoing || now - lastReload > RELOAD_GAP_MS)) {
         reloadOwed = false;
         lastReload = now;
         notify.current();
       }
-      if (keepGoing) timer = setTimeout(check, POLL_MS);
+      if (view.nextCheckMs !== null) timer = setTimeout(check, view.nextCheckMs);
       // The search itself saves today's reports a moment later: look once more.
       else if (calls === 1) timer = setTimeout(check, 6_000);
     }
@@ -285,36 +266,19 @@ function useAutomaticFetch(
   return value && value.key === key ? value : null;
 }
 
-function FetchNotice({
-  fetch,
-  hasData,
-}: {
-  fetch: { status: FetchStatus; phase: FetchPhase } | null;
-  hasData: boolean;
-}) {
-  if (!fetch) return null;
-  const { status, phase } = fetch;
-  const place = status.district ?? status.state ?? "this area";
-  if (phase === "fetching" || phase === "waiting") {
-    return (
-      <p className={styles.fetchNotice} role="status">
-        <span className={styles.fetchDot} aria-hidden="true" />
-        {hasData
-          ? `Fetching more ${status.crop} prices for ${place} from data.gov.in in the background (${status.savedReports} reports saved so far). This page updates by itself.`
-          : `Fetching ${status.crop} prices for ${place} from data.gov.in. This usually takes a minute or two; the page updates by itself.`}
-      </p>
-    );
-  }
-  if (phase === "paused" && status.configured && status.savedReports > 0) {
-    return (
-      <p className={styles.fetchNotice} role="status">
-        {status.savedReports} reports for {status.crop} in {place} are saved. data.gov.in limits how
-        much can be fetched at once, so the rest is fetched automatically the next time this page is
-        opened.
-      </p>
-    );
-  }
-  return null;
+function FetchNotice({ fetch }: { fetch: AutomaticFetch | null }) {
+  if (!fetch || fetch.view.lines.length === 0) return null;
+  return (
+    <p className={styles.fetchNotice} role="status">
+      {fetch.view.busy ? <span className={styles.fetchDot} aria-hidden="true" /> : null}
+      {/* One element per message: each is translated as a whole. */}
+      <span className={styles.fetchLines}>
+        {fetch.view.lines.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </span>
+    </p>
+  );
 }
 
 function WeatherBlock({
@@ -496,7 +460,6 @@ export function MarketForecastPanel({
       ? result.backtest.baselineMae
       : null;
   const staleNote = result?.status === "trend_only" && result.reason === "stale";
-  const hasData = Boolean(result) || (data?.markets?.length ?? 0) > 0;
 
   return (
     <section className={`panel ${styles.root}`} aria-labelledby="market-forecast-heading">
@@ -516,12 +479,16 @@ export function MarketForecastPanel({
         </div>
       </div>
 
-      <FetchNotice fetch={automatic} hasData={hasData} />
+      <FetchNotice fetch={automatic} />
 
       {data?.area?.widened && data.area.district ? (
         <p className={styles.fetchNotice} role="note">
           No mandi in {data.area.district} district reports {data.crop}, so mandis elsewhere in{" "}
           {data.area.state} are shown.
+        </p>
+      ) : data?.area?.district && data.area.sourceDistrict ? (
+        <p className={styles.fetchNotice} role="note">
+          {`data.gov.in lists ${data.area.district} district as “${data.area.sourceDistrict}”; its mandis are shown here.`}
         </p>
       ) : null}
 
@@ -557,22 +524,26 @@ export function MarketForecastPanel({
       ) : data?.status === "no_saved_prices" ? (
         <div className={styles.message}>
           <strong>No saved prices for {data.crop} here yet</strong>
-          {automatic?.phase === "fetching" || automatic?.phase === "waiting"
+          {automatic?.view.phase === "fetching" || automatic?.view.phase === "waiting"
             ? "They are being fetched from data.gov.in now. This page updates by itself."
-            : !fetchState
-              ? "Choose your state and district above and Farmess fetches the prices from data.gov.in automatically."
-              : automatic && !automatic.status.configured
-                ? "Automatic price fetching is not set up on this server yet."
-                : automatic?.phase === "done" || automatic?.phase === "paused"
-                  ? "data.gov.in has no recent reports for this crop here. Try a nearby district or the whole state."
-                  : data.message}
+            : automatic?.view.phase === "retrying"
+              ? "Farmess is still trying to fetch them from data.gov.in. This page updates by itself."
+              : !fetchState
+                ? "Choose your state and district above and Farmess fetches the prices from data.gov.in automatically."
+                : automatic && !automatic.status.configured
+                  ? "Automatic price fetching is not set up on this server yet."
+                  : automatic?.view.phase === "none"
+                    ? "data.gov.in has no recent reports for this crop here. Try a nearby district or the whole state."
+                    : automatic
+                      ? "Nothing could be fetched for this crop here just now. data.gov.in may have no recent reports for it, or may be limiting requests. Farmess tries again the next time this page is opened."
+                      : data.message}
         </div>
       ) : result?.status === "insufficient_history" ? (
         <div className={styles.message}>
           <strong>Not enough history yet</strong>
           Farmess has {result.reportCount} report day(s) for this mandi. A trend needs at least{" "}
           {result.minimumReports}.{" "}
-          {automatic?.phase === "fetching" || automatic?.phase === "waiting"
+          {automatic?.view.busy
             ? "More are being fetched now."
             : "More are fetched automatically as data.gov.in publishes them."}
         </div>

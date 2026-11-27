@@ -1,7 +1,7 @@
 import { withApiLogging } from "@/lib/observability/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { canonicalState, ogdStateName } from "@/lib/location/india";
+import { canonicalState, ogdStateName, sourceDistrictNames } from "@/lib/location/india";
 import { canonicalCommodity } from "@/lib/market-data/commodities";
 import { mandiKey } from "@/lib/market-data/mandi-key";
 import { dailySeries, forecastPrices, MINIMUM_REPORTS } from "@/lib/market-data/price-forecast";
@@ -144,16 +144,33 @@ async function handleGET(request: NextRequest) {
 
   // Mandis for this crop (and district filter), grouped across renamed listings.
   const cropLower = cropName.toLowerCase();
-  const districtLower = district.value?.toLowerCase();
   const stateCropRows = stateRows.filter((row) => row.crop.toLowerCase() === cropLower);
-  const districtCropRows = districtLower
-    ? stateCropRows.filter((row) => row.district.toLowerCase() === districtLower)
+  // Saved rows carry the source's district names ("East Champaran/ Motihari"
+  // for East Champaran), so the chosen district is matched to those first.
+  const sourceNames =
+    district.value && stateName
+      ? sourceDistrictNames(stateName, district.value, [
+          ...new Set(stateRows.map((row) => row.district)),
+        ])
+      : [];
+  const districtKeys = district.value
+    ? new Set([district.value, ...sourceNames].map((name) => name.toLowerCase()))
+    : null;
+  const districtCropRows = districtKeys
+    ? stateCropRows.filter((row) => districtKeys.has(row.district.toLowerCase()))
     : stateCropRows;
   // No mandi in the chosen district reports this crop: show the rest of the state instead.
   const widened =
-    Boolean(districtLower) && districtCropRows.length === 0 && stateCropRows.length > 0;
+    Boolean(districtKeys) && districtCropRows.length === 0 && stateCropRows.length > 0;
   const cropRows = widened ? stateCropRows : districtCropRows;
-  const area = { state: stateName, district: district.value ?? null, widened };
+  const area = {
+    state: stateName,
+    district: district.value ?? null,
+    widened,
+    /** The district as data.gov.in writes it, when that differs from the chosen name. */
+    sourceDistrict:
+      sourceNames.find((name) => name.toLowerCase() !== district.value?.toLowerCase()) ?? null,
+  };
 
   const groups = new Map<
     string,
