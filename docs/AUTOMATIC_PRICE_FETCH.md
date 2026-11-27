@@ -76,18 +76,42 @@ already past the year Farmess reads.
 
 ## District names
 
-data.gov.in writes some districts its own way, and it matches the district exactly:
-asking for "East Champaran" finds nothing, because the source lists that district as
-"East Champaran/ Motihari". Farmess therefore asks under the source's name, which it gets from:
+data.gov.in writes many districts its own way, and it matches the district exactly, down to a
+trailing space. Asking for "East Champaran" finds nothing, because the source lists that
+district as "East Champaran/ Motihari"; "North and Middle Andaman" finds nothing without the
+space the source keeps after it. These kinds of difference turned up:
 
-1. **Reports already saved for the state**, which carry the source's spelling.
-2. **A checked list** in `src/lib/location/india.ts` (`OGD_DISTRICT_NAMES`) for districts whose
-   source name has nothing in common with the usual one. Bihar was checked against the source
-   on 27 Nov 2026: 30 of its 38 districts are listed under the usual name; the others are
-   East Champaran → `East Champaran/ Motihari`, West Champaran → `West Chambaran`,
-   Kaimur → `Kaimur/Bhabhua`, Katihar → `Kaithar`, Lakhisarai → `Luckeesarai`,
-   Munger → `Munghair`, Purnia → `Purnea`, Gopalganj → `Gopalgang`, and Saran, whose mandis
-   appear under both `Chhapra` and `Saran` (both are fetched).
+| Kind                       | Example at the source                                             |
+| -------------------------- | ----------------------------------------------------------------- |
+| Another spelling           | `Gopalgang` for Gopalganj, `Chittor` for Chittoor                 |
+| Another name altogether    | `Chhapra` for Saran, `Munghair` for Munger, `Cuddapah` for Kadapa |
+| Renamed during the year    | Anantapur is `Anantapur` until May 2026 and `Ananthapuramu` after |
+| Two names at the same time | Saran's mandis are under both `Chhapra` and `Saran`               |
+
+So Farmess asks under the source's names, all of them when a district has more than one:
+
+1. **The list in `src/lib/location/ogd-district-names.ts`.** It is built from a scan of every
+   district name in the source's price history, state by state, keeping the names with a report
+   in the last 400 days. It is generated, not written by hand:
+
+   ```
+   node --experimental-strip-types scripts/check-district-names.mts "Uttar Pradesh"
+   node --experimental-strip-types scripts/build-district-names.mts
+   ```
+
+   The scan reads the history sorted by district, one row at a time: the first row names a
+   district, a second request counts that district's rows and gives its newest report, and the
+   next read starts that many rows further on. That is two small requests per name, and the
+   counts must add up to the state's total (Goa: 95,611 + 53,174 = 148,785). Results are kept in
+   `scripts/data/ogd-districts/`; a scan that is cut short carries on from where it stopped.
+
+   The builder gives each source name to the district it fits best by spelling, and prints
+   every match that is not the same name so a wrong one is noticed. Names no spelling rule can
+   connect ("Chhapra" is Saran) are mapped by hand in `scripts/data/ogd-district-manual.json`,
+   using the mandi named in the scan as evidence.
+
+2. **Reports already saved for the state**, for a state that has not been scanned yet: they
+   carry the source's spelling.
 
 A source name is taken for a district only when it fits that district better than any other
 district of the state (`sourceDistrictNames`). "Siwan" is two letters from "Saran" and
@@ -95,25 +119,17 @@ district of the state (`sourceDistrictNames`). "Siwan" is two letters from "Sara
 mixed in. The same rule is used by the live price search, the price-trend panel and the
 district weather (which looks a district up on the map under its usual name).
 
-Jammu and Kashmir was checked the same day and needs no entries: 14 of its 20 districts are
-listed under the usual name, and no rows were found for Bandipora, Doda, Kishtwar, Poonch,
-Reasi or Samba under any spelling tried, so those fall back to the state.
+The states scanned so far are listed in `OGD_DISTRICT_NAMES_CHECKED` in the generated file. For
+the others, the live search looks for the district under another spelling among today's reports
+("Farukhabad" for Farrukhabad), and the automatic fetch falls back to the state.
 
-Other states have not been checked name by name yet. Their districts are matched by the
-spelling rules: the live search looks for the district under another spelling among today's
-reports ("Farukhabad" for Farrukhabad), and the automatic fetch falls back to the state.
+Two things the scans showed that the list cannot repair:
 
-To list every district name a state has at the source:
-
-```
-node --experimental-strip-types scripts/check-district-names.mts "Uttar Pradesh"
-```
-
-It reads the price history sorted by district, one row at a time: the first row names a
-district, a second request counts that district's rows and gives its newest report, and the
-next read starts that many rows further on. That is two small requests per name, and the counts
-must add up to the state's total (Goa: 95,611 + 53,174 = 148,785). Results are saved in
-`scripts/data/ogd-districts/`; a scan that is cut short carries on from where it stopped.
+- **Districts split from an older one** carry their own name only since the source adopted it.
+  Sri Sathya Sai (Andhra Pradesh) has reports under its own name from May 2026; before that its
+  mandis were reported under the undivided `Anantapur`.
+- **Districts the source lists and Farmess did not have** are added to the district list when
+  the source's mandis place them clearly (Markapuram and Polavaram in Andhra Pradesh).
 
 ## How it stays safe and within limits
 

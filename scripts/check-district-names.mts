@@ -31,7 +31,8 @@ const india = await import(pathToFileURL(`${process.cwd()}/src/lib/location/indi
 const HISTORY = "https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24";
 const CURRENT = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070";
 const OUT_DIR = path.join("scripts", "data", "ogd-districts");
-const PAUSE_MS = 1_300;
+// Unhurried on purpose: the key is shared, and the live site reads with it too.
+const PAUSE_MS = 3_000;
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readKey(): string {
@@ -81,10 +82,11 @@ async function get(base: string, params: Record<string, string>): Promise<Page |
         signal: AbortSignal.timeout(40_000),
       });
       if (response.status === 429) {
-        // Others share this key; step well back so their requests get through.
+        // Others share this key, the live site among them: step well back so
+        // their requests get through, and all but stop while it stays busy.
         slowDowns += 1;
         pauseMs = Math.min(6_000, pauseMs * 1.5);
-        await sleep(15_000 + attempt * 15_000);
+        await sleep(Math.min(300_000, 30_000 * 2 ** attempt));
         continue;
       }
       if (!response.ok) return null;
@@ -344,8 +346,9 @@ for (const state of states) {
   );
   const counted = scan.names.reduce((sum, found) => sum + found.rows, 0);
   if (!scan.complete) {
+    // The source has stopped answering; the next state would fare no better.
     console.log(`${state}: the source could not be read to the end; run again to carry on.`);
-    continue;
+    break;
   }
   fs.rmSync(partialFile, { force: true });
   fs.writeFileSync(

@@ -105,6 +105,51 @@ test("a source name is given to the district it fits best, never to a similar ne
   assert.deepEqual(sourceDistrictNames("Keralam", "Palakkad", ["Palakad", "Kollam"]), ["Palakad"]);
 });
 
+test("the list of source names points only at real districts, each name at one", async () => {
+  const { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED } =
+    await import("./ogd-district-names.ts");
+  for (const state of OGD_DISTRICT_NAMES_CHECKED) {
+    assert.ok(INDIA_STATES.includes(state), `${state} is not a state of the list`);
+  }
+  for (const [state, districts] of Object.entries(OGD_DISTRICT_NAMES)) {
+    assert.ok(OGD_DISTRICT_NAMES_CHECKED.includes(state), `${state} was not read to the end`);
+    const taken = new Map<string, string>();
+    for (const [district, names] of Object.entries(districts)) {
+      assert.ok(districtsForState(state).includes(district), `${state}: ${district} is not listed`);
+      assert.ok(names.length > 0, `${state}: ${district} has no names`);
+      for (const name of names) {
+        assert.ok(name.trim().length > 0, `${state}: ${district} has an empty name`);
+        const other = taken.get(name.trim().toLowerCase());
+        assert.equal(other, undefined, `${state}: "${name}" is given to ${other} and ${district}`);
+        taken.set(name.trim().toLowerCase(), district);
+      }
+    }
+  }
+});
+
+test("renamed districts and padded names are asked for exactly as the source writes them", async () => {
+  const { districtForSourceName, ogdDistrictNames, ogdDistrictNamesChecked, sourceDistrictNames } =
+    await import("./india.ts");
+  // Renamed at the source during the year: both names hold part of it.
+  assert.deepEqual(ogdDistrictNames("Andhra Pradesh", "Anantapur"), ["Ananthapuramu", "Anantapur"]);
+  assert.deepEqual(ogdDistrictNames("Andhra Pradesh", "YSR Kadapa"), ["YSR Kadapa", "Cuddapah"]);
+  assert.deepEqual(
+    sourceDistrictNames("Andhra Pradesh", "YSR Kadapa", ["Cuddapah", "Kurnool", "YSR Kadapa"]),
+    ["Cuddapah", "YSR Kadapa"],
+  );
+  assert.equal(districtForSourceName("Andhra Pradesh", "Vijayanagaram"), "Vizianagaram");
+  assert.equal(
+    districtForSourceName("Andhra Pradesh", "SPSR Nellore"),
+    "Sri Potti Sriramulu Nellore",
+  );
+  // The trailing space is part of the name at the source; without it nothing is found.
+  assert.deepEqual(ogdDistrictNames("Andaman and Nicobar Islands", "North and Middle Andaman"), [
+    "North and Middle Andaman ",
+  ]);
+  assert.equal(ogdDistrictNamesChecked("Bihar"), true);
+  assert.equal(ogdDistrictNamesChecked("Atlantis"), false);
+});
+
 test("districts the source names its own way use the checked names", async () => {
   const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
     await import("./india.ts");

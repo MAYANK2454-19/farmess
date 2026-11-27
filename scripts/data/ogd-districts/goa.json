@@ -1,0 +1,21 @@
+{
+  "state": "Goa",
+  "sourceState": "Goa",
+  "scannedOn": "2026-11-27",
+  "rows": 148785,
+  "rowsCounted": 148785,
+  "names": [
+    {
+      "name": "North Goa",
+      "rows": 95611,
+      "newest": "2026-11-26",
+      "market": "Mapusa APMC"
+    },
+    {
+      "name": "South Goa",
+      "rows": 53174,
+      "newest": "2026-11-25",
+      "market": "Ponda APMC"
+    }
+  ]
+}

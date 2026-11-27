@@ -32,6 +32,7 @@ const SKIP_DIRS = new Set(["i18n", "supabase"]);
 /** Long data lists that are handled separately (see the end of this file). */
 const SKIP_FILES = new Set([
   path.join("src", "lib", "location", "india.ts"),
+  path.join("src", "lib", "location", "ogd-district-names.ts"),
   path.join("src", "lib", "market-data", "commodities.ts"),
 ]);
 

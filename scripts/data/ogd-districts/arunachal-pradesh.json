@@ -1,0 +1,75 @@
+{
+  "state": "Arunachal Pradesh",
+  "sourceState": "Arunachal Pradesh",
+  "scannedOn": "2026-11-27",
+  "rows": 3940,
+  "rowsCounted": 3940,
+  "names": [
+    {
+      "name": "Changlang",
+      "rows": 5,
+      "newest": "2014-09-30",
+      "market": "Miao"
+    },
+    {
+      "name": "East Siang",
+      "rows": 378,
+      "newest": "2026-06-05",
+      "market": "Pasighat APMC"
+    },
+    {
+      "name": "Lohit",
+      "rows": 2,
+      "newest": "2014-10-01",
+      "market": "Tezu"
+    },
+    {
+      "name": "Lower Dibang Valley",
+      "rows": 7,
+      "newest": "2014-09-29",
+      "market": "Roing"
+    },
+    {
+      "name": "Lower Subansiri",
+      "rows": 706,
+      "newest": "2026-11-09",
+      "market": "Ziro APMC"
+    },
+    {
+      "name": "Papum Pore",
+      "rows": 823,
+      "newest": "2018-06-21",
+      "market": "Naharlagun"
+    },
+    {
+      "name": "Tawang",
+      "rows": 938,
+      "newest": "2006-02-09",
+      "market": "Tawang"
+    },
+    {
+      "name": "Tirap",
+      "rows": 1077,
+      "newest": "2015-11-05",
+      "market": "Khonsa"
+    },
+    {
+      "name": "Upper Subansiri",
+      "rows": 2,
+      "newest": "2017-12-07",
+      "market": "Daporijo"
+    },
+    {
+      "name": "West Kameng",
+      "rows": 1,
+      "newest": "2013-08-19",
+      "market": "Bomdila"
+    },
+    {
+      "name": "West Siang",
+      "rows": 1,
+      "newest": "2014-09-22",
+      "market": "Along"
+    }
+  ]
+}

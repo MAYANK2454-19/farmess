@@ -223,8 +223,15 @@ async function districtSourceNames(
     .map((row) => row.district)
     .filter((name): name is string => Boolean(name));
   const fitting = new Set(sourceDistrictNames(canonState, district, seen));
+  // The checked list comes first: it has the names exactly as the source
+  // writes them (saved reports are trimmed, and the source's filter is exact
+  // down to a trailing space) and in the order of their newest reports.
+  const names: string[] = [];
+  for (const name of [...listed, ...seen.filter((row) => fitting.has(row)), ...usual]) {
+    if (!names.some((taken) => taken.trim() === name.trim())) names.push(name);
+  }
   const saved = seen.filter((name) => fitting.has(name));
-  const names = [...new Set([...saved, ...usual])].slice(0, MAX_DISTRICT_NAMES);
+  names.length = Math.min(names.length, MAX_DISTRICT_NAMES);
   // Names read from saved reports or from the checked list will not change;
   // "nothing known yet" may change as soon as the first rows for the state arrive.
   const known = saved.length > 0 || listed.length > 0;
@@ -253,8 +260,13 @@ async function loadCoverage(
       .ilike("crop", exact(scope.crop))
       .ilike("state", exact(scope.state))
       .gte("observation_date", fromDate);
-    if (districtNames && districtNames.length > 1) query = query.in("district", [...districtNames]);
-    else if (scope.district) query = query.ilike("district", exact(scope.district));
+    // Saved reports hold the names trimmed, whatever the source's padding.
+    if (districtNames && districtNames.length > 1) {
+      query = query.in(
+        "district",
+        districtNames.map((name) => name.trim()),
+      );
+    } else if (scope.district) query = query.ilike("district", exact(scope.district));
     return query;
   };
   const [newest, oldest, any] = await Promise.all([

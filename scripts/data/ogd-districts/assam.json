@@ -1,0 +1,159 @@
+{
+  "state": "Assam",
+  "sourceState": "Assam",
+  "scannedOn": "2026-11-27",
+  "rows": 554094,
+  "rowsCounted": 554094,
+  "names": [
+    {
+      "name": "BONGAIGAON",
+      "rows": 14631,
+      "newest": "2019-12-30",
+      "market": "Bongiagaon"
+    },
+    {
+      "name": "Barpeta",
+      "rows": 63708,
+      "newest": "2026-08-20",
+      "market": "Baharihat APMC"
+    },
+    {
+      "name": "Bongaigaon",
+      "rows": 71,
+      "newest": "2025-12-24",
+      "market": "Bijni APMC"
+    },
+    {
+      "name": "Cachar",
+      "rows": 40061,
+      "newest": "2026-11-26",
+      "market": "Fatakbazar APMC"
+    },
+    {
+      "name": "Darrang",
+      "rows": 58394,
+      "newest": "2026-11-25",
+      "market": "Besimari APMC"
+    },
+    {
+      "name": "Dhemaji",
+      "rows": 9978,
+      "newest": "2026-03-10",
+      "market": "Silapathar APMC"
+    },
+    {
+      "name": "Dhubri",
+      "rows": 20580,
+      "newest": "2026-04-24",
+      "market": "Gauripur APMC"
+    },
+    {
+      "name": "Dibrugarh",
+      "rows": 14086,
+      "newest": "2022-04-08",
+      "market": "Dibrugarh"
+    },
+    {
+      "name": "Goalpara",
+      "rows": 22809,
+      "newest": "2026-02-15",
+      "market": "Goalpara APMC"
+    },
+    {
+      "name": "Golaghat",
+      "rows": 17845,
+      "newest": "2025-08-28",
+      "market": "Golaghat"
+    },
+    {
+      "name": "Hailakandi",
+      "rows": 11387,
+      "newest": "2026-11-26",
+      "market": "Harbartganj Daily Market APMC"
+    },
+    {
+      "name": "Hojai",
+      "rows": 868,
+      "newest": "2026-08-09",
+      "market": "Gandhimaidan SMY, Hojai"
+    },
+    {
+      "name": "Jorhat",
+      "rows": 19190,
+      "newest": "2026-02-03",
+      "market": "Jorhat APMC"
+    },
+    {
+      "name": "Kamrup",
+      "rows": 116289,
+      "newest": "2026-11-26",
+      "market": "Pamohi(Garchuk) APMC"
+    },
+    {
+      "name": "Karbi Anglong",
+      "rows": 2355,
+      "newest": "2025-07-22",
+      "market": "Diphu"
+    },
+    {
+      "name": "Karimganj",
+      "rows": 9644,
+      "newest": "2026-11-26",
+      "market": "Santar Bazaar APMC"
+    },
+    {
+      "name": "Kokrajhar",
+      "rows": 5483,
+      "newest": "2026-02-12",
+      "market": "Gossaigaon APMC"
+    },
+    {
+      "name": "Lakhimpur",
+      "rows": 12794,
+      "newest": "2025-08-28",
+      "market": "Kakoi Weekly Market"
+    },
+    {
+      "name": "MORIGAON",
+      "rows": 2431,
+      "newest": "2025-08-23",
+      "market": "Moirabari"
+    },
+    {
+      "name": "Morigaon",
+      "rows": 106,
+      "newest": "2026-02-07",
+      "market": "Moirabari APMC"
+    },
+    {
+      "name": "Nagaon",
+      "rows": 50960,
+      "newest": "2026-11-26",
+      "market": "Ambagan APMC"
+    },
+    {
+      "name": "Nalbari",
+      "rows": 16536,
+      "newest": "2026-02-24",
+      "market": "Nalbari APMC"
+    },
+    {
+      "name": "Sibsagar",
+      "rows": 16465,
+      "newest": "2026-02-19",
+      "market": "Sibsagar APMC"
+    },
+    {
+      "name": "Sonitpur",
+      "rows": 15952,
+      "newest": "2026-11-26",
+      "market": "Dhekiajuli APMC"
+    },
+    {
+      "name": "Tinsukia",
+      "rows": 11471,
+      "newest": "2026-11-26",
+      "market": "Tinsukia Market"
+    }
+  ]
+}

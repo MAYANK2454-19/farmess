@@ -6,6 +6,8 @@
  * as an option instead of rejecting the user's real address.
  */
 
+import { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED } from "./ogd-district-names.ts";
+
 export const INDIA_DISTRICTS: Readonly<Record<string, readonly string[]>> = {
   "Andaman and Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
   "Andhra Pradesh": [
@@ -22,10 +24,12 @@ export const INDIA_DISTRICTS: Readonly<Record<string, readonly string[]>> = {
     "Kakinada",
     "Krishna",
     "Kurnool",
+    "Markapuram",
     "Nandyal",
     "NTR",
     "Palnadu",
     "Parvathipuram Manyam",
+    "Polavaram",
     "Prakasam",
     "Sri Potti Sriramulu Nellore",
     "Sri Sathya Sai",
@@ -992,29 +996,15 @@ export function placeNamesMatch(
   return placeMatchStrength(a, b) > 0;
 }
 
-/**
- * District names exactly as the OGD mandi datasets write them, for districts
- * the source does not list under the name used above. The source's district
- * filter is an exact match, so these are the names to ask with. A district can
- * have two (Saran's mandis are listed under "Chhapra" and under "Saran").
- *
- * Every name here was checked against data.gov.in (price history resource) on
- * 27 Nov 2026 and returned rows. Other states are matched by the spelling
- * rules below until their names have been checked the same way.
+/*
+ * The source matches a district exactly, down to a trailing space, and writes
+ * many districts its own way: "East Champaran/ Motihari" for East Champaran,
+ * "Chhapra" as well as "Saran" for Saran, and two names for a district it
+ * renamed during the year ("Ananthapuramu" and "Anantapur"). The names to ask
+ * with are in ogd-district-names.ts, which is built from a scan of every
+ * district name in the source's price history (scripts/check-district-names.mts
+ * and scripts/build-district-names.mts).
  */
-const OGD_DISTRICT_NAMES: Record<string, Record<string, readonly string[]>> = {
-  Bihar: {
-    "East Champaran": ["East Champaran/ Motihari"],
-    Gopalganj: ["Gopalgang"],
-    Kaimur: ["Kaimur/Bhabhua"],
-    Katihar: ["Kaithar"],
-    Lakhisarai: ["Luckeesarai"],
-    Munger: ["Munghair"],
-    Purnia: ["Purnea"],
-    Saran: ["Chhapra", "Saran"],
-    "West Champaran": ["West Chambaran"],
-  },
-};
 
 function listedSourceNames(state: string, district: string): readonly string[] {
   const byDistrict = OGD_DISTRICT_NAMES[state];
@@ -1036,14 +1026,13 @@ export function ogdDistrictNames(state: string, district: string): readonly stri
 }
 
 /**
- * States whose district names were all compared with the source: a district
- * of such a state that is not in OGD_DISTRICT_NAMES is written the usual way
- * there (or has no mandi reports), so looking for another spelling is pointless.
+ * True for a state whose district names were all read from the source: a
+ * district of it that has no entry in OGD_DISTRICT_NAMES is written the usual
+ * way there (or has no mandi reports), so looking for another spelling is
+ * pointless.
  */
-const OGD_DISTRICT_NAMES_CHECKED: ReadonlySet<string> = new Set(["Bihar", "Goa"]);
-
 export function ogdDistrictNamesChecked(state: string): boolean {
-  return OGD_DISTRICT_NAMES_CHECKED.has(canonicalState(state) ?? state);
+  return OGD_DISTRICT_NAMES_CHECKED.includes(canonicalState(state) ?? state);
 }
 
 function districtMatchStrength(state: string, sourceName: string, district: string): number {

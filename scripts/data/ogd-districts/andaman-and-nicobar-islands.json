@@ -1,0 +1,27 @@
+{
+  "state": "Andaman and Nicobar Islands",
+  "sourceState": "Andaman and Nicobar",
+  "scannedOn": "2026-11-27",
+  "rows": 21654,
+  "rowsCounted": 21654,
+  "names": [
+    {
+      "name": "Nicobar",
+      "rows": 3874,
+      "newest": "2026-09-02",
+      "market": "Perka Vegetable Market"
+    },
+    {
+      "name": "North and Middle Andaman ",
+      "rows": 11593,
+      "newest": "2026-11-26",
+      "market": "Diglipur Vegetable Market (Subhashgram)"
+    },
+    {
+      "name": "South Andaman",
+      "rows": 6187,
+      "newest": "2026-11-23",
+      "market": "Bathubasti Vegetable Market"
+    }
+  ]
+}
