@@ -9,6 +9,7 @@
 import {
   OGD_DISTRICT_NAMES,
   OGD_DISTRICT_NAMES_CHECKED,
+  OGD_RETIRED_DISTRICT_NAMES,
   OGD_STATEWIDE_DISTRICT_NAMES,
 } from "./ogd-district-names.ts";
 
@@ -1029,6 +1030,28 @@ function listedSourceNames(state: string, district: string): readonly string[] {
  */
 export function ogdDistrictNames(state: string, district: string): readonly string[] {
   return listedSourceNames(canonicalState(state) ?? state, district);
+}
+
+/**
+ * True for a name the source has stopped using ("Mysore" since it writes
+ * "Mysuru"): part of the year's history is under it, but no report of today.
+ */
+export function ogdDistrictNameRetired(state: string, sourceName: string): boolean {
+  const retired = OGD_RETIRED_DISTRICT_NAMES[canonicalState(state) ?? state];
+  return retired !== undefined && retired.includes(sourceName);
+}
+
+/**
+ * The names the source lists a district under today: ogdDistrictNames without
+ * the ones it has stopped using. For today's reports only; the price history
+ * needs them all.
+ */
+export function ogdCurrentDistrictNames(state: string, district: string): readonly string[] {
+  const canonical = canonicalState(state) ?? state;
+  const names = listedSourceNames(canonical, district);
+  const current = names.filter((name) => !ogdDistrictNameRetired(canonical, name));
+  // Never empty where a name is known: the newest one is in use by definition.
+  return current.length > 0 ? current : names.slice(0, 1);
 }
 
 /**

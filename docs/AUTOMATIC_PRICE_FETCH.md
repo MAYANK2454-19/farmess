@@ -105,13 +105,19 @@ So Farmess asks under the source's names, all of them when a district has more t
    counts must add up to the state's total (Goa: 95,611 + 53,174 = 148,785). Results are kept in
    `scripts/data/ogd-districts/`; a scan that is cut short carries on from where it stopped.
 
+   The source reads no deeper than ten million rows into a result, and Uttar Pradesh has
+   thirteen million. The end of such a state is read in the opposite order, from its last
+   district backwards, until the two readings meet.
+
    The builder gives each source name to the district it fits best by spelling, and prints
    every match that is not the same name so a wrong one is noticed. Names no spelling rule can
    connect ("Chhapra" is Saran) are mapped by hand in `scripts/data/ogd-district-manual.json`,
-   using the mandi named in the scan as evidence.
+   using the mandi named in the scan as evidence. Spelling alone is not trusted: it would give
+   `The Nilgiris` to Theni, `Asifabad` to Adilabad and `Badaun` to Jalaun as readily as to
+   Budaun, and those three are mapped by hand as well.
 
-2. **Reports already saved for the state**, for a state that has not been scanned yet: they
-   carry the source's spelling.
+2. **Reports already saved for the state**, for a district name the source starts using after
+   the scan: they carry the source's spelling.
 
 A source name is taken for a district only when it fits that district better than any other
 district of the state (`sourceDistrictNames`). "Siwan" is two letters from "Saran" and
@@ -119,16 +125,37 @@ district of the state (`sourceDistrictNames`). "Siwan" is two letters from "Sara
 mixed in. The same rule is used by the live price search, the price-trend panel and the
 district weather (which looks a district up on the map under its usual name).
 
-The states scanned so far are listed in `OGD_DISTRICT_NAMES_CHECKED` in the generated file. For
-the others, the live search looks for the district under another spelling among today's reports
-("Farukhabad" for Farrukhabad), and the automatic fetch falls back to the state.
+All 36 states and union territories were scanned on 27 and 28 Nov 2026; they are listed in
+`OGD_DISTRICT_NAMES_CHECKED` in the generated file, and 169 districts are asked for under 221
+names of the source. For a state that is not in that list, the live search would look for the
+district under another spelling among today's reports, and the automatic fetch would fall back
+to the state.
+
+The source renames districts often, so the list ages: scan again (`--redo`) when a district
+that used to have prices shows none.
+
+**Names the source has stopped using** are kept apart (`OGD_RETIRED_DISTRICT_NAMES`): a name
+with no report for 30 days while another name of the same district has them. The automatic
+fetch still reads such a name, because part of the year's history is under it. The live search
+of today's reports does not ask under it: nothing is there, and each request counts against a
+shared limit.
 
 What the scans showed beyond spellings:
 
-- **A wave of renaming in 2026.** The source switched many districts to new names in April to
+- **Waves of renaming in 2026.** The source switched many districts to new names in April to
   July 2026 (Karnataka: `Mysore` to `Mysuru`, `Shimoga` to `Shivamogga`, `Bijapur` to
-  `Vijayapura`; Andhra Pradesh: `Cuddapah` to `YSR Kadapa`). A year of history therefore sits
-  under two names, and both are asked for.
+  `Vijayapura`; Andhra Pradesh: `Cuddapah` to `YSR Kadapa`) and ten of Tamil Nadu's in
+  October 2026 (`Tuticorin` to `Thoothukudi`, `Thiruvellore` to `Thiruvallur`, `Chengalpattu`
+  to `Chengalpet`). A year of history therefore sits under two names, and both are asked for.
+- **Districts that were dissolved.** Rajasthan undid nine of its new districts; the source
+  used the names of eight until March 2026. Each is read with the district its mandis are
+  listed under now, checked against a mandi of each: `Jaipur Rural` and `Dudu` with Jaipur,
+  `Jodhpur Rural` with Jodhpur, `Kekri` with Ajmer, `Neem Ka Thana` with Sikar, `Sanchore`
+  with Jalore, `Gangapur City` with Sawai Madhopur and `Anupgarh` with Sri Ganganagar.
+- **Districts whose mandis sit under a neighbour.** The source has no name at all for three
+  districts of Uttar Pradesh and lists their mandis under the next district: Moradabad's under
+  `Sambhal`, Sultanpur's under `Amethi`, Hapur's under `Ghaziabad`. Each is asked for under
+  the neighbour's name, and the panel says which name its mandis are shown under.
 - **One name for a whole state.** The source lists all of Delhi's mandis under the single
   district `Delhi`, so that name is used for each of Delhi's eleven districts.
 - **One name for a group of districts.** The source keeps the mandis of both Mumbai districts
@@ -149,11 +176,13 @@ What the scans showed beyond spellings:
   were reported under the undivided `Anantapur`.
 - **Districts the source lists and Farmess did not have** are added to the district list when
   the source's mandis place them clearly (Markapuram and Polavaram in Andhra Pradesh).
-- **States with nothing recent.** Jharkhand's newest report in the history is from 2023, and
-  Dadra and Nagar Haveli and Daman and Diu has no rows at all, so no price can be shown there.
+- **States with nothing recent.** Jharkhand's newest report in the history is from 2023 and
+  Sikkim's from 2010; Ladakh, Lakshadweep, and Dadra and Nagar Haveli and Daman and Diu have
+  no rows at all. No price can be shown there.
 - **States where only some districts report.** In the hill states the source has mandis in a
-  few districts only: 5 of Manipur's 16, 2 of Mizoram's 11, 12 of Nagaland's 17. A district
-  with no mandi of its own gets the state's reports instead (the panel says so).
+  few districts only: 5 of Manipur's 16, 2 of Mizoram's 11, 12 of Nagaland's 17, 7 of
+  Uttarakhand's 13. Chennai has had no report since 2014. A district with no mandi of its own
+  gets the state's reports instead (the panel says so).
 
 ## How it stays safe and within limits
 

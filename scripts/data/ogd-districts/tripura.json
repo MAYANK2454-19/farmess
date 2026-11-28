@@ -1,0 +1,63 @@
+{
+  "state": "Tripura",
+  "sourceState": "Tripura",
+  "scannedOn": "2026-11-28",
+  "rows": 751575,
+  "rowsCounted": 751575,
+  "names": [
+    {
+      "name": "Dhalai",
+      "rows": 79132,
+      "newest": "2026-11-27",
+      "market": "Gondatwisa APMC"
+    },
+    {
+      "name": "Gomati",
+      "rows": 48503,
+      "newest": "2026-11-26",
+      "market": "Nutanbazar APMC"
+    },
+    {
+      "name": "Khowai",
+      "rows": 109347,
+      "newest": "2026-11-27",
+      "market": "Bachaibari APMC"
+    },
+    {
+      "name": "North Tripura",
+      "rows": 87147,
+      "newest": "2026-11-27",
+      "market": "Dasda APMC"
+    },
+    {
+      "name": "Sepahijala",
+      "rows": 228261,
+      "newest": "2026-11-27",
+      "market": "Jampuijala APMC"
+    },
+    {
+      "name": "South District",
+      "rows": 57917,
+      "newest": "2025-11-05",
+      "market": "Barpathari"
+    },
+    {
+      "name": "South Tripura",
+      "rows": 9156,
+      "newest": "2026-11-27",
+      "market": "Santir Bazar APMC"
+    },
+    {
+      "name": "Unokoti",
+      "rows": 75637,
+      "newest": "2026-11-27",
+      "market": "Machmara"
+    },
+    {
+      "name": "West District",
+      "rows": 56475,
+      "newest": "2026-11-27",
+      "market": "Champaknagar APMC"
+    }
+  ]
+}

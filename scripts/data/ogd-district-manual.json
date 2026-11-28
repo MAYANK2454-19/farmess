@@ -62,5 +62,49 @@
     "Mohali": "Sahibzada Ajit Singh Nagar",
     "Muktsar": "Sri Muktsar Sahib",
     "Nawanshahr": "Shaheed Bhagat Singh Nagar"
+  },
+  "Rajasthan": {
+    "Anupgarh": "Sri Ganganagar",
+    "Dudu": "Jaipur",
+    "Ganganagar": "Sri Ganganagar",
+    "Gangapur City": "Sawai Madhopur",
+    "Jaipur Rural": "Jaipur",
+    "Jodhpur Rural": "Jodhpur",
+    "Kekri": "Ajmer",
+    "Neem Ka Thana": "Sikar",
+    "Sanchore": "Jalore"
+  },
+  "Tamil Nadu": {
+    "Chengalpet": "Chengalpattu",
+    "Nagercoil (Kannyiakumari)": "Kanniyakumari",
+    "The Nilgiris": "Nilgiris",
+    "Thiruvellore": "Tiruvallur",
+    "Tuticorin": "Thoothukudi"
+  },
+  "Telangana": {
+    "Asifabad": "Kumuram Bheem Asifabad",
+    "Bhupalapally": "Jayashankar Bhupalpally"
+  },
+  "Tripura": {
+    "South District": "South Tripura",
+    "West District": "West Tripura"
+  },
+  "Uttar Pradesh": {
+    "Amethi": ["Amethi", "Sultanpur"],
+    "Badaun": "Budaun",
+    "Ghaziabad": ["Ghaziabad", "Hapur"],
+    "Kanpur": "Kanpur Nagar",
+    "Khiri (Lakhimpur)": "Kheri",
+    "Lakhimpur": "Kheri",
+    "Mau(Maunathbhanjan)": "Mau",
+    "Sambhal": ["Sambhal", "Moradabad"]
+  },
+  "Uttarakhand": {
+    "Garhwal (Pauri)": "Pauri Garhwal"
+  },
+  "West Bengal": {
+    "Burdwan": "Purba Bardhaman",
+    "Medinipur(E)": "Purba Medinipur",
+    "Medinipur(W)": "Paschim Medinipur"
   }
 }

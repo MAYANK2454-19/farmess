@@ -1,0 +1,153 @@
+{
+  "state": "West Bengal",
+  "sourceState": "West Bengal",
+  "scannedOn": "2026-11-28",
+  "rows": 2870653,
+  "rowsCounted": 2870653,
+  "names": [
+    {
+      "name": "Alipurduar",
+      "rows": 75772,
+      "newest": "2026-11-27",
+      "market": "Alipurduar APMC"
+    },
+    {
+      "name": "Bankura",
+      "rows": 171938,
+      "newest": "2026-11-27",
+      "market": "Bankura Sadar APMC"
+    },
+    {
+      "name": "Birbhum",
+      "rows": 164331,
+      "newest": "2026-11-27",
+      "market": "Rampurhat APMC"
+    },
+    {
+      "name": "Burdwan",
+      "rows": 5566,
+      "newest": "2026-01-13",
+      "market": "Guskara APMC"
+    },
+    {
+      "name": "Coochbehar",
+      "rows": 258775,
+      "newest": "2026-11-26",
+      "market": "Mathabhanga APMC"
+    },
+    {
+      "name": "Dakshin Dinajpur",
+      "rows": 85861,
+      "newest": "2026-11-25",
+      "market": "Gangarampur(Dakshin Dinajpur) APMC"
+    },
+    {
+      "name": "Darjeeling",
+      "rows": 102224,
+      "newest": "2026-11-27",
+      "market": "Siliguri APMC"
+    },
+    {
+      "name": "Hooghly",
+      "rows": 136524,
+      "newest": "2026-11-27",
+      "market": "Champadanga APMC"
+    },
+    {
+      "name": "Howrah",
+      "rows": 101212,
+      "newest": "2026-11-27",
+      "market": "Ramkrishanpur(Howrah)"
+    },
+    {
+      "name": "Jalpaiguri",
+      "rows": 154874,
+      "newest": "2026-11-27",
+      "market": "Dhupguri APMC"
+    },
+    {
+      "name": "Jhargram",
+      "rows": 24804,
+      "newest": "2026-11-27",
+      "market": "Jhargram APMC"
+    },
+    {
+      "name": "Kalimpong",
+      "rows": 18539,
+      "newest": "2026-09-14",
+      "market": "Kalimpong APMC"
+    },
+    {
+      "name": "Kolkata",
+      "rows": 161613,
+      "newest": "2026-11-27",
+      "market": "Sealdah Koley Market APMC"
+    },
+    {
+      "name": "Malda",
+      "rows": 112959,
+      "newest": "2026-11-27",
+      "market": "Samsi APMC"
+    },
+    {
+      "name": "Medinipur(E)",
+      "rows": 125451,
+      "newest": "2026-11-27",
+      "market": "Tamluk (Medinipur E) APMC"
+    },
+    {
+      "name": "Medinipur(W)",
+      "rows": 119279,
+      "newest": "2026-11-27",
+      "market": "Medinipur(West) APMC"
+    },
+    {
+      "name": "Murshidabad",
+      "rows": 121370,
+      "newest": "2026-11-27",
+      "market": "Jangipur APMC"
+    },
+    {
+      "name": "Nadia",
+      "rows": 203155,
+      "newest": "2026-11-27",
+      "market": "Chakdah APMC"
+    },
+    {
+      "name": "North 24 Parganas",
+      "rows": 101447,
+      "newest": "2026-11-26",
+      "market": "Habra APMC"
+    },
+    {
+      "name": "Paschim Bardhaman",
+      "rows": 114782,
+      "newest": "2026-11-20",
+      "market": "Asansol APMC"
+    },
+    {
+      "name": "Purba Bardhaman",
+      "rows": 254026,
+      "newest": "2026-11-27",
+      "market": "Burdwan APMC"
+    },
+    {
+      "name": "Puruliya",
+      "rows": 116541,
+      "newest": "2026-11-26",
+      "market": "Purulia APMC"
+    },
+    {
+      "name": "Sounth 24 Parganas",
+      "rows": 92608,
+      "newest": "2026-11-27",
+      "market": "Baruipur(Canning) APMC"
+    },
+    {
+      "name": "Uttar Dinajpur",
+      "rows": 47002,
+      "newest": "2026-11-27",
+      "market": "Islampur APMC"
+    }
+  ]
+}

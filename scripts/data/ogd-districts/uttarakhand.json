@@ -1,0 +1,51 @@
+{
+  "state": "Uttarakhand",
+  "sourceState": "Uttarakhand",
+  "scannedOn": "2026-11-28",
+  "rows": 72089,
+  "rowsCounted": 72089,
+  "names": [
+    {
+      "name": "Chamoli (Gopeshwar)",
+      "rows": 166,
+      "newest": "2026-11-26",
+      "market": "Chamoli APMC"
+    },
+    {
+      "name": "Champawat",
+      "rows": 357,
+      "newest": "2026-11-27",
+      "market": "Tanakpur APMC"
+    },
+    {
+      "name": "Dehradoon",
+      "rows": 16734,
+      "newest": "2026-11-27",
+      "market": "Dehradoon APMC"
+    },
+    {
+      "name": "Garhwal (Pauri)",
+      "rows": 4203,
+      "newest": "2026-11-27",
+      "market": "Kotadwara APMC"
+    },
+    {
+      "name": "Haridwar",
+      "rows": 15742,
+      "newest": "2026-11-27",
+      "market": "Manglaur APMC"
+    },
+    {
+      "name": "Nanital",
+      "rows": 4807,
+      "newest": "2026-11-27",
+      "market": "Haldwani APMC"
+    },
+    {
+      "name": "Udhamsinghnagar",
+      "rows": 30080,
+      "newest": "2026-11-27",
+      "market": "Kicchha APMC"
+    }
+  ]
+}

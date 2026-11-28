@@ -96,7 +96,7 @@ test("a source name is given to the district it fits best, never to a similar ne
   assert.deepEqual(sourceDistrictNames("Tamil Nadu", "Tiruvallur", ["Tiruvarur"]), []);
   assert.deepEqual(sourceDistrictNames("Andhra Pradesh", "East Godavari", ["West Godavari"]), []);
   // A name that fits two districts equally well is left out.
-  assert.deepEqual(sourceDistrictNames("Uttar Pradesh", "Kanpur Nagar", ["Kanpur"]), []);
+  assert.deepEqual(sourceDistrictNames("Manipur", "Imphal East", ["Imphal"]), []);
   // Small spelling differences still match when no other district is closer.
   assert.deepEqual(sourceDistrictNames("Odisha", "Mayurbhanj", ["Mayurbhanja", "Balasore"]), [
     "Mayurbhanja",
@@ -269,5 +269,127 @@ test("districts the source names its own way use the checked names", async () =>
   assert.equal(districtForSourceName("Bihar", "Chhapra"), "Saran");
   assert.equal(districtForSourceName("Bihar", "Siwan"), "Siwan");
   assert.equal(districtForSourceName("Bihar", "Atlantis"), null);
-  assert.equal(districtForSourceName("Uttar Pradesh", "Kanpur"), null);
+  assert.equal(districtForSourceName("Manipur", "Imphal"), null);
+});
+
+test("a source name is never taken for a similar-looking neighbour", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  // By letters alone "The Nilgiris" begins like Theni, "Asifabad" is two letters
+  // from Adilabad and "Badaun" as close to Jalaun as to Budaun; the list settles each.
+  assert.equal(districtForSourceName("Tamil Nadu", "The Nilgiris"), "Nilgiris");
+  assert.deepEqual(sourceDistrictNames("Tamil Nadu", "Theni", ["The Nilgiris", "Theni"]), [
+    "Theni",
+  ]);
+  assert.equal(districtForSourceName("Telangana", "Asifabad"), "Kumuram Bheem Asifabad");
+  assert.deepEqual(sourceDistrictNames("Telangana", "Adilabad", ["Asifabad", "Adilabad"]), [
+    "Adilabad",
+  ]);
+  assert.equal(districtForSourceName("Uttar Pradesh", "Badaun"), "Budaun");
+  assert.deepEqual(sourceDistrictNames("Uttar Pradesh", "Jalaun", ["Badaun", "Jalaun (Orai)"]), [
+    "Jalaun (Orai)",
+  ]);
+  // Tiruvallur and Tiruvarur each have an old and a new name at the source.
+  assert.deepEqual(ogdDistrictNames("Tamil Nadu", "Tiruvallur"), ["Thiruvallur", "Thiruvellore"]);
+  assert.deepEqual(ogdDistrictNames("Tamil Nadu", "Tiruvarur"), ["Tiruvarur", "Thiruvarur"]);
+  assert.deepEqual(
+    sourceDistrictNames("Tamil Nadu", "Tiruvallur", [
+      "Thiruvarur",
+      "Tiruvarur",
+      "Thiruvallur",
+      "Thiruvellore",
+    ]),
+    ["Thiruvallur", "Thiruvellore"],
+  );
+  // "Kanpur" is the city district; Kanpur Dehat has its own name at the source.
+  assert.equal(districtForSourceName("Uttar Pradesh", "Kanpur"), "Kanpur Nagar");
+  assert.deepEqual(
+    sourceDistrictNames("Uttar Pradesh", "Kanpur Dehat", ["Kanpur", "Kanpur Dehat"]),
+    ["Kanpur Dehat"],
+  );
+});
+
+test("districts whose mandis the source keeps under a neighbour are asked for there", async () => {
+  const { districtForSourceName, ogdDistrictNames, sourceDistrictNames } =
+    await import("./india.ts");
+  // Uttar Pradesh: Moradabad's mandi is listed under Sambhal, Sultanpur's under
+  // Amethi and Hapur's under Ghaziabad. The neighbour keeps its own name too.
+  assert.deepEqual(ogdDistrictNames("Uttar Pradesh", "Moradabad"), ["Sambhal"]);
+  assert.deepEqual(ogdDistrictNames("Uttar Pradesh", "Sambhal"), ["Sambhal"]);
+  assert.deepEqual(sourceDistrictNames("Uttar Pradesh", "Sambhal", ["Sambhal", "Rampur"]), [
+    "Sambhal",
+  ]);
+  assert.deepEqual(sourceDistrictNames("Uttar Pradesh", "Moradabad", ["Sambhal", "Rampur"]), [
+    "Sambhal",
+  ]);
+  assert.deepEqual(ogdDistrictNames("Uttar Pradesh", "Sultanpur"), ["Amethi"]);
+  assert.deepEqual(ogdDistrictNames("Uttar Pradesh", "Hapur"), ["Ghaziabad"]);
+  // The name belongs to neither district alone, so the map is not asked for one.
+  assert.equal(districtForSourceName("Uttar Pradesh", "Amethi"), null);
+});
+
+test("districts dissolved at the source are read with the district that took their mandis", async () => {
+  const { districtForSourceName, ogdDistrictNames } = await import("./india.ts");
+  // Rajasthan dissolved nine districts; the source used their names until March 2026.
+  assert.deepEqual(ogdDistrictNames("Rajasthan", "Jaipur"), ["Jaipur", "Jaipur Rural", "Dudu"]);
+  assert.deepEqual(ogdDistrictNames("Rajasthan", "Sri Ganganagar"), ["Ganganagar", "Anupgarh"]);
+  assert.equal(districtForSourceName("Rajasthan", "Kekri"), "Ajmer");
+  assert.equal(districtForSourceName("Rajasthan", "Neem Ka Thana"), "Sikar");
+  // A leading space is part of the name at the source, like a trailing one.
+  assert.deepEqual(ogdDistrictNames("Rajasthan", "Jhunjhunu"), ["Jhunjhunu", " Jhunjhunu"]);
+  assert.deepEqual(ogdDistrictNames("Tripura", "West Tripura"), ["West District"]);
+  assert.deepEqual(ogdDistrictNames("West Bengal", "Purba Medinipur"), ["Medinipur(E)"]);
+  assert.deepEqual(ogdDistrictNames("West Bengal", "Paschim Medinipur"), ["Medinipur(W)"]);
+  assert.deepEqual(ogdDistrictNames("Uttarakhand", "Pauri Garhwal"), ["Garhwal (Pauri)"]);
+  assert.deepEqual(ogdDistrictNames("Uttar Pradesh", "Kheri"), ["Khiri (Lakhimpur)", "Lakhimpur"]);
+});
+
+test("names the source has stopped using are left out of today's search only", async () => {
+  const { ogdCurrentDistrictNames, ogdDistrictNameRetired, ogdDistrictNames } =
+    await import("./india.ts");
+  // Renamed in May 2026: the history is under both names, today's reports under the new one.
+  assert.deepEqual(ogdDistrictNames("Karnataka", "Shivamogga"), ["Shivamogga", "Shimoga"]);
+  assert.deepEqual(ogdCurrentDistrictNames("Karnataka", "Shivamogga"), ["Shivamogga"]);
+  assert.equal(ogdDistrictNameRetired("Karnataka", "Shimoga"), true);
+  assert.equal(ogdDistrictNameRetired("Karnataka", "Shivamogga"), false);
+  // Two names in use at the same time are both asked for.
+  assert.deepEqual(ogdCurrentDistrictNames("Bihar", "Saran"), ["Chhapra", "Saran"]);
+  assert.deepEqual(ogdCurrentDistrictNames("Uttar Pradesh", "Kheri"), [
+    "Khiri (Lakhimpur)",
+    "Lakhimpur",
+  ]);
+  // The districts Rajasthan dissolved are history only.
+  assert.deepEqual(ogdCurrentDistrictNames("Rajasthan", "Jaipur"), ["Jaipur"]);
+  // The source moved away from the usual name: only its new one is asked for.
+  assert.deepEqual(ogdCurrentDistrictNames("Tamil Nadu", "Chengalpattu"), ["Chengalpet"]);
+  // Nothing listed: the caller asks under the usual name.
+  assert.deepEqual(ogdCurrentDistrictNames("Bihar", "Patna"), []);
+  assert.deepEqual(ogdCurrentDistrictNames("Delhi", "New Delhi"), ["Delhi"]);
+  // The state may be given the way the source writes it.
+  assert.equal(ogdDistrictNameRetired("Chattisgarh", "Koria"), true);
+  assert.equal(ogdDistrictNameRetired("Atlantis", "Koria"), false);
+});
+
+test("every state has been read, and no district needs more names than the fetch asks with", async () => {
+  const { OGD_DISTRICT_NAMES, OGD_DISTRICT_NAMES_CHECKED, OGD_RETIRED_DISTRICT_NAMES } =
+    await import("./ogd-district-names.ts");
+  assert.deepEqual([...OGD_DISTRICT_NAMES_CHECKED].sort(), [...INDIA_STATES].sort());
+  for (const [state, districts] of Object.entries(OGD_DISTRICT_NAMES)) {
+    for (const [district, names] of Object.entries(districts)) {
+      // The automatic fetch asks under at most three names (MAX_DISTRICT_NAMES).
+      assert.ok(names.length <= 3, `${state}: ${district} has ${names.length} names`);
+    }
+  }
+  for (const [state, names] of Object.entries(OGD_RETIRED_DISTRICT_NAMES)) {
+    const districts = Object.values(OGD_DISTRICT_NAMES[state] ?? {});
+    for (const name of names) {
+      const holders = districts.filter((listed) => listed.includes(name));
+      assert.ok(holders.length > 0, `${state}: "${name}" is retired but not a listed name`);
+      // The newest name of a district is the one in use.
+      assert.ok(
+        holders.every((listed) => listed[0] !== name),
+        `${state}: "${name}" is retired but listed first`,
+      );
+    }
+  }
 });

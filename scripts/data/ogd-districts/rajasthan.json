@@ -1,0 +1,315 @@
+{
+  "state": "Rajasthan",
+  "sourceState": "Rajasthan",
+  "scannedOn": "2026-11-28",
+  "rows": 4167449,
+  "rowsCounted": 4167449,
+  "names": [
+    {
+      "name": " Jhunjhunu",
+      "rows": 3320,
+      "newest": "2025-11-05",
+      "market": "Surajgarh"
+    },
+    {
+      "name": "Ajmer",
+      "rows": 319814,
+      "newest": "2026-11-26",
+      "market": "Madanganj Kishangarh APMC"
+    },
+    {
+      "name": "Alwar",
+      "rows": 244892,
+      "newest": "2026-11-26",
+      "market": "Alwar APMC"
+    },
+    {
+      "name": "Anupgarh",
+      "rows": 9745,
+      "newest": "2026-03-24",
+      "market": "Jaitsar APMC"
+    },
+    {
+      "name": "Balotra",
+      "rows": 926,
+      "newest": "2026-09-01",
+      "market": "Balotra APMC"
+    },
+    {
+      "name": "Banswara",
+      "rows": 8046,
+      "newest": "2020-05-07",
+      "market": "Banswara"
+    },
+    {
+      "name": "Baran",
+      "rows": 145262,
+      "newest": "2026-11-27",
+      "market": "Nahargarh APMC"
+    },
+    {
+      "name": "Barmer",
+      "rows": 33453,
+      "newest": "2026-11-25",
+      "market": "Dhorimanna APMC"
+    },
+    {
+      "name": "Beawar",
+      "rows": 5101,
+      "newest": "2026-11-27",
+      "market": "Beawar APMC"
+    },
+    {
+      "name": "Bharatpur",
+      "rows": 98142,
+      "newest": "2026-11-27",
+      "market": "Bhusawar Bair APMC"
+    },
+    {
+      "name": "Bhilwara",
+      "rows": 46170,
+      "newest": "2026-11-26",
+      "market": "Bhilwara APMC"
+    },
+    {
+      "name": "Bikaner",
+      "rows": 189881,
+      "newest": "2026-11-27",
+      "market": "Lunkaransar APMC"
+    },
+    {
+      "name": "Bundi",
+      "rows": 80827,
+      "newest": "2026-11-27",
+      "market": "Bundi APMC"
+    },
+    {
+      "name": "Chittorgarh",
+      "rows": 232279,
+      "newest": "2026-11-27",
+      "market": "Nimbahera APMC"
+    },
+    {
+      "name": "Churu",
+      "rows": 46844,
+      "newest": "2026-11-27",
+      "market": "Sadulpur APMC"
+    },
+    {
+      "name": "Dausa",
+      "rows": 126255,
+      "newest": "2026-11-27",
+      "market": "Mandawari APMC"
+    },
+    {
+      "name": "Deedwana Kuchaman",
+      "rows": 1659,
+      "newest": "2026-11-26",
+      "market": "Kuchaman City APMC"
+    },
+    {
+      "name": "Deeg",
+      "rows": 5879,
+      "newest": "2026-11-27",
+      "market": "Kama APMC"
+    },
+    {
+      "name": "Dholpur",
+      "rows": 6443,
+      "newest": "2026-11-25",
+      "market": "Dholpur APMC"
+    },
+    {
+      "name": "Dudu",
+      "rows": 967,
+      "newest": "2026-03-06",
+      "market": "Dudu APMC"
+    },
+    {
+      "name": "Dungarpur",
+      "rows": 7104,
+      "newest": "2026-11-27",
+      "market": "Dungarpur APMC"
+    },
+    {
+      "name": "Ganganagar",
+      "rows": 437038,
+      "newest": "2026-11-27",
+      "market": "Sriganganagar (F&V) APMC"
+    },
+    {
+      "name": "Gangapur City",
+      "rows": 1314,
+      "newest": "2026-03-23",
+      "market": "Gangapur City APMC"
+    },
+    {
+      "name": "Hanumangarh",
+      "rows": 264685,
+      "newest": "2026-11-27",
+      "market": "Sangriya APMC"
+    },
+    {
+      "name": "Jaipur",
+      "rows": 298093,
+      "newest": "2026-11-27",
+      "market": "Jaipur (F&V) APMC"
+    },
+    {
+      "name": "Jaipur Rural",
+      "rows": 19094,
+      "newest": "2026-03-25",
+      "market": "Bassi APMC"
+    },
+    {
+      "name": "Jaisalmer",
+      "rows": 3244,
+      "newest": "2026-11-27",
+      "market": "Mohangarh APMC"
+    },
+    {
+      "name": "Jalore",
+      "rows": 85033,
+      "newest": "2026-11-27",
+      "market": "Jalore APMC"
+    },
+    {
+      "name": "Jhalawar",
+      "rows": 110697,
+      "newest": "2026-11-27",
+      "market": "Jhalarapatan APMC"
+    },
+    {
+      "name": "Jhunjhunu",
+      "rows": 2784,
+      "newest": "2026-11-27",
+      "market": "Surajgarh APMC"
+    },
+    {
+      "name": "Jhunjunu",
+      "rows": 37450,
+      "newest": "2024-07-18",
+      "market": "Jhunjhunu"
+    },
+    {
+      "name": "Jodhpur",
+      "rows": 295404,
+      "newest": "2026-11-27",
+      "market": "Jodhpur (F&V) APMC"
+    },
+    {
+      "name": "Jodhpur Rural",
+      "rows": 3201,
+      "newest": "2026-03-24",
+      "market": "Osiyan Mathania APMC"
+    },
+    {
+      "name": "Karauli",
+      "rows": 24604,
+      "newest": "2026-11-26",
+      "market": "Hindoun APMC"
+    },
+    {
+      "name": "Kekri",
+      "rows": 2628,
+      "newest": "2026-03-24",
+      "market": "Kekri APMC"
+    },
+    {
+      "name": "Khairthal Tijara",
+      "rows": 4073,
+      "newest": "2026-11-26",
+      "market": "Kishangarhbas APMC"
+    },
+    {
+      "name": "Kota",
+      "rows": 247939,
+      "newest": "2026-11-27",
+      "market": "Kota (F&V) APMC"
+    },
+    {
+      "name": "Kotputli- Behror",
+      "rows": 2914,
+      "newest": "2026-11-26",
+      "market": "Behror APMC"
+    },
+    {
+      "name": "Nagaur",
+      "rows": 106835,
+      "newest": "2026-11-27",
+      "market": "Merta City APMC"
+    },
+    {
+      "name": "Neem Ka Thana",
+      "rows": 1791,
+      "newest": "2026-03-23",
+      "market": "Sri Madhopur APMC"
+    },
+    {
+      "name": "Pali",
+      "rows": 59888,
+      "newest": "2026-11-27",
+      "market": "Sumerpur APMC"
+    },
+    {
+      "name": "Phalodi",
+      "rows": 2540,
+      "newest": "2026-11-26",
+      "market": "Phalodi APMC"
+    },
+    {
+      "name": "Pratapgarh",
+      "rows": 9559,
+      "newest": "2026-11-27",
+      "market": "Pratapgarh APMC"
+    },
+    {
+      "name": "Rajasamand",
+      "rows": 38846,
+      "newest": "2024-07-01",
+      "market": "Rajsamand"
+    },
+    {
+      "name": "Rajsamand",
+      "rows": 2047,
+      "newest": "2026-11-27",
+      "market": "Rajsamand APMC"
+    },
+    {
+      "name": "Sanchore",
+      "rows": 1030,
+      "newest": "2026-03-24",
+      "market": "Raniwara APMC"
+    },
+    {
+      "name": "Sikar",
+      "rows": 108005,
+      "newest": "2026-11-27",
+      "market": "Fatehpur APMC"
+    },
+    {
+      "name": "Sirohi",
+      "rows": 14775,
+      "newest": "2026-11-27",
+      "market": "Abu Road APMC"
+    },
+    {
+      "name": "Swai Madhopur",
+      "rows": 67192,
+      "newest": "2026-11-27",
+      "market": "Sawai Madhopur APMC"
+    },
+    {
+      "name": "Tonk",
+      "rows": 149519,
+      "newest": "2026-11-27",
+      "market": "Dooni APMC"
+    },
+    {
+      "name": "Udaipur",
+      "rows": 152218,
+      "newest": "2026-11-27",
+      "market": "Udaipur (F&V) APMC"
+    }
+  ]
+}

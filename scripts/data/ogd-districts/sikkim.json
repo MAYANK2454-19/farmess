@@ -1,0 +1,27 @@
+{
+  "state": "Sikkim",
+  "sourceState": "Sikkim",
+  "scannedOn": "2026-11-28",
+  "rows": 272,
+  "rowsCounted": 272,
+  "names": [
+    {
+      "name": "East",
+      "rows": 211,
+      "newest": "2010-01-28",
+      "market": "Rangpo"
+    },
+    {
+      "name": "South Sikkim (Namchi)",
+      "rows": 60,
+      "newest": "2010-01-29",
+      "market": "Melli"
+    },
+    {
+      "name": "West Sikkim (Gyalsing)",
+      "rows": 1,
+      "newest": "2007-10-20",
+      "market": "Gyalsing"
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+{
+  "state": "Telangana",
+  "sourceState": "Telangana",
+  "scannedOn": "2026-11-28",
+  "rows": 1767213,
+  "rowsCounted": 1767213,
+  "names": [
+    {
+      "name": "Adilabad",
+      "rows": 87590,
+      "newest": "2026-11-27",
+      "market": "Adilabad (Rythu Bazar)"
+    },
+    {
+      "name": "Asifabad",
+      "rows": 209,
+      "newest": "2026-11-27",
+      "market": "Kagaznagar APMC"
+    },
+    {
+      "name": "Bhadradri Kothagudem",
+      "rows": 1303,
+      "newest": "2026-11-27",
+      "market": "Yellandu APMC"
+    },
+    {
+      "name": "Bhupalapally",
+      "rows": 90,
+      "newest": "2026-11-26",
+      "market": "Kataram APMC"
+    },
+    {
+      "name": "Hanmakonda",
+      "rows": 643,
+      "newest": "2026-07-04",
+      "market": "Excise Colony RBZ (under APMC Warangal)"
+    },
+    {
+      "name": "Hanumakonda",
+      "rows": 1548,
+      "newest": "2026-11-27",
+      "market": "Excise Colony,RBZ"
+    },
+    {
+      "name": "Hyderabad",
+      "rows": 426210,
+      "newest": "2026-11-27",
+      "market": "RYTHU BAZAR MEHDIPATNAM"
+    },
+    {
+      "name": "Jagityal",
+      "rows": 970,
+      "newest": "2026-06-13",
+      "market": "Mallapur APMC"
+    },
+    {
+      "name": "Jagtial",
+      "rows": 316,
+      "newest": "2026-11-27",
+      "market": "Raikal APMC"
+    },
+    {
+      "name": "Jangaon",
+      "rows": 146,
+      "newest": "2026-11-27",
+      "market": "Jangaon APMC"
+    },
+    {
+      "name": "Jayashankar Bhupalapally",
+      "rows": 46,
+      "newest": "2026-06-30",
+      "market": "Bhupalapally APMC"
+    },
+    {
+      "name": "Jogulamba Gadwal",
+      "rows": 379,
+      "newest": "2026-11-27",
+      "market": "Gadwal APMC"
+    },
+    {
+      "name": "Karimnagar",
+      "rows": 190448,
+      "newest": "2026-11-27",
+      "market": "Sultanabad APMC"
+    },
+    {
+      "name": "Khammam",
+      "rows": 119700,
+      "newest": "2026-11-27",
+      "market": "Kallur APMC"
+    },
+    {
+      "name": "Mahabubabad",
+      "rows": 895,
+      "newest": "2026-11-27",
+      "market": "Mahabubabad APMC"
+    },
+    {
+      "name": "Mahbubnagar",
+      "rows": 199970,
+      "newest": "2026-11-27",
+      "market": "Mahabubnagar(Rythu Bazar)"
+    },
+    {
+      "name": "Mancherial",
+      "rows": 243,
+      "newest": "2026-11-27",
+      "market": "Chennur APMC"
+    },
+    {
+      "name": "Medak",
+      "rows": 110920,
+      "newest": "2026-11-27",
+      "market": "Narsapur APMC"
+    },
+    {
+      "name": "Medchal Malkajgiri",
+      "rows": 4402,
+      "newest": "2026-11-27",
+      "market": "Kukatpally,RBZ"
+    },
+    {
+      "name": "Mulugu",
+      "rows": 2,
+      "newest": "2026-06-06",
+      "market": "Mulugu APMC"
+    },
+    {
+      "name": "Nagarkurnool",
+      "rows": 1617,
+      "newest": "2026-11-27",
+      "market": "Kalwakurthy APMC"
+    },
+    {
+      "name": "Nalgonda",
+      "rows": 190948,
+      "newest": "2026-11-27",
+      "market": "Venkateswarnagar APMC"
+    },
+    {
+      "name": "Narayanpet",
+      "rows": 153,
+      "newest": "2026-11-27",
+      "market": "Makthal APMC"
+    },
+    {
+      "name": "Nirmal",
+      "rows": 728,
+      "newest": "2026-11-27",
+      "market": "Bhainsa APMC"
+    },
+    {
+      "name": "Nizamabad",
+      "rows": 85806,
+      "newest": "2026-11-27",
+      "market": "Nizamabad APMC"
+    },
+    {
+      "name": "Peddapalli",
+      "rows": 48,
+      "newest": "2026-11-27",
+      "market": "Dharmaram APMC"
+    },
+    {
+      "name": "Rajanna Siricilla",
+      "rows": 356,
+      "newest": "2026-11-27",
+      "market": "Rudrangi APMC"
+    },
+    {
+      "name": "Ranga Reddy",
+      "rows": 177754,
+      "newest": "2026-11-27",
+      "market": "Shadnagar APMC"
+    },
+    {
+      "name": "Sangareddy",
+      "rows": 2061,
+      "newest": "2026-11-27",
+      "market": "Zaheerabad APMC"
+    },
+    {
+      "name": "Siddipet",
+      "rows": 4929,
+      "newest": "2026-11-27",
+      "market": "Siddipet(Rythu Bazar)"
+    },
+    {
+      "name": "Suryapet",
+      "rows": 1598,
+      "newest": "2026-11-27",
+      "market": "Suryapeta APMC"
+    },
+    {
+      "name": "Vikarabad",
+      "rows": 536,
+      "newest": "2026-11-27",
+      "market": "Tanduru APMC"
+    },
+    {
+      "name": "Wanaparthy",
+      "rows": 154,
+      "newest": "2026-11-26",
+      "market": "Wanaparthy town APMC"
+    },
+    {
+      "name": "Warangal",
+      "rows": 154482,
+      "newest": "2026-11-27",
+      "market": "Warangal APMC"
+    },
+    {
+      "name": "Yadadri Bhuvanagiri",
+      "rows": 13,
+      "newest": "2026-11-23",
+      "market": "Aler APMC"
+    }
+  ]
+}

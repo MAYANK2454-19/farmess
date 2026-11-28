@@ -28,6 +28,8 @@ const SCAN_DIR = path.join("scripts", "data", "ogd-districts");
 const MANUAL = path.join("scripts", "data", "ogd-district-manual.json");
 const OUT = path.join("src", "lib", "location", "ogd-district-names.ts");
 const CURRENT_DAYS = 400;
+/** A name is one the source has stopped using when another name of the district has reports this much newer. */
+const RETIRED_DAYS = 30;
 const EVERY_DISTRICT = "*";
 const reportOnly = process.argv.includes("--report");
 
@@ -69,6 +71,8 @@ const newestFirst = (a: Found, b: Found) =>
 const table: Record<string, Record<string, string[]>> = {};
 /** Source names that stand for every district of a state. */
 const statewide: Record<string, string[]> = {};
+/** Source names the source has stopped using, by state. */
+const retired: Record<string, string[]> = {};
 /** States whose scan reached the end with counts that add up. */
 const checked: string[] = [];
 const scannedOn = new Set<string>();
@@ -99,6 +103,8 @@ for (const file of files.sort()) {
   const since = daysBefore(scan.scannedOn, CURRENT_DAYS);
   const byHand = manual[scan.state] ?? {};
   const assigned = new Map<string, Found[]>();
+  /** Names given by hand to more than one district. */
+  const shared = new Set<string>();
   const forAll: Found[] = [];
   const report: string[] = [];
   const unmatchedOld: string[] = [];
@@ -130,6 +136,7 @@ for (const file of files.sort()) {
         );
         continue;
       }
+      if (districts.length > 1) shared.add(found.name);
     } else {
       const match = bySpelling(scan.state, name);
       if (!match) {
@@ -155,14 +162,30 @@ for (const file of files.sort()) {
   }
 
   const entries: Record<string, string[]> = {};
+  const stopped = new Set<string>();
   for (const district of listed) {
-    const names = (assigned.get(district) ?? []).sort(newestFirst).map((found) => found.name);
-    // Nothing to note when the source uses exactly the usual name and no other.
-    if (names.length === 0 || (names.length === 1 && names[0] === district)) continue;
+    const found = (assigned.get(district) ?? []).sort(newestFirst);
+    const names = found.map((item) => item.name);
+    // Nothing to note when the source uses exactly the usual name and no other,
+    // unless it uses that name for another district as well ("Amethi" also
+    // holds Sultanpur's mandis): then both districts must list it.
+    if (
+      names.length === 0 ||
+      (names.length === 1 && names[0] === district && !shared.has(names[0]))
+    ) {
+      continue;
+    }
     entries[district] = names;
     namesListed += names.length;
+    // A name the source has stopped using: another name of the district has
+    // reports a month or more newer.
+    const last = daysBefore(found[0].newest ?? scan.scannedOn, RETIRED_DAYS);
+    for (const item of found.slice(1)) {
+      if ((item.newest ?? "") < last) stopped.add(item.name);
+    }
   }
   if (Object.keys(entries).length > 0) table[scan.state] = entries;
+  if (stopped.size > 0) retired[scan.state] = [...stopped].sort();
   if (forAll.length > 0) {
     statewide[scan.state] = forAll.sort(newestFirst).map((found) => found.name);
   }
@@ -217,6 +240,15 @@ export const OGD_DISTRICT_NAMES: Record<string, Record<string, readonly string[]
  * of Delhi's mandis under the single district "Delhi".
  */
 export const OGD_STATEWIDE_DISTRICT_NAMES: Record<string, readonly string[]> = ${JSON.stringify(statewide, null, 2)};
+
+/**
+ * Names the source has stopped using, by state: it renamed many districts
+ * during the year, and these have had no report for ${RETIRED_DAYS} days or more while
+ * another name of the same district has. Part of the year's history is still
+ * under them, so the automatic fetch reads them; today's reports have nothing
+ * under them, so the live search does not ask.
+ */
+export const OGD_RETIRED_DISTRICT_NAMES: Record<string, readonly string[]> = ${JSON.stringify(retired, null, 2)};
 
 /**
  * States whose district names were all read from the source. A district of

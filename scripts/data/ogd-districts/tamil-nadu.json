@@ -1,0 +1,297 @@
+{
+  "state": "Tamil Nadu",
+  "sourceState": "Tamil Nadu",
+  "scannedOn": "2026-11-28",
+  "rows": 7258067,
+  "rowsCounted": 7258067,
+  "names": [
+    {
+      "name": "Ariyalur",
+      "rows": 55428,
+      "newest": "2026-11-27",
+      "market": "Jeyankondam (Uzhavar Sandhai )"
+    },
+    {
+      "name": "Chengalpattu",
+      "rows": 229271,
+      "newest": "2026-10-12",
+      "market": "Nanganallur(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Chengalpet",
+      "rows": 23435,
+      "newest": "2026-11-27",
+      "market": "Guduvancheri(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Chennai",
+      "rows": 604,
+      "newest": "2014-07-02",
+      "market": "Koyambedu"
+    },
+    {
+      "name": "Coimbatore",
+      "rows": 459016,
+      "newest": "2026-11-27",
+      "market": "Vadavalli(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Cuddalore",
+      "rows": 179094,
+      "newest": "2026-11-27",
+      "market": "Viruthachalam(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Dharmapuri",
+      "rows": 232234,
+      "newest": "2026-11-27",
+      "market": "A.Jattihalli(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Dindigul",
+      "rows": 167303,
+      "newest": "2026-11-27",
+      "market": "Dindigul(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Erode",
+      "rows": 243704,
+      "newest": "2026-11-27",
+      "market": "Sathiyamagalam(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Kallakurichi",
+      "rows": 10629,
+      "newest": "2026-11-27",
+      "market": "Kallakurichi(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Kallakuruchi",
+      "rows": 75231,
+      "newest": "2026-10-12",
+      "market": "Sankarapuram(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Kancheepuram",
+      "rows": 119126,
+      "newest": "2026-11-27",
+      "market": "Padappai(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Kannyiakumari",
+      "rows": 6477,
+      "newest": "2026-11-27",
+      "market": "Vadaseri RM"
+    },
+    {
+      "name": "Karur",
+      "rows": 149108,
+      "newest": "2026-11-27",
+      "market": "Kulithalai(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Krishnagiri",
+      "rows": 217984,
+      "newest": "2026-11-27",
+      "market": "Hosur(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Madurai",
+      "rows": 346328,
+      "newest": "2026-11-27",
+      "market": "Anna nagar(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Mayiladuthurai",
+      "rows": 5809,
+      "newest": "2026-11-27",
+      "market": "Sirkali(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Nagapattinam",
+      "rows": 138924,
+      "newest": "2026-11-27",
+      "market": "Nagapattinam(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Nagercoil (Kannyiakumari)",
+      "rows": 77229,
+      "newest": "2026-10-14",
+      "market": "Myladi(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Namakkal",
+      "rows": 263935,
+      "newest": "2026-11-27",
+      "market": "Mohanur(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Perambalur",
+      "rows": 44986,
+      "newest": "2026-11-27",
+      "market": "Perambalur(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Pudukkottai",
+      "rows": 178017,
+      "newest": "2026-11-27",
+      "market": "Pudukottai(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Ramanathapuram",
+      "rows": 90187,
+      "newest": "2026-11-27",
+      "market": "Ramanathapuram(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Ranipet",
+      "rows": 87482,
+      "newest": "2026-11-27",
+      "market": "Arcot(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Salem",
+      "rows": 536071,
+      "newest": "2026-11-27",
+      "market": "Ammapet(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Sivaganga",
+      "rows": 177093,
+      "newest": "2026-10-12",
+      "market": "Karaikudi(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Sivagangai",
+      "rows": 15650,
+      "newest": "2026-11-27",
+      "market": "Singampunari(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Tenkasi",
+      "rows": 61645,
+      "newest": "2026-10-12",
+      "market": "Tenkasi(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thanjavur",
+      "rows": 172605,
+      "newest": "2026-11-27",
+      "market": "Papanasam(Uzhavar Sandhai )"
+    },
+    {
+      "name": "The Nilgiris",
+      "rows": 113568,
+      "newest": "2026-11-27",
+      "market": "Udhagamandalam(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Theni",
+      "rows": 296753,
+      "newest": "2026-11-27",
+      "market": "Theni(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thenkasi",
+      "rows": 6319,
+      "newest": "2026-11-27",
+      "market": "Tenkasi(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thiruchirappalli",
+      "rows": 240632,
+      "newest": "2026-11-27",
+      "market": "KKNagar(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thirunelveli",
+      "rows": 151380,
+      "newest": "2026-10-12",
+      "market": "Kandiyaperi(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thirupathur",
+      "rows": 73622,
+      "newest": "2026-11-27",
+      "market": "Thirupathur RM"
+    },
+    {
+      "name": "Thiruppur",
+      "rows": 17755,
+      "newest": "2026-11-27",
+      "market": "Tiruppur (North) (Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thirupur",
+      "rows": 144232,
+      "newest": "2026-10-12",
+      "market": "Tiruppur (North) (Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thiruvallur",
+      "rows": 8602,
+      "newest": "2026-11-27",
+      "market": "Tiruthani(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thiruvannamalai",
+      "rows": 369743,
+      "newest": "2026-11-27",
+      "market": "Arani(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thiruvarur",
+      "rows": 184650,
+      "newest": "2026-10-12",
+      "market": "Muthupettai(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thiruvellore",
+      "rows": 78814,
+      "newest": "2026-10-12",
+      "market": "Naravarikuppam(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Thoothukudi",
+      "rows": 7797,
+      "newest": "2026-11-27",
+      "market": "Kovilpatti(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Tirunelveli",
+      "rows": 11511,
+      "newest": "2026-11-27",
+      "market": "Palayamkottai(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Tiruvarur",
+      "rows": 15423,
+      "newest": "2026-11-27",
+      "market": "Tiruvarur(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Tuticorin",
+      "rows": 126619,
+      "newest": "2026-10-12",
+      "market": "Tuticorin(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Vellore",
+      "rows": 346269,
+      "newest": "2026-11-27",
+      "market": "Kahithapattarai(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Villupuram",
+      "rows": 423151,
+      "newest": "2026-11-27",
+      "market": "Villupuram(Uzhavar Sandhai )"
+    },
+    {
+      "name": "Virudhunagar",
+      "rows": 276622,
+      "newest": "2026-11-27",
+      "market": "Aruppukottai(Uzhavar Sandhai )"
+    }
+  ]
+}

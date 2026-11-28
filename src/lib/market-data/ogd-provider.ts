@@ -5,7 +5,7 @@ import { canonicalCommodity } from "./commodities";
 import { fetchOgdRecordsPaginated } from "./ogd-pagination";
 import {
   canonicalState,
-  ogdDistrictNames,
+  ogdCurrentDistrictNames,
   ogdDistrictNamesChecked,
   ogdStateName,
   sourceDistrictNames,
@@ -94,9 +94,11 @@ async function fetchOgdPrices(filters: MarketSearchFilters): Promise<MarketDataR
     const limit = safeLimit(filters.limit);
     // A district the source is known to list differently ("East Champaran/
     // Motihari", or both "Chhapra" and "Saran" for Saran) is asked for under
-    // those names; any other under the name it was given.
+    // those names; any other under the name it was given. Names the source has
+    // stopped using ("Mysore" for Mysuru) are left out: today's reports have
+    // nothing under them, and every request counts against a shared limit.
     const listed =
-      filters.district && stateFilter ? ogdDistrictNames(stateFilter, filters.district) : [];
+      filters.district && stateFilter ? ogdCurrentDistrictNames(stateFilter, filters.district) : [];
     const districtNames = listed.length > 0 ? listed : filters.district ? [filters.district] : [];
     let rawRecords: unknown[] = [];
     if (districtNames.length === 0) {

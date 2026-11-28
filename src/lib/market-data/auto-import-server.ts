@@ -5,6 +5,7 @@ import { after } from "next/server";
 import {
   canonicalDistrict,
   canonicalState,
+  ogdDistrictNameRetired,
   ogdDistrictNames,
   ogdStateName,
   sourceDistrictNames,
@@ -382,6 +383,9 @@ async function fetchAndSaveCurrent(
   scope: ImportScope,
   trigger: ImportTrigger,
 ): Promise<number> {
+  // A name the source has stopped using holds history only: nothing is
+  // reported under it today, so there is no point in asking.
+  if (scope.district && ogdDistrictNameRetired(scope.state, scope.district)) return 0;
   const result = await searchOgdPrices({
     commodity: scope.crop,
     state: scope.state,
